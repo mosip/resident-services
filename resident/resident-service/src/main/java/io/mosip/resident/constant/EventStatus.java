@@ -14,7 +14,7 @@ public enum EventStatus {
 	public static Optional<EventStatus> getEventStatusForText(String status) {
 		return Stream.of(values())
 			.filter(event -> event.name()
-				.equals(status.trim()))
+				.equalsIgnoreCase(status.trim()))
 			.findAny();
 	}
 }
