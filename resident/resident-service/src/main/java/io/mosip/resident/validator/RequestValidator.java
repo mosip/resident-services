@@ -1310,8 +1310,12 @@ public class RequestValidator {
 		validateIndividualIdV2(individualId, "Request Download Card Request");
 	}
 
+	public void validateAidStatusIndividualId(String individualId) {
+		validateIndividualIdV2(individualId, "AID status");
+	}
+
 	private void validateIndividualIdV2(String individualId, String eventName) {
-		if (individualId == null || StringUtils.isEmpty(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId) || !isNumeric(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					eventName));
 			throw new InvalidInputException("individualId");
