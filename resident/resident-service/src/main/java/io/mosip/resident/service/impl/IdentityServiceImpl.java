@@ -6,6 +6,7 @@ import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdResponseDTO1;
@@ -111,7 +112,7 @@ public class IdentityServiceImpl implements IdentityService {
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
-			identityDTO.setUIN(utility.getMappingValue(identity, ResidentConstants.UIN));
+			identityDTO.setUIN(utility.getMappingValue(identity, IdType.UIN.name()));
 			identityDTO.setEmail(utility.getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(utility.getMappingValue(identity, PHONE));
 			String dateOfBirth = utility.getMappingValue(identity, DATE_OF_BIRTH);
@@ -179,7 +180,7 @@ public class IdentityServiceImpl implements IdentityService {
 						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID) && !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
-								perpVid = residentVidService.getPerpatualVid((String) identity.get(ResidentConstants.UIN));
+								perpVid = residentVidService.getPerpatualVid((String) identity.get(IdType.UIN.name()));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -234,7 +235,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	
 		try {
-			if(getIndividualIdType(idvid).equalsIgnoreCase(ResidentConstants.UIN)){
+			if(getIndividualIdType(idvid).equalsIgnoreCase(IdType.UIN.name())){
 				return idvid;
 			}
 			return getIdentity(idvid).getUIN();
@@ -408,11 +409,11 @@ public class IdentityServiceImpl implements IdentityService {
 
 	public String getIndividualIdType(String individualId){
 		if(requestValidator.validateUin(individualId)){
-			return ResidentConstants.UIN;
+			return IdType.UIN.name();
 		} else if(requestValidator.validateVid(individualId)){
-			return ResidentConstants.VID;
+			return IdType.VID.name();
 		} else {
-			return ResidentConstants.AID;
+			return IdType.AID.name();
 		}
 	}
 }
