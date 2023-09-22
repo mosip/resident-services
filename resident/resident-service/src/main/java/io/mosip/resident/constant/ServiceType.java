@@ -46,7 +46,7 @@ public enum ServiceType {
     
     public static Optional<ServiceType> getServiceTypeFromString(String serviceTypeString) {
         for (ServiceType serviceType : values()) {
-            if (serviceType.name().equalsIgnoreCase(serviceTypeString)) {
+            if (serviceType.name().equals(serviceTypeString)) {
                 return Optional.of(serviceType);
             }
         }

@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -162,7 +163,7 @@ public class AuditUtilTest {
 	@Test
 	public void testGetRefIdandType() throws ApisResourceAccessException {
 		String individualId = "9054257143";
-		String refIdType = ResidentConstants.UIN;
+		String refIdType = IdType.UIN.name();
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(refIdType);
 		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();

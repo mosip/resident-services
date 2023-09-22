@@ -475,7 +475,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
 	private String getRidForIndividualId(String individualId) {
 		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(ResidentConstants.AID)) {
+		if (idType.equalsIgnoreCase(IdType.AID.name())) {
 			return individualId;
 		} else {
 			try {
