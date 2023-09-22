@@ -1,19 +1,5 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
-
-import java.io.IOException;
-import java.util.List;
-
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -24,6 +10,9 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +20,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.List;
+
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 
 /**
  * Resident proxy masterdata controller class.
@@ -531,6 +531,49 @@ public class ProxyMasterdataController {
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::exit");
+		return responseWrapper;
+	}
+
+	@ResponseFilter
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+	@GetMapping("/proxy/masterdata/locationHierarchyLevels")
+	@Operation(summary = "Retrieve all location Hierarchy Level details", description = "Retrieve all location Hierarchy Level details", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getLocationHierarchyLevel(
+			@RequestParam(name = "lastUpdated", required = false) @ApiParam(value = "last updated rows", required = false) String lastUpdated) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::entry");
+		ResponseWrapper<?> responseWrapper;
+		try {
+			responseWrapper = proxyMasterdataService.getLocationHierarchyLevels(lastUpdated);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
+		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
+		return responseWrapper;
+	}
+
+	@ResponseFilter
+	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
+	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
+	public ResponseWrapper<?> getAllDynamicFieldByName(
+			@PathVariable("fieldName") String fieldName) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::entry");
+		ResponseWrapper<?> responseWrapper;
+		try {
+			responseWrapper = proxyMasterdataService.getAllDynamicFieldByName(fieldName);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION);
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
+		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::exit");
 		return responseWrapper;
 	}
 
