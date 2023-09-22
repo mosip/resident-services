@@ -2057,7 +2057,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(toDate == null){
 			toDate = LocalDate.now();
 		}
-		if(statusFilter == null || statusFilter.equalsIgnoreCase(EventStatus.ALL.name())){
+		if(statusFilter == null || statusFilter.trim().equalsIgnoreCase(EventStatus.ALL.name())){
 			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
@@ -2065,7 +2065,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
-		if(serviceType == null || serviceType.equalsIgnoreCase(ServiceType.ALL.name())) {
+		if(serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
 			serviceTypeTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
