@@ -307,8 +307,4 @@ public class ResidentConstants {
 	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
 
     public static final String API_RESPONSE_TIME_ID = "api.response.time";
-    
-    public static final String UIN = "UIN";
-    public static final String VID = "VID";
-    public static final String AID = "AID";
 }
