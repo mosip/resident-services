@@ -11,6 +11,7 @@ import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
 import io.mosip.kernel.openid.bridge.model.MosipUserDto;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
@@ -327,12 +328,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeUin(){
-		assertEquals(ResidentConstants.UIN, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		assertEquals(ResidentConstants.UIN, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -556,7 +557,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdTypeVidPassed(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		assertEquals(ResidentConstants.VID, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.VID.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -635,7 +636,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdType(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
-		assertEquals(ResidentConstants.AID, identityService.getIndividualIdType("3434343343"));
+		assertEquals(IdType.AID.name(), identityService.getIndividualIdType("3434343343"));
 	}
 
 	@Test

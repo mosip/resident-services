@@ -233,7 +233,7 @@ public class ResidentControllerTest {
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
-		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn(ResidentConstants.UIN);
+		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn(IdType.UIN.name());
 		when(environment.getProperty(anyString())).thenReturn("property");
 		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
 
