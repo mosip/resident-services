@@ -168,5 +168,8 @@ public interface ProxyMasterdataService {
 
 	String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode);
 
-	
+
+    ResponseWrapper<?> getLocationHierarchyLevels(String lastUpdated) throws ResidentServiceCheckedException;
+
+    ResponseWrapper<?> getAllDynamicFieldByName(String fieldName) throws ResidentServiceCheckedException;
 }
