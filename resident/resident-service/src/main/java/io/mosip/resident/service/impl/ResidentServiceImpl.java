@@ -1627,12 +1627,12 @@ public class ResidentServiceImpl implements ResidentService {
 		List<String> requestTypes;
 		List<String> statusList = new ArrayList<>();
 		Tuple2<LocalDateTime, LocalDateTime> dateTimeTuple2 = null;
-		if (serviceType == null || serviceType.equals(ServiceType.ALL.name())) {
+		if (serviceType == null || serviceType.equalsIgnoreCase(ServiceType.ALL.name())) {
 			requestTypes = getServiceQueryForNullServiceType();
 		} else {
 			requestTypes = convertServiceTypeToResidentTransactionType(serviceType);
 		}
-		if (statusFilter != null && !statusFilter.equals(EventStatus.ALL.name())) {
+		if (statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
 			statusList = getStatusFilterQuery(statusFilter, statusCodeList);
 		}
 		if (fromDateTime != null && toDateTime != null) {
@@ -1736,7 +1736,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
 		List<String> residentTransactionTypeList = new ArrayList<>();
 		if (serviceType != null) {
-			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::toUpperCase)
+			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::trim).map(String::toUpperCase)
 					.collect(Collectors.toList());
 			for (String service : serviceTypeList) {
 				ServiceType type = ServiceType.valueOf(service);
