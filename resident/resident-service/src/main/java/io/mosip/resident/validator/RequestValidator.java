@@ -1026,10 +1026,6 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorCode(),
 					ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorMessage());
 		}
-		if (!individualId.matches(idAllowedSpecialCharRegex)) {
-			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
-					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),individualId));
-		}
 		if (individualId.length() > vidLength) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),vidLength,individualId));
@@ -1310,12 +1306,20 @@ public class RequestValidator {
 		validateIndividualIdV2(individualId, "Request Download Card Request");
 	}
 
+	public void validateAidStatusIndividualId(String individualId) {
+		validateIndividualIdV2(individualId, "AID status");
+	}
+
 	private void validateIndividualIdV2(String individualId, String eventName) {
-		if (individualId == null || StringUtils.isEmpty(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId) || !validateIndividualId(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					eventName));
 			throw new InvalidInputException("individualId");
 		}
+	}
+
+	private boolean validateIndividualId(String individualId) {
+		return individualId.matches(idAllowedSpecialCharRegex);
 	}
 
 	public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
