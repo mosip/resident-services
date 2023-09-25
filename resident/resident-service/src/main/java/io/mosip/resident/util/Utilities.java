@@ -47,14 +47,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
 import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
@@ -305,9 +310,12 @@ public class Utilities {
 		}
 		ArrayList<Map<String, String>> arrayListOfMaps = (ArrayList<Map<String, String>>) objectArrayList;
 		arrayListOfMaps.sort((map1, map2) -> {
+			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			String dateTime1 = map1.get(CREATE_DATE_TIMES);
 			String dateTime2 = map2.get(CREATE_DATE_TIMES);
-		return dateTime2.compareTo(dateTime1);
+			LocalDate localDate1=LocalDate.parse(dateTime1, formatter);
+			LocalDate localDate2=LocalDate.parse(dateTime2, formatter);
+		return localDate2.compareTo(localDate1);
 		});
 		return arrayListOfMaps;
 	}
