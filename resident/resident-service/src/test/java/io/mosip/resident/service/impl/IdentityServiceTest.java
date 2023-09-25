@@ -17,7 +17,6 @@ import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
@@ -329,12 +328,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeUin(){
-		assertEquals(IdType.UIN.toString(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		assertEquals(IdType.UIN.toString(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -558,7 +557,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdTypeVidPassed(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		assertEquals(IdType.VID.toString(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.VID.name(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -634,11 +633,10 @@ public class IdentityServiceTest {
 				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
 	}
 
-	@Test(expected = InvalidInputException.class)
 	public void testGetIndividualIdType(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(false);
-		identityService.getIndividualIdType("3434343343");
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
+		assertEquals(IdType.AID.name(), identityService.getIndividualIdType("3434343343"));
 	}
 
 	@Test

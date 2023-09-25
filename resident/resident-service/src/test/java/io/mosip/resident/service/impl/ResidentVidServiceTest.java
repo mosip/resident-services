@@ -44,6 +44,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.IdentityDTO;
@@ -424,7 +425,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID.name());
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -525,7 +526,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID.name());
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -579,7 +580,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID.name());
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);

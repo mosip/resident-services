@@ -1627,13 +1627,16 @@ public class ResidentServiceImpl implements ResidentService {
 		List<String> requestTypes;
 		List<String> statusList = new ArrayList<>();
 		Tuple2<LocalDateTime, LocalDateTime> dateTimeTuple2 = null;
-		if (serviceType == null) {
+		if (serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
 			requestTypes = getServiceQueryForNullServiceType();
 		} else {
 			requestTypes = convertServiceTypeToResidentTransactionType(serviceType);
 		}
 		if (statusFilter != null) {
-			statusList = getStatusFilterQuery(statusFilter, statusCodeList);
+			statusFilter = statusFilter.trim();
+			if(!statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
+				statusList = getStatusFilterQuery(statusFilter, statusCodeList);
+			}
 		}
 		if (fromDateTime != null && toDateTime != null) {
 			dateTimeTuple2 = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
@@ -1641,7 +1644,7 @@ public class ResidentServiceImpl implements ResidentService {
 		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
 		int totalItems = 0;
 		List<Object[]> pageData = null;
-		if (statusFilter != null && searchText != null) {
+		if (statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name()) && searchText != null) {
 			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdInStatusSearchEventId(idaToken,
@@ -1653,7 +1656,7 @@ public class ResidentServiceImpl implements ResidentService {
 			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
 					searchText);
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
 			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageFetch,
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList,
 					dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
@@ -1665,7 +1668,7 @@ public class ResidentServiceImpl implements ResidentService {
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdAndSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, searchText);
-		} else if (statusFilter != null) {
+		} else if (statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
 			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, pageFetch, pageStart * pageFetch,
 					onlineVerificationPartnerId, requestTypes, statusList);
 			totalItems = residentTransactionRepository.countByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
@@ -1736,7 +1739,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
 		List<String> residentTransactionTypeList = new ArrayList<>();
 		if (serviceType != null) {
-			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::toUpperCase)
+			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::trim).map(String::toUpperCase)
 					.collect(Collectors.toList());
 			for (String service : serviceTypeList) {
 				ServiceType type = ServiceType.valueOf(service);
@@ -2054,7 +2057,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(toDate == null){
 			toDate = LocalDate.now();
 		}
-		if(statusFilter == null){
+		if(statusFilter == null || statusFilter.trim().equalsIgnoreCase(EventStatus.ALL.name())){
 			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
@@ -2062,7 +2065,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
-		if(serviceType == null || serviceType.equals(ServiceType.ALL.name())) {
+		if(serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
 			serviceTypeTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)

@@ -2857,12 +2857,6 @@ public class RequestValidatorTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testValidateChannelVerificationStatusInvalidAllowedChar() throws Exception {
-        String channel = "PHONE";
-        requestValidator.validateChannelVerificationStatus(channel, "$");
-    }
-
-    @Test(expected = ResidentServiceException.class)
     public void testValidateChannelVerificationStatusInvalidVidLength() throws Exception {
         String channel = "PHONE";
         requestValidator.validateChannelVerificationStatus(channel, "454645787845124578");

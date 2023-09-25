@@ -189,6 +189,7 @@ public class DownloadCardController {
     	logger.debug("DownloadCardController::getStatus()::entry");
 		ResponseWrapper<CheckStatusResponseDTO> responseWrapper = null;
 		try {
+			requestValidator.validateAidStatusIndividualId(aid);
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
