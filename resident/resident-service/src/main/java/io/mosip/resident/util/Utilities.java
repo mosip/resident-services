@@ -73,6 +73,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @Data
 public class Utilities {
+	private static final String CREATE_DATE_TIMES = "createdDateTimes";
 	private final Logger logger = LoggerConfiguration.logConfig(Utilities.class);
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
@@ -295,7 +296,20 @@ public class Utilities {
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
 		ArrayList<?> objectArrayList = objMapper.readValue(
 				objMapper.writeValueAsString(responseWrapper.getResponse()), ArrayList.class);
-		return objectArrayList;
+		return sortedRegprocStageList(objectArrayList);
+	}
+
+	public  ArrayList<?> sortedRegprocStageList(ArrayList<?> objectArrayList) {
+		if (objectArrayList.isEmpty() || !(objectArrayList.get(0) instanceof Map)) {
+			throw new IllegalArgumentException("Input ArrayList must contain Map objects.");
+		}
+		ArrayList<Map<String, String>> arrayListOfMaps = (ArrayList<Map<String, String>>) objectArrayList;
+		arrayListOfMaps.sort((map1, map2) -> {
+			String dateTime1 = map1.get(CREATE_DATE_TIMES);
+			String dateTime2 = map2.get(CREATE_DATE_TIMES);
+		return dateTime2.compareTo(dateTime1);
+		});
+		return arrayListOfMaps;
 	}
 
 	public Map<String, String> getPacketStatus(String rid)
