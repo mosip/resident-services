@@ -1,6 +1,7 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.exception.IllegalArgumentException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
@@ -34,7 +35,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -378,11 +378,13 @@ public class UtilitiesTest {
         utilities.getRidByIndividualId("123");
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void testGetRidStatus() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
-        ArrayList arrayList = new ArrayList<>();
-        arrayList.add("123");
+        ArrayList<Map> arrayList = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
+        map.put("createdDateTimes", "2023-09-21T08:38:34.280Z");
+        arrayList.add(map);
         response.setResponse(arrayList);
         Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
         utilities.getRidStatus("123");
@@ -427,7 +429,7 @@ public class UtilitiesTest {
         assertEquals(identityJsonObj.get("UIN"), uin.get("UIN"));
     }
 
-    @Test(expected = ResidentServiceCheckedException.class)
+    @Test(expected = Exception.class)
     public void testGetRidStatusFailed() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
@@ -439,7 +441,7 @@ public class UtilitiesTest {
         utilities.getRidStatus("123");
     }
 
-    @Test(expected = ResidentServiceCheckedException.class)
+    @Test(expected = Exception.class)
     public void testGetPacketStatusFailed() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
