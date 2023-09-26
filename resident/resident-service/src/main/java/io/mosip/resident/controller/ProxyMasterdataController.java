@@ -561,6 +561,7 @@ public class ProxyMasterdataController {
 	}
 
 	@ResponseFilter
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
 	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
 	public ResponseWrapper<?> getAllDynamicFieldByName(
@@ -579,7 +580,8 @@ public class ProxyMasterdataController {
 	}
 
 	@ResponseFilter
-	@GetMapping(value = "/proxy/masterdata/locations/immediatechildren/{locationcode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+	@GetMapping(value = "/auth-proxy/masterdata/locations/immediatechildren/{locationcode}")
 	public ResponseWrapper<LocationImmediateChildrenResponseDto> getImmediateChildrenByLocCode(
 			@PathVariable("locationcode") String locationCode, @RequestParam("languageCodes") List<String> languageCodes) throws ResidentServiceCheckedException {
 
