@@ -6,6 +6,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
@@ -574,6 +575,17 @@ public class ProxyMasterdataController {
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
 		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::exit");
+		return responseWrapper;
+	}
+
+	@ResponseFilter
+	@GetMapping(value = "/proxy/masterdata/immediatechildren/{locationcode}")
+	public ResponseWrapper<LocationImmediateChildrenResponseDto> getImmediateChildrenByLocCode(
+			@PathVariable("locationcode") String locationCode, @RequestParam("languageCodes") List<String> languageCodes) throws ResidentServiceCheckedException {
+
+		ResponseWrapper<LocationImmediateChildrenResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper
+				.setResponse(proxyMasterdataService.getImmediateChildrenByLocCode(locationCode, languageCodes));
 		return responseWrapper;
 	}
 

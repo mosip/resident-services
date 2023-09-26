@@ -8,6 +8,8 @@ import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
+import io.mosip.resident.dto.LocationDto;
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
@@ -511,6 +513,46 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
 		return responseWrapper;
+	}
+
+	@Override
+	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::entry");
+		ResponseWrapper<List<LocationDto>> responseWrapper = new ResponseWrapper<>();
+
+		List<String> pathsegements = new ArrayList<>();
+		pathsegements.add(locationCode);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("languageCodes");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(languageCodes);
+
+		try {
+			responseWrapper = (ResponseWrapper<List<LocationDto>>) residentServiceRestClient.getApi(ApiName.LATEST_ID_SCHEMA_URL,
+					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.error(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException | ResidentServiceCheckedException e) {
+			logger.error("Error occured in accessing latest id schema %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		List<LocationDto> locationDtoList = responseWrapper.getResponse();
+		Map<String, List<LocationDto>> groupedValues = locationDtoList
+				.stream()
+				.collect(Collectors.groupingBy(LocationDto::getLangCode));
+
+
+		LocationImmediateChildrenResponseDto locationImmediateChildrenResponseDto = new LocationImmediateChildrenResponseDto();
+		locationImmediateChildrenResponseDto.setLocations(groupedValues);
+
+		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::exit");
+		return locationImmediateChildrenResponseDto;
 	}
 
 	@CacheEvict(value = "templateCache", allEntries = true)
