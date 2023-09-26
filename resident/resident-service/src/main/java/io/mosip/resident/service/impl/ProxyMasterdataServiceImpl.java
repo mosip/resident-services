@@ -530,7 +530,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		queryParamValue.add(languageCodes);
 
 		try {
-			responseWrapper = (ResponseWrapper<List<LocationDto>>) residentServiceRestClient.getApi(ApiName.LATEST_ID_SCHEMA_URL,
+			responseWrapper = (ResponseWrapper<List<LocationDto>>) residentServiceRestClient.getApi(ApiName.IMMEDIATE_CHILDREN_BY_LOCATION_CODE,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.error(responseWrapper.getErrors().get(0).toString());
