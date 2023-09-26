@@ -31,11 +31,13 @@ import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +58,10 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private static final String DOCUMENTCATEGORIES = "documentcategories";
 	private static final String GENDER_NAME = "genderName";
 	private static final Object VALUES = "values";
+
+	private Map<String, LocationImmediateChildrenResponseDto> cache = new ConcurrentHashMap<>();
+
+
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -517,6 +523,30 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Override
 	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
+		String cacheKey = generateCacheKey(locationCode, languageCodes);
+		LocationImmediateChildrenResponseDto cachedResult = cache.get(cacheKey);
+
+		if (cachedResult != null) {
+			return cachedResult;
+		} else {
+			LocationImmediateChildrenResponseDto result = getImmediateChildrenByLocCodeAndLanguageCodes(locationCode, languageCodes);
+			cache.put(cacheKey, result);
+			return result;
+		}
+	}
+
+	private String generateCacheKey(String locationCode, List<String> languageCodes) {
+		Collections.sort(languageCodes);
+
+		StringBuilder keyBuilder = new StringBuilder(locationCode);
+		for (String languageCode : languageCodes) {
+			keyBuilder.append(languageCode);
+		}
+
+		return keyBuilder.toString();
+	}
+
+	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCodeAndLanguageCodes(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::entry");
 		ResponseWrapper<List<LocationDto>> responseWrapper = new ResponseWrapper<>();
 
