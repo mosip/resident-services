@@ -10,5 +10,5 @@ import java.util.Map;
  */
 @Data
 public class LocationImmediateChildrenResponseDto {
-    Map<String, List<LocationDto>> locations;
+    Map<String, List<Map<String, Object>>> locations;
 }

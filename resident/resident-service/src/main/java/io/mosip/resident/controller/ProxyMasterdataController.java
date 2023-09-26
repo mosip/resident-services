@@ -579,7 +579,7 @@ public class ProxyMasterdataController {
 	}
 
 	@ResponseFilter
-	@GetMapping(value = "/proxy/masterdata/immediatechildren/{locationcode}")
+	@GetMapping(value = "/proxy/masterdata/locations/immediatechildren/{locationcode}")
 	public ResponseWrapper<LocationImmediateChildrenResponseDto> getImmediateChildrenByLocCode(
 			@PathVariable("locationcode") String locationCode, @RequestParam("languageCodes") List<String> languageCodes) throws ResidentServiceCheckedException {
 

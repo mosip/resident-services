@@ -8,7 +8,6 @@ import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
-import io.mosip.resident.dto.LocationDto;
 import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -548,7 +547,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCodeAndLanguageCodes(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::entry");
-		ResponseWrapper<List<LocationDto>> responseWrapper = new ResponseWrapper<>();
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 
 		List<String> pathsegements = new ArrayList<>();
 		pathsegements.add(locationCode);
@@ -557,10 +556,10 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		queryParamName.add("languageCodes");
 
 		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(languageCodes);
+		queryParamValue.add(String.join(ResidentConstants.COMMA, languageCodes));
 
 		try {
-			responseWrapper = (ResponseWrapper<List<LocationDto>>) residentServiceRestClient.getApi(ApiName.IMMEDIATE_CHILDREN_BY_LOCATION_CODE,
+			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.IMMEDIATE_CHILDREN_BY_LOCATION_CODE,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.error(responseWrapper.getErrors().get(0).toString());
@@ -572,14 +571,14 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		List<LocationDto> locationDtoList = responseWrapper.getResponse();
-		Map<String, List<LocationDto>> groupedValues = locationDtoList
-				.stream()
-				.collect(Collectors.groupingBy(LocationDto::getLangCode));
+		Map<Object, Object> locationResponse = (Map<Object, Object>) responseWrapper.getResponse();
+		List<Map<String, Object>> locationList = (List<Map<String, Object>>) locationResponse.get("locations");
 
+		Map<String, List<Map<String, Object>>> groupedLocations = locationList.stream()
+				.collect(Collectors.groupingBy(map -> (String) map.get("langCode")));
 
 		LocationImmediateChildrenResponseDto locationImmediateChildrenResponseDto = new LocationImmediateChildrenResponseDto();
-		locationImmediateChildrenResponseDto.setLocations(groupedValues);
+		locationImmediateChildrenResponseDto.setLocations(groupedLocations);
 
 		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::exit");
 		return locationImmediateChildrenResponseDto;
