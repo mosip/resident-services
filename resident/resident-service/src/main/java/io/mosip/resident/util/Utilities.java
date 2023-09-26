@@ -47,14 +47,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
 import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
@@ -73,6 +78,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @Data
 public class Utilities {
+	private static final String CREATE_DATE_TIMES = "createdDateTimes";
 	private final Logger logger = LoggerConfiguration.logConfig(Utilities.class);
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
@@ -295,7 +301,23 @@ public class Utilities {
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
 		ArrayList<?> objectArrayList = objMapper.readValue(
 				objMapper.writeValueAsString(responseWrapper.getResponse()), ArrayList.class);
-		return objectArrayList;
+		return sortedRegprocStageList(objectArrayList);
+	}
+
+	public  ArrayList<?> sortedRegprocStageList(ArrayList<?> objectArrayList) {
+		if (objectArrayList.isEmpty() || !(objectArrayList.get(0) instanceof Map)) {
+			throw new IllegalArgumentException("Input ArrayList must contain Map objects.");
+		}
+		ArrayList<Map<String, String>> arrayListOfMaps = (ArrayList<Map<String, String>>) objectArrayList;
+		arrayListOfMaps.sort((map1, map2) -> {
+			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
+			String dateTime1 = map1.get(CREATE_DATE_TIMES);
+			String dateTime2 = map2.get(CREATE_DATE_TIMES);
+			LocalDate localDate1=LocalDate.parse(dateTime1, formatter);
+			LocalDate localDate2=LocalDate.parse(dateTime2, formatter);
+		return localDate2.compareTo(localDate1);
+		});
+		return arrayListOfMaps;
 	}
 
 	public Map<String, String> getPacketStatus(String rid)

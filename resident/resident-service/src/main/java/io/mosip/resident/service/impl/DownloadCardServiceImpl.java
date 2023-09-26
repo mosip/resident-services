@@ -72,7 +72,6 @@ import reactor.util.function.Tuples;
 @Service
 public class DownloadCardServiceImpl implements DownloadCardService {
 
-	private static final String AID = "AID";
 	private static final String LANGUAGE = "language";
 	private static final String VALUE = "value";
 	private static final String MASKED_VID = "maskedVid";
@@ -476,7 +475,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
 	private String getRidForIndividualId(String individualId) {
 		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(AID)) {
+		if (idType.equalsIgnoreCase(IdType.AID.name())) {
 			return individualId;
 		} else {
 			try {
@@ -540,7 +539,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			if (vidList.size() > 0) {
 				for (Map<String, ?> vidData : vidList) {
 					if (vidData.get(VID).toString().equalsIgnoreCase(vid)) {
-						additionalAttributes.put(ResidentConstants.VID, vid);
+						additionalAttributes.put(VID, vid);
 						additionalAttributes.put(VID_TYPE, vidData.get(VID_TYPE));
 						additionalAttributes.put(MASKED_VID, vidData.get(MASKED_VID));
 						additionalAttributes.put(EXPIRY_TIMESTAMP,

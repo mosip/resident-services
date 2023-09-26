@@ -6,12 +6,12 @@ import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidCreationException;
@@ -54,7 +54,6 @@ import static io.mosip.resident.util.Utility.IDENTITY;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String UIN = "UIN";
 	private static final String INDIVIDUAL_ID = "individual_id";
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
@@ -62,10 +61,7 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String NAME = "name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
-
-	private static final String VID = "VID";
-	private static final String AID = "AID";
-	private static final String  PERPETUAL_VID = "perpetualVID";
+	private static final String PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
 	private Utility utility;
@@ -116,7 +112,7 @@ public class IdentityServiceImpl implements IdentityService {
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
-			identityDTO.setUIN(utility.getMappingValue(identity, UIN));
+			identityDTO.setUIN(utility.getMappingValue(identity, IdType.UIN.name()));
 			identityDTO.setEmail(utility.getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(utility.getMappingValue(identity, PHONE));
 			String dateOfBirth = utility.getMappingValue(identity, DATE_OF_BIRTH);
@@ -184,7 +180,7 @@ public class IdentityServiceImpl implements IdentityService {
 						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID) && !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
-								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
+								perpVid = residentVidService.getPerpatualVid((String) identity.get(IdType.UIN.name()));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -239,7 +235,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	
 		try {
-			if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
+			if(getIndividualIdType(idvid).equalsIgnoreCase(IdType.UIN.name())){
 				return idvid;
 			}
 			return getIdentity(idvid).getUIN();
@@ -413,13 +409,11 @@ public class IdentityServiceImpl implements IdentityService {
 
 	public String getIndividualIdType(String individualId){
 		if(requestValidator.validateUin(individualId)){
-			return UIN;
+			return IdType.UIN.name();
 		} else if(requestValidator.validateVid(individualId)){
-			return VID;
-		} else if(requestValidator.validateRid(individualId)){
-			return AID;
+			return IdType.VID.name();
 		} else {
-			throw new InvalidInputException(ResidentConstants.INDIVIDUAL_ID);
+			return IdType.AID.name();
 		}
 	}
 }

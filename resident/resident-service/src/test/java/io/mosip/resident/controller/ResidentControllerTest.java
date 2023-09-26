@@ -63,6 +63,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AidStatusRequestDTO;
@@ -232,7 +233,7 @@ public class ResidentControllerTest {
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
-		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
+		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn(IdType.UIN.name());
 		when(environment.getProperty(anyString())).thenReturn("property");
 		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
 
