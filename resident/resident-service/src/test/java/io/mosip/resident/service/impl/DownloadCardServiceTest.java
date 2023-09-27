@@ -161,7 +161,7 @@ public class DownloadCardServiceTest {
 
 	@Test
 	public void testGetDownloadCardPdfWithVID()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException, OtpValidationFailedException {
 		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID.name());
 		Tuple2<byte[], String> actualResult = downloadCardService
 				.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
