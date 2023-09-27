@@ -581,7 +581,7 @@ public class ProxyMasterdataController {
 
 	@ResponseFilter
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping(value = "/auth-proxy/masterdata/locations/immediatechildren/{locationcode}")
+	@GetMapping(value = "/proxy/masterdata/locations/immediatechildren/{locationcode}")
 	public ResponseWrapper<LocationImmediateChildrenResponseDto> getImmediateChildrenByLocCode(
 			@PathVariable("locationcode") String locationCode, @RequestParam("languageCodes") List<String> languageCodes) throws ResidentServiceCheckedException {
 
