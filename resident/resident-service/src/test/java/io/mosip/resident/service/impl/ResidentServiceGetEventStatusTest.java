@@ -117,6 +117,20 @@ public class ResidentServiceGetEventStatusTest {
     }
 
     @Test
+    public void getEventStatusTestVid() throws ResidentServiceCheckedException {
+        Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
+    }
+
+    @Test
+    public void getEventStatusTestUIN() throws ResidentServiceCheckedException {
+        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
+    }
+
+    @Test
     public void getEventStatusTestEventStatusFailure() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);

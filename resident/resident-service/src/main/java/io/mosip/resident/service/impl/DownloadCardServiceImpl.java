@@ -143,16 +143,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
 					rid = getRidForIndividualId(individualId);
-					Map<String, String> ridStatus = utilities.getPacketStatus(rid);
-					String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-					String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-					if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
-							&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
-						pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
-					} else {
-						throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-								ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
-					}
+					pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
 					if (pdfBytes.length == 0) {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 						residentTransactionEntity.setStatusComment(

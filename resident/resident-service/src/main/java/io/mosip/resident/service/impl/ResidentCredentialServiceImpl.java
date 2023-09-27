@@ -32,6 +32,7 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
@@ -371,14 +372,18 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 		credentialRequestStatusResponseDto = JsonUtil.readValue(
 				JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-		if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
-		|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
+
+		if (credentialRequestStatusResponseDto != null
+				&& EventStatusSuccess.STORED.name().equals(credentialRequestStatusResponseDto.getStatusCode())
+				&& credentialRequestStatusResponseDto.getUrl() != null
+				&& !credentialRequestStatusResponseDto.getUrl().isEmpty()) {
+			logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::exit");
+			return credentialRequestStatusResponseDto.getUrl();
+		} else {
 			logger.error("Data share URL is not available.");
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
 		}
-		logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::exit");
-		return credentialRequestStatusResponseDto.getUrl();
 	}
 
 	public byte[] getDataShareData(String appId, String partnerRefId, URI dataShareUri)
