@@ -334,7 +334,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return getCard(requestId, applicationId, partnerReferenceId);
 	}
 	@Override
-	public byte[] getCard(String requestId, String appId, String partnerRefId) throws Exception {
+	public byte[] getCard(String requestId, String appId, String partnerRefId) {
 		try {
 			String dataShareUrl = getDataShareUrl(requestId);
 			URI dataShareUri = URI.create(dataShareUrl);
@@ -373,14 +373,18 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		credentialRequestStatusResponseDto = JsonUtil.readValue(
 				JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 
-		if (credentialRequestStatusResponseDto != null
-				&& EventStatusSuccess.STORED.name().equals(credentialRequestStatusResponseDto.getStatusCode())
+		if (credentialRequestStatusResponseDto != null) {
+			if(EventStatusSuccess.STORED.name().equals(credentialRequestStatusResponseDto.getStatusCode())
 				&& credentialRequestStatusResponseDto.getUrl() != null
 				&& !credentialRequestStatusResponseDto.getUrl().isEmpty()) {
-			logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::exit");
-			return credentialRequestStatusResponseDto.getUrl();
+				logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::exit");
+				return credentialRequestStatusResponseDto.getUrl();
+			} else {
+				logger.error("Data share URL is not available.");
+				throw new ResidentCredentialServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+						ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
+			}
 		} else {
-			logger.error("Data share URL is not available.");
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
 		}

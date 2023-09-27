@@ -1537,60 +1537,48 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public Tuple2<byte[], IdType> downloadCard(String eventId) {
-		try {
-			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
-					.findByEventId(eventId);
-			if (residentTransactionEntity.isPresent()) {
-				IdType cardType;
-				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
-				if (requestType.equals(RequestType.UPDATE_MY_UIN)) {
-					cardType = IdType.UIN;
-				} else if (requestType.equals(RequestType.VID_CARD_DOWNLOAD)) {
-					cardType = IdType.VID;
-				} else {
-					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
-							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
-				}
-				return Tuples.of(downloadCardFromDataShareUrl(residentTransactionEntity.get()), cardType);
+		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
+				.findByEventId(eventId);
+		if (residentTransactionEntity.isPresent()) {
+			IdType cardType;
+			RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.get().getRequestTypeCode());
+			if (requestType.equals(RequestType.UPDATE_MY_UIN)) {
+				cardType = IdType.UIN;
+			} else if (requestType.equals(RequestType.VID_CARD_DOWNLOAD)) {
+				cardType = IdType.VID;
 			} else {
-				throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.toString(),
-						ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+				logger.error(EventEnum.INVALID_REQUEST_TYPE_CODE.getDescription());
+				throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorCode(),
+						ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
 			}
-		} catch (EventIdNotPresentException e) {
+			return Tuples.of(downloadCardFromDataShareUrl(residentTransactionEntity.get()), cardType);
+		} else {
 			logger.error(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
 			throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
-		} catch (InvalidRequestTypeCodeException e) {
-			logger.error(EventEnum.INVALID_REQUEST_TYPE_CODE.getDescription());
-			throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
-					ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
-		} catch (Exception e) {
-			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_FOUND.getErrorCode(),
-					ResidentErrorCode.CARD_NOT_FOUND.getErrorMessage(), e);
 		}
 	}
 
 	public byte[] downloadCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
-		try {
-			if (residentTransactionEntity.getReferenceLink() != null
-					&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
-							.getStatusCode().equals(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name())) {
-				URI dataShareUri = URI.create(residentTransactionEntity.getReferenceLink());
-				byte[] pdfBytes = residentServiceRestClient.getApi(dataShareUri, byte[].class);
-				if (pdfBytes.length == 0) {
-					throw new CardNotReadyException();
-				}
-				residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
-						ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
-						utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
-				return pdfBytes;
+		byte[] pdfBytes = new byte[0];
+		if (residentTransactionEntity.getReferenceLink() != null
+				&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
+						.getStatusCode().equals(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name())) {
+			URI dataShareUri = URI.create(residentTransactionEntity.getReferenceLink());
+			try {
+				pdfBytes = residentServiceRestClient.getApi(dataShareUri, byte[].class);
+			} catch (ApisResourceAccessException e) {
+				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 			}
-		} catch (Exception e) {
-			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
-		return new byte[0];
+		if (pdfBytes.length == 0) {
+			throw new CardNotReadyException();
+		}
+		residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
+				ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
+				utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
+		return pdfBytes;
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
