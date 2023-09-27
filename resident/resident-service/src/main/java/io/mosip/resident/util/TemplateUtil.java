@@ -102,8 +102,11 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
 		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
-		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, getEventTypeBasedOnLangcode(requestType, languageCode));
+		String eventTypeBasedOnLangcode = getEventTypeBasedOnLangcode(requestType, languageCode);
+		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, eventTypeBasedOnLangcode);
+		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE_ENUM, requestType.name());
 		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCodes.getT2());
+		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS_ENUM, statusCodes.getT1());
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
 				templateVariables.put(TemplateVariablesConstants.SUMMARY,
@@ -111,7 +114,7 @@ public class TemplateUtil {
 								statusCodes.getT1(), requestType));
 			}
 		} else {
-			templateVariables.put(TemplateVariablesConstants.SUMMARY, getEventTypeBasedOnLangcode(requestType, languageCode));
+			templateVariables.put(TemplateVariablesConstants.SUMMARY, eventTypeBasedOnLangcode);
 		}
 		templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
 				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
@@ -279,15 +282,15 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForManageMyVid(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
+		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.VID_TYPE,
 				replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
-		fileText = fileText.replace(ResidentConstants.MASKED_VID,
+		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.MASKED_VID,
 				replaceNullWithEmptyString(residentTransactionEntity.getRefId()));
 		String requestType = residentTransactionEntity.getRequestTypeCode();
 		if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);
+			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, GENERATED);
 		} else if (requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, REVOKED);
+			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, REVOKED);
 		}
 		return fileText;
 	}
@@ -301,7 +304,7 @@ public class TemplateUtil {
 			String fileText, String languageCode) {
 		String channelsTemplateData = getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP);
-			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL, channelsTemplateData);
+			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.CHANNEL, channelsTemplateData);
 		return fileText;
 	}
 
@@ -493,7 +496,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.VALIDATE_OTP,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(ResidentConstants.CHANNEL, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.CHANNEL, getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP));
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
