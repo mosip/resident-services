@@ -181,7 +181,6 @@ public class ResidentConstants {
     public static final String DOLLAR = "$";
     public static final String AUTH_TYPE = "authType";
 
-    public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
     public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
 
@@ -200,9 +199,7 @@ public class ResidentConstants {
     public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
     public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
     public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
-    public static final String ACTION_PERFORMED = "actionPerformed";
-    public static final String VID_TYPE = "vidType";
-    public static final String MASKED_VID = "*masked VID*";
+
     public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
     public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
     
