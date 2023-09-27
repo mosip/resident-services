@@ -82,6 +82,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
 	public void clearExpiredCacheEntries() {
+		logger.info("Emptying getImmediateChildrenByLocCode cache");
 		cache.clear();
 	}
 
@@ -538,7 +539,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		Map<String, List<Map<String, Object>>> locations = new HashMap<>();
 		List<String> languageCodesNotCached = new ArrayList<>();
 		if (!cache.isEmpty()) {
-			cacheKeyList.stream()
+			cacheKeyList
 					.forEach(cacheKeyLanguage -> {
 						List<Map<String, Object>> cachedResult = cache.get(cacheKeyLanguage);
 						String languageCode = List.of(cacheKeyLanguage.split(ResidentConstants.UNDER_SCORE)).get(1);
@@ -554,10 +555,12 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		if(!languageCodesNotCached.isEmpty()) {
 			LocationImmediateChildrenResponseDto responseDto = getImmediateChildrenByLocCodeAndLanguageCodes(locationCode, languageCodes);
-			for(String languageCodeNotCached:languageCodesNotCached){
-				locations.put(languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
-				cache.put(locationCode+"_"+languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
-			}
+			languageCodesNotCached.forEach(
+					languageCodeNotCached ->{
+						locations.put(languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+						cache.put(locationCode+"_"+languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+					}
+			);
 		}
 		result.setLocations(locations);
 		return result;
