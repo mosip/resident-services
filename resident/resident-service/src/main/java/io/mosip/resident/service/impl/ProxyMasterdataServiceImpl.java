@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import com.hazelcast.cache.impl.CacheEntry;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -32,11 +33,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,8 +65,6 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	private Map<String, List<Map<String, Object>>> cache = new ConcurrentHashMap<>();
 
-
-
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -75,6 +78,12 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Autowired
 	private Utilities utilities;
+
+
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
+	public void clearExpiredCacheEntries() {
+		cache.clear();
+	}
 
 	@Override
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
@@ -522,23 +531,23 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Override
 	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
-		List<String> cacheKeyList = new ArrayList<>();
-		for(String languageCode:languageCodes){
-			cacheKeyList.add(locationCode +"_"+ languageCode);
-		}
+		List<String> cacheKeyList = languageCodes.stream()
+				.map(languageCode -> locationCode + ResidentConstants.UNDER_SCORE + languageCode)
+				.collect(Collectors.toList());
 		LocationImmediateChildrenResponseDto result =new LocationImmediateChildrenResponseDto();
 		Map<String, List<Map<String, Object>>> locations = new HashMap<>();
 		List<String> languageCodesNotCached = new ArrayList<>();
-		if(!cache.isEmpty()) {
-			for (String cacheKeyLanguage : cacheKeyList) {
-				List<Map<String, Object>> cachedResult = cache.get(cacheKeyLanguage);
-				String languageCode = List.of(cacheKeyLanguage.split("_")).get(1);
-				if (cachedResult != null) {
-					locations.put(languageCode, cachedResult);
-				} else {
-					languageCodesNotCached.add(languageCode);
-				}
-			}
+		if (!cache.isEmpty()) {
+			cacheKeyList.stream()
+					.forEach(cacheKeyLanguage -> {
+						List<Map<String, Object>> cachedResult = cache.get(cacheKeyLanguage);
+						String languageCode = List.of(cacheKeyLanguage.split(ResidentConstants.UNDER_SCORE)).get(1);
+						if (cachedResult != null) {
+							locations.put(languageCode, cachedResult);
+						} else {
+							languageCodesNotCached.add(languageCode);
+						}
+					});
 		}
 		if(cache.isEmpty()){
 			languageCodesNotCached.addAll(languageCodes);

@@ -7,6 +7,7 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
+
     private ResidentConstants() {
 	}
 
@@ -307,4 +308,5 @@ public class ResidentConstants {
 	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
 
     public static final String API_RESPONSE_TIME_ID = "api.response.time";
+    public static final String UNDER_SCORE = "_";
 }
