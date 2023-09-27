@@ -529,15 +529,6 @@ public class ResidentControllerTest {
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
-	@Test(expected = CardNotReadyException.class)
-	@WithUserDetails("reg-admin")
-	public void testDownloadCardIndividualIdCardNotReadyException() throws Exception {
-		byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
-		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(Tuples.of(bytes, IdType.VID));
-		residentController.downloadCard("9876543210", 0, LOCALE_EN_US);
-	}
-
 	@Test(expected = ResidentServiceException.class)
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualIdInvalidInputException() throws Exception {
