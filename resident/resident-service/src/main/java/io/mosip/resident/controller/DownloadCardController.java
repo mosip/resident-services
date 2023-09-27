@@ -39,6 +39,7 @@ import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
@@ -92,7 +93,7 @@ public class DownloadCardController {
 			@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, OtpValidationFailedException {
 		logger.debug("DownloadCardController::downloadCard()::entry");
 		InputStreamResource resource = null;
 		Tuple2<byte[], String> tupleResponse = null;
@@ -103,7 +104,7 @@ public class DownloadCardController {
 			if (tupleResponse.getT1().length == 0) {
 				throw new CardNotReadyException();
 			}
-		} catch (ResidentServiceException | InvalidInputException | CardNotReadyException e) {
+		} catch (ResidentServiceException | InvalidInputException | CardNotReadyException | OtpValidationFailedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
