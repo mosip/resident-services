@@ -169,7 +169,7 @@ public class DownloadCardServiceTest {
 		assertEquals(pdfbytes, actualResult.getT1());
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = OtpValidationFailedException.class)
 	public void testGetDownloadCardPdfWithValidateOTPFalse()
 			throws ResidentServiceCheckedException, OtpValidationFailedException {
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
@@ -186,7 +186,7 @@ public class DownloadCardServiceTest {
 		downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = OtpValidationFailedException.class)
 	public void testGetDownloadCardPdfWithOtpValidationFailedException()
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
