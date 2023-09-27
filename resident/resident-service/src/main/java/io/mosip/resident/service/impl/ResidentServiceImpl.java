@@ -1874,8 +1874,6 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
-			String requestTypeCode;
-			Tuple2<String, String> statusCodes;
 			if (residentTransactionEntity.isPresent()) {
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
@@ -1884,12 +1882,10 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!residentTransactionEntity.get().isReadStatus()) {
 					residentTransactionRepository.updateReadStatus(eventId);
 				}
-				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				statusCodes = getEventStatusCode(residentTransactionEntity.get().getStatusCode(), languageCode);
 			} else {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
-			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
+			RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.get().getRequestTypeCode());
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			Map<String, String> eventStatusMap;
 
@@ -1903,6 +1899,20 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 			eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesConstants.SUMMARY));
 
+			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
+			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+
+			if (serviceType.isPresent()) {
+				if (!serviceType.get().equals(ServiceType.ALL.name())) {
+					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
+							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
+									eventStatusMap.get(TemplateVariablesConstants.EVENT_STATUS_ENUM), requestType));
+				}
+			} else {
+				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, eventStatusMap.get(TemplateVariablesConstants.EVENT_TYPE));
+			}
+			
 			/**
 			 * Removed map value from eventStatusMap to put outside of info in
 			 * EventStatusResponseDTO
@@ -1914,19 +1924,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK);
-
-			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
-			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
-			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
-
-			if (serviceType.isPresent()) {
-				if (!serviceType.get().equals(ServiceType.ALL.name())) {
-					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode, statusCodes.getT1(), requestType));
-				}
-			} else {
-				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, templateUtil.getEventTypeBasedOnLangcode(requestType, languageCode));
-			}
+			
 			eventStatusResponseDTO.setInfo(eventStatusMap);
 			responseWrapper.setId(serviceEventId);
 			responseWrapper.setVersion(serviceEventVersion);
