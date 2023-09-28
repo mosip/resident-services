@@ -47,10 +47,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -304,19 +304,25 @@ public class Utilities {
 		return sortedRegprocStageList(objectArrayList);
 	}
 
-	public  ArrayList<?> sortedRegprocStageList(ArrayList<?> objectArrayList) {
+	public ArrayList<?> sortedRegprocStageList(ArrayList<?> objectArrayList) {
 		if (objectArrayList.isEmpty() || !(objectArrayList.get(0) instanceof Map)) {
 			throw new IllegalArgumentException("Input ArrayList must contain Map objects.");
 		}
 		ArrayList<Map<String, String>> arrayListOfMaps = (ArrayList<Map<String, String>>) objectArrayList;
 		arrayListOfMaps.sort((map1, map2) -> {
-			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
+			SimpleDateFormat dateFormat = new SimpleDateFormat(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			String dateTime1 = map1.get(CREATE_DATE_TIMES);
 			String dateTime2 = map2.get(CREATE_DATE_TIMES);
-			LocalDate localDate1=LocalDate.parse(dateTime1, formatter);
-			LocalDate localDate2=LocalDate.parse(dateTime2, formatter);
-		return localDate2.compareTo(localDate1);
+
+			try {
+				Date date1 = dateFormat.parse(dateTime1);
+				Date date2 = dateFormat.parse(dateTime2);
+				return date2.compareTo(date1);
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("Date parsing error: " + e.getMessage());
+			}
 		});
+
 		return arrayListOfMaps;
 	}
 
