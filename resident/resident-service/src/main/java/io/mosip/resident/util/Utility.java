@@ -1046,4 +1046,16 @@ public class Utility {
 	public void emptyGetCenterDetailsCache() {
 		logger.info("Emptying getCenterDetails cache");
 	}
+
+	@CacheEvict(value = "getLocationHierarchyLevels", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLocationHierarchyLevels}")
+	public void emptyGetLocationHierarchyLevels() {
+		logger.info("Emptying getLocationHierarchyLevels cache");
+	}
+
+	@CacheEvict(value = "getAllDynamicFieldByName", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getAllDynamicFieldByName}")
+	public void emptyGetAllDynamicFieldByName() {
+		logger.info("Emptying getAllDynamicFieldByName cache");
+	}
 }
