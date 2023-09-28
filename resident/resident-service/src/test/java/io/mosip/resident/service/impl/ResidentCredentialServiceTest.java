@@ -32,6 +32,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.CredentialRequestStatusDto;
@@ -529,7 +530,7 @@ public class ResidentCredentialServiceTest {
 		CredentialRequestStatusDto credentialRequestStatusDto = new CredentialRequestStatusDto();
 		credentialRequestStatusDto.setId("id-1");
 		credentialRequestStatusDto.setRequestId("effc56cd-cf3b-4042-ad48-7277cf90f763");
-		credentialRequestStatusDto.setStatusCode("code-101");
+		credentialRequestStatusDto.setStatusCode(EventStatusSuccess.STORED.name());
 		credentialRequestStatusDto.setUrl("https://url");
 
 		responseWrapper.setId("id-1");
@@ -569,7 +570,7 @@ public class ResidentCredentialServiceTest {
 		CredentialRequestStatusDto credentialRequestStatusDto = new CredentialRequestStatusDto();
 		credentialRequestStatusDto.setId("id-1");
 		credentialRequestStatusDto.setRequestId("effc56cd-cf3b-4042-ad48-7277cf90f763-pdf");
-		credentialRequestStatusDto.setStatusCode("code-101");
+		credentialRequestStatusDto.setStatusCode(EventStatusSuccess.STORED.name());
 		credentialRequestStatusDto.setUrl("https://url");
 
 		responseWrapper.setId("id-1");

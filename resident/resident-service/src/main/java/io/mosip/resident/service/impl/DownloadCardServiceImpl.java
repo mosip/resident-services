@@ -124,7 +124,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, OtpValidationFailedException {
 		logger.debug("DownloadCardServiceImpl::getDownloadCardPDF()::entry");
 		String rid = "";
 		String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
@@ -143,16 +143,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
 					rid = getRidForIndividualId(individualId);
-					Map<String, String> ridStatus = utilities.getPacketStatus(rid);
-					String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-					String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-					if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
-							&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
-						pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
-					} else {
-						throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-								ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
-					}
+					pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
 					if (pdfBytes.length == 0) {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 						residentTransactionEntity.setStatusComment(
@@ -169,17 +160,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+					throw new OtpValidationFailedException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException | ResidentCredentialServiceException e) {
-			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
-		} catch (OtpValidationFailedException e) {
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
-					e, Map.of(ResidentConstants.EVENT_ID, eventId));
+		} catch (ResidentCredentialServiceException | ResidentServiceCheckedException | OtpValidationFailedException e) {
+			e.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw e;
 		} catch (Exception e) {
 			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
 					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
