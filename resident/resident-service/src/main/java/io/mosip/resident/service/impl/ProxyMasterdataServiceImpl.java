@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import com.hazelcast.cache.impl.CacheEntry;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -8,6 +9,7 @@ import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
@@ -29,11 +31,17 @@ import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +63,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private static final String GENDER_NAME = "genderName";
 	private static final Object VALUES = "values";
 
+	private Map<String, List<Map<String, Object>>> cache = new ConcurrentHashMap<>();
+
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -68,6 +78,13 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Autowired
 	private Utilities utilities;
+
+
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
+	public void clearExpiredCacheEntries() {
+		logger.info("Emptying getImmediateChildrenByLocCode cache");
+		cache.clear();
+	}
 
 	@Override
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
@@ -511,6 +528,81 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
 		return responseWrapper;
+	}
+
+	@Override
+	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
+		List<String> cacheKeyList = languageCodes.stream()
+				.map(languageCode -> locationCode + ResidentConstants.UNDER_SCORE + languageCode)
+				.collect(Collectors.toList());
+		LocationImmediateChildrenResponseDto result =new LocationImmediateChildrenResponseDto();
+		Map<String, List<Map<String, Object>>> locations = new HashMap<>();
+		List<String> languageCodesNotCached = new ArrayList<>();
+		if (!cache.isEmpty()) {
+			cacheKeyList
+					.forEach(cacheKeyLanguage -> {
+						List<Map<String, Object>> cachedResult = cache.get(cacheKeyLanguage);
+						String languageCode = List.of(cacheKeyLanguage.split(ResidentConstants.UNDER_SCORE)).get(1);
+						if (cachedResult != null) {
+							locations.put(languageCode, cachedResult);
+						} else {
+							languageCodesNotCached.add(languageCode);
+						}
+					});
+		}
+		if(cache.isEmpty()){
+			languageCodesNotCached.addAll(languageCodes);
+		}
+		if(!languageCodesNotCached.isEmpty()) {
+			LocationImmediateChildrenResponseDto responseDto = getImmediateChildrenByLocCodeAndLanguageCodes(locationCode, languageCodesNotCached);
+			languageCodesNotCached.forEach(
+					languageCodeNotCached ->{
+						locations.put(languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+						cache.put(locationCode+"_"+languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+					}
+			);
+		}
+		result.setLocations(locations);
+		return result;
+	}
+
+	public LocationImmediateChildrenResponseDto getImmediateChildrenByLocCodeAndLanguageCodes(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+
+		List<String> pathsegements = new ArrayList<>();
+		pathsegements.add(locationCode);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("languageCodes");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(String.join(ResidentConstants.COMMA, languageCodes));
+
+		try {
+			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.IMMEDIATE_CHILDREN_BY_LOCATION_CODE,
+					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.error(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException | ResidentServiceCheckedException e) {
+			logger.error("Error occured in accessing latest id schema %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		Map<Object, Object> locationResponse = (Map<Object, Object>) responseWrapper.getResponse();
+		List<Map<String, Object>> locationList = (List<Map<String, Object>>) locationResponse.get("locations");
+
+		Map<String, List<Map<String, Object>>> groupedLocations = locationList.stream()
+				.collect(Collectors.groupingBy(map -> (String) map.get("langCode")));
+
+		LocationImmediateChildrenResponseDto locationImmediateChildrenResponseDto = new LocationImmediateChildrenResponseDto();
+		locationImmediateChildrenResponseDto.setLocations(groupedLocations);
+
+		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCode()::exit");
+		return locationImmediateChildrenResponseDto;
 	}
 
 	@CacheEvict(value = "templateCache", allEntries = true)
