@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +80,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String DATA = "data";
+
+	private static final String EMAIL_CHANNEL = "email";
+	private static final String PHONE_CHANNEL = "phone";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -425,8 +429,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			credentialRequestStatusResponseDto.setStatusCode(credentialRequestStatusDto.getStatusCode());
 			additionalAttributes.put("RID", credentialRequestStatusResponseDto.getRequestId());
 			additionalAttributes.put("status", credentialRequestStatusResponseDto.getStatusCode());
-			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
-					additionalAttributes);
+
+			IdentityDTO identityDTO = identityServiceImpl.getIdentity(credentialRequestStatusResponseDto.getId());
+			String email = identityDTO.getEmail();
+			String phone = identityDTO.getPhone();
+			if(!email.isEmpty() || !phone.isEmpty()) {
+				NotificationRequestDto notificationRequest = new NotificationRequestDto(credentialRequestStatusResponseDto.getId(),
+						NotificationTemplateCode.RS_CRE_STATUS, additionalAttributes);
+				notificationService.sendNotification(notificationRequest, getChannel(email, phone),
+						email, phone);
+			}
 
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
@@ -446,6 +458,17 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
 		return credentialRequestStatusResponseDto;
+	}
+
+	private List<String> getChannel(String email, String phone) {
+		if(!email.isEmpty() && !phone.isEmpty()){
+			return List.of(EMAIL_CHANNEL, PHONE_CHANNEL);
+		} else if (!email.isEmpty()) {
+			return List.of(EMAIL_CHANNEL);
+		} else if(!phone.isEmpty()){
+			return List.of(PHONE_CHANNEL);
+		}
+		return List.of();
 	}
 
 	private CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
