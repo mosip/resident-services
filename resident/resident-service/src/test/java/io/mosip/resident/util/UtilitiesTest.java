@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.IllegalArgumentException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
