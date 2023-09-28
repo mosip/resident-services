@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -472,7 +474,10 @@ public class ResidentCredentialServiceTest {
     	
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
     	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(responseWrapper);
-    	
+        IdentityDTO identityDTO = new IdentityDTO();
+        identityDTO.setEmail("");
+        identityDTO.setPhone("");
+        when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
     	
     	CredentialRequestStatusResponseDto response=residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
     	assertEquals(response.getId(),responseWrapper.getId());
