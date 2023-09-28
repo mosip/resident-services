@@ -519,22 +519,20 @@ public class ResidentController {
 		InputStreamResource resource = null;
 		Tuple2<byte[], IdType> pdfBytesAndCardType;
 		try {
-		validator.validateEventId(eventId);
-		logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
-		pdfBytesAndCardType = residentService.downloadCard(eventId);
-		if (pdfBytesAndCardType.getT1().length == 0) {
-			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
-		}
-		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytesAndCardType.getT1()));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
-		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
+			validator.validateEventId(eventId);
+			logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
+			pdfBytesAndCardType = residentService.downloadCard(eventId);
+			resource = new InputStreamResource(new ByteArrayInputStream(pdfBytesAndCardType.getT1()));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
+		} catch (CardNotReadyException | ResidentServiceException | EventIdNotPresentException
+				| InvalidRequestTypeCodeException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
 							downloadCardEventidId));
-			}
+		}
 		logger.debug("ResidentController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
 				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, pdfBytesAndCardType.getT2(), timeZoneOffset, locale) + ".pdf\"")

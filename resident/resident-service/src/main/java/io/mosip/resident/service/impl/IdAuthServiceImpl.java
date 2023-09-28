@@ -197,7 +197,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp,
 																	RequestType requestType)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
+			throws OtpValidationFailedException {
 		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
 		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
@@ -262,7 +262,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return Tuples.of(response.getResponse().isAuthStatus(), residentTransactionEntity);
 	}
 
-	private ResidentTransactionEntity updateResidentTransaction(boolean verified, String transactionId, RequestType requestType, String idaToken) throws ResidentServiceCheckedException {
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified, String transactionId, RequestType requestType, String idaToken) {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
 				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, idaToken
 				, List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
