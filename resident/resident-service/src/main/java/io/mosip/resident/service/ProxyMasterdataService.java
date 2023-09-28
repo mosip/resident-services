@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -172,4 +173,6 @@ public interface ProxyMasterdataService {
     ResponseWrapper<?> getLocationHierarchyLevels(String lastUpdated) throws ResidentServiceCheckedException;
 
     ResponseWrapper<?> getAllDynamicFieldByName(String fieldName) throws ResidentServiceCheckedException;
+
+    LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException;
 }
