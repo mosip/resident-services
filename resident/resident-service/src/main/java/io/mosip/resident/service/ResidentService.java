@@ -83,7 +83,7 @@ public interface ResidentService {
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
 								  String serviceType, String statusFilter, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException;
 
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset, String locale) throws ApisResourceAccessException;
+	public ResponseWrapper<UserInfoDto> getUserinfo(String idaToken, String langCode, int timeZoneOffset, String locale) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
 	public String getFileName(String eventId, IdType cardType, int timeZoneOffset, String locale);
 
