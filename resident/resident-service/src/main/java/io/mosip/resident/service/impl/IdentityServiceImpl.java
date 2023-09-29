@@ -58,7 +58,6 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
 	private static final String DATE_OF_BIRTH = "dob";
-	private static final String NAME = "name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
 	private static final String PERPETUAL_VID = "perpetualVID";
@@ -122,7 +121,7 @@ public class IdentityServiceImpl implements IdentityService {
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
 			}
-			String name = utility.getMappingValue(identity, NAME, langCode);
+			String name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			identityDTO.setFullName(name);
 			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 

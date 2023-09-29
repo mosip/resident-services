@@ -2075,8 +2075,21 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UserInfoDto> getUserinfo(String idaToken, int timeZoneOffset, String locale) throws ApisResourceAccessException {
-		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+	public ResponseWrapper<UserInfoDto> getUserinfo(String idaToken, String langCode, int timeZoneOffset, String locale) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String name;
+		if (langCode != null) {
+			try {
+				Map<String, Object> identity = identityServiceImpl
+						.getIdentityAttributes(identityServiceImpl.getResidentIndvidualIdFromSession(), null);
+				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
+			} catch (IOException e) {
+				logger.error("Error occured in accessing identity data %s", e.getMessage());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+			}
+		} else {
+			name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+		}
 		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
 		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
 		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
