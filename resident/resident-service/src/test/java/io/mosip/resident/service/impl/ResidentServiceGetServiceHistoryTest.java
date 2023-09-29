@@ -395,17 +395,17 @@ public class ResidentServiceGetServiceHistoryTest {
     }
 
     @Test
-    public void testGetUserinfo() throws ApisResourceAccessException {
+    public void testGetUserinfo() throws ApisResourceAccessException, ResidentServiceCheckedException {
         assertEquals("Kamesh",
-                residentServiceImpl.getUserinfo("ida_token", 0, LOCALE_EN_US).getResponse().getFullName());
+                residentServiceImpl.getUserinfo("ida_token", null, 0, LOCALE_EN_US).getResponse().getFullName());
     }
 
     @Test
-    public void testGetUserinfoMultipleLoginTime() throws ApisResourceAccessException {
+    public void testGetUserinfoMultipleLoginTime() throws ApisResourceAccessException, ResidentServiceCheckedException {
         Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity, residentSessionEntity));
         assertEquals("Kamesh",
-                residentServiceImpl.getUserinfo("ida_token", 0, LOCALE_EN_US).getResponse().getFullName());
+                residentServiceImpl.getUserinfo("ida_token", null, 0, LOCALE_EN_US).getResponse().getFullName());
     }
 
     @Test

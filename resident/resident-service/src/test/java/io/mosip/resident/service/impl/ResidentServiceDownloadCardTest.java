@@ -158,7 +158,7 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testGetUserInfo() throws ApisResourceAccessException{
+    public void testGetUserInfo() throws ApisResourceAccessException, ResidentServiceCheckedException{
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         ResidentSessionEntity residentUserEntity = new ResidentSessionEntity();
         residentUserEntity.setHost("localhost");
@@ -167,16 +167,16 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setSessionId("123");;
         Optional<ResidentSessionEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(Mockito.anyString())).thenReturn(List.of(residentUserEntity));
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0, LOCALE_EN_US);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", null, 0, LOCALE_EN_US);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testGetUserInfoFailed() throws ApisResourceAccessException {
+    public void testGetUserInfoFailed() throws ApisResourceAccessException, ResidentServiceCheckedException {
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0, LOCALE_EN_US);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", null, 0, LOCALE_EN_US);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 

@@ -349,20 +349,20 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
 			if(identityDTO!=null) {
 				uinForVid = utilities.getUinByVid(vid);
-			}
-			residentTransactionEntity = insertDataForVidCard(vid, identityDTO.getUIN());
-			if (residentTransactionEntity != null) {
-				eventId = residentTransactionEntity.getEventId();
-				String uinForIndividualId = identityService.
-						getIdentity(identityService.getResidentIndvidualIdFromSession()).getUIN();
-				if (!uinForIndividualId.equals(uinForVid)) {
-					residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
-					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-							LoggerFileConstant.APPLICATIONID.toString(),
-							ResidentErrorCode.VID_NOT_BELONG_TO_USER.getErrorMessage());
-					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
-							Map.of(ResidentConstants.EVENT_ID, eventId));
+				String uinForIndividualId = identityDTO.getUIN();
+				residentTransactionEntity = insertDataForVidCard(vid, uinForIndividualId);
+				if (residentTransactionEntity != null) {
+					eventId = residentTransactionEntity.getEventId();
+					
+					if (!uinForIndividualId.equals(uinForVid)) {
+						residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+						logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+								LoggerFileConstant.APPLICATIONID.toString(),
+								ResidentErrorCode.VID_NOT_BELONG_TO_USER.getErrorMessage());
+						throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
+								Map.of(ResidentConstants.EVENT_ID, eventId));
+					}
 				}
 			}
 			RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
