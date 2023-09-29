@@ -63,7 +63,6 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AidStatusRequestDTO;
@@ -93,7 +92,6 @@ import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -578,8 +576,8 @@ public class ResidentControllerTest {
 		user.setFullName("name");
 		ResponseWrapper<UserInfoDto> response = new ResponseWrapper<>();
 		response.setResponse(user);
-		residentController.userinfo(0, LOCALE_EN_US);
-		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
+		residentController.userinfo(null, 0, LOCALE_EN_US);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
 		this.mockMvc.perform(get("/profile"))
 				.andExpect(status().isOk());
 	}
@@ -587,8 +585,8 @@ public class ResidentControllerTest {
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testGetUserInfoWithException() throws Exception {
-		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt(), Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		residentController.userinfo(0, LOCALE_EN_US);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		residentController.userinfo("eng", 0, LOCALE_EN_US);
 	}
 
 	@Test
