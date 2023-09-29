@@ -47,6 +47,7 @@ import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -330,7 +331,7 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(response.getT1());
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = CardNotReadyException.class)
     public void testVidCardFailed() throws Exception {
         String digitalCardStatusUri= "http://datashare.datashare/123";
         residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
