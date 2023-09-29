@@ -51,8 +51,6 @@ public class TemplateUtil {
 
 	private static final String RESIDENT = "Resident";
 	private static final String LOGO_URL = "logoUrl";
-	private static final CharSequence GENERATED = "generated";
-	private static final CharSequence REVOKED = "revoked";
 	private static final String UNKNOWN = "UNKNOWN";
 	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
 	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
@@ -282,16 +280,19 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForManageMyVid(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
+		RequestType requestType = RequestType.DEFAULT;
+		String templateData = "";
 		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.VID_TYPE,
 				replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
 		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.MASKED_VID,
 				replaceNullWithEmptyString(residentTransactionEntity.getRefId()));
-		String requestType = residentTransactionEntity.getRequestTypeCode();
-		if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, GENERATED);
-		} else if (requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, REVOKED);
+		if (RequestType.GENERATE_VID.name().equalsIgnoreCase(residentTransactionEntity.getRequestTypeCode())) {
+			requestType = RequestType.GENERATE_VID;
+		} else if (RequestType.REVOKE_VID.name().equalsIgnoreCase(residentTransactionEntity.getRequestTypeCode())) {
+			requestType = RequestType.REVOKE_VID;
 		}
+		templateData = getAttributeBasedOnLangcode(requestType.name(), languageCode);
+		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, templateData);
 		return fileText;
 	}
 
