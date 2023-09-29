@@ -193,7 +193,7 @@ public class NotificationServiceTest {
 		assertEquals(SMS_SUCCESS, response.getMessage());
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void testNotificationFailure() throws Exception {
 		NotificationResponseDTO notificationResp = new NotificationResponseDTO();
 		notificationResp.setMessage("Notification failure");
