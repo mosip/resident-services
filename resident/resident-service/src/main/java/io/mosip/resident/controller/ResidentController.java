@@ -750,9 +750,10 @@ public class ResidentController {
 		logger.debug("ResidentController::getuserinfo()::entry");
 		ResponseWrapper<UserInfoDto> userInfoDto = new ResponseWrapper<>();
 		try {
+			validator.validateProfileApiRequest(languageCode);
 			String idaToken = identityServiceImpl.getResidentIdaToken();
 			userInfoDto = residentService.getUserinfo(idaToken, languageCode, timeZoneOffset, locale);
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.GET_PROFILE_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.PROFILE_ID));
 			throw e;

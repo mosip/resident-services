@@ -1525,4 +1525,10 @@ public class RequestValidator {
 					ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorMessage());
 		}
 	}
+
+	public void validateProfileApiRequest(String languageCode) {
+		if (languageCode != null) {
+			validateLanguageCode(languageCode);
+		}
+	}
 }
