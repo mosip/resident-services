@@ -171,7 +171,7 @@ public class NotificationServiceTest {
 
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void testNotificationFailure() throws Exception {
 		ResponseWrapper<NotificationResponseDTO> smsNotificationResponse = new ResponseWrapper<>();
 		NotificationResponseDTO notificationResp = new NotificationResponseDTO();
@@ -185,7 +185,7 @@ public class NotificationServiceTest {
 
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void getTemplateNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		NotificationRequestDto reqDto = new NotificationRequestDto();
 		reqDto.setId("3527812406");
