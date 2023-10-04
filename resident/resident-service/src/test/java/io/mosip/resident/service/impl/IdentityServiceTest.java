@@ -45,6 +45,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
@@ -305,10 +307,9 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		String aid = "123456789";
 		fileLoadMethod();
-		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
-		assertEquals("8251649601", result);
+		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
+		assertEquals("8251649601", result.getT1());
 	}
 
 	@Test
@@ -317,13 +318,12 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		String aid = "123456789";
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
-		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
-		assertEquals("8251649601", result);
+		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
+		assertEquals("8251649601", result.getT1());
 	}
 
 	@Test
