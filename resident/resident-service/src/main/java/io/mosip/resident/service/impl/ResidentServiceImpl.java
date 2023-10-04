@@ -1824,14 +1824,15 @@ public class ResidentServiceImpl implements ResidentService {
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
-			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getIndividualId());
-			boolean validStatus = individualId != null;
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(reqDto.getIndividualId());
+			boolean validStatus = individualIdAndType != null;
 			if (performOtpValidation) {
-				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualId, reqDto.getOtp());
+				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualIdAndType.getT1(), reqDto.getOtp());
 			}
 			if (validStatus) {
 				AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
-				aidStatusResponseDTO.setIndividualId(individualId);
+				aidStatusResponseDTO.setIndividualId(individualIdAndType.getT1());
+				aidStatusResponseDTO.setIndividualIdType(individualIdAndType.getT2().name());
 				aidStatusResponseDTO.setAidStatus(PROCESSED);
 				aidStatusResponseDTO.setTransactionId(reqDto.getTransactionId());
 				return aidStatusResponseDTO;
