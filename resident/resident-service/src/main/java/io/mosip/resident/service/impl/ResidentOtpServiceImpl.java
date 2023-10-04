@@ -18,6 +18,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
@@ -32,6 +33,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
 
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
@@ -117,8 +119,8 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		logger.debug("ResidentOtpServiceImpl::generateOtpForIndividualId()::entry");
 		String individualId;
 		try {
-			individualId = identityServiceImpl.getIndividualIdForAid(individualIdRequestDto.getIndividualId());
-			individualIdRequestDto.setIndividualId(individualId);
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(individualIdRequestDto.getIndividualId());
+			individualIdRequestDto.setIndividualId(individualIdAndType.getT1());
 			OtpRequestDTO otpRequestDTO = objectMapper.convertValue(individualIdRequestDto, OtpRequestDTO.class);
 			otpRequestDTO.setTransactionID(individualIdRequestDto.getTransactionId());
 			OtpResponseDTO otpResponseDTO = generateOtp(otpRequestDTO);
