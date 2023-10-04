@@ -53,6 +53,7 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to test the get service history service
@@ -349,7 +350,7 @@ public class ResidentServiceGetServiceHistoryTest {
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        Mockito.when(identityServiceImpl.getIndividualIdAndTypeForAid(Mockito.anyString())).thenReturn(Tuples.of("2476302389", IdType.UIN));
         assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, true).getAidStatus());
     }
 
@@ -360,7 +361,7 @@ public class ResidentServiceGetServiceHistoryTest {
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        Mockito.when(identityServiceImpl.getIndividualIdAndTypeForAid(Mockito.anyString())).thenReturn(Tuples.of("2476302389", IdType.UIN));
         assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
     }
 
@@ -371,7 +372,7 @@ public class ResidentServiceGetServiceHistoryTest {
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn(null);
+        Mockito.when(identityServiceImpl.getIndividualIdAndTypeForAid(Mockito.anyString())).thenReturn(null);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         RegistrationStatusResponseDTO registrationStatusResponseDTO = new RegistrationStatusResponseDTO();
         RegistrationStatusDTO registrationStatusDTO = new RegistrationStatusDTO();
@@ -388,7 +389,7 @@ public class ResidentServiceGetServiceHistoryTest {
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn(null);
+        Mockito.when(identityServiceImpl.getIndividualIdAndTypeForAid(Mockito.anyString())).thenReturn(null);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(null);
         assertEquals("UNDER PROCESSING", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
