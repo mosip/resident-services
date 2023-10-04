@@ -21,6 +21,9 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -342,22 +345,25 @@ public class IdentityServiceImpl implements IdentityService {
      * @param aid - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
-	public String getIndividualIdForAid(String aid)
+	public Tuple2<String, IdType> getIndividualIdAndTypeForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 			IdentityDTO identity = getIdentity(aid);
 			String uin = identity.getUIN();
 			String individualId;
+			IdType idType;
 			if(useVidOnly) {
 				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
 					individualId = perpVid.get();
+					idType = IdType.VID;
 				} else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
 				}
 			} else {
 				individualId = uin;
+				idType = IdType.UIN;
 			}
-			return individualId;
+			return Tuples.of(individualId, idType);
 	}
 	
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
