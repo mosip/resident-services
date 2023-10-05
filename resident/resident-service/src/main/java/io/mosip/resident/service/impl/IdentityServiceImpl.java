@@ -21,6 +21,9 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -58,7 +61,6 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
 	private static final String DATE_OF_BIRTH = "dob";
-	private static final String NAME = "name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
 	private static final String PERPETUAL_VID = "perpetualVID";
@@ -122,7 +124,7 @@ public class IdentityServiceImpl implements IdentityService {
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
 			}
-			String name = utility.getMappingValue(identity, NAME, langCode);
+			String name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			identityDTO.setFullName(name);
 			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 
@@ -343,22 +345,25 @@ public class IdentityServiceImpl implements IdentityService {
      * @param aid - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
-	public String getIndividualIdForAid(String aid)
+	public Tuple2<String, IdType> getIndividualIdAndTypeForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 			IdentityDTO identity = getIdentity(aid);
 			String uin = identity.getUIN();
 			String individualId;
+			IdType idType;
 			if(useVidOnly) {
 				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
 					individualId = perpVid.get();
+					idType = IdType.VID;
 				} else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
 				}
 			} else {
 				individualId = uin;
+				idType = IdType.UIN;
 			}
-			return individualId;
+			return Tuples.of(individualId, idType);
 	}
 	
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {

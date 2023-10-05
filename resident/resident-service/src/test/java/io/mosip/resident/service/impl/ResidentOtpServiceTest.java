@@ -25,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
@@ -39,6 +40,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuples;
 
 /**
  * 
@@ -130,7 +132,7 @@ public class ResidentOtpServiceTest {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = getIndividualIdOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
-		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
+		when(identityServiceImpl.getIndividualIdAndTypeForAid(any())).thenReturn(Tuples.of("9054257143", IdType.UIN));
 		when(objectMapper.convertValue(individualIdOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
 		OtpResponseDTO otpResponseDTO = getOtpResponseDTO();
 		when(residentServiceRestClient.postApi(anyString(), any(), any(), any())).thenReturn(otpResponseDTO);
@@ -144,7 +146,7 @@ public class ResidentOtpServiceTest {
 	public void testGenerateOtpForIndividualIdWithApisResourceAccessException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = getIndividualIdOtpRequestDTO();
-		when(identityServiceImpl.getIndividualIdForAid(any())).thenThrow(new ApisResourceAccessException());
+		when(identityServiceImpl.getIndividualIdAndTypeForAid(any())).thenThrow(new ApisResourceAccessException());
 		residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO);
 	}
 

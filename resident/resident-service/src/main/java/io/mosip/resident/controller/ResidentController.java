@@ -743,16 +743,17 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+	public ResponseWrapper<UserInfoDto> userinfo(@RequestParam(name = "languageCode", required = false) String languageCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
-		String Id = null;
 		ResponseWrapper<UserInfoDto> userInfoDto = new ResponseWrapper<>();
 		try {
-			Id = identityServiceImpl.getResidentIdaToken();
-			userInfoDto = residentService.getUserinfo(Id, timeZoneOffset, locale);
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			validator.validateProfileApiRequest(languageCode);
+			String idaToken = identityServiceImpl.getResidentIdaToken();
+			userInfoDto = residentService.getUserinfo(idaToken, languageCode, timeZoneOffset, locale);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.GET_PROFILE_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.PROFILE_ID));
 			throw e;
