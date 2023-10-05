@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -60,7 +61,7 @@ public class DocumentServiceImpl implements DocumentService {
 			throws ResidentServiceCheckedException {
 		try {
 			logger.debug("DocumentServiceImpl::uploadDocument()::entry");
-			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + request.getDocCatCode()).toString();
+			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + request.getDocCatCode() + UUID.randomUUID()).toString();
 			String objectNameWithPath = transactionId + "/" + docId;
 			Map<String, Object> metadata = Map.of("doccatcode", request.getDocCatCode(), "doctypcode",
 					request.getDocTypCode(), "langcode", request.getLangCode(), "docname", file.getOriginalFilename(),
