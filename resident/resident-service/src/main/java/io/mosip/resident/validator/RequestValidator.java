@@ -1007,10 +1007,7 @@ public class RequestValidator {
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateRequestNewApi(reqDto, RequestIdType.CHECK_STATUS);
 		validateTransactionId(reqDto.getRequest().getTransactionId());
-		if(reqDto.getRequest().getIndividualId() == null) {
-			throw new InvalidInputException("individualId");
-		}
-
+		validateIndividualIdV2(reqDto.getRequest().getIndividualId(), "AID status");
 	}
 
 	public void validateChannelVerificationStatus(String channel, String individualId) {
