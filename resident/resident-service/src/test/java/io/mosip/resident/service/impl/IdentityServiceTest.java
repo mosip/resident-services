@@ -310,6 +310,7 @@ public class IdentityServiceTest {
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
 		assertEquals("8251649601", result.getT1());
+		assertEquals(IdType.UIN, result.getT2());
 	}
 
 	@Test
@@ -324,6 +325,7 @@ public class IdentityServiceTest {
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
 		assertEquals("8251649601", result.getT1());
+		assertEquals(IdType.VID, result.getT2());
 	}
 
 	@Test
