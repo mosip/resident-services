@@ -61,7 +61,7 @@ public class DocumentServiceImpl implements DocumentService {
 			throws ResidentServiceCheckedException {
 		try {
 			logger.debug("DocumentServiceImpl::uploadDocument()::entry");
-			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + request.getDocCatCode() + UUID.randomUUID()).toString();
+			String docId = UUID.randomUUID().toString();
 			String objectNameWithPath = transactionId + "/" + docId;
 			Map<String, Object> metadata = Map.of("doccatcode", request.getDocCatCode(), "doctypcode",
 					request.getDocTypCode(), "langcode", request.getLangCode(), "docname", file.getOriginalFilename(),
