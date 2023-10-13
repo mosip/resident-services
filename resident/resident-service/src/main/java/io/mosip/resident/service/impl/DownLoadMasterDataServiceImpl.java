@@ -17,7 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -34,6 +36,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
@@ -57,6 +60,8 @@ import io.mosip.resident.util.Utility;
 @Component
 public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService {
 
+	private static final String HYPHEN_DELIMITER = "-";
+	private static final String PIPE_DELIMITER = " | ";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	
@@ -185,8 +190,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		regCenterDto.setFullAddress(fullAddress);
 		List<WorkingDaysDto> workingDaysList = getRegCenterWorkingDays(regCenterDto.getId(),
 				regCenterDto.getLangCode());
-		workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
-				+ getTime(regCenterDto.getCenterStartTime()) + "-" + getTime(regCenterDto.getCenterEndTime());
+		workingHours = workingDaysList.get(0).getName() + HYPHEN_DELIMITER + workingDaysList.get(1).getName() + PIPE_DELIMITER
+				+ getTime(regCenterDto.getCenterStartTime()) + HYPHEN_DELIMITER + getTime(regCenterDto.getCenterEndTime());
 		regCenterDto.setWorkingHours(workingHours);
 	}
 
@@ -199,9 +204,10 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * @return
 	 */
 	private String getFullAddress(String address1, String address2, String address3) {
-		StringBuilder fullAddress = new StringBuilder();
-		fullAddress.append(address1 + "," + address2 + "," + address3);
-		return fullAddress.toString();
+		return Stream.of(address1, address2, address3)
+				.filter(StringUtils::isNotBlank)
+				.collect(Collectors.joining(env.getProperty("resident.attribute.separator.fullAddress",
+						ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER)));
 	}
 
 	/**
