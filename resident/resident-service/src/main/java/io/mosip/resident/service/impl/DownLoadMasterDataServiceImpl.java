@@ -206,7 +206,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	private String getFullAddress(String address1, String address2, String address3) {
 		return Stream.of(address1, address2, address3)
 				.filter(StringUtils::isNotBlank)
-				.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+				.collect(Collectors.joining(env.getProperty("resident.attribute.separator.fullAddress",
+						ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER)));
 	}
 
 	/**
