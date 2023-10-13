@@ -135,6 +135,7 @@ public class DownloadmasterDataServiceImplTest {
 		responseWrapper.setResponse(signatureResponseDto);
 		Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
 		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
+		Mockito.when(environment.getProperty(Mockito.anyString(), Mockito.anyString())).thenReturn(", ");
 		langCode = "eng";
 		hierarchyLevel = 4;
 		name = "name1";
