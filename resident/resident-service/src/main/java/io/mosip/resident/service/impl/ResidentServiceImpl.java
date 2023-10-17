@@ -903,13 +903,13 @@ public class ResidentServiceImpl implements ResidentService {
 						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes, idRepoJson);
 				residentUpdateResponseDTOV2.setStatus(ResidentConstants.SUCCESS);
 				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
+				utility.clearIdentityMapCache(identityServiceImpl.getAccessToken());
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
 				if (residentUpdateResponseDTO != null) {
 					residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
 					residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
-					utility.clearIdentityMapCache(identityServiceImpl.getAccessToken());
 				}
 			}
 			logger.debug(EventEnum.SEND_NOTIFICATION_SUCCESS.getDescription(), dto.getTransactionID());
