@@ -93,11 +93,10 @@ public class ProxyOtpController {
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		log.debug("ProxyOtpController::sendOTP()::entry");
 		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
-		String userid = null;
+		String userid = userOtpRequest.getRequest().getUserId();
 		try {
 			IdentityDTO identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
 			requestValidator.validateProxySendOtpRequest(userOtpRequest, identityDTO);
-			userid = userOtpRequest.getRequest().getUserId();
 			responseEntity = proxyOtpService.sendOtp(userOtpRequest, identityDTO);
 		}
 		catch (InvalidInputException e) {
@@ -137,10 +136,9 @@ public class ProxyOtpController {
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 		log.debug("ProxyOtpController::validateWithUserIdOtp()::entry");
-		String userId = null;
+		String userId = userIdOtpRequest.getRequest().getUserId();
 		try {
 			requestValidator.validateUpdateDataRequest(userIdOtpRequest);
-			userId = userIdOtpRequest.getRequest().getUserId();
 		} catch (InvalidInputException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED, userId, "Validate OTP Failed"));
