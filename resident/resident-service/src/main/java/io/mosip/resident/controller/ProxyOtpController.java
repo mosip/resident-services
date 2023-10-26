@@ -93,7 +93,7 @@ public class ProxyOtpController {
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		log.debug("ProxyOtpController::sendOTP()::entry");
 		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
-		String userid =  userOtpRequest.getRequest().getUserId();
+		String userid = userOtpRequest.getRequest().getUserId();
 		try {
 			IdentityDTO identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
 			requestValidator.validateProxySendOtpRequest(userOtpRequest, identityDTO);
