@@ -242,16 +242,6 @@ public enum EventEnum {
 			"Residence service", "RS-PARTN", "Partner section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
-	REQ_AUTH_TXN_DETAILS("RES-SER-189", RegistrationConstants.SYSTEM, "Request auth transaction details",
-			"Requesting auth transaction details for individual id %s", "RES-SER", "Residence service", "RS-AUTH_TXN",
-			"Auth transaction", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	REQ_AUTH_TXN_DETAILS_FAILURE("RES-SER-190", RegistrationConstants.SYSTEM,
-			"Request auth transaction details: Failed",
-			"Requesting auth transaction details for individual id %s failed", "RES-SER", "Residence service",
-			"RS-AUTH_TXN", "Auth transaction", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_VIDS_SUCCESS("RES-SER-192", RegistrationConstants.SYSTEM, "get vids success", "get vids: Success", "RES-SER",
 			"Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
