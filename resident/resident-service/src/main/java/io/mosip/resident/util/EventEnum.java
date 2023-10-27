@@ -108,13 +108,13 @@ public enum EventEnum {
 			"get location hierarchy levels for all language: Failed", "get location hierarchy level is failed",
 			"RES-SER", "Residence service", "RS-LOC", "Location", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION("RES-SER-149", RegistrationConstants.SYSTEM,
-			"get all dynamic field value: Failed", "get all dynamic field value is failed", "RES-SER",
+
+	GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS("RES-SER-149", RegistrationConstants.SYSTEM,
+			"get all dynamic field value: Success", "get all dynamic field value is succeed", "RES-SER",
 			"Residence service", "RS-DYNAMIC", "Dynamic field", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
-	GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS("RES-SER-150", RegistrationConstants.SYSTEM,
-			"get all dynamic field value: Success", "get all dynamic field value is succeed", "RES-SER",
+	GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION("RES-SER-150", RegistrationConstants.SYSTEM,
+			"get all dynamic field value: Failed", "get all dynamic field value is failed", "RES-SER",
 			"Residence service", "RS-DYNAMIC", "Dynamic field", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_IMMEDIATE_CHILDREN_SUCCESS("RES-SER-151", RegistrationConstants.SYSTEM, "get immediate children: Success",
@@ -152,13 +152,15 @@ public enum EventEnum {
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS("RES-SER-159", RegistrationConstants.SYSTEM,
-			"get registration centers for location code: Success", "get registration centers for location code: Success",
-			"RES-SER", "Residence service", "RS-REG_LOC", "Registration center location",
-			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+			"get registration centers for location code: Success",
+			"get registration centers for location code: Success", "RES-SER", "Residence service", "RS-REG_LOC",
+			"Registration center location", RegistrationConstants.RESIDENT_APPLICATION_ID,
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION("RES-SER-160", RegistrationConstants.SYSTEM,
-			"get registration centers for location code: Exception", "get registration centers for location code: Failed",
-			"RES-SER", "Residence service", "RS-REG_LOC", "Registration center location",
-			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+			"get registration centers for location code: Exception",
+			"get registration centers for location code: Failed", "RES-SER", "Residence service", "RS-REG_LOC",
+			"Registration center location", RegistrationConstants.RESIDENT_APPLICATION_ID,
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	GET_REG_CENTERS_PAGINATED_SUCCESS("RES-SER-161", RegistrationConstants.SYSTEM,
 			"get registration centers paginated: Success", "get registration centers paginated is succeed", "RES-SER",
@@ -199,6 +201,16 @@ public enum EventEnum {
 	GET_CONFIGURATION_PROPERTIES_EXCEPTION("RES-SER-170", RegistrationConstants.SYSTEM,
 			"get resident configuration properties failure", "get resident configuration properties: Failed", "RES-SER",
 			"Residence service", "RS-CONF", "Config properties", RegistrationConstants.RESIDENT_APPLICATION_ID,
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_SUCCESS("RES-SER-171", RegistrationConstants.SYSTEM,
+			"get dynamic field based on lang code and field name: Success",
+			"get dynamic field based on langCode and field name is succeeded", "RES-SER", "Residence service",
+			"RS-GEND", "Dynamic Field", RegistrationConstants.RESIDENT_APPLICATION_ID,
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION("RES-SER-172", RegistrationConstants.SYSTEM,
+			"get dynamic field based on lang code and field name: Failed",
+			"get dynamic field based on langCode and field name is failed", "RES-SER", "Residence service", "RS-GEND",
+			"Dynamic Field", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	UPLOAD_DOCUMENT_SUCCESS("RES-SER-177", RegistrationConstants.SYSTEM, "Document upload: Success",
@@ -310,7 +322,7 @@ public enum EventEnum {
 	VALIDATE_OTP_FAILURE("RES-SER-210", RegistrationConstants.SYSTEM, "Validate otp: Failed",
 			"OTP vaildation for transaction id %s is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
+
 	AID_STATUS_SUCCESS("RES-SER-211", RegistrationConstants.SYSTEM, "Checking AID status: Success",
 			"Request for checking AID status is success", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -449,16 +461,7 @@ public enum EventEnum {
 	SEND_OTP_FAILURE("RES-SER-260", RegistrationConstants.SYSTEM, "send otp: Failed",
 			"send otp is failed for userId: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_SUCCESS("RES-SER-262", RegistrationConstants.SYSTEM,
-			"get dynamic field based on lang code and field name: Success",
-			"get dynamic field based on langCode and field name is succeeded", "RES-SER", "Residence service",
-			"RS-GEND", "Dynamic Field", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION("RES-SER-263", RegistrationConstants.SYSTEM,
-			"get dynamic field based on lang code and field name: Failed",
-			"get dynamic field based on langCode and field name is failed", "RES-SER", "Residence service", "RS-GEND",
-			"Dynamic Field", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+
 	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-265", RegistrationConstants.SYSTEM, "download service history: Success",
 			"download service history success based on language code", "RES-SER", "Resident service", "RS-DOWN_SER",
 			"Download service history", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -551,7 +554,7 @@ public enum EventEnum {
 	VALIDATE_TOKEN_FAILURE("RES-SER-288", RegistrationConstants.SYSTEM, "Validate Token: Failed",
 			"Validate token is failed", "RES-SER", "Resident service", "RS-VAL", "Validate token",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
+
 	DOWNLOAD_PERSONALIZED_CARD_FAILURE("RES-SER-291", RegistrationConstants.SYSTEM,
 			"Download personalized card: Failed", "Download card Html to pdf failed", "RES-SER", "Resident service",
 			"RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -566,9 +569,7 @@ public enum EventEnum {
 	AID_STAGE_FAILURE("RES-SER-294", RegistrationConstants.SYSTEM, "Check AID stage status: Failed",
 			"Check AID stage status is failed", "RES-SER", "Residence service", "RS-AID_STAGE", "AID stage",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
-	
-	
+
 	CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS("RES-SER-299", RegistrationConstants.SYSTEM,
 			"Credential status update call back: Success",
 			"credential status update call back success for transaction id %s", "RES-SER", "Residence service",
@@ -579,7 +580,7 @@ public enum EventEnum {
 			"credential status update call back failure for transaction id %s", "RES-SER", "Residence service",
 			"RS-CRED_STAT_UPD", "Credential status update", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
+
 	RID_STATUS_FAILURE("RES-SER-302", RegistrationConstants.SYSTEM, "RID status: Failed",
 			"Request for checking RID status failed- %s", "RES-SER", "Residence service", "RS-RID", "RID Status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -610,7 +611,7 @@ public enum EventEnum {
 	GET_NOTIF_CLICK_FAILURE("RES-SER-312", RegistrationConstants.SYSTEM, "Get notification click: Failed",
 			"Get notification click failed", "RES-SER", "Residence service", "RS-NOT", "Notification section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
+
 	GET_PROFILE_SUCCESS("RES-SER-314", RegistrationConstants.SYSTEM, "Get profile: Success", "Get profile is Success",
 			"RES-SER", "Residence service", "RS-PROF", "Profile section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -633,9 +634,6 @@ public enum EventEnum {
 			"Deactivated VID for transaction id %s while generating VID", "RES-SER", "Residence service", "RS_VID_REV",
 			"Revoke vid", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	INDIVIDUALID_STATUS("RES-SER-321", RegistrationConstants.SYSTEM, "Checking Individual ID status",
-			"Request for checking Individual ID status", "RES-SER", "Residence service", "RS-AID", "AID status",
-			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	AUTH_TYPE_CALL_BACK_SUCCESS("RES-SER-323", RegistrationConstants.SYSTEM, "Auth type call back: Success",
 			"auth type call back success for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP",
@@ -645,12 +643,6 @@ public enum EventEnum {
 			"auth type call back failure for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP",
 			"Auth type", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	INDIVIDUALID_STATUS_SUCCESS("RES-SER-325", RegistrationConstants.SYSTEM, "Checking Individual ID status: Success",
-			"Request for checking Individual ID status is success", "RES-SER", "Residence service", "RS-IND_ID",
-			"Indiviudal id status", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
-	
 
 	BASE_EXCEPTION("RES-SER-401", RegistrationConstants.SYSTEM, "Base Exception",
 			"Base exception for transaction id %s", "RES-SER", "Residence service", "RS-EXCE", "Exception",
