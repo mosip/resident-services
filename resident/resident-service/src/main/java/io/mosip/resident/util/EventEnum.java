@@ -716,6 +716,7 @@ public enum EventEnum {
 			"Dynamic field", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME);
 
 
+
 	private final String eventId;
 
 	private final String type;

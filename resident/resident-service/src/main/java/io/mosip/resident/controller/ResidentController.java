@@ -137,7 +137,7 @@ public class ResidentController {
 	
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
-
+	
 	@Value("${resident.service.history.id}")
 	private String serviceHistoryId;
 	
