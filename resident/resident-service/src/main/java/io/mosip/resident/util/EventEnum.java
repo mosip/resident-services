@@ -600,7 +600,7 @@ public enum EventEnum {
 	GET_GENDER_CODE_EXCEPTION("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code: Failed",
 			"get gender code by genderName and langCode is failed", "RES-SER", "Residence service", "RS-GEND",
 			"Gender", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
+	
 	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page index value",
 			"Invalid page index value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
