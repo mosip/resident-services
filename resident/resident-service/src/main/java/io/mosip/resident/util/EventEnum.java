@@ -717,6 +717,7 @@ public enum EventEnum {
 	
 
 
+
 	private final String eventId;
 
 	private final String type;
