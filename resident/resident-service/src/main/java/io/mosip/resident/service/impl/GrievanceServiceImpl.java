@@ -1,5 +1,14 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
+
+import java.util.HashMap;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -10,21 +19,8 @@ import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.entity.ResidentGrievanceEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.GrievanceService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.UUID;
-
-import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -41,15 +37,13 @@ public class GrievanceServiceImpl implements GrievanceService {
     private Environment environment;
 
     @Autowired
-    private AuditUtil auditUtil;
-
-    @Autowired
     private ResidentGrievanceRepository residentGrievanceRepository;
 
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
+    	logger.debug("GrievanceServiceImpl::getGrievanceTicket()::entry");
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
         responseWrapper.setVersion(grievanceRequestDTOMainRequestDTO.getVersion());
@@ -62,8 +56,10 @@ public class GrievanceServiceImpl implements GrievanceService {
             response.put(TICKET_ID, ticketId);
             responseWrapper.setResponse(response);
         } catch (ApisResourceAccessException e) {
+        	logger.error("%s - %s", ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorMessage(), e.getMessage());
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
+        logger.debug("GrievanceServiceImpl::getGrievanceTicket()::exit");
         return responseWrapper;
     }
 

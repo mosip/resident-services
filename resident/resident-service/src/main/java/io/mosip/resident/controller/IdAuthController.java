@@ -1,5 +1,10 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -8,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -18,6 +24,7 @@ import io.mosip.resident.dto.IdAuthResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ValidateOtpResponseDto;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -28,7 +35,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.util.function.Tuple2;
-import java.util.Map;
 
 /**
  * Resident IdAuth controller class.
@@ -56,9 +62,11 @@ public class IdAuthController {
 	 * @param requestWrapper
 	 * @return ResponseWrapper<IdAuthResponseDto> object
 	 * @throws OtpValidationFailedException
+	 * @throws ResidentServiceCheckedException 
 	 */
 	@ResponseFilter
-	@PostMapping("/validate-otp")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping("/validate-otp")
 	@Operation(summary = "validateOtp", description = "validateOtp", tags = { "id-auth-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -66,10 +74,8 @@ public class IdAuthController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
-				"OTP Validate Request"));
 		Tuple2<Boolean, String> tupleResponse = null;
 		try {
 		tupleResponse = idAuthService.validateOtpV1(requestWrapper.getRequest().getTransactionId(),
@@ -77,8 +83,12 @@ public class IdAuthController {
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request Success"));
 		} catch (OtpValidationFailedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_FAILURE,
+					requestWrapper.getRequest().getTransactionId(), "OTP Validation Failed"));
 			throw new OtpValidationFailedException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,validateOtpId));
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							validateOtpId, ResidentConstants.EVENT_ID,
+							e.getMetadata().get(ResidentConstants.EVENT_ID)));
 		}
 		ResponseWrapper<IdAuthResponseDto> responseWrapper = new ResponseWrapper<IdAuthResponseDto>();
 		ValidateOtpResponseDto validateOtpResponseDto = new ValidateOtpResponseDto();

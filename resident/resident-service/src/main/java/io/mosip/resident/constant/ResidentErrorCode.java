@@ -55,7 +55,7 @@ public enum ResidentErrorCode {
 	AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
 
 	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
-	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
+	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type status for resident"),
 
 	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
 	INVALID_PAGE_INDEX_VALUE("RES-SER-446", "Invalid page index value"),
@@ -69,7 +69,7 @@ public enum ResidentErrorCode {
 	IDVID_NOT_MATCH_TO_SESSION("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
-	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
+	VID_NOT_BELONG_TO_USER("RES-SER-454", "Provided VID does not belong to the logged in user."),
 	RID_NOT_FOUND("RES-SER-456", "RID not found"), AID_NOT_FOUND("RES-SER-457", "AID not found"),
 	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
@@ -109,8 +109,8 @@ public enum ResidentErrorCode {
 	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),
 	PATNER_NOT_FOUND("RES-SER-481","Partner not found."),
 	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
-	CARD_NOT_READY("RES_SER_509", "The card is not ready for download."),
-	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
+	CARD_NOT_READY("RES-SER-509", "The card is not ready for download."),
+	OTP_REQUEST_FLOODED("RES-SER-510", "Innumerous OTP requests received"),
 	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
 	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
 	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s"),
@@ -122,7 +122,18 @@ public enum ResidentErrorCode {
 	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked"),
 	VID_CREATION_FAILED_WITH_REVOCATION("RES-SER-513",
 			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
-	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB.");
+	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB."),
+	CHAR_LIMIT_EXCEEDS("RES-SER-514","Input text size exceeds the limit; Character limit=%d; inputType=%s"),
+	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s"),
+	UN_SUPPORTED_FILE_TYPE("RES-SER-516", "Unsupported file type. Supported file extensions: jpg, jpeg, png, pdf"),
+	UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB("RES-SER-517", "Unable to fetch service history from database."),
+	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field."),
+	SAME_EMAIL_ERROR("RES-SER-519", "Enter a new email ID"),
+	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
+	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" ),
+	INVALID_UIN_VID_ENTERED("RES-SER-522", "Invalid UIN/VID entered"),
+	FORBIDDEN("RES-SER-403","Access is denied"),
+	VIRUS_SCAN("RES-SER-319","The file uploaded is corrupted");
 	
 
 

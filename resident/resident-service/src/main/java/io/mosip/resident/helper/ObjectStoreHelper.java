@@ -209,7 +209,7 @@ public class ObjectStoreHelper {
 	 * @param toEncrypt true if you want to encrypt, false if you want to decrypt
 	 * @return ResponseWrapper<Map<String, Object>>
 	 */
-	private String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
+	public String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
 		try {
 			CryptomanagerRequestDto request = new CryptomanagerRequestDto();
 			request.setApplicationId(applicationId);
@@ -223,7 +223,7 @@ public class ObjectStoreHelper {
 					ResponseWrapper.class);
 			if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage());
+						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage() + " \n at: " + Thread.getAllStackTraces());
 				throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 						ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage());
 			}

@@ -29,6 +29,7 @@
 		<kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
 		<kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
+		<kernel.idobjectvalidator.version>1.2.1-SNAPSHOT</kernel.idobjectvalidator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -74,6 +75,10 @@
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -332,6 +337,10 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -381,6 +390,42 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-idobjectvalidator</artifactId>
+			<version>${kernel.idobjectvalidator.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.11.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.nimbusds</groupId>
+		    <artifactId>nimbus-jose-jwt</artifactId>
+		    <version>9.31</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>itextpdf</artifactId>
+		    <version>5.5.13.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.mosip.kernel</groupId>
+		    <artifactId>kernel-pdfgenerator-itext</artifactId>
+		    <version>1.2.0.1-B1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-test</artifactId>
+		    <version>5.3.3.RELEASE</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.bitbucket.b_c</groupId>
+		    <artifactId>jose4j</artifactId>
+		    <version>0.9.3</version>
 		</dependency>
 	</dependencies>
 	<build>

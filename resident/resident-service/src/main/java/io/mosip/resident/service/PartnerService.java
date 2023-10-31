@@ -1,9 +1,10 @@
 package io.mosip.resident.service;
 
-import io.mosip.resident.exception.ResidentServiceCheckedException;
+import java.util.ArrayList;
+
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
  * Partner service class.

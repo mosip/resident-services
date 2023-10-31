@@ -1,29 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.RegistrationCenterDto;
-import io.mosip.resident.dto.RegistrationCenterResponseDto;
-import io.mosip.resident.dto.WorkingDaysDto;
-import io.mosip.resident.dto.WorkingDaysResponseDto;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.DownLoadMasterDataService;
-import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.Utility;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +17,40 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterInfoResponseDto;
+import io.mosip.resident.dto.WorkingDaysDto;
+import io.mosip.resident.dto.WorkingDaysResponseDto;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.DownLoadMasterDataService;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
 
 /**
  * 
@@ -49,9 +60,10 @@ import java.util.stream.IntStream;
 @Component
 public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService {
 
+	private static final String HYPHEN_DELIMITER = "-";
+	private static final String PIPE_DELIMITER = " | ";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	public static final String FILE_TEXT = "fileText";
 	
 	@Autowired
 	Environment env;
@@ -71,7 +83,13 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	@Autowired
 	private Utility utility;
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
+	@Autowired
+	private TemplateUtil templateUtil;
+
+	@Value("${" + RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT + "}")
+	private Integer maxRegistrationCenterPageSize;
+
+	private static final Logger logger = LoggerConfiguration.logConfig(DownLoadMasterDataServiceImpl.class);
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -84,21 +102,20 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * center names
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
-			List<String> name) throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
-		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
-		return getRegistrationCentrePdf(langCode, regCentResponseWrapper);
+			String name) throws ResidentServiceCheckedException, IOException, Exception {
+		logger.debug("DownLoadMasterDataServiceImpl::downloadRegistrationCentersByHierarchyLevel()::entry");
+		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, 0, maxRegistrationCenterPageSize, OrderEnum.desc, null);
+		return getRegistrationCentersPdf(langCode, regCentResponseWrapper);
 	}
 
-	public InputStream getRegistrationCentrePdf(String langCode, ResponseWrapper<?> regCentResponseWrapper) throws ResidentServiceCheckedException, IOException {
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
+	public InputStream getRegistrationCentersPdf(String langCode, ResponseWrapper<?> regCentResponseWrapper) throws ResidentServiceCheckedException, IOException {
+		logger.debug("DownLoadMasterDataServiceImpl::getRegistrationCentersPdf()::entry");
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
 		if (regCentResponseWrapper != null) {
-			RegistrationCenterResponseDto registrationCentersDtls = mapper.readValue(
+			RegistrationCenterInfoResponseDto registrationCentersDtls = mapper.readValue(
 					mapper.writeValueAsString(regCentResponseWrapper.getResponse()),
-					RegistrationCenterResponseDto.class);
-			List<RegistrationCenterDto> regCenterIntialList = registrationCentersDtls.getRegistrationCenters();
+					RegistrationCenterInfoResponseDto.class);
+			List<RegistrationCenterDto> regCenterIntialList = getRegCenterList(registrationCentersDtls);
 			if (regCenterIntialList != null && !regCenterIntialList.isEmpty()) {
 				IntStream.range(0, regCenterIntialList.size()).forEach(i -> {
 					try {
@@ -110,16 +127,24 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 			}
 			regCentersMap.put("regCenterIntialList", regCenterIntialList);
 		}
-		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
-		Map<String, Object> templateResponse = new LinkedHashMap<>(
-				(Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(FILE_TEXT);
+		String templateTypeCode = this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
+		logger.debug("DownLoadMasterDataServiceImpl::getRegistrationCentersPdf()::exit");
 		return new ByteArrayInputStream(utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
+	}
+
+	private List<RegistrationCenterDto> getRegCenterList(RegistrationCenterInfoResponseDto registrationCentersDtls) {
+		if (registrationCentersDtls.getData() != null && !registrationCentersDtls.getData().isEmpty()) {
+			return registrationCentersDtls.getData();
+		} else if (registrationCentersDtls.getRegistrationCenters() != null && !registrationCentersDtls.getRegistrationCenters().isEmpty()) {
+			return registrationCentersDtls.getRegistrationCenters();
+		}
+		return List.of();
 	}
 	
 	/**
@@ -127,10 +152,10 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 */
 	public InputStream getNearestRegistrationcenters(String langCode, double longitude, double latitude,
 			int proximityDistance) throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataServiceImpl::getNearestRegistrationcenters()::entry");
 		ResponseWrapper<?> regCentResponseWrapper =  proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
 				longitude, latitude, proximityDistance);
-		return getRegistrationCentrePdf(langCode, regCentResponseWrapper);
+		return getRegistrationCentersPdf(langCode, regCentResponseWrapper);
 	}
 
 
@@ -139,12 +164,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * center names
 	 */
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.SUPPORTING_DOCS_TEMPLATE_PROPERTY));
-		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
-		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(FILE_TEXT);		
+		logger.debug("DownLoadMasterDataServiceImpl::downloadSupportingDocsByLanguage()::entry");
+		String templateTypeCode = this.env.getProperty(ResidentConstants.SUPPORTING_DOCS_TEMPLATE_PROPERTY);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		Map<String, Object> supportingsDocsMap = new HashMap<>();
 		supportingsDocsMap.put("supportingsDocMap", supportingsDocsMap);
 		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
@@ -152,6 +174,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
     
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
+		logger.debug("DownLoadMasterDataServiceImpl::downloadSupportingDocsByLanguage()::exit");
 		return new ByteArrayInputStream(utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
   
@@ -167,8 +190,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		regCenterDto.setFullAddress(fullAddress);
 		List<WorkingDaysDto> workingDaysList = getRegCenterWorkingDays(regCenterDto.getId(),
 				regCenterDto.getLangCode());
-		workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
-				+ getTime(regCenterDto.getCenterStartTime()) + "-" + getTime(regCenterDto.getCenterEndTime());
+		workingHours = workingDaysList.get(0).getName() + HYPHEN_DELIMITER + workingDaysList.get(1).getName() + PIPE_DELIMITER
+				+ getTime(regCenterDto.getCenterStartTime()) + HYPHEN_DELIMITER + getTime(regCenterDto.getCenterEndTime());
 		regCenterDto.setWorkingHours(workingHours);
 	}
 
@@ -181,9 +204,10 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * @return
 	 */
 	private String getFullAddress(String address1, String address2, String address3) {
-		StringBuilder fullAddress = new StringBuilder();
-		fullAddress.append(address1 + "," + address2 + "," + address3);
-		return fullAddress.toString();
+		return Stream.of(address1, address2, address3)
+				.filter(StringUtils::isNotBlank)
+				.collect(Collectors.joining(env.getProperty("resident.attribute.separator.fullAddress",
+						ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER)));
 	}
 
 	/**
@@ -197,6 +221,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 */
 	private List<WorkingDaysDto> getRegCenterWorkingDays(String regCenterId, String langCode)
 			throws ResidentServiceCheckedException, Exception {
+		logger.debug("DownLoadMasterDataServiceImpl::getRegCenterWorkingDays()::entry");
 		ResponseWrapper<?> responseWrapper;
 		responseWrapper = proxyMasterdataService.getRegistrationCenterWorkingDays(regCenterId, langCode);
 		WorkingDaysResponseDto workingDaysResponeDtls = mapper
@@ -212,6 +237,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		List<WorkingDaysDto> workingDaysHoursList = new ArrayList<>();
 		workingDaysHoursList.add(startDay);
 		workingDaysHoursList.add(endDay);
+		logger.debug("DownLoadMasterDataServiceImpl::getRegCenterWorkingDays()::exit");
 		return workingDaysHoursList;
 	}
 
@@ -222,6 +248,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * @return
 	 */
 	private String getTime(String time) {
+		logger.debug("DownLoadMasterDataServiceImpl::getTime()::entry");
 		SimpleDateFormat sdf1 = new SimpleDateFormat("hh:mm:ss");
 		SimpleDateFormat sdf2 = new SimpleDateFormat("hh.mm aa");
 		Date date = new Date();
@@ -231,6 +258,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 			logger.error("ParseException", ExceptionUtils.getStackTrace(e));
 			logger.error("In getTime method of DownLoadMasterDataServiceImpl class", e.getMessage());
 		}
+		logger.debug("DownLoadMasterDataServiceImpl::getTime()::exit");
 		return sdf2.format(date);
 	}
 

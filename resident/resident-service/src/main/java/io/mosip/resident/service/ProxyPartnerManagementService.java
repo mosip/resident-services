@@ -24,12 +24,12 @@ public interface ProxyPartnerManagementService {
 	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType)
+	public ResponseWrapper<?> getPartnersByPartnerType(String partnerType)
 			throws ResidentServiceCheckedException;
 	
 	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl)
 			throws ResidentServiceCheckedException;
 	
-	public Map<String, ?> getPartnerDetailFromPartnerId(String partnerId);
+	public Map<String, ?> getPartnerDetailFromPartnerIdAndPartnerType(String partnerId, String partnerType);
 
 }

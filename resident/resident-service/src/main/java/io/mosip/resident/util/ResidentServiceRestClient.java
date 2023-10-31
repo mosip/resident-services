@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -45,7 +43,6 @@ public class ResidentServiceRestClient {
 
 	private RestTemplate residentRestTemplate;
 	
-
 	@Autowired
 	Environment environment;
 	
@@ -219,7 +216,7 @@ public class ResidentServiceRestClient {
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
@@ -230,24 +227,6 @@ public class ResidentServiceRestClient {
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
 
 			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
-		}
-	}
-	
-	
-	/**
-	 * Method to validate URL
-	 *
-	 * @param url  
-	 * @throws ApisResourceAccessException 
-	 */
-	public void validateURL(String url) throws ApisResourceAccessException {
-		try {
-			new URL(url).toURI();
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
-
-			throw new ApisResourceAccessException("Invalid URL" + url, e);
 		}
 	}
 
@@ -261,14 +240,13 @@ public class ResidentServiceRestClient {
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T patchApi(URI uri, MediaType mediaType, Object requestType, Class<?> responseClass)
+	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		T result = null;
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			
-			validateURL(uri.toString());
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
@@ -282,7 +260,7 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public <T> T patchApi(URI uri, Object requestType, Class<?> responseClass) throws Exception {
+	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass) throws Exception {
 		return patchApi(uri, null, requestType, responseClass);
 	}
 
@@ -303,7 +281,7 @@ public class ResidentServiceRestClient {
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
 			response = (ResponseEntity<T>) residentRestTemplate.exchange(uri, HttpMethod.PUT,

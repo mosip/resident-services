@@ -1,38 +1,33 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.velocity.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import io.mosip.commons.khazana.dto.ObjectDto;
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.UUIDUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.velocity.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 
 /**
  * It's a service class that uploads a document to the object store and returns
@@ -53,9 +48,6 @@ public class DocumentServiceImpl implements DocumentService {
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
 
-	@Autowired
-	private Environment environment;
-
 	/**
 	 * It uploads a file to the object store
 	 * 
@@ -68,7 +60,8 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentResponseDTO uploadDocument(String transactionId, MultipartFile file, DocumentRequestDTO request)
 			throws ResidentServiceCheckedException {
 		try {
-			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + request.getDocCatCode()).toString();
+			logger.debug("DocumentServiceImpl::uploadDocument()::entry");
+			String docId = UUID.randomUUID().toString();
 			String objectNameWithPath = transactionId + "/" + docId;
 			Map<String, Object> metadata = Map.of("doccatcode", request.getDocCatCode(), "doctypcode",
 					request.getDocTypCode(), "langcode", request.getLangCode(), "docname", file.getOriginalFilename(),
@@ -81,6 +74,7 @@ public class DocumentServiceImpl implements DocumentService {
 			response.setDocCatCode(request.getDocCatCode());
 			response.setDocTypCode(request.getDocTypCode());
 			response.setDocFileFormat(StringUtils.split(file.getOriginalFilename(), "\\.")[1]);
+			logger.debug("DocumentServiceImpl::uploadDocument()::exit");
 			return response;
 		}
 		catch (IOException e) {
@@ -101,9 +95,10 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public List<DocumentResponseDTO> fetchAllDocumentsMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
+		logger.debug("DocumentServiceImpl::fetchAllDocumentsMetadata()::entry");
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
 		if(allObjects == null){
-			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId);
 		}
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
@@ -118,6 +113,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Override
 	public DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException {
+		logger.debug("DocumentServiceImpl::fetchDocumentByDocId()::entry");
 		DocumentDTO document = new DocumentDTO();
 		String objectNameWithPath = transactionId + "/" + documentId;
 		try {
@@ -126,9 +122,10 @@ public class DocumentServiceImpl implements DocumentService {
 		}catch (ResidentServiceException | ObjectStoreAdapterException e){
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " & documentId: "+documentId, e);
 		}
+		logger.debug("DocumentServiceImpl::fetchDocumentByDocId()::exit");
 		return document;
 	}
 
@@ -143,6 +140,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Map<DocumentResponseDTO, String> getDocumentsWithMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
+		logger.debug("DocumentServiceImpl::getDocumentsWithMetadata()::entry");
 		List<ObjectDto> allObjects= objectStoreHelper.getAllObjects(transactionId);
 		if(allObjects==null) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
@@ -162,7 +160,9 @@ public class DocumentServiceImpl implements DocumentService {
 	 * @return A DocumentResponseDTO object.
 	 */
 	private DocumentResponseDTO fetchDocumentMetadata(String transactionId, String objectName) {
+		logger.debug("DocumentServiceImpl::fetchDocumentMetadata()::entry");
 		Map<String, Object> metadata = objectStoreHelper.getMetadata(transactionId + "/" + objectName);
+		logger.debug("DocumentServiceImpl::fetchDocumentMetadata()::exit");
 		return new DocumentResponseDTO(transactionId, (String) metadata.get("docid"), (String) metadata.get("docname"),
 				(String) metadata.get("doccatcode"), (String) metadata.get("doctypcode"),
 				StringUtils.split((String) metadata.get("docname"), "\\.")[1]);
@@ -177,6 +177,7 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	@Override
 	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
+		logger.debug("DocumentServiceImpl::deleteDocument()::entry");
 		DocumentDTO documentDTO = fetchDocumentByDocId(transactionId, documentId);
 		ResponseDTO response = new ResponseDTO();
 		if(documentDTO != null){
@@ -189,6 +190,7 @@ public class DocumentServiceImpl implements DocumentService {
 				response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
 			}
 		}
+		logger.debug("DocumentServiceImpl::deleteDocument()::exit");
 		return response;
 	}
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -41,7 +42,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
 		try {
-			String individualId=identityServiceImpl.getResidentIndvidualId();
+			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::entry");
+			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put("individualId", individualId);
 			
@@ -49,7 +51,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			queryParamName.add("attribute_list");
 
 			List<Object> queryParamValue = new ArrayList<>();
-			queryParamValue.add(attributeList.stream().collect(Collectors.joining(",")));
+			queryParamValue.add(Objects.isNull(attributeList) ? "" : attributeList.stream().collect(Collectors.joining(",")));
 			
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
@@ -57,6 +59,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 			}
+			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 			return responseWrapper;
 			
 		} catch (ApisResourceAccessException e) {

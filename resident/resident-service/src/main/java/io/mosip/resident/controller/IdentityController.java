@@ -1,5 +1,21 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -19,17 +35,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/identity")
@@ -56,7 +61,8 @@ public class IdentityController {
 	private String residentIdentityInfoVersion;
 	
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes("
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes("
     				+ "@authorizedScopes.getGetinputattributevalues()"
     			+ ")")
 	@GetMapping("/info/type/{schemaType}")
@@ -70,10 +76,10 @@ public class IdentityController {
 	public ResponseWrapper<Object> getInputAttributeValues(@PathVariable("schemaType") String schemaType)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("IdentityController::getInputAttributeValues()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
 		try {
 			validator.validateSchemaType(schemaType);
 		} catch (InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_EXCEPTION);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, residentIdentityInfoId));
 		}
@@ -90,7 +96,7 @@ public class IdentityController {
 	}
 
 	private String getIdFromUser() throws ApisResourceAccessException {
-		return idServiceImpl.getResidentIndvidualId();
+		return idServiceImpl.getResidentIndvidualIdFromSession();
 	}
 	
 

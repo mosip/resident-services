@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.constant.ResidentConstants;
@@ -57,7 +61,8 @@ public class ProxyAuditController {
 	 * @throws NoSuchAlgorithmException 
 	 */
 	@ResponseFilter
-	@PostMapping("/auth-proxy/audit/log")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping("/auth-proxy/audit/log")
 	@Operation(summary = "authAuditLog", description = "auth audit log", tags = { "proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -77,7 +82,7 @@ public class ProxyAuditController {
 		auditRequestDto.setApplicationName(requestDto.getApplicationName());
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
-		String individualId = identityService.getResidentIndvidualId();
+		String individualId = identityService.getResidentIndvidualIdFromSession();
 		auditRequestDto.setId(utility.getRefIdHash(individualId));
 		auditRequestDto.setIdType(identityService.getIndividualIdType(individualId));
 		auditRequestDto.setCreatedBy(requestDto.getCreatedBy());
@@ -98,7 +103,8 @@ public class ProxyAuditController {
 	 * @throws NoSuchAlgorithmException
 	 */
 	@ResponseFilter
-	@PostMapping("/proxy/audit/log")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping("/proxy/audit/log")
 	@Operation(summary = "auditLog", description = "audit log", tags = { "proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),

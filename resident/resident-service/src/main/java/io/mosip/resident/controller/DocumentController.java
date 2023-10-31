@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -25,9 +29,10 @@ import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.DocumentValidator;
@@ -41,7 +46,7 @@ import io.mosip.resident.validator.DocumentValidator;
 @RestController
 public class DocumentController {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(DocumentController.class);
 
 	@Autowired
 	private DocumentValidator validator;
@@ -83,6 +88,7 @@ public class DocumentController {
 	 * @param file          The file to be uploaded
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentResponseDTO> uploadDocuments(@PathVariable("transaction-id") String transactionId,
 			@RequestPart(value = "file", required = true) MultipartFile file,
@@ -90,34 +96,38 @@ public class DocumentController {
 			@RequestParam("docTypCode") String docTypCode,
 			@RequestParam("langCode") String langCode,
 			@RequestParam("referenceId") String referenceId) throws IOException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
+		logger.debug("DocumentController::uploadDocuments()::entry");
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			validator.validateRequest(docCatCode,docTypCode,langCode);
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
+			validator.validateRequest(transactionId,docCatCode,docTypCode,langCode);
 			validator.validateFileName(file);
+			validator.scanForViruses(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
 			docRequest.setDocCatCode(docCatCode.toLowerCase());
 			docRequest.setDocTypCode(docTypCode);
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
-			validator.scanForViruses(file);
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
+			logger.debug(String.format("DocumentController::Requesting upload document api for transaction id: %s", transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
-			responseWrapper.setId(residentUploadDocumentId);
-			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_SUCCESS, transactionId));
+			logger.debug("DocumentController::uploadDocuments()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setId(residentUploadDocumentId);
-			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-		} 
+		} catch (InvalidInputException | ResidentServiceException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		}
 		return responseWrapper;
 	}
 
@@ -127,22 +137,30 @@ public class DocumentController {
 	 * @param transactionId The transaction ID of the document
 	 * @return ResponseWrapper<List<DocumentResponseDTO>>
 	 */
+
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
 			@PathVariable("transaction-id") String transactionId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get documents API"));
+		logger.debug("DocumentController::getDocumentsByTransactionId()::entry");
 		ResponseWrapper<List<DocumentResponseDTO>> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
-			validator.validateTransactionId(transactionId);
-			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);
+			validator.validateTransactionIdForDocument(transactionId);
+			logger.debug(String.format("DocumentController::Requesting get documents api for transaction id: %s", transactionId));
+			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_SUCCESS, transactionId));
+			logger.debug("DocumentController::getDocumentsByTransactionId()::exit");
 		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -159,23 +177,30 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document should be passed as Path Variable
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping(path = "/document/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get document API"));
+		logger.debug("DocumentController::getDocumentByDocumentId()::entry");
 		ResponseWrapper<DocumentDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
-			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
-			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
-			responseWrapper.setResponse(documentResponse);
 			responseWrapper.setId(residentGetDocumentId);
 			responseWrapper.setVersion(residentGetDocumentVersion);
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
+			logger.debug("DocumentController::Requesting get document by doc id");
+			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
+			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_SUCCESS, transactionId));
+			logger.debug("DocumentController::getDocumentByDocumentId()::exit");
 		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -192,30 +217,34 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document
 	 * @return ResponseWrapper<ResponseDTO>
 	 */
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@DeleteMapping(path = "/documents/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<ResponseDTO> deleteDocument(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Delete document API"));
+		logger.debug("DocumentController::deleteDocument()::entry");
 		ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
-			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
 			responseWrapper.setId(residentDeleteId);
 			responseWrapper.setVersion(residentDeleteVersion);
-			ResponseDTO documentResponse = service
-					.deleteDocument(transactionId, documentId);
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
+			logger.debug("DocumentController::Requesting delete document api by doc id");
+			ResponseDTO documentResponse = service.deleteDocument(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_SUCCESS, transactionId));
+			logger.debug("DocumentController::deleteDocument()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setId(residentDeleteId);
-			responseWrapper.setVersion(residentDeleteVersion);
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		}
 		return responseWrapper;

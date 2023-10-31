@@ -2,11 +2,9 @@ package io.mosip.resident.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -26,7 +24,7 @@ public interface DownLoadMasterDataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
-			List<String> name) throws ResidentServiceCheckedException, IOException, Exception;
+			String name) throws ResidentServiceCheckedException, IOException, Exception;
 	
 	/**
 	 * 

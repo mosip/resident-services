@@ -1,5 +1,18 @@
 package io.mosip.resident.mock.controller;
 
+import java.io.ByteArrayInputStream;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -19,14 +32,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.ByteArrayInputStream;
-import java.util.UUID;
 
 /**
  * Mock API Controller class.
@@ -84,10 +89,11 @@ public class MockApiController {
     @GetMapping(path= "/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(
             @PathVariable("rid") String rid) throws Exception {
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
+    	logger.debug("MockApiController::getRIDDigitalCard()::entry");
         byte[] pdfBytes = mockService.getRIDDigitalCardV2(rid);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+        logger.debug("MockApiController::getRIDDigitalCard()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
                         rid + ".pdf\"")

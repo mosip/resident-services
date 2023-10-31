@@ -1,8 +1,6 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
-
-public class RIDInvalidException extends BaseUncheckedException {
+public class RIDInvalidException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/**
 	 * Generated serial version id

@@ -1,32 +1,11 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.kernel.core.authmanager.model.AuthNResponse;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.preregistration.application.constant.PreRegLoginConstant;
-import io.mosip.preregistration.core.util.GenericUtil;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.ExceptionJSONInfoDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.MainResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
-import io.mosip.resident.dto.OtpRequestDTOV3;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.OtpManager;
-import io.mosip.resident.service.ProxyOtpService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import io.mosip.resident.dto.IdentityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -34,12 +13,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+
+import io.mosip.kernel.core.authmanager.model.AuthNResponse;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.preregistration.application.constant.PreRegLoginConstant;
+import io.mosip.preregistration.core.util.GenericUtil;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ExceptionJSONInfoDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.OtpManager;
+import io.mosip.resident.service.ProxyOtpService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author  Kamesh Shekhar Prasad
@@ -67,14 +65,11 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     @Autowired
 	private Utility utility;
     
-    @Autowired
-	private ResidentTransactionRepository residentTransactionRepository;
-
     @Value("${mosip.mandatory-languages}")
     private String mandatoryLanguage;
 
     @Override
-    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ResidentServiceCheckedException {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         String userid = null;
         boolean isSuccess = false;
@@ -88,7 +83,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 
             userid = userOtpRequest.getRequest().getUserId();
             otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionId());
-            boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
+            boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language, identityDTO);
             AuthNResponse authNResponse = null;
             if (otpSent) {
                 if (otpChannel.get(0).equalsIgnoreCase(PreRegLoginConstant.PHONE_NUMBER))
@@ -103,17 +98,16 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             log.error("In callsendOtp method of login service- ", ex.getResponseBodyAsString());
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             if(ex instanceof HttpServerErrorException || ex instanceof HttpClientErrorException){
                 throw new ResidentServiceException(ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorCode(),
                         ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorMessage());
             }
+        } catch (ResidentServiceCheckedException e){
+            log.error("In callsendOtp method of login service- ", e);
+            throw e;
         }
         catch (Exception ex) {
             log.error("In callsendOtp method of login service- ", ex);
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             throw new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
                     ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage(), ex);
         } finally {
@@ -141,102 +135,61 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         MainResponseDTO<AuthNResponse> response = null;
         response = (MainResponseDTO<AuthNResponse>) getMainResponseDto(userIdOtpRequest);
         String userid = null;
+        String transactionId = null;
         boolean isSuccess = false;
         String eventId = ResidentConstants.NOT_AVAILABLE;
-		ResidentTransactionEntity residentTransactionEntity=null;
 
         try {
-        	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest.getRequest().getUserId());
-			if (residentTransactionEntity != null) {
-    			eventId = residentTransactionEntity.getEventId();
-    		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
+            transactionId = user.getTransactionId();
+			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
+                Tuple2<Object, String> updateResult = otpManager.updateUserId(userid, transactionId);
+                eventId = updateResult.getT2();
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
                 authresponse.setStatus(PreRegLoginConstant.SUCCESS);
-
             } else {
-            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-            	residentTransactionEntity.setRequestSummary("failed");
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
             response.setResponse(authresponse);
             isSuccess = true;
         } catch (ResidentServiceException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+            ex.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw ex;
         } catch (RuntimeException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
         	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (IOException e) {
+            throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION, e,
+                    Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
-        	if(residentTransactionEntity.getStatusCode()==null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			}
-        	if (residentTransactionEntity.getRequestSummary() == null) {
-				residentTransactionEntity.setRequestSummary("failed");
-			}
-			residentTransactionRepository.save(residentTransactionEntity);
-			
             response.setResponsetime(GenericUtil.getCurrentResponseTime());
 
-            if (isSuccess) {
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-                        userid, "Validate OTP Success"));
-            } else {
+            if (!isSuccess) {
                 ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
                         ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
                 List<ExceptionJSONInfoDTO> lst = new ArrayList<>();
                 lst.add(errors);
                 response.setErrors(lst);
                 response.setResponse(null);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
-                        userid, "Validate OTP Failed"));
             }
 
         }
         return Tuples.of(response, eventId);
     }
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String userId)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-        residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
-        residentTransactionEntity.setAttributeList(userId);
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
-		if (requestValidator.phoneValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update phone as " + userId);
-		} else if (requestValidator.emailValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update email as " + userId);
-		}
-		return residentTransactionEntity;
-	}
-
-	/**
+    /**
      * This method will return the MainResponseDTO with id and version
      *
      * @param mainRequestDto

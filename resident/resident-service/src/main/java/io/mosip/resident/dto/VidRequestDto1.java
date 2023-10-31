@@ -1,6 +1,7 @@
 package io.mosip.resident.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.ToString;
