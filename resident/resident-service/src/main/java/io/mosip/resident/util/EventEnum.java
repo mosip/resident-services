@@ -601,12 +601,12 @@ public enum EventEnum {
 			"get gender code by genderName and langCode is failed", "RES-SER", "Residence service", "RS-GEND",
 			"Gender", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page start value",
-			"Invalid page start value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
+	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page index value",
+			"Invalid page index value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
-	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "Invalid page fetch value",
-			"Invalid page fetch value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
+
+	INVALID_PAGE_SIZE_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "Invalid page size value",
+			"Invalid page size value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	LOGIN_REQ("RES-SER-281", RegistrationConstants.SYSTEM,

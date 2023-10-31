@@ -654,7 +654,7 @@ public class ResidentControllerTest {
 		serviceHistoryResponseDto.setEventStatus("Success");
 		PageDto<ServiceHistoryResponseDto> dto = new PageDto<>();
 		dto.setData(List.of(serviceHistoryResponseDto));
-		dto.setPageNo(0);
+		dto.setPageIndex(0);
 		dto.setPageSize(10);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		response.setResponse(dto);
