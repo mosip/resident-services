@@ -714,7 +714,7 @@ public enum EventEnum {
 	GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS("RES-SER-150", RegistrationConstants.SYSTEM, "get all dynamic field value: Success",
 			"get all dynamic field value is succeed", "RES-SER", "Residence service", "RS-DYNAMIC",
 			"Dynamic field", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME);
-
+	
 
 
 	private final String eventId;
