@@ -604,7 +604,7 @@ public enum EventEnum {
 	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page index value",
 			"Invalid page index value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	
+
 	INVALID_PAGE_SIZE_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "Invalid page size value",
 			"Invalid page size value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
