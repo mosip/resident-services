@@ -596,10 +596,10 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
 			throw new InvalidInputException("authTypes");
 		}
-		String[] authTypesArray = authTypes.split(",");
+		String[] authTypesArray = authTypes.split(",").toLowerCase();
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (String type : authType) {
-			if (!authTypesAllowed.toLowerCase().contains(type.toLowerCase())) {
+			if (!authTypesAllowed.contains(type.toLowerCase())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
 				throw new InvalidInputException("authTypes");
 			}
