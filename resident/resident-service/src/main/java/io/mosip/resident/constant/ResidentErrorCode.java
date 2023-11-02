@@ -43,6 +43,7 @@ public enum ResidentErrorCode {
 	PACKET_CREATION_EXCEPTION("RES-SER-424", "Exception while creating packet."),
 	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured"),
 	POLICY_EXCEPTION("RES-SER-426", "while retrieving policy details error is occured"),
+	UNSUPPORTED_INPUT("RES-SER-427", "Unsupported Input Parameter - "),
 	PACKET_SIGNKEY_EXCEPTION("RES-SER-430", "Public sign key is not available from key manager"),
 	MACHINE_MASTER_CREATE_EXCEPTION("RES-SER-431", "Machine is not created in master data"),
 	INDIVIDUAL_ID_TYPE_INVALID("RES-SER-432", "Individual Id type is invalid"),

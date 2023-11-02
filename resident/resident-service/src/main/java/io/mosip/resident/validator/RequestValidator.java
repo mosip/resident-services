@@ -402,20 +402,29 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("authTypes");
 		}
-		String[] authTypesArray = authTypes.split(",");
+		String[] authTypesArray = authTypes.toLowerCase().split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (AuthTypeStatusDtoV2 authTypeStatusDto : authType) {
 			String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatusDto);
-			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString)) {
+			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString.toLowerCase())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
 						"Request to generate VID"));
 				throw new InvalidInputException("authTypes");
 			}
-			if(!isValidUnlockForSeconds(authTypeStatusDto.getUnlockForSeconds())) {
+
+			if(!authTypeStatusDto.getLocked() && !isValidUnlockForSeconds(authTypeStatusDto.getUnlockForSeconds())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
 						"Request to generate VID"));
 				throw new InvalidInputException("unlockForSeconds");
 			}
+
+			if(authTypeStatusDto.getLocked() && (authTypeStatusDto.getUnlockForSeconds() != null)) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UNSUPPORTED_INPUT, "unlockForSeconds",
+						"Request to generate VID"));
+				throw new InvalidInputException("unlockForSeconds");
+			}
+
+
 			List<String> authTypes = Arrays.asList(authTypeString);
 			validateAuthType(authTypes,
 					"Request auth " + authTypes.toString().toLowerCase() + " API");
