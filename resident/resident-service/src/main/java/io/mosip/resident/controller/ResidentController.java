@@ -372,8 +372,8 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langCode") String langCode,
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestParam(name = "pageIndex", required = false) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
 			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
 			@RequestParam(name = "sortType", required = false) String sortType,
@@ -388,7 +388,7 @@ public class ResidentController {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		try {
 			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter, langCode, searchText);
-			responseWrapper = residentService.getServiceHistory(pageStart, pageFetch, fromDate, toDate, serviceType,
+			responseWrapper = residentService.getServiceHistory(pageIndex, pageSize, fromDate, toDate, serviceType,
 					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
 					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
@@ -669,8 +669,8 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestParam(name = "pageIndex", required = false) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -680,7 +680,7 @@ public class ResidentController {
 		try {
 			validator.validateLanguageCode(langCode);
 			id = identityServiceImpl.getResidentIdaToken();
-			notificationDtoList = residentService.getNotificationList(pageStart, pageFetch, id, langCode,
+			notificationDtoList = residentService.getNotificationList(pageIndex, pageSize, id, langCode,
 					timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_FAILURE);
