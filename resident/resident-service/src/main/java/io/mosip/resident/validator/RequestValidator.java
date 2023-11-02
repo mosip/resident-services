@@ -397,14 +397,14 @@ public class RequestValidator {
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
-	private void validateAuthTypeV2(List<AuthTypeStatusDtoV2> authType) {
-		if (authType == null || authType.isEmpty()) {
+	private void validateAuthTypeV2(List<AuthTypeStatusDtoV2> authTypesList) {
+		if (authTypesList == null || authTypesList.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("authTypes");
 		}
 		String[] authTypesArray = authTypes.toLowerCase().split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
-		for (AuthTypeStatusDtoV2 authTypeStatusDto : authType) {
+		for (AuthTypeStatusDtoV2 authTypeStatusDto : authTypesList) {
 			String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatusDto);
 			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString.toLowerCase())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
@@ -600,14 +600,14 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateAuthType(List<String> authType, String msg) {
-		if (authType == null || authType.isEmpty()) {
+	public void validateAuthType(List<String> authTypesList, String msg) {
+		if (authTypesList == null || authTypesList.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
 			throw new InvalidInputException("authTypes");
 		}
 		String[] authTypesArray = authTypes.toLowerCase().split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
-		for (String type : authType) {
+		for (String type : authTypesList) {
 			if (!authTypesAllowed.contains(type.toLowerCase())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
 				throw new InvalidInputException("authTypes");
