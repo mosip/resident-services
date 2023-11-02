@@ -168,8 +168,8 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "allowedAuthTypes", "bio-FIR,bio-IIR");
         ReflectionTestUtils.setField(requestValidator, "version", "v1");
         ReflectionTestUtils.setField(requestValidator, "map", map);
-        ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
-        ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
+        ReflectionTestUtils.setField(requestValidator, "allowedAuthTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
+        ReflectionTestUtils.setField(residentService, "allowedAuthTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
         ReflectionTestUtils.setField(requestValidator, "mandatoryLanguages", "eng");
         ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
         ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
