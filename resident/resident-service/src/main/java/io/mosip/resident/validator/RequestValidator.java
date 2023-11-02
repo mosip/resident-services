@@ -424,9 +424,8 @@ public class RequestValidator {
 				throw new InvalidInputException("unlockForSeconds");
 			}
 
-
-			List<String> authTypesList = Arrays.asList(authTypeString);
-			validateAuthType(authTypesList,
+			List<String> authTypes = Arrays.asList(authTypeString);
+			validateAuthType(authTypes,
 					"Request auth " + authTypes.toString().toLowerCase() + " API");
 
 		}
