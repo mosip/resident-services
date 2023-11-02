@@ -1410,11 +1410,11 @@ public class RequestValidatorTest {
         requestWrapper.setVersion("1.0");
         requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
         try {
-			requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
-		} catch (BaseResidentUncheckedExceptionWithMetadata e) {
-			assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
-			return;
-		}
+            requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+        } catch (BaseResidentUncheckedExceptionWithMetadata e) {
+            assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
+            return;
+        }
         fail();
     }
 
@@ -3205,10 +3205,10 @@ public class RequestValidatorTest {
         requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
         try {
             requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
-		} catch (BaseResidentUncheckedExceptionWithMetadata e) {
-			assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
-			return;
-		}
+        } catch (BaseResidentUncheckedExceptionWithMetadata e) {
+            assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
+            return;
+        }
         fail();
     }
 }
