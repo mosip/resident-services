@@ -165,7 +165,7 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "euinId", "mosip.resident.euin");
         ReflectionTestUtils.setField(requestValidator, "authHstoryId", "mosip.resident.authhistory");
         ReflectionTestUtils.setField(requestValidator, "uinUpdateId", "mosip.resident.updateuin");
-        ReflectionTestUtils.setField(requestValidator, "authTypes", "bio-FIR,bio-IIR");
+        ReflectionTestUtils.setField(requestValidator, "allowedAuthTypes", "bio-FIR,bio-IIR");
         ReflectionTestUtils.setField(requestValidator, "version", "v1");
         ReflectionTestUtils.setField(requestValidator, "map", map);
         ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
