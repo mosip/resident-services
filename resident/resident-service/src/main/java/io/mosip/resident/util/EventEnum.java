@@ -15,7 +15,6 @@ public enum EventEnum {
 			"Obtained RID for transaction id %s while requesting for update UIN", "RES-SER", "Residence service",
 			"RS-RID", "RID section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VID_GENERATED("RES-SER-117", RegistrationConstants.SYSTEM, "Request to generate VID",
 			"VID generated for transaction id %s", "RES-SER", "Residence service", "RS-VID_GEN", "VID generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -28,14 +27,12 @@ public enum EventEnum {
 	PACKET_SYNC("RES-SER-120", RegistrationConstants.SYSTEM, "Request to upload UIN packet", "Sync packet", "RES-SER",
 			"Residence service", "RS-PACK", "Packet creation", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	OTP_GEN_SUCCESS("RES-SER-122", RegistrationConstants.SYSTEM, "generating otp: Success", "otp generation is success",
 			"RES-SER", "Residence service", "RS-OTP-GEN", "Otp generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	OTP_GEN_EXCEPTION("RES-SER-123", RegistrationConstants.SYSTEM, "generating otp: Exception",
 			"otp generation is failed", "RES-SER", "Residence service", "RS-OTP-GEN", "Otp generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CREDENTIAL_REQ_SUCCESS("RES-SER-125", RegistrationConstants.SYSTEM, "Sharing credential to partner: Success",
 			"Sharing credential to partner is succeded", "RES-SER", "Residence service", "RS-CRED_REQ",
 			"Credential request", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -44,53 +41,45 @@ public enum EventEnum {
 			"Sharing credential to partner is failed", "RES-SER", "Residence service", "RS-CRED_REQ",
 			"Credential request", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CREDENTIAL_REQ_STATUS_SUCCESS("RES-SER-128", RegistrationConstants.SYSTEM, "credential status: Success",
 			"credential req status is success", "RES-SER", "Residence service", "RS-CRED_REQ", "Credential request",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	CREDENTIAL_REQ_STATUS_EXCEPTION("RES-SER-129", RegistrationConstants.SYSTEM, "credential status: Exception",
 			"credential req status is failed", "RES-SER", "Residence service", "RS-CRED_REQ", "Credential request",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CREDENTIAL_CANCEL_REQ_SUCCESS("RES-SER-131", RegistrationConstants.SYSTEM, "credential cancel request: Success",
 			"credential cancel request success", "RES-SER", "Residence service", "RS-CRED_REQ", "Credential request",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	CREDENTIAL_CANCEL_REQ_EXCEPTION("RES-SER-132", RegistrationConstants.SYSTEM, "credential cancel request: Exception",
 			"credential cancel request failed", "RES-SER", "Residence service", "RS-CRED_REQ", "Credential request",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CREDENTIAL_TYPES_SUCCESS("RES-SER-134", RegistrationConstants.SYSTEM, "credential types: Success",
 			"fetch credential type success", "RES-SER", "Residence service", "RS-CRED_TYP", "Credential type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	CREDENTIAL_TYPES_EXCEPTION("RES-SER-135", RegistrationConstants.SYSTEM, "credential types: Exception",
 			"fetch credential types failed", "RES-SER", "Residence service", "RS-CRED_TYP", "Credential type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_CARD_SUCCESS("RES-SER-137", RegistrationConstants.SYSTEM, "request for card: Success",
 			"request for card is success", "RES-SER", "Residence service", "RS-CARD", "Request card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	REQ_CARD_EXCEPTION("RES-SER-138", RegistrationConstants.SYSTEM, "request for card: Exception",
 			"request for card is failed", "RES-SER", "Residence service", "RS-CARD", "Request card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_POLICY_SUCCESS("RES-SER-140", RegistrationConstants.SYSTEM, "request for policy: Success",
 			"request for policy is success", "RES-SER", "Residence service", "RS-POL", "Request policy",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	REQ_POLICY_EXCEPTION("RES-SER-141", RegistrationConstants.SYSTEM, "request for policy: Exception",
 			"request for policy is failed", "RES-SER", "Residence service", "RS-POL", "Request policy",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VALIDATION_FAILED_EXCEPTION("RES-SER-142", RegistrationConstants.SYSTEM, "Validation failed",
 			"Validation failed : %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_VALID_DOCUMENT_SUCCESS("RES-SER-143", RegistrationConstants.SYSTEM, "get valid documents: Success",
 			"get valid documents by lang code is succeed", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_VALID_DOCUMENT_EXCEPTION("RES-SER-144", RegistrationConstants.SYSTEM, "get valid documents: Exception",
 			"get valid documents by lang code is failed", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_LOCATION_HIERARCHY_LEVEL_SUCCESS("RES-SER-145", RegistrationConstants.SYSTEM,
 			"get location hierarchy levels: Success", "get location hierarchy level by lang code is succeed", "RES-SER",
 			"Residence service", "RS-LOC", "Location", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -99,7 +88,6 @@ public enum EventEnum {
 			"get location hierarchy levels: Failed", "get location hierarchy level by lang code is failed", "RES-SER",
 			"Residence service", "RS-LOC", "Location", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS("RES-SER-147", RegistrationConstants.SYSTEM,
 			"get location hierarchy levels for all language: Success", "get location hierarchy level is succeed",
 			"RES-SER", "Residence service", "RS-LOC", "Location", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -108,7 +96,6 @@ public enum EventEnum {
 			"get location hierarchy levels for all language: Failed", "get location hierarchy level is failed",
 			"RES-SER", "Residence service", "RS-LOC", "Location", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS("RES-SER-149", RegistrationConstants.SYSTEM,
 			"get all dynamic field value: Success", "get all dynamic field value is succeed", "RES-SER",
 			"Residence service", "RS-DYNAMIC", "Dynamic field", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -125,14 +112,12 @@ public enum EventEnum {
 			"get immediate children by location code and lang code is failed", "RES-SER", "Residence service",
 			"RS-CHILD", "Immediate children", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_LOCATION_DETAILS_SUCCESS("RES-SER-153", RegistrationConstants.SYSTEM, "get location details: Success",
 			"get location details by location code and lang code is succeed", "RES-SER", "Residence service", "RS-LOC",
 			"Location", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_LOCATION_DETAILS_EXCEPTION("RES-SER-154", RegistrationConstants.SYSTEM, "get location details: Exception",
 			"get location details by location code and lang code is failed", "RES-SER", "Residence service", "RS-LOC",
 			"Location", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS("RES-SER-155", RegistrationConstants.SYSTEM,
 			"get coordinate specific registration centers", "get coordinate specific registration centers: Success",
 			"RES-SER", "Residence service", "RS-REG", "Registration center",
@@ -141,7 +126,6 @@ public enum EventEnum {
 			"get coordinate specific registration centers", "get coordinate specific registration centers: Failed",
 			"RES-SER", "Residence service", "RS-REG", "Registration center",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_APPLICANT_VALID_DOCUMENT_SUCCESS("RES-SER-157", RegistrationConstants.SYSTEM,
 			"get applicant valid documents: Success", "get applicant valid documents is succeed", "RES-SER",
 			"Residence service", "RS-DOC", "Document", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -150,7 +134,6 @@ public enum EventEnum {
 			"get applicant valid documents: Exception", "get applicant valid documents is failed", "RES-SER",
 			"Residence service", "RS-DOC", "Document", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS("RES-SER-159", RegistrationConstants.SYSTEM,
 			"get registration centers for location code: Success",
 			"get registration centers for location code: Success", "RES-SER", "Residence service", "RS-REG_LOC",
@@ -161,7 +144,6 @@ public enum EventEnum {
 			"get registration centers for location code: Failed", "RES-SER", "Residence service", "RS-REG_LOC",
 			"Registration center location", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_REG_CENTERS_PAGINATED_SUCCESS("RES-SER-161", RegistrationConstants.SYSTEM,
 			"get registration centers paginated: Success", "get registration centers paginated is succeed", "RES-SER",
 			"Residence service", "RS-REG", "Registration center", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -178,7 +160,6 @@ public enum EventEnum {
 			"get registration center working days failure", "get registration center working days: Failed", "RES-SER",
 			"Residence service", "RS-REG", "Registration center", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_LATEST_ID_SCHEMA_SUCCESS("RES-SER-165", RegistrationConstants.SYSTEM, "get latest id schema: Success",
 			"get latest id schema is succeeded", "RES-SER", "Residence service", "RS-ID_SCH", "ID schema",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -193,7 +174,6 @@ public enum EventEnum {
 			"get templates by langCode and templateTypeCode is failed", "RES-SER", "Residence service", "RS-TEMP",
 			"Templates section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_CONFIGURATION_PROPERTIES_SUCCESS("RES-SER-169", RegistrationConstants.SYSTEM,
 			"get resident configuration properties success", "get resident configuration properties: Success",
 			"RES-SER", "Residence service", "RS-CONF", "Config properties",
@@ -212,21 +192,18 @@ public enum EventEnum {
 			"get dynamic field based on langCode and field name is failed", "RES-SER", "Residence service", "RS-GEND",
 			"Dynamic Field", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	UPLOAD_DOCUMENT_SUCCESS("RES-SER-177", RegistrationConstants.SYSTEM, "Document upload: Success",
 			"document upload success for transaction id %s", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	UPLOAD_DOCUMENT_FAILED("RES-SER-178", RegistrationConstants.SYSTEM, "Document upload: Failed",
 			"document upload failed for transaction id %s", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_DOCUMENTS_METADATA_SUCCESS("RES-SER-180", RegistrationConstants.SYSTEM, "Get documents: Success",
 			"get documents success for transaction id %s", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_DOCUMENTS_METADATA_FAILED("RES-SER-181", RegistrationConstants.SYSTEM, "Get documents: Failed",
 			"Get documents failed for transaction id %s", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_AUTH_LOCK_STATUS_SUCCESS("RES-SER-183", RegistrationConstants.SYSTEM, "Request auth lock status: Success",
 			"Requesting auth lock status api is success", "RES-SER", "Residence service", "RS-AUTH_LOCK", "Auth lock",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -241,14 +218,12 @@ public enum EventEnum {
 			"get partners by partner type: Failed", "get partners by partner type is failed", "RES-SER",
 			"Residence service", "RS-PARTN", "Partner section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_VIDS_SUCCESS("RES-SER-192", RegistrationConstants.SYSTEM, "get vids success", "get vids: Success", "RES-SER",
 			"Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_VIDS_EXCEPTION("RES-SER-193", RegistrationConstants.SYSTEM, "get vids failure", "get vids: Failed", "RES-SER",
 			"Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	OTP_INDIVIDUALID_GEN_SUCCESS("RES-SER-195", RegistrationConstants.SYSTEM,
 			"generating otp for Individual ID: Success", "otp generation for Individual ID is success", "RES-SER",
 			"Residence service", "RS-OTP_GEN", "Otp generation", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -256,14 +231,12 @@ public enum EventEnum {
 	OTP_AID_GEN_EXCEPTION("RES-SER-196", RegistrationConstants.SYSTEM, "generating otp for aid: Failed",
 			"otp generation for aid is failed", "RES-SER", "Residence service", "RS-OTP_GEN", "Otp generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_INPUT_ATTRIBUTES_SUCCESS("RES-SER-198", RegistrationConstants.SYSTEM, "get identity attributes success",
 			"get identity attributes: Success", "RES-SER", "Residence service", "RS-INP_ATTR", "Input attribute",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_INPUT_ATTRIBUTES_EXCEPTION("RES-SER-199", RegistrationConstants.SYSTEM, "get identity attributes failure",
 			"get identity attributes: Failed", "RES-SER", "Residence service", "RS-INP_ATTR", "Input attribute",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	RID_STATUS_SUCCESS("RES-SER-200", RegistrationConstants.SYSTEM, "RID status: Success",
 			"Request for checking RID status is success", "RES-SER", "Residence service", "RS-RID", "RID Status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -271,48 +244,39 @@ public enum EventEnum {
 	REQ_PRINTUIN_SUCCESS("RES-SER-201", RegistrationConstants.SYSTEM, "Request print UIN: Success",
 			"Requesting print uin api for transaction id %s is success", "RES-SER", "Residence service", "RS-UIN",
 			"UIN", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_AUTH_LOCK_SUCCESS("RES-SER-202", RegistrationConstants.SYSTEM, "Request auth lock: Success",
 			"Requesting auth lock api for transaction id %s is success", "RES-SER", "Residence service",
 			"RS-AUTH_LOCK_UNLOCK", "Auth lock/unlock", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_AUTH_UNLOCK_SUCCESS("RES-SER-203", RegistrationConstants.SYSTEM, "Request auth unlock: Success",
 			"Requesting auth unlock api for transaction id %s is success", "RES-SER", "Residence service",
 			"RS-AUTH_LOCK_UNLOCK", "Auth lock/unlock", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_AUTH_HISTORY_SUCCESS("RES-SER-204", RegistrationConstants.SYSTEM, "Request auth history: Success",
 			"Requesting auth history api for transaction id %s is success", "RES-SER", "Residence service",
 			"RS-AUTH_HIST", "Auth history", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	UPDATE_UIN_SUCCESS("RES-SER-205", RegistrationConstants.SYSTEM, "Request update uin: Success",
 			"Requesting update uin api for transaction id %s is success", "RES-SER", "Residence service", "RS-UIN",
 			"UIN", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GENERATE_VID_SUCCESS("RES-SER-206", RegistrationConstants.SYSTEM, "Request for generating VID: Success",
 			"Request for generating VID for transaction id %s is success", "RES-SER", "Residence service",
 			"RS-GEN_REV_VID", "Generate/Revoke VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REVOKE_VID_SUCCESS("RES-SER-207", RegistrationConstants.SYSTEM, "Request for revoking VID: Success",
 			"Request for revoking VID for transaction id %s is success", "RES-SER", "Residence service",
 			"RS-GEN_REV_VID", "Generate/Revoke VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	SEND_NOTIFICATION_SUCCESS("RES-SER-208", RegistrationConstants.SYSTEM, "Send notification: Success",
 			"Sending notification for transaction id %s", "RES-SER", "Residence service", "RS-NOT",
 			"Notification section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VALIDATE_OTP_SUCCESS("RES-SER-209", RegistrationConstants.SYSTEM, "Validate otp: Success",
 			"Validating OTP for transaction id %s is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	VALIDATE_OTP_FAILURE("RES-SER-210", RegistrationConstants.SYSTEM, "Validate otp: Failed",
 			"OTP vaildation for transaction id %s is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	AID_STATUS_SUCCESS("RES-SER-211", RegistrationConstants.SYSTEM, "Checking AID status: Success",
 			"Request for checking AID status is success", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -334,7 +298,6 @@ public enum EventEnum {
 	IDA_TOKEN_NOT_FOUND("RES-SER-217", RegistrationConstants.SYSTEM, "IDA token not found", "IDA token not found",
 			"RES-SER", "Residence service", "RS-IDA_TOK", "IDA token", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	REQ_CUSTOM_CREDENTIAL("RES-SER-218", RegistrationConstants.SYSTEM, "Custom Credential Request",
 			"Custom Credential Request", "RES-SER", "Residence service", "RES-CUS_CRED", "Custom credential",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -344,7 +307,6 @@ public enum EventEnum {
 	REQ_CUSTOM_CREDENTIAL_FAILURE("RES-SER-220", RegistrationConstants.SYSTEM, "Custom Credential Request: Failed",
 			"Custom Credential Request has failed", "RES-SER", "Residence service", "RES-CUS_CRED", "Custom credential",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CHANNEL_VERIFICATION_STATUS("RES-SER-221", RegistrationConstants.SYSTEM,
 			"Check Channel Verification status Request", "Check Channel Verification status Request", "RES-SER",
 			"Residence service", "RS-CHAN_VER", "Channel verification", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -358,7 +320,6 @@ public enum EventEnum {
 			"Custom Credential Request: Failed", "Custom Credential Request has failed", "RES-SER", "Residence service",
 			"RS-CHAN_VER", "Channel verification", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_VID_POLICY("RES-SER-224", RegistrationConstants.SYSTEM, "Get VID Policy Request", "Get VID Policy Request",
 			"RES-SER", "Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -368,7 +329,6 @@ public enum EventEnum {
 	GET_VID_POLICY_FAILURE("RES-SER-226", RegistrationConstants.SYSTEM, "Get VID Policy Request: Failed",
 			"Get VID Policy Request has failed", "RES-SER", "Residence service", "RS-VID", "VID",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_IDMAPPING("RES-SER-227", RegistrationConstants.SYSTEM, "get identity mapping json", "get identity mapping json",
 			"RES-SER", "Residence service", "RS-ID_MAP", "ID mapping", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -378,7 +338,6 @@ public enum EventEnum {
 	GET_IDMAPPING_EXCEPTION("RES-SER-229", RegistrationConstants.SYSTEM, "get identity mapping json failure",
 			"get identity mapping json: Failed", "RES-SER", "Residence service", "RS-ID_MAP", "ID mapping",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request: Success",
 			"Download digital card request is succeeded", "RES-SER", "Residence service", "RS-RID_CARD", "NO_ID_TYPE",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -386,14 +345,12 @@ public enum EventEnum {
 			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD",
 			"RID digital card", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-233", RegistrationConstants.SYSTEM, "Request AID status: Success",
 			"Requesting AID status for eventId %s is succeeded", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	CHECK_AID_STATUS_REQUEST_FAILED("RES-SER-234", RegistrationConstants.SYSTEM, "Request AID status: Failed",
 			"Requesting AID status  for eventId %s is failed", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	SEND_PHYSICAL_CARD_SUCCESS("RES-SER-237", RegistrationConstants.SYSTEM, "send a physical card: Success",
 			"send a physical card is succeeded", "RES-SER", "Residence service", "RS-PHYS_CARD", "Physical card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -412,7 +369,6 @@ public enum EventEnum {
 	DELETE_DOCUMENT_FAILED("RES-SER-244", RegistrationConstants.SYSTEM, "delete document: Failed",
 			"delete document is failed", "RES-SER", "Residence service", "RS-DOC", "Document",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_IDENTITY_UPDATE_COUNT_SUCCESS("RES-SER-249", RegistrationConstants.SYSTEM, "get identity update count: Success",
 			"retrieve remaining update counts for each id attributes for a UIN/VID is succeeded", "RES-SER",
 			"Residence service", "RS-IDEN_COUN", "Identity count", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -428,14 +384,12 @@ public enum EventEnum {
 	PIN_STATUS_FAILURE("RES-SER-252", RegistrationConstants.SYSTEM, "pin status failure",
 			"pin status failure based on event id: Failed", "RES-SER", "Resident service", "RS-PIN", "Pin status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	UN_PIN_STATUS_SUCCESS("RES-SER-253", RegistrationConstants.SYSTEM, "un pin status: Success",
 			"un pin status success based on event id", "RES-SER", "Resident service", "RS-PIN", "Pin status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	UN_PIN_STATUS_FAILURE("RES-SER-254", RegistrationConstants.SYSTEM, "un pin status: Failed",
 			"un pin status failure based on event id", "RES-SER", "Resident service", "RS-PIN", "Pin statusE",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-255", RegistrationConstants.SYSTEM,
 			"get acknowledgement download url: Success", "get acknowledgement download url is succeeded", "RES-SER",
 			"Residence service", "RS-ACK_DOWN", "Acknowledgement download",
@@ -444,14 +398,12 @@ public enum EventEnum {
 			"get acknowledgement download url: Failed", "get acknowledgement download url failed", "RES-SER",
 			"Residence service", "RS-ACK_DOWN", "Acknowledgement download",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	SEND_OTP_SUCCESS("RES-SER-259", RegistrationConstants.SYSTEM, "send otp: Success",
 			"send otp is success for userId: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	SEND_OTP_FAILURE("RES-SER-260", RegistrationConstants.SYSTEM, "send otp: Failed",
 			"send otp is failed for userId: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-265", RegistrationConstants.SYSTEM, "download service history: Success",
 			"download service history success based on language code", "RES-SER", "Resident service", "RS-DOWN_SER",
 			"Download service history", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -464,7 +416,6 @@ public enum EventEnum {
 					+ "\t\t\t\"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN",
 			"RES-SER", "Resident service", "RS-VAL", "Validation", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	DOWNLOAD_REGISTRATION_CENTER_SUCCESS("RES-SER-269", RegistrationConstants.SYSTEM,
 			"download registration center: Success",
 			"download registration center success based on language code and hierarchy level", "RES-SER",
@@ -474,7 +425,6 @@ public enum EventEnum {
 			"Download registration center: Failed", "Download registration center is failed", "RES-SER",
 			"Resident service", "RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	DOWNLOAD_SUPPORTING_DOCS_SUCCESS("RES-SER-271", RegistrationConstants.SYSTEM, "Download supporting docs: Success",
 			"Download supporting docs success based on language code", "RES-SER", "Resident service", "RS-DOWN_CARD",
 			"Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -482,7 +432,6 @@ public enum EventEnum {
 	DOWNLOAD_SUPPORTING_DOCS_FAILURE("RES-SER-272", RegistrationConstants.SYSTEM, "Download supporting docs: Failed",
 			"Download supporting docs failed", "RES-SER", "Resident service", "RS-DOWN_CARD", "Download card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS("RES-SER-273", RegistrationConstants.SYSTEM,
 			"Download nearest registration center: Success",
 			"Download nearest registration center success based on language code,longitude,latitude and distance",
@@ -492,7 +441,6 @@ public enum EventEnum {
 			"Download nearest registration center: Failed", "Download nearest registration center failed", "RES-SER",
 			"Resident service", "RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_DOCUMENT_TYPES_SUCCESS("RES-SER-275", RegistrationConstants.SYSTEM, "get document types: Success",
 			"get document types by documentCode and langCode is succeeded", "RES-SER", "Residence service", "RS-DOC",
 			"Document", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -505,46 +453,36 @@ public enum EventEnum {
 	GET_GENDER_CODE_EXCEPTION("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code: Failed",
 			"get gender code by genderName and langCode is failed", "RES-SER", "Residence service", "RS-GEND", "Gender",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GRIEVANCE_TICKET_REQUEST_SUCCESS("RES-SER-279", RegistrationConstants.SYSTEM, "Grievance ticket request: Success",
 			"Grievance ticket request success", "RES-SER", "Resident service", "RS-GRIEV", "Grievance ticket",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GRIEVANCE_TICKET_REQUEST_FAILED("RES-SER-280", RegistrationConstants.SYSTEM, "Grievance ticket request: Failed",
 			"Grievance ticket request failed", "RES-SER", "Resident service", "RS-GRIEV", "Grievance ticket",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGIN_REQ("RES-SER-281", RegistrationConstants.SYSTEM, "Login Request", "Login Request", "RES-SER",
 			"Resident service", "RS-LOGN", "Login req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGIN_REQ_SUCCESS("RES-SER-282", RegistrationConstants.SYSTEM, "Login Request: Success", "Login request is success",
 			"RES-SER", "Resident service", "RS-LOGN", "Login req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGIN_REQ_FAILURE("RES-SER-283", RegistrationConstants.SYSTEM, "Login Request: Failed", "Login request is failed",
 			"RES-SER", "Resident service", "RS-LOGN", "Login req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGOUT_REQ("RES-SER-284", RegistrationConstants.SYSTEM, "Logout Request", "Logout Request", "RES-SER",
 			"Resident service", "RS-LOGN", "Logout req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGOUT_REQ_SUCCESS("RES-SER-285", RegistrationConstants.SYSTEM, "Logout Request: Success",
 			"Logout request is success", "RES-SER", "Resident service", "RS-LOGO", "Logout req",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	LOGOUT_REQ_FAILURE("RES-SER-286", RegistrationConstants.SYSTEM, "Logout Request: Failed",
 			"Logout request is failed", "RES-SER", "Resident service", "RS-LOGO", "Logout req",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VALIDATE_TOKEN_SUCCESS("RES-SER-287", RegistrationConstants.SYSTEM, "Validate Token: Success",
 			"Validate token is success", "RES-SER", "Resident service", "RS-VAL", "Validate token",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VALIDATE_TOKEN_FAILURE("RES-SER-288", RegistrationConstants.SYSTEM, "Validate Token: Failed",
 			"Validate token is failed", "RES-SER", "Resident service", "RS-VAL", "Validate token",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	DOWNLOAD_PERSONALIZED_CARD_FAILURE("RES-SER-291", RegistrationConstants.SYSTEM,
 			"Download personalized card: Failed", "Download card Html to pdf failed", "RES-SER", "Resident service",
 			"RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -559,7 +497,6 @@ public enum EventEnum {
 	AID_STAGE_FAILURE("RES-SER-294", RegistrationConstants.SYSTEM, "Check AID stage status: Failed",
 			"Check AID stage status is failed", "RES-SER", "Residence service", "RS-AID_STAGE", "AID stage",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS("RES-SER-299", RegistrationConstants.SYSTEM,
 			"Credential status update call back: Success",
 			"credential status update call back success for transaction id %s", "RES-SER", "Residence service",
@@ -601,7 +538,6 @@ public enum EventEnum {
 	GET_NOTIF_CLICK_FAILURE("RES-SER-312", RegistrationConstants.SYSTEM, "Get notification click: Failed",
 			"Get notification click failed", "RES-SER", "Residence service", "RS-NOT", "Notification section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	GET_PROFILE_SUCCESS("RES-SER-314", RegistrationConstants.SYSTEM, "Get profile: Success", "Get profile is Success",
 			"RES-SER", "Residence service", "RS-PROF", "Profile section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -624,7 +560,6 @@ public enum EventEnum {
 			"Deactivated VID for transaction id %s while generating VID", "RES-SER", "Residence service", "RS_VID_REV",
 			"Revoke vid", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	AUTH_TYPE_CALL_BACK_SUCCESS("RES-SER-323", RegistrationConstants.SYSTEM, "Auth type call back: Success",
 			"auth type call back success for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP",
 			"Auth type", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -648,7 +583,6 @@ public enum EventEnum {
 			"JSON parsing exception for transaction id %s while generating VID", "RES-SER", "Residence service",
 			"RS-VID", "VID section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VID_ALREADY_EXISTS("RES-SER-405", RegistrationConstants.SYSTEM, "VID already exists",
 			"VID already exists for transaction id %s", "RES-SER", "Residence service", "RS-VID_GEN", "VID generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -656,11 +590,9 @@ public enum EventEnum {
 			"VID generated failed for transaction id %s", "RES-SER", "Residence service", "RS-VID_GEN",
 			"VID generation", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	VID_REVOKE_EXCEPTION("RES-SER-407", RegistrationConstants.SYSTEM, "Request to revoke VID: Exception",
 			"Revoking VID failed for transaction id %s", "RES-SER", "Residence service", "RS_VID_REV", "Revoke vid",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	RID_NOT_FOUND("RES-SER-408", RegistrationConstants.SYSTEM, "Checking RID status: Not found",
 			"RID not found while checking for RID status", "RES-SER", "Residence service", "RS-RID", "RID section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -708,7 +640,6 @@ public enum EventEnum {
 	OTP_VALIDATION_FAILED("RES-SER-422", RegistrationConstants.SYSTEM, "OTP validation: Failed",
 			"OTP validation failed for user Id: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	UNKNOWN_EXCEPTION("RES-SER-423", RegistrationConstants.SYSTEM, "Request to create packet: Exception",
 			"Unknown exception occured", "RES-SER", "Residence service", "RS-EXCE", "Exception",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
@@ -721,14 +652,12 @@ public enum EventEnum {
 	UNSUPPORTED_INPUT("RES-SER-427", RegistrationConstants.SYSTEM, "Unsupported input", "Unsupported input parameter %s", 
 			"RES-SER", "Residence service", "RS-VAL", "Validation section", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page start value",
-			"Invalid page start value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
+	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "Invalid page index value",
+			"Invalid page index value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
-	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "Invalid page fetch value",
-			"Invalid page fetch value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
+	INVALID_PAGE_SIZE_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "Invalid page size value",
+			"Invalid page size value %s", "RES-SER", "Residence service", "RS-VAL", "Validation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
 	INVALID_LANGUAGE_CODE("RES-SER-500", RegistrationConstants.SYSTEM, "Invalid language code", "invalid lang code",
 			"RES-SER", "Residence service", "RS-VAL", "Validation section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME);
