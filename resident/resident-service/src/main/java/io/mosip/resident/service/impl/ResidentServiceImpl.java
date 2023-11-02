@@ -188,8 +188,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
-	private static final Integer DEFAULT_PAGE_START = 0;
-	private static final Integer DEFAULT_PAGE_COUNT = 10;
+	private static final Integer DEFAULT_PAGE_INDEX = 0;
+	private static final Integer DEFAULT_PAGE_SIZE = 10;
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
@@ -1478,50 +1478,50 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 	
 	@Override
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageIndex, Integer pageSize,
 			 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 			 String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale)
 		throws ResidentServiceCheckedException, ApisResourceAccessException {
-				return getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter,
+				return getServiceHistory(pageIndex, pageSize, fromDateTime, toDateTime, serviceType, sortType, statusFilter,
 						searchText, langCode, timeZoneOffset, locale, null, null);
 	}
 	
 	@Override
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageIndex, Integer pageSize,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale,
 																				 String defaultPageSizeProperty, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
-		if (pageStart == null) {
+		if (pageIndex == null) {
 			//By default page start is 0
-			pageStart = DEFAULT_PAGE_START;
+			pageIndex = DEFAULT_PAGE_INDEX;
 		}
 		
-		if (pageFetch == null) {
+		if (pageSize == null) {
 			// Get the default page size based on the property if mentioned otherwise it
 			// default would be 10
-			pageFetch = getDefaultPageSize(defaultPageSizeProperty);
+			pageSize = getDefaultPageSize(defaultPageSizeProperty);
 		}
 		
-		if (pageStart < 0) {
-			logger.error(EventEnum.INVALID_PAGE_START_VALUE.getDescription(), pageStart.toString());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-		} else if(pageFetch <=0){
-			logger.error(EventEnum.INVALID_PAGE_FETCH_VALUE.getDescription(), pageFetch.toString());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+		if (pageIndex < 0) {
+			logger.error(EventEnum.INVALID_PAGE_INDEX_VALUE.getDescription(), pageIndex.toString());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_INDEX_VALUE);
+		} else if(pageSize <=0){
+			logger.error(EventEnum.INVALID_PAGE_SIZE_VALUE.getDescription(), pageSize.toString());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_SIZE_VALUE);
 		}
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
-				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
+				sortType, pageIndex, pageSize, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
 				langCode, timeZoneOffset, locale, statusCodeList);
 		return serviceHistoryResponseDtoList;
 	}
 
 	private Integer getDefaultPageSize(String defaultPageSizeProperty) {
 		return defaultPageSizeProperty != null
-				? env.getProperty(defaultPageSizeProperty, Integer.class, DEFAULT_PAGE_COUNT)
-				: DEFAULT_PAGE_COUNT;
+				? env.getProperty(defaultPageSizeProperty, Integer.class, DEFAULT_PAGE_SIZE)
+				: DEFAULT_PAGE_SIZE;
 	}
 
 	@Override
@@ -1582,12 +1582,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
-			Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime, String serviceType,
+			Integer pageIndex, Integer pageSize, LocalDate fromDateTime, LocalDate toDateTime, String serviceType,
 			String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale,
 			List<String> statusCodeList) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
-		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
+		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageIndex, pageSize, idaToken, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, locale, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
@@ -1595,22 +1595,22 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
-	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
-			Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
+	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageIndex,
+			Integer pageSize, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
 			LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset, String locale,
 			List<String> statusCodeList) throws ResidentServiceCheckedException {
 		Tuple2<List<ResidentTransactionEntity>, Integer> serviceHistoryData = getServiceHistoryData(sortType, idaToken,
-				pageStart, pageFetch, statusFilter, searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset,
+				pageIndex, pageSize, statusFilter, searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset,
 				statusCodeList);
 		Integer totalItems = serviceHistoryData.getT2();
-		return new PageDto<>(pageStart, pageFetch, totalItems,
-				totalItems % pageFetch == 0 ? (totalItems / pageFetch) : (totalItems / pageFetch) + 1,
+		return new PageDto<>(pageIndex, pageSize, totalItems,
+				totalItems % pageSize == 0 ? (totalItems / pageSize) : (totalItems / pageSize) + 1,
 				convertResidentEntityListToServiceHistoryDto(serviceHistoryData.getT1(), langCode, timeZoneOffset,
 						locale));
 	}
 
 	public Tuple2<List<ResidentTransactionEntity>, Integer> getServiceHistoryData(String sortType, String idaToken,
-			Integer pageStart, Integer pageFetch, String statusFilter, String searchText, LocalDate fromDateTime,
+			Integer pageIndex, Integer pageSize, String statusFilter, String searchText, LocalDate fromDateTime,
 			LocalDate toDateTime, String serviceType, int timeZoneOffset, List<String> statusCodeList) {
 		List<String> requestTypes;
 		List<String> statusList = new ArrayList<>();
@@ -1633,42 +1633,42 @@ public class ResidentServiceImpl implements ResidentService {
 		int totalItems = 0;
 		List<Object[]> pageData = null;
 		if (statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name()) && searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
-					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList, searchText);
+			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageSize,
+					pageIndex * pageSize, onlineVerificationPartnerId, requestTypes, statusList, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdInStatusSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, statusList, searchText);
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken, pageFetch,
-					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken, pageSize,
+					pageIndex * pageSize, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
 					dateTimeTuple2.getT2(), searchText);
 			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
 					searchText);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
-			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageFetch,
-					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList,
+			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageSize,
+					pageIndex * pageSize, onlineVerificationPartnerId, requestTypes, statusList,
 					dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
 			totalItems = residentTransactionRepository.countByTokenIdInStatusBetweenCrDtimes(idaToken,
 					onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(),
 					dateTimeTuple2.getT2());
 		} else if (searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken, pageFetch,
-					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, searchText);
+			pageData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken, pageSize,
+					pageIndex * pageSize, onlineVerificationPartnerId, requestTypes, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdAndSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, searchText);
 		} else if (statusFilter != null && !statusFilter.equalsIgnoreCase(EventStatus.ALL.name())) {
-			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, pageFetch, pageStart * pageFetch,
+			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, pageSize, pageIndex * pageSize,
 					onlineVerificationPartnerId, requestTypes, statusList);
 			totalItems = residentTransactionRepository.countByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
 					requestTypes, statusList);
 		} else if (fromDateTime != null && toDateTime != null) {
-			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken, pageFetch,
-					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken, pageSize,
+					pageIndex * pageSize, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
 					dateTimeTuple2.getT2());
 			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimes(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
 		} else {
-			pageData = residentTransactionRepository.findByTokenId(idaToken, pageFetch, pageStart * pageFetch,
+			pageData = residentTransactionRepository.findByTokenId(idaToken, pageSize, pageIndex * pageSize,
 					onlineVerificationPartnerId, requestTypes);
 			totalItems = residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId,
 					requestTypes);
@@ -1993,13 +1993,13 @@ public class ResidentServiceImpl implements ResidentService {
 
 	}
 
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
-			Integer pageFetch, String id, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageIndex,
+			Integer pageSize, String id, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestTypes();
 		List<String> statusCodeList = requestTypeList.stream()
 				.flatMap(requestType -> requestType.getNotificationStatusList(env))
 				.collect(Collectors.toCollection(ArrayList::new));
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageIndex, pageSize,
 																				 null, null, ServiceType.ASYNC.name(), null,
 																				 null, null, languageCode, timeZoneOffset, locale,
 				RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE, statusCodeList);
