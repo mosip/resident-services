@@ -1,7 +1,23 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.dto.AttributeListDto;
+import io.mosip.resident.dto.UpdateCountDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,19 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
 /**
  * @author Manoj SP
@@ -37,6 +41,12 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
@@ -57,7 +67,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
+				ResponseWrapper<AttributeListDto> listDtoResponseWrapper = new ResponseWrapper<>();
+				listDtoResponseWrapper.setResponse(getRemainingUpdateCountFromConfig(attributeList));
+				logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
+				return listDtoResponseWrapper;
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 			return responseWrapper;
@@ -66,6 +79,28 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			logger.error(ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
+	}
+
+	private AttributeListDto getRemainingUpdateCountFromConfig(List<String> attributeList) throws ResidentServiceCheckedException, IOException {
+		String identityMapping = residentConfigService.getIdentityMapping();
+		Map<String, Object> identityMappingMap = objectMapper
+				.readValue(identityMapping.getBytes(StandardCharsets.UTF_8), Map.class);
+		Object identityObj = identityMappingMap.get(MappingJsonConstants.ATTRIBUTE_UPDATE_COUNT_LIMIT);
+		Map<String, Object> attributeUpdateCountLimit = (Map<String, Object>) identityObj;
+		AttributeListDto attributeListDto= new AttributeListDto();
+		List<UpdateCountDto> updateCountDtoList = new ArrayList<>();
+		for(String attribute:attributeList){
+			if(attributeUpdateCountLimit.containsKey(attribute)){
+				UpdateCountDto updateCountDto= new UpdateCountDto();
+				updateCountDto.setAttributeName(attribute);
+				updateCountDto.setNoOfUpdatesLeft((Integer) attributeUpdateCountLimit.get(attribute));
+				updateCountDtoList.add(updateCountDto);
+			}
+		}
+		attributeListDto.setAttributes(updateCountDtoList);
+		return attributeListDto;
 	}
 }
