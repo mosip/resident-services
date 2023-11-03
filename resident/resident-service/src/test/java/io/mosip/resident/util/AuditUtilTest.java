@@ -160,7 +160,7 @@ public class AuditUtilTest {
     
 	@Test
 	public void testGetRefIdandTypeNoID() {
-		Tuple2<String, String> response = auditUtil.getRefIdandType();
+		Tuple2<String, String> response = auditUtil.getRefIdHashAndType();
 		assertEquals(Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE), response);
 	}
 
@@ -170,7 +170,7 @@ public class AuditUtilTest {
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN.name());
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
-		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();
+		Tuple2<String, String> refIdandType = auditUtil.getRefIdHashAndType();
 		assertEquals(Tuples.of("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308", IdType.UIN.name()),
 				refIdandType);
 	}

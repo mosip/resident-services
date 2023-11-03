@@ -129,7 +129,7 @@ public class AuditUtil {
 		auditRequestDto.setModuleId(eventEnum.getModuleId());
 		auditRequestDto.setModuleName(eventEnum.getModuleName());
 		auditRequestDto.setEventId(eventEnum.getEventId());
-		Tuple2<String, String> refIdandType = getRefIdandType();
+		Tuple2<String, String> refIdandType = getRefIdHashAndType();
 		auditRequestDto.setId(refIdandType.getT1());
 		auditRequestDto.setIdType(refIdandType.getT2());
 		callAuditManager(auditRequestDto);
@@ -177,20 +177,20 @@ public class AuditUtil {
 		return auditResponseDto;
 	}
 	
-	public Tuple2<String, String> getRefIdandType() {
+	public Tuple2<String, String> getRefIdHashAndType() {
 		try {
 			String individualId = identityService.getResidentIndvidualIdFromSession();
 			if (individualId == null || individualId.isEmpty()) {
 				return Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE);
 			}
-			return getRefIdandTypeFromIndividualId(individualId);
+			return getRefIdHashAndTypeFromIndividualId(individualId);
 		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
 
-	public Tuple2<String, String> getRefIdandTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
+	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
 		String refId = utility.getRefIdHash(individualId);
 		String refIdType = identityService.getIndividualIdType(individualId);
 		return Tuples.of(refId, refIdType);

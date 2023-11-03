@@ -78,7 +78,7 @@ public class ProxyAuditController {
 		auditRequestDto.setApplicationName(requestDto.getApplicationName());
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
-		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();
+		Tuple2<String, String> refIdandType = auditUtil.getRefIdHashAndType();
 		auditRequestDto.setId(refIdandType.getT1());
 		auditRequestDto.setIdType(refIdandType.getT2());
 		auditRequestDto.setCreatedBy(requestDto.getCreatedBy());
@@ -121,7 +121,7 @@ public class ProxyAuditController {
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
 		if (requestDto.getId() != null && !StringUtils.isEmpty(requestDto.getId())) {
-			Tuple2<String, String> refIdandType = auditUtil.getRefIdandTypeFromIndividualId(requestDto.getId());
+			Tuple2<String, String> refIdandType = auditUtil.getRefIdHashAndTypeFromIndividualId(requestDto.getId());
 			auditRequestDto.setId(refIdandType.getT1());
 			auditRequestDto.setIdType(refIdandType.getT2());
 		} else {
