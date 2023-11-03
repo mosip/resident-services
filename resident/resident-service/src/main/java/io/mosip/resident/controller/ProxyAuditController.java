@@ -22,7 +22,6 @@ import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
 import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +30,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 /**
  * Audit log proxy.
@@ -44,10 +44,7 @@ public class ProxyAuditController {
 	/** The audit util. */
 	@Autowired
 	private AuditUtil auditUtil;
-	
-	@Autowired
-	private IdentityService identityService;
-	
+
 	@Autowired
 	private Utility utility;
 
@@ -69,8 +66,7 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> authAuditLog(@RequestBody AuthenticatedAuditRequestDto requestDto, HttpServletRequest req)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
+	public ResponseEntity<?> authAuditLog(@RequestBody AuthenticatedAuditRequestDto requestDto, HttpServletRequest req) {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(requestDto.getAuditEventId());
 		auditRequestDto.setEventName(requestDto.getAuditEventName());
@@ -82,9 +78,9 @@ public class ProxyAuditController {
 		auditRequestDto.setApplicationName(requestDto.getApplicationName());
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
-		String individualId = identityService.getResidentIndvidualIdFromSession();
-		auditRequestDto.setId(utility.getRefIdHash(individualId));
-		auditRequestDto.setIdType(identityService.getIndividualIdType(individualId));
+		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();
+		auditRequestDto.setId(refIdandType.getT1());
+		auditRequestDto.setIdType(refIdandType.getT2());
 		auditRequestDto.setCreatedBy(requestDto.getCreatedBy());
 		auditRequestDto.setModuleName(requestDto.getModuleName());
 		auditRequestDto.setModuleId(requestDto.getModuleId());
@@ -112,7 +108,7 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<?> auditLog(@RequestBody UnauthenticatedAuditRequestDto requestDto, HttpServletRequest req)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
+			throws NoSuchAlgorithmException {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(requestDto.getAuditEventId());
 		auditRequestDto.setEventName(requestDto.getAuditEventName());
@@ -125,8 +121,9 @@ public class ProxyAuditController {
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
 		if (requestDto.getId() != null && !StringUtils.isEmpty(requestDto.getId())) {
-			auditRequestDto.setId(utility.getRefIdHash(requestDto.getId()));
-			auditRequestDto.setIdType(identityService.getIndividualIdType(requestDto.getId()));
+			Tuple2<String, String> refIdandType = auditUtil.getRefIdandTypeFromIndividualId(requestDto.getId());
+			auditRequestDto.setId(refIdandType.getT1());
+			auditRequestDto.setIdType(refIdandType.getT2());
 		} else {
 			auditRequestDto.setId(ResidentConstants.NO_ID);
 			auditRequestDto.setIdType(ResidentConstants.NO_ID_TYPE);

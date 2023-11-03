@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,13 +33,13 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
 import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuples;
 
 /**
  * Resident proxy audit controller test class.
@@ -58,9 +59,6 @@ public class ProxyAuditControllerTest {
 
 	@Mock
 	private AuditUtil auditUtil;
-	
-	@Mock
-	private IdentityService identityService;
 	
 	@Mock
 	private Utility utility;
@@ -117,6 +115,7 @@ public class ProxyAuditControllerTest {
 
 	@Test
 	public void testAuthAuditLog() throws Exception {
+		Mockito.when(auditUtil.getRefIdandType()).thenReturn(Tuples.of("23455683456", "AID"));
 		reqJson = gson.toJson(authenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
@@ -124,6 +123,7 @@ public class ProxyAuditControllerTest {
 	
 	@Test
 	public void testAuditLogWithId() throws Exception {
+		Mockito.when(auditUtil.getRefIdandTypeFromIndividualId(Mockito.anyString())).thenReturn(Tuples.of("23455683456", "AID"));
 		unauthenticatedAuditRequestDto.setId("23456");
 		reqJson = gson.toJson(unauthenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
