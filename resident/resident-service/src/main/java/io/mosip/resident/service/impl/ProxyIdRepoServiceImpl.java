@@ -6,10 +6,12 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AttributeListDto;
 import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -26,6 +28,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
+import static io.mosip.resident.constant.TemplateVariablesConstants.ATTRIBUTE_LIST;
 
 /**
  * @author Manoj SP
@@ -68,7 +71,11 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				ResponseWrapper<AttributeListDto> listDtoResponseWrapper = new ResponseWrapper<>();
-				listDtoResponseWrapper.setResponse(getRemainingUpdateCountFromConfig(attributeList));
+				if(attributeList != null) {
+					listDtoResponseWrapper.setResponse(getRemainingUpdateCountFromConfig(attributeList));
+				} else {
+					throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, ATTRIBUTE_LIST);
+				}
 				logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 				return listDtoResponseWrapper;
 			}
