@@ -129,9 +129,9 @@ public class AuditUtil {
 		auditRequestDto.setModuleId(eventEnum.getModuleId());
 		auditRequestDto.setModuleName(eventEnum.getModuleName());
 		auditRequestDto.setEventId(eventEnum.getEventId());
-		Tuple2<String, String> refIdandType = getRefIdHashAndType();
-		auditRequestDto.setId(refIdandType.getT1());
-		auditRequestDto.setIdType(refIdandType.getT2());
+		Tuple2<String, String> refIdHashAndType = getRefIdHashAndType();
+		auditRequestDto.setId(refIdHashAndType.getT1());
+		auditRequestDto.setIdType(refIdHashAndType.getT2());
 		callAuditManager(auditRequestDto);
 	}
 	
