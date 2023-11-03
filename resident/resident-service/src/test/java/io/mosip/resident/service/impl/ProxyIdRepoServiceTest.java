@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.exception.ResidentServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -64,8 +65,7 @@ public class ProxyIdRepoServiceTest {
 		service.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
-	@SuppressWarnings("unchecked")
-	@Test(expected = Exception.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testGetRemainingUpdateCountByIndividualIdIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
