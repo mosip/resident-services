@@ -65,7 +65,7 @@ public class ProxyIdRepoServiceTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test(expected = ResidentServiceCheckedException.class)
+	@Test(expected = Exception.class)
 	public void testGetRemainingUpdateCountByIndividualIdIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();

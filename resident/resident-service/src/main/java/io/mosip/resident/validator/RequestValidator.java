@@ -75,6 +75,7 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.BaseResidentUncheckedExceptionWithMetadata;
 import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -421,7 +422,8 @@ public class RequestValidator {
 			if(authTypeStatusDto.getLocked() && (authTypeStatusDto.getUnlockForSeconds() != null)) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UNSUPPORTED_INPUT, "unlockForSeconds",
 						"Request to generate VID"));
-				throw new InvalidInputException("unlockForSeconds");
+				throw new BaseResidentUncheckedExceptionWithMetadata(ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode(),
+						String.format("%sunlockForSeconds", ResidentErrorCode.UNSUPPORTED_INPUT.getErrorMessage()));
 			}
 			
 			List<String> authTypes = Arrays.asList(authTypeString);
@@ -607,7 +609,7 @@ public class RequestValidator {
 		String[] authTypesArray = allowedAuthTypes.toLowerCase().split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (String type : authTypesList) {
-			if (!authTypesAllowed.contains(type.toLowerCase())) {
+			if (StringUtils.isEmpty(type) || !authTypesAllowed.contains(type.toLowerCase())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
 				throw new InvalidInputException("authTypes");
 			}

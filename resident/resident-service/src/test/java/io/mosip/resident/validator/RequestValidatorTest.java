@@ -1,6 +1,41 @@
 package io.mosip.resident.validator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
@@ -46,6 +81,7 @@ import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.BaseResidentUncheckedExceptionWithMetadata;
 import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -59,39 +95,6 @@ import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
-import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -168,7 +171,7 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "allowedAuthTypes", "bio-FIR,bio-IIR");
         ReflectionTestUtils.setField(requestValidator, "version", "v1");
         ReflectionTestUtils.setField(requestValidator, "map", map);
-        ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
+        ReflectionTestUtils.setField(requestValidator, "allowedAuthTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
         ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
         ReflectionTestUtils.setField(requestValidator, "mandatoryLanguages", "eng");
         ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
@@ -1316,7 +1319,7 @@ public class RequestValidatorTest {
         AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
         authTypeStatusDto.setAuthType("bio-FIR");
         authTypeStatusDto.setLocked(true);
-        authTypeStatusDto.setUnlockForSeconds(10L);
+        //authTypeStatusDto.setUnlockForSeconds(10L);
         authTypes.add(authTypeStatusDto);
         authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
         RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
@@ -1353,12 +1356,12 @@ public class RequestValidatorTest {
     }
 
     @Test(expected = InvalidInputException.class)
-    public void testValidateAuthLockOrUnlockRequestV2NegativeUnlockForSeconds() throws Exception {
+    public void testValidateAuthTypeUnlockRequestV2NegativeUnlockForSeconds() throws Exception {
         AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
         List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
         AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
         authTypeStatusDto.setAuthType("bio-FIR");
-        authTypeStatusDto.setLocked(true);
+        authTypeStatusDto.setLocked(false);
         authTypeStatusDto.setUnlockForSeconds(-1L);
         authTypes.add(authTypeStatusDto);
         authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
@@ -1391,7 +1394,7 @@ public class RequestValidatorTest {
     }
 
     @Test
-    public void testValidateAuthLockOrUnlockRequestV2PositiveUnlockForSeconds() throws Exception {
+    public void testValidateAuthLockRequestV2NegativeUnlockForSeconds() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
         AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
         List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
@@ -1406,8 +1409,13 @@ public class RequestValidatorTest {
         requestWrapper.setId("mosip.resident.auth.lock.unlock");
         requestWrapper.setVersion("1.0");
         requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
-        requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
-        //Should not throw exception
+        try {
+            requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+        } catch (BaseResidentUncheckedExceptionWithMetadata e) {
+            assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
+            return;
+        }
+        fail();
     }
 
     @Test(expected = InvalidInputException.class)
@@ -3179,7 +3187,7 @@ public class RequestValidatorTest {
         requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
     }
 
-    @Test(expected = InvalidInputException.class)
+    @Test
     public void testValidateAuthLockOrUnlockRequestV2FailedUnlockSeconds() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
         AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
@@ -3195,6 +3203,12 @@ public class RequestValidatorTest {
         requestWrapper.setId("mosip.resident.auth.lock.unlock");
         requestWrapper.setVersion("1.0");
         requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
-        requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+        try {
+            requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+        } catch (BaseResidentUncheckedExceptionWithMetadata e) {
+            assertEquals(e.getErrorCode(),ResidentErrorCode.UNSUPPORTED_INPUT.getErrorCode());
+            return;
+        }
+        fail();
     }
 }
