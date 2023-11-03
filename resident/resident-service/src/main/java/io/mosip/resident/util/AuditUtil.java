@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,6 @@ import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
@@ -62,8 +62,10 @@ public class AuditUtil {
 
 	@Autowired
 	private Environment environment;
-	
-  
+
+	@Autowired
+	private Utility utility;
+
 	/** The Constant UNKNOWN_HOST. */
 	private static final String UNKNOWN_HOST = "Unknown Host";
 
@@ -92,7 +94,8 @@ public class AuditUtil {
 		hostIpAddress = getServerIp();
 		hostName = getServerName();
 	}
-	
+
+	@Async("AuditExecutor")
 	public  void setAuditRequestDto(EventEnum eventEnum) {
 		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
@@ -126,8 +129,9 @@ public class AuditUtil {
 		auditRequestDto.setModuleId(eventEnum.getModuleId());
 		auditRequestDto.setModuleName(eventEnum.getModuleName());
 		auditRequestDto.setEventId(eventEnum.getEventId());
-		auditRequestDto.setId(getRefIdandType().getT1());
-		auditRequestDto.setIdType(getRefIdandType().getT2());
+		Tuple2<String, String> refIdHashAndType = getRefIdHashAndType();
+		auditRequestDto.setId(refIdHashAndType.getT1());
+		auditRequestDto.setIdType(refIdHashAndType.getT2());
 		callAuditManager(auditRequestDto);
 	}
 	
@@ -173,21 +177,23 @@ public class AuditUtil {
 		return auditResponseDto;
 	}
 	
-	public Tuple2<String, String> getRefIdandType() {
-		String refId = null;
-		String refIdType = null;
+	public Tuple2<String, String> getRefIdHashAndType() {
 		try {
 			String individualId = identityService.getResidentIndvidualIdFromSession();
 			if (individualId == null || individualId.isEmpty()) {
 				return Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE);
 			}
-			refId = HMACUtils2.digestAsPlainText(individualId.getBytes());
-			refIdType = identityService.getIndividualIdType(individualId);
+			return getRefIdHashAndTypeFromIndividualId(individualId);
 		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		return Tuples.of(refId, refIdType);
+	}
+
+	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
+		String refIdHash = utility.getRefIdHash(individualId);
+		String idType = identityService.getIndividualIdType(individualId);
+		return Tuples.of(refIdHash, idType);
 	}
 
 }
