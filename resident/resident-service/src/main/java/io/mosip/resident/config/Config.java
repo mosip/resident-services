@@ -156,7 +156,7 @@ public class Config {
 	public TaskExecutor AuditExecutor() {
 	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 	    executor.setCorePoolSize(Math.floorDiv(env.getProperty("mosip.resident.async-thread-count", Integer.class, 100), 4));
-	    executor.setMaxPoolSize(env.getProperty("mosip.resident.async-thread-count", Integer.class, 100));
+	    executor.setMaxPoolSize(env.getProperty("mosip.resident.async-max-pool-size", Integer.class, 100));
 	    executor.setThreadNamePrefix("Async-audit");
 	    executor.setWaitForTasksToCompleteOnShutdown(true);
 	    executor.initialize();
