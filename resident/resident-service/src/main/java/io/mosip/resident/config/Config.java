@@ -24,10 +24,15 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -41,6 +46,7 @@ import io.mosip.resident.util.Utility;
 
 @Configuration
 @EnableScheduling
+@EnableAsync
 public class Config {
 	private String defaultEncoding = StandardCharsets.UTF_8.name();
 	/** The resource loader. */
@@ -61,6 +67,8 @@ public class Config {
 	@Autowired(required = false)
 	private LoggingInterceptor loggingInterceptor;
 
+	@Autowired
+	private Environment env;
 
 	@Bean("varres")
 	public VariableResolverFactory getVariableResolverFactory() {
@@ -143,7 +151,16 @@ public class Config {
 		return threadPoolTaskScheduler;
 	}
 
-
+	@Bean
+	@Qualifier("AuditExecutor")
+	public TaskExecutor AuditExecutor() {
+	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	    executor.setCorePoolSize(Math.floorDiv(env.getProperty("mosip.resident.async-core-pool-size", Integer.class, 100), 4));
+	    executor.setMaxPoolSize(env.getProperty("mosip.resident.async-max-pool-size", Integer.class, 100));
+	    executor.setThreadNamePrefix("Async-audit");
+	    executor.setWaitForTasksToCompleteOnShutdown(true);
+	    executor.initialize();
+	    return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+	}
 
 }
-
