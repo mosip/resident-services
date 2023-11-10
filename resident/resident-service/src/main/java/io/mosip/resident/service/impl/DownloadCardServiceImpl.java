@@ -275,16 +275,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return Tuples.of(utility.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
 	}
 
-	Map<String, Object> getIdentityData(String individualId) throws IOException {
+	private Map<String, Object> getIdentityData(String individualId) {
 		Map<String, Object> identityAttributes = null;
 		try {
-			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
+			identityAttributes = (Map<String, Object>) identityService.getIdentity(individualId);
 		} catch (ResidentServiceCheckedException e) {
 			logger.error("Unable to get attributes- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
-		} catch (IOException e) {
-			logger.error("Unable to get attributes- " + e);
-			throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
 		}
 		return identityAttributes;
 	}
