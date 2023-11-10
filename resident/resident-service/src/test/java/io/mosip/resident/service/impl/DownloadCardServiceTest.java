@@ -1,5 +1,26 @@
 package io.mosip.resident.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.IdType;
@@ -30,29 +51,8 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
 
 /**
  * This class is used to create service class test for getting cards.
@@ -107,7 +107,7 @@ public class DownloadCardServiceTest {
 
 	private MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO;
 
-	private Map identityMap;
+	private IdentityDTO identityMap;
 
 	private ResidentTransactionEntity residentTransactionEntity;
 
@@ -144,7 +144,7 @@ public class DownloadCardServiceTest {
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
 				Mockito.any())).thenReturn(Tuples.of(true, residentTransactionEntity));
-		identityMap = new LinkedHashMap();
+		identityMap = new IdentityDTO();
 		identityMap.put("UIN", "8251649601");
 		identityMap.put("email", "manojvsp12@gmail.com");
 		identityMap.put("phone", "9395910872");
@@ -155,8 +155,7 @@ public class DownloadCardServiceTest {
 		Mockito.when(identityService.getIdentity("1234567890")).thenReturn(identityDTO);
 		Mockito.when(identityService.getIdentity("7841261580")).thenReturn(identityDTO);
 		identityDTO.setUIN("123");
-		Map<String, Object> identityAttributes = new HashMap<>();
-		Mockito.when(identityService.getIdentityAttributes("1234567890",null)).thenReturn(identityAttributes);
+		Mockito.when(identityService.getIdentity("1234567890")).thenReturn(new IdentityDTO());
 	}
 
 	@Test
@@ -214,7 +213,7 @@ public class DownloadCardServiceTest {
 		name.put("language", "eng");
 		name.put("value", "kamesh");
 		identityMap.put("firstName", List.of(name));
-		Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), isNull())).thenReturn(identityMap);
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityMap);
 		Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
 		Mockito.when(utility.getPassword(Mockito.anyList())).thenReturn("kame1970");
 		Tuple2<byte[], String> actualResult = downloadCardService
@@ -234,15 +233,8 @@ public class DownloadCardServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testDownloadPersonalizedCardResidentServiceCheckedException()
 			throws ResidentServiceCheckedException, IOException {
-		Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.isNull()))
+		Mockito.when(identityService.getIdentity(Mockito.anyString()))
 				.thenThrow(new ResidentServiceCheckedException());
-		downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testDownloadPersonalizedCardIOException() throws ResidentServiceCheckedException, IOException {
-		Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.isNull()))
-				.thenThrow(new IOException());
 		downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
 	}
 
