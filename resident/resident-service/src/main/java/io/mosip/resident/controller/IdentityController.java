@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
 
 import java.io.IOException;
 import java.util.List;
@@ -86,7 +87,7 @@ public class IdentityController {
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		String id = getIdFromUser();
 		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, schemaType, List.of());
-		propertiesResponse.remove(Utility.IDENTITY);
+		propertiesResponse.remove(IDENTITY);
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		responseWrapper.setResponse(propertiesResponse);

@@ -102,6 +102,7 @@ import java.util.stream.Stream;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -113,10 +114,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class Utility {
 
 	private static final String MEDIUM = "MEDIUM";
-
 	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
-
-	public static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
 	private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
