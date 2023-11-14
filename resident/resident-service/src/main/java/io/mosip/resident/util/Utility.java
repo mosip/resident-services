@@ -103,6 +103,8 @@ import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
+import static io.mosip.resident.constant.ResidentConstants.LANGUAGE;
+import static io.mosip.resident.constant.ResidentConstants.VALUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -115,11 +117,8 @@ public class Utility {
 
 	private static final String MEDIUM = "MEDIUM";
 	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
-	private static final String VALUE = "value";
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
 	private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
-	private static final String LANGUAGE = "language";
-
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 
@@ -455,7 +454,7 @@ public class Utility {
 
 	public String maskData(Object object, String maskingFunctionName) {
 		Map context = new HashMap();
-		context.put("value", String.valueOf(object));
+		context.put(VALUE, String.valueOf(object));
 		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
 		myVarFactory.setNextFactory(functionFactory);
 		Serializable serializable = MVEL.compileExpression(maskingFunctionName + "(value);");

@@ -1,7 +1,33 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
+
+import java.io.IOException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -19,7 +45,6 @@ import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TemplateEnum;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.BaseVidRequestDto;
@@ -57,31 +82,8 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
-import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
@@ -223,7 +225,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			logger.debug(EventEnum.VID_GENERATED.getDescription(), requestDto.getTransactionID());
 			// send notification
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put(TemplateEnum.VID.name(), vidResponse.getVID());
+			additionalAttributes.put(IdType.VID.name(), vidResponse.getVID());
 			notificationRequestDto.setAdditionalAttributes(additionalAttributes);
 
 			NotificationResponseDTO notificationResponseDTO;
@@ -523,7 +525,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			logger.debug(EventEnum.DEACTIVATED_VID.getDescription(), requestDto.getTransactionID());
 			// send notification
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put(TemplateEnum.VID.name(), vid);
+			additionalAttributes.put(IdType.VID.name(), vid);
 			notificationRequestDto.setAdditionalAttributes(additionalAttributes);
 
 			NotificationResponseDTO notificationResponseDTO;

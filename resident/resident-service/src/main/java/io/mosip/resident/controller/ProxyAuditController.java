@@ -20,8 +20,6 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
 import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,9 +51,6 @@ public class ProxyAuditController {
 	 *
 	 * @param requestDto the authenticated audit request dto
 	 * @return the response entity
-	 * @throws ResidentServiceCheckedException the resident service checked exception
-	 * @throws ApisResourceAccessException 
-	 * @throws NoSuchAlgorithmException 
 	 */
 	@ResponseFilter
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
@@ -66,7 +61,7 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> authAuditLog(@RequestBody AuthenticatedAuditRequestDto requestDto, HttpServletRequest req) {
+	public ResponseEntity<Object> authAuditLog(@RequestBody AuthenticatedAuditRequestDto requestDto, HttpServletRequest req) {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(requestDto.getAuditEventId());
 		auditRequestDto.setEventName(requestDto.getAuditEventName());
@@ -94,8 +89,6 @@ public class ProxyAuditController {
 	 * 
 	 * @param requestDto the unauthenticated audit request dto
 	 * @return the response entity
-	 * @throws ResidentServiceCheckedException
-	 * @throws ApisResourceAccessException
 	 * @throws NoSuchAlgorithmException
 	 */
 	@ResponseFilter
@@ -107,7 +100,7 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> auditLog(@RequestBody UnauthenticatedAuditRequestDto requestDto, HttpServletRequest req)
+	public ResponseEntity<Object> auditLog(@RequestBody UnauthenticatedAuditRequestDto requestDto, HttpServletRequest req)
 			throws NoSuchAlgorithmException {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(requestDto.getAuditEventId());
