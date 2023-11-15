@@ -843,7 +843,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
 		try {
 			if(map.get(TRANSACTION_LIMIT) != null) {
-				String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
+				String hashrefid = utility.getRefIdHash(map.get(VID).toString());
 				int countdb = residentTransactionRepository.findByRefIdAndAuthTypeCodeLike(hashrefid, AUTH_TYPE_CODE_SUFFIX);
 				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
 				int leftcount = limitCount - countdb;
