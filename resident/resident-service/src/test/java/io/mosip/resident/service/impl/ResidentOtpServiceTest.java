@@ -90,6 +90,7 @@ public class ResidentOtpServiceTest {
 		identityValue.setUIN("123");
 		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
 		when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123");
+		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 	}
 
 	@Test

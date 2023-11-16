@@ -237,7 +237,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	
 		try {
-			if(getIndividualIdType(idvid).equalsIgnoreCase(IdType.UIN.name())){
+			if(getIndividualIdType(idvid).equals(IdType.UIN)){
 				return idvid;
 			}
 			return getIdentity(idvid).getUIN();
@@ -347,10 +347,11 @@ public class IdentityServiceImpl implements IdentityService {
      */
 	public Tuple2<String, IdType> getIndividualIdAndTypeForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		String individualId;
+		IdType idType = getIndividualIdType(aid);
+		if(idType.equals(IdType.AID)) {
 			IdentityDTO identity = getIdentity(aid);
 			String uin = identity.getUIN();
-			String individualId;
-			IdType idType;
 			if(useVidOnly) {
 				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
@@ -363,7 +364,10 @@ public class IdentityServiceImpl implements IdentityService {
 				individualId = uin;
 				idType = IdType.UIN;
 			}
-			return Tuples.of(individualId, idType);
+		} else {
+			individualId = aid;
+		}
+		return Tuples.of(individualId, idType);
 	}
 	
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
@@ -412,13 +416,13 @@ public class IdentityServiceImpl implements IdentityService {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public String getIndividualIdType(String individualId){
+	public IdType getIndividualIdType(String individualId){
 		if(requestValidator.validateUin(individualId)){
-			return IdType.UIN.name();
+			return IdType.UIN;
 		} else if(requestValidator.validateVid(individualId)){
-			return IdType.VID.name();
+			return IdType.VID;
 		} else {
-			return IdType.AID.name();
+			return IdType.AID;
 		}
 	}
 }

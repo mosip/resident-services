@@ -307,6 +307,8 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
 		assertEquals("8251649601", result.getT1());
@@ -319,6 +321,8 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
@@ -330,12 +334,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeUin(){
-		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		assertEquals(IdType.UIN.name(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -559,7 +563,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdTypeVidPassed(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		assertEquals(IdType.VID.name(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.VID, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -638,7 +642,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdType(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
-		assertEquals(IdType.AID.name(), identityService.getIndividualIdType("3434343343"));
+		assertEquals(IdType.AID, identityService.getIndividualIdType("3434343343"));
 	}
 
 	@Test

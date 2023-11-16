@@ -99,7 +99,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthTypeStatusDto;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
@@ -117,7 +118,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
 		individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		
+		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");

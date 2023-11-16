@@ -307,13 +307,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private void validateVidFromSession(String individualId, String vidType, String uin) {
 		try {
-			String idType = identityServiceImpl.getIndividualIdType(individualId);
+			IdType idType = identityServiceImpl.getIndividualIdType(individualId);
 			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
 					uin);
 			/**
 			 * Check If id type is VID.
 			 */
-			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+			if (idType.equals(IdType.VID)) {
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */
