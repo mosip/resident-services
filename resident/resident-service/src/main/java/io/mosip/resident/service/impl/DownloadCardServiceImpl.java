@@ -202,7 +202,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
@@ -458,8 +458,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private String getRidForIndividualId(String individualId) {
-		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(IdType.AID.name())) {
+		IdType idType = identityService.getIndividualIdType(individualId);
+		if (idType.equals(IdType.AID)) {
 			return individualId;
 		} else {
 			try {

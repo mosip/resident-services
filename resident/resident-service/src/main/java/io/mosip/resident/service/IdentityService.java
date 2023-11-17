@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -63,7 +64,7 @@ public interface IdentityService {
 	String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
 
-    String getIndividualIdType(String s);
+	IdType getIndividualIdType(String individualId);
 
 	String createSessionId();
 

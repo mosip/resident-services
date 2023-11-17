@@ -1234,7 +1234,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		residentTransactionEntity.setLangCode(this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE));
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
 		return residentTransactionEntity;
 	}
 
@@ -1824,7 +1824,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
-			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(reqDto.getIndividualId());
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIdAndTypeForIndividualId(reqDto.getIndividualId());
 			boolean validStatus = individualIdAndType != null;
 			if (performOtpValidation) {
 				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualIdAndType.getT1(), reqDto.getOtp());

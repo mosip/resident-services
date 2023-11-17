@@ -629,7 +629,7 @@ public class Utility {
 		} else {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
 		}
-		return HMACUtils2.digestAsPlainText(id.getBytes());
+		return getRefIdHash(id);
 	}
 
 	public String getFileNameAck(String featureName, String eventId, String propertyName, int timeZoneOffset, String locale) {

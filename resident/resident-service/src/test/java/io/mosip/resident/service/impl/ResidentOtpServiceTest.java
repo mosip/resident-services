@@ -90,6 +90,7 @@ public class ResidentOtpServiceTest {
 		identityValue.setUIN("123");
 		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
 		when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123");
+		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 	}
 
 	@Test
@@ -132,7 +133,7 @@ public class ResidentOtpServiceTest {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = getIndividualIdOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
-		when(identityServiceImpl.getIndividualIdAndTypeForAid(any())).thenReturn(Tuples.of("9054257143", IdType.UIN));
+		when(identityServiceImpl.getIdAndTypeForIndividualId(any())).thenReturn(Tuples.of("9054257143", IdType.UIN));
 		when(objectMapper.convertValue(individualIdOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
 		OtpResponseDTO otpResponseDTO = getOtpResponseDTO();
 		when(residentServiceRestClient.postApi(anyString(), any(), any(), any())).thenReturn(otpResponseDTO);
@@ -146,7 +147,7 @@ public class ResidentOtpServiceTest {
 	public void testGenerateOtpForIndividualIdWithApisResourceAccessException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = getIndividualIdOtpRequestDTO();
-		when(identityServiceImpl.getIndividualIdAndTypeForAid(any())).thenThrow(new ApisResourceAccessException());
+		when(identityServiceImpl.getIdAndTypeForIndividualId(any())).thenThrow(new ApisResourceAccessException());
 		residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO);
 	}
 
