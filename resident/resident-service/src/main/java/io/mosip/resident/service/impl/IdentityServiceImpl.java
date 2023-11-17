@@ -345,29 +345,29 @@ public class IdentityServiceImpl implements IdentityService {
      * @param aid - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
-	public Tuple2<String, IdType> getIndividualIdAndTypeForAid(String aid)
+	public Tuple2<String, IdType> getIdAndTypeForIndividualId(String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String individualId;
-		IdType idType = getIndividualIdType(aid);
+		String id;
+		IdType idType = getIndividualIdType(individualId);
 		if(idType.equals(IdType.AID)) {
-			IdentityDTO identity = getIdentity(aid);
+			IdentityDTO identity = getIdentity(individualId);
 			String uin = identity.getUIN();
 			if(useVidOnly) {
 				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
-					individualId = perpVid.get();
+					id = perpVid.get();
 					idType = IdType.VID;
 				} else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
 				}
 			} else {
-				individualId = uin;
+				id = uin;
 				idType = IdType.UIN;
 			}
 		} else {
-			individualId = aid;
+			id = individualId;
 		}
-		return Tuples.of(individualId, idType);
+		return Tuples.of(id, idType);
 	}
 	
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {

@@ -310,7 +310,7 @@ public class IdentityServiceTest {
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		fileLoadMethod();
-		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
+		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
 		assertEquals("8251649601", result.getT1());
 		assertEquals(IdType.UIN, result.getT2());
 	}
@@ -327,7 +327,7 @@ public class IdentityServiceTest {
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
-		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdAndTypeForAid", "123456789");
+		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
 		assertEquals("8251649601", result.getT1());
 		assertEquals(IdType.VID, result.getT2());
 	}

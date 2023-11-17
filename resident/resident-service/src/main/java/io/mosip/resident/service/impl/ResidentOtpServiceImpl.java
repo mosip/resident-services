@@ -118,7 +118,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentOtpServiceImpl::generateOtpForIndividualId()::entry");
 		try {
-			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(individualIdRequestDto.getIndividualId());
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIdAndTypeForIndividualId(individualIdRequestDto.getIndividualId());
 			individualIdRequestDto.setIndividualId(individualIdAndType.getT1());
 			OtpRequestDTO otpRequestDTO = objectMapper.convertValue(individualIdRequestDto, OtpRequestDTO.class);
 			otpRequestDTO.setTransactionID(individualIdRequestDto.getTransactionId());
