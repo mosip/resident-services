@@ -99,7 +99,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
@@ -118,7 +118,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentOtpServiceImpl::generateOtpForIndividualId()::entry");
 		try {
-			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(individualIdRequestDto.getIndividualId());
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIdAndTypeForIndividualId(individualIdRequestDto.getIndividualId());
 			individualIdRequestDto.setIndividualId(individualIdAndType.getT1());
 			OtpRequestDTO otpRequestDTO = objectMapper.convertValue(individualIdRequestDto, OtpRequestDTO.class);
 			otpRequestDTO.setTransactionID(individualIdRequestDto.getTransactionId());

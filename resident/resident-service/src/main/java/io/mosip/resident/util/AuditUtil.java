@@ -192,7 +192,7 @@ public class AuditUtil {
 
 	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
 		String refIdHash = utility.getRefIdHash(individualId);
-		String idType = identityService.getIndividualIdType(individualId);
+		String idType = identityService.getIndividualIdType(individualId).name();
 		return Tuples.of(refIdHash, idType);
 	}
 

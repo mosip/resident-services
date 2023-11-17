@@ -124,7 +124,7 @@ public class DownloadCardServiceTest {
 		Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn(pdfbytes);
 		Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
 		Mockito.when(residentCredentialService.getCard(Mockito.anyString(), isNull(), isNull())).thenReturn(pdfbytes);
-		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN.name());
+		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
 		Mockito.when(utility.createEventId()).thenReturn("12345");
 
@@ -161,7 +161,7 @@ public class DownloadCardServiceTest {
 	@Test
 	public void testGetDownloadCardPdfWithVID()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException, OtpValidationFailedException {
-		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID.name());
+		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
 		Tuple2<byte[], String> actualResult = downloadCardService
 				.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
 		assertNotNull(actualResult);
@@ -195,7 +195,7 @@ public class DownloadCardServiceTest {
 
 	@Test
 	public void testGetDownloadCardPdfZeroLength() throws Exception {
-		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.AID.name());
+		Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.AID);
 		Mockito.when(residentCredentialService.getCard(Mockito.anyString(), isNull(), isNull()))
 				.thenReturn(new byte[0]);
 		Tuple2<byte[], String> actualResult = downloadCardService
