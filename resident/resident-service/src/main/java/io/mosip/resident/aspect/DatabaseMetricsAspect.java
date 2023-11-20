@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 /**
- * Aspect class for database logging
+ * Aspect class for database metrics to record the query time metrics
  * 
  * @author Ritik Jain
  */
