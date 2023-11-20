@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import javax.servlet.Filter;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -19,8 +20,6 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +37,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
-import io.micrometer.core.aop.TimedAspect;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -51,7 +47,6 @@ import io.mosip.resident.util.Utility;
 @Configuration
 @EnableScheduling
 @EnableAsync
-@EnableAutoConfiguration(exclude = {WebMvcMetricsAutoConfiguration.class})
 public class Config {
 	private String defaultEncoding = StandardCharsets.UTF_8.name();
 	/** The resource loader. */
@@ -166,11 +161,6 @@ public class Config {
 	    executor.setWaitForTasksToCompleteOnShutdown(true);
 	    executor.initialize();
 	    return new DelegatingSecurityContextAsyncTaskExecutor(executor);
-	}
-	
-	@Bean
-	public TimedAspect timedAspect(MeterRegistry registry) {
-		return new TimedAspect(registry);
 	}
 
 }
