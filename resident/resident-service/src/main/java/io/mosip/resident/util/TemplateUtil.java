@@ -351,7 +351,7 @@ public class TemplateUtil {
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		return identityServiceImpl.getIndividualIdType(individualId);
+		return identityServiceImpl.getIndividualIdType(individualId).name();
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,

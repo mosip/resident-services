@@ -32,7 +32,6 @@ import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -308,13 +307,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private void validateVidFromSession(String individualId, String vidType, String uin) {
 		try {
-			String idType = identityServiceImpl.getIndividualIdType(individualId);
+			IdType idType = identityServiceImpl.getIndividualIdType(individualId);
 			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
 					uin);
 			/**
 			 * Check If id type is VID.
 			 */
-			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+			if (idType.equals(IdType.VID)) {
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */
@@ -843,7 +842,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
 		try {
 			if(map.get(TRANSACTION_LIMIT) != null) {
-				String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
+				String hashrefid = utility.getRefIdHash(map.get(VID).toString());
 				int countdb = residentTransactionRepository.findByRefIdAndAuthTypeCodeLike(hashrefid, AUTH_TYPE_CODE_SUFFIX);
 				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
 				int leftcount = limitCount - countdb;

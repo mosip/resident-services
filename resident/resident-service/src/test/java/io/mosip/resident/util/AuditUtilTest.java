@@ -122,7 +122,7 @@ public class AuditUtilTest {
         when(objectMapper.readValue(Mockito.anyString(), Mockito.any(TypeReference.class))).thenReturn(responseWrapper);
 		String individualId = "9054257143";
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
-		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN.name());
+		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN);
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
 		
         auditUtil.setAuditRequestDto(eventEnum);
@@ -168,7 +168,7 @@ public class AuditUtilTest {
 	public void testGetRefIdandType() throws ApisResourceAccessException, NoSuchAlgorithmException {
 		String individualId = "9054257143";
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
-		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN.name());
+		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN);
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
 		Tuple2<String, String> refIdandType = auditUtil.getRefIdHashAndType();
 		assertEquals(Tuples.of("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308", IdType.UIN.name()),

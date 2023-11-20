@@ -135,8 +135,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			identityDTO = identityService.getIdentity(individualId);
-			String uin = identityDTO.getUIN();
-			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
+			Tuple2<String, IdType> individualIdAndType = identityService.getIdAndTypeForIndividualId(individualId);
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, individualIdAndType.getT1(),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
 			residentTransactionEntity = tupleResponse.getT2();
 			if (residentTransactionEntity != null) {
@@ -202,7 +202,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
@@ -458,8 +458,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private String getRidForIndividualId(String individualId) {
-		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(IdType.AID.name())) {
+		IdType idType = identityService.getIndividualIdType(individualId);
+		if (idType.equals(IdType.AID)) {
 			return individualId;
 		} else {
 			try {
