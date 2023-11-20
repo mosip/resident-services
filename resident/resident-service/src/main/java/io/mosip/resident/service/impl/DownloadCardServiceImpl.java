@@ -135,8 +135,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			identityDTO = identityService.getIdentity(individualId);
-			String uin = identityDTO.getUIN();
-			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
+			Tuple2<String, IdType> individualIdAndType = identityService.getIdAndTypeForIndividualId(individualId);
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, individualIdAndType.getT1(),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
 			residentTransactionEntity = tupleResponse.getT2();
 			if (residentTransactionEntity != null) {
