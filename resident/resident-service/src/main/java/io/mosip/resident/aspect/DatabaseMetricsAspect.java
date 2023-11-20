@@ -19,7 +19,7 @@ import io.micrometer.core.instrument.Timer;
 /**
  * Aspect class for database metrics to record the query time metrics
  * 
- * @author Ritik Jain
+ * @author Loganathan S
  */
 @Component
 @Aspect
