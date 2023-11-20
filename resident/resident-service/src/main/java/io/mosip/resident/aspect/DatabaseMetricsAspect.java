@@ -19,7 +19,7 @@ import io.micrometer.core.instrument.Timer;
 /**
  * Aspect class for database metrics to record the query time metrics
  * 
- * @author Ritik Jain
+ * @author Loganathan S
  */
 @Component
 @Aspect
@@ -38,8 +38,7 @@ public class DatabaseMetricsAspect {
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
         Timer timer = Timer.builder(DB_QUERY_RESPONSE_TIME_ID)
         		.tag("label", DB_QUERY_RESPONSE_TIME_DESCRIPTION)
-        		.tag("method", jp.getSignature().toLongString())
-        		.tag("target", jp.getTarget().getClass().getCanonicalName())
+        		.tag("queryMethod", jp.getSignature().toShortString())
         		.register(registry);
         long start = System.nanoTime();
         Object result = jp.proceed();
