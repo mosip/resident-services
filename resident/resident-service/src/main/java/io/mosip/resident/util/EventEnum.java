@@ -332,8 +332,7 @@ public enum EventEnum {
 			"download service history failed", "RS-DOWN_SER", "Download service history", RESIDENT_APPLICATION_ID,
 			RESIDENT_APPLICATION_NAME),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-267", FAILURE, "Invalid request type code",
-			"\"Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD,\" +\n"
-					+ "\t\t\t\"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN",
+			"Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD and UPDATE_MY_UIN",
 			"RS-VAL", "Validation", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	DOWNLOAD_REGISTRATION_CENTER_SUCCESS("RES-SER-269", SUCCESS, "download registration center: Success",
 			"download registration center success based on language code and hierarchy level", "RS-DOWN_CARD",

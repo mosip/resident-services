@@ -305,6 +305,9 @@ public class ResidentConstants {
 	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
 
     public static final String API_RESPONSE_TIME_ID = "api.response.time";
+    
+    public static final String DB_QUERY_RESPONSE_TIME_DESCRIPTION = "DB Query Response Time";
+    public static final String DB_QUERY_RESPONSE_TIME_ID = "db.query.response.time";
     public static final String UNDER_SCORE = "_";
     public static final String IDENTITY = "identity";
 }
