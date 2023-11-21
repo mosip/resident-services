@@ -55,6 +55,8 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
         		.tag("statusText", statusText == null ? "NA" : statusText)
         		.tag("thread", thread)
         		.tag("error", error)
+        		.publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
         		.register(registry);
 		timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
 	}
