@@ -71,8 +71,7 @@ public class AuditUtilTest {
     @Mock
     private Utility utility;
     
-    @Mock
-    private AsyncUtil asyncUtil;
+    private AsyncUtil asyncUtil = new AsyncUtil();
 
     @Captor
     ArgumentCaptor<HttpEntity> httpEntityCaptor;
