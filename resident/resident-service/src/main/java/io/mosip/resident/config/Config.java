@@ -8,6 +8,8 @@ import java.util.Properties;
 import javax.servlet.Filter;
 
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.interceptor.RestTemplateLoggingInterceptor;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -63,9 +65,16 @@ public class Config {
 
 	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED + ":false}")
 	private boolean isResidentLoggingInterceptorFilterEnabled;
+	
+	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_METRICS_INTERCEPTOR_FILTER_ENABLED + ":false}")
+	private boolean isResidentMetricsInterceptorFilterEnabled;
+	
 
 	@Autowired(required = false)
-	private LoggingInterceptor loggingInterceptor;
+	private RestTemplateLoggingInterceptor restTemplateLoggingInterceptor;
+	
+	@Autowired(required = false)
+	private RestTemplateLoggingInterceptor restTemplateMetricsInterceptor;
 
 	@Autowired
 	private Environment env;
@@ -122,6 +131,7 @@ public class Config {
 	@Primary
 	public ResidentServiceRestClient selfTokenRestClient(@Qualifier("selfTokenRestTemplate")RestTemplate residentRestTemplate) {
 		addLoggingInterceptor(residentRestTemplate);
+		addMetricsInterceptor(residentRestTemplate);
 		return new ResidentServiceRestClient(residentRestTemplate);
 	}
 
@@ -132,7 +142,19 @@ public class Config {
 			if (CollectionUtils.isEmpty(interceptors)) {
 				interceptors = new ArrayList<>();
 			}
-			interceptors.add(loggingInterceptor);
+			interceptors.add(restTemplateLoggingInterceptor);
+			restTemplate.setInterceptors(interceptors);
+		}
+	}
+	
+	private void addMetricsInterceptor(RestTemplate restTemplate) {
+		if(isResidentMetricsInterceptorFilterEnabled) {
+			List<ClientHttpRequestInterceptor> interceptors
+					= restTemplate.getInterceptors();
+			if (CollectionUtils.isEmpty(interceptors)) {
+				interceptors = new ArrayList<>();
+			}
+			interceptors.add(restTemplateMetricsInterceptor);
 			restTemplate.setInterceptors(interceptors);
 		}
 	}

@@ -1,6 +1,7 @@
-package io.mosip.resident.config;
+package io.mosip.resident.interceptor;
 
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpRequest;
@@ -18,9 +19,9 @@ import java.util.stream.Stream;
  */
 @Component
 @ConditionalOnProperty(value = ResidentConstants.RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED, havingValue = "true", matchIfMissing = false)
-public class LoggingInterceptor implements ClientHttpRequestInterceptor {
+public class RestTemplateLoggingInterceptor implements ClientHttpRequestInterceptor {
 
-    private final Logger logger = LoggerConfiguration.logConfig(LoggingInterceptor.class);
+    private final Logger logger = LoggerConfiguration.logConfig(RestTemplateLoggingInterceptor.class);
 
     @Override
     public ClientHttpResponse intercept(
