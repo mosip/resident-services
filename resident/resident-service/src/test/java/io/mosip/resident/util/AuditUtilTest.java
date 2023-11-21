@@ -70,6 +70,8 @@ public class AuditUtilTest {
 
     @Mock
     private Utility utility;
+    
+    private AsyncUtil asyncUtil = new AsyncUtil();
 
     @Captor
     ArgumentCaptor<HttpEntity> httpEntityCaptor;
@@ -86,6 +88,7 @@ public class AuditUtilTest {
     @Before
     public void setUp() throws Exception {
         ReflectionTestUtils.setField(auditUtil, "auditUrl", auditUrl);
+        ReflectionTestUtils.setField(auditUtil, "asyncUtil", asyncUtil);
 
         PowerMockito.mockStatic(SecurityContextHolder.class);
         PowerMockito.mockStatic(InetAddress.class);
