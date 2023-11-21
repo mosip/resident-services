@@ -39,6 +39,9 @@ public class DatabaseMetricsAspect {
         Timer timer = Timer.builder(DB_QUERY_RESPONSE_TIME_ID)
         		.tag("label", DB_QUERY_RESPONSE_TIME_DESCRIPTION)
         		.tag("queryMethod", jp.getSignature().toShortString())
+        		.tag("service", "resident")
+        		.publishPercentileHistogram(true)
+                .publishPercentiles(0.5, 0.95, 0.99)
         		.register(registry);
         long start = System.nanoTime();
         Object result = jp.proceed();
