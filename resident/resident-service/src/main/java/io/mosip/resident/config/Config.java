@@ -179,8 +179,8 @@ public class Config {
 	}
 
 	@Bean
-	@Qualifier("AuditExecutor")
-	public TaskExecutor AuditExecutor() {
+	@Qualifier("AsyncExecutor")
+	public TaskExecutor AsyncExecutor() {
 	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 	    executor.setCorePoolSize(Math.floorDiv(env.getProperty("mosip.resident.async-core-pool-size", Integer.class, 100), 4));
 	    executor.setMaxPoolSize(env.getProperty("mosip.resident.async-max-pool-size", Integer.class, 100));
