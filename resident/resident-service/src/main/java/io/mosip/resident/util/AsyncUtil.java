@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AsyncUtil {
 	
-	@Async
+	@Async("AsyncExecutor")
 	public void asyncRun(Runnable runnable) {
 		runnable.run();
 	}
