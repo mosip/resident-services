@@ -131,8 +131,7 @@ public class Config {
 	@Bean("restClientWithSelfTOkenRestTemplate")
 	@Primary
 	public ResidentServiceRestClient selfTokenRestClient(@Qualifier("selfTokenRestTemplate")RestTemplate residentRestTemplate) {
-		addLoggingInterceptor(residentRestTemplate);
-		addMetricsInterceptor(residentRestTemplate);
+		addInterceptors(residentRestTemplate);
 		return new ResidentServiceRestClient(residentRestTemplate);
 	}
 
@@ -162,8 +161,13 @@ public class Config {
 
 	@Bean("restClientWithPlainRestTemplate")
 	public ResidentServiceRestClient plainRestClient(@Qualifier("restTemplate")RestTemplate restTemplate) {
-		addLoggingInterceptor(restTemplate);
+		addInterceptors(restTemplate);
 		return new ResidentServiceRestClient(restTemplate);
+	}
+
+	private void addInterceptors(RestTemplate restTemplate) {
+		addLoggingInterceptor(restTemplate);
+		addMetricsInterceptor(restTemplate);
 	}
 
 	@Bean
