@@ -9,6 +9,7 @@ import javax.servlet.Filter;
 
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.interceptor.RestTemplateLoggingInterceptor;
+import io.mosip.resident.interceptor.RestTemplateMetricsInterceptor;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
@@ -74,7 +75,7 @@ public class Config {
 	private RestTemplateLoggingInterceptor restTemplateLoggingInterceptor;
 	
 	@Autowired(required = false)
-	private RestTemplateLoggingInterceptor restTemplateMetricsInterceptor;
+	private RestTemplateMetricsInterceptor restTemplateMetricsInterceptor;
 
 	@Autowired
 	private Environment env;
