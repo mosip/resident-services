@@ -42,4 +42,5 @@ public class TemplateVariablesConstants {
     public static final String PHONE = "phone";
     public static final String ATTRIBUTES = "attributes";
     public static final String CHANNEL = "channel";
+    public static final String PDF_HEADER_LOGO = "pdfHeaderLogo";
 }

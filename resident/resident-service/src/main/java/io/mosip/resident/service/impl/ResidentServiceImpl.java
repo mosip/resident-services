@@ -2066,7 +2066,7 @@ public class ResidentServiceImpl implements ResidentService {
 		servHistoryMap.put("statusFilter", statusFilterTemplateData);
 		servHistoryMap.put("serviceType", serviceTypeTemplateData);
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
-
+		servHistoryMap.put(TemplateVariablesConstants.PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		InputStream serviceHistTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream serviceHistTemplateData = templateManager.merge(serviceHistTemplate, servHistoryMap);
 		StringWriter writer = new StringWriter();
