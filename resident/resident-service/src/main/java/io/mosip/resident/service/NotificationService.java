@@ -119,7 +119,7 @@ public class NotificationService {
 	
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone, Map identity) throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
@@ -176,9 +176,9 @@ public class NotificationService {
 			}
 		}
 
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				IS_EMAIL_NOTIFICATION_SUCCESS + emailStatus);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		if (smsStatus && emailStatus) {
@@ -200,13 +200,13 @@ public class NotificationService {
 			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
-			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 					"NotificationService::sendNotification()::Failure" );
 		}
 
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendSMSNotification()::isSuccess?::" + notificationResponse.getMessage());
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
 	}

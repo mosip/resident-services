@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import javax.servlet.Filter;
 
-import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -40,6 +39,10 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.interceptor.RestTemplateLoggingInterceptor;
+import io.mosip.resident.interceptor.RestTemplateMetricsInterceptor;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -63,9 +66,16 @@ public class Config {
 
 	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED + ":false}")
 	private boolean isResidentLoggingInterceptorFilterEnabled;
+	
+	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_METRICS_INTERCEPTOR_FILTER_ENABLED + ":false}")
+	private boolean isResidentMetricsInterceptorFilterEnabled;
+	
 
 	@Autowired(required = false)
-	private LoggingInterceptor loggingInterceptor;
+	private RestTemplateLoggingInterceptor restTemplateLoggingInterceptor;
+	
+	@Autowired(required = false)
+	private RestTemplateMetricsInterceptor restTemplateMetricsInterceptor;
 
 	@Autowired
 	private Environment env;
@@ -121,7 +131,7 @@ public class Config {
 	@Bean("restClientWithSelfTOkenRestTemplate")
 	@Primary
 	public ResidentServiceRestClient selfTokenRestClient(@Qualifier("selfTokenRestTemplate")RestTemplate residentRestTemplate) {
-		addLoggingInterceptor(residentRestTemplate);
+		addInterceptors(residentRestTemplate);
 		return new ResidentServiceRestClient(residentRestTemplate);
 	}
 
@@ -132,15 +142,32 @@ public class Config {
 			if (CollectionUtils.isEmpty(interceptors)) {
 				interceptors = new ArrayList<>();
 			}
-			interceptors.add(loggingInterceptor);
+			interceptors.add(restTemplateLoggingInterceptor);
+			restTemplate.setInterceptors(interceptors);
+		}
+	}
+	
+	private void addMetricsInterceptor(RestTemplate restTemplate) {
+		if(isResidentMetricsInterceptorFilterEnabled) {
+			List<ClientHttpRequestInterceptor> interceptors
+					= restTemplate.getInterceptors();
+			if (CollectionUtils.isEmpty(interceptors)) {
+				interceptors = new ArrayList<>();
+			}
+			interceptors.add(restTemplateMetricsInterceptor);
 			restTemplate.setInterceptors(interceptors);
 		}
 	}
 
 	@Bean("restClientWithPlainRestTemplate")
 	public ResidentServiceRestClient plainRestClient(@Qualifier("restTemplate")RestTemplate restTemplate) {
-		addLoggingInterceptor(restTemplate);
+		addInterceptors(restTemplate);
 		return new ResidentServiceRestClient(restTemplate);
+	}
+
+	private void addInterceptors(RestTemplate restTemplate) {
+		addLoggingInterceptor(restTemplate);
+		addMetricsInterceptor(restTemplate);
 	}
 
 	@Bean
@@ -152,8 +179,8 @@ public class Config {
 	}
 
 	@Bean
-	@Qualifier("AuditExecutor")
-	public TaskExecutor AuditExecutor() {
+	@Qualifier("AsyncExecutor")
+	public TaskExecutor AsyncExecutor() {
 	    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 	    executor.setCorePoolSize(Math.floorDiv(env.getProperty("mosip.resident.async-core-pool-size", Integer.class, 100), 4));
 	    executor.setMaxPoolSize(env.getProperty("mosip.resident.async-max-pool-size", Integer.class, 100));
