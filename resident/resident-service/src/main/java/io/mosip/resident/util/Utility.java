@@ -527,6 +527,10 @@ public class Utility {
 		return ResidentConstants.NOT_AVAILABLE;
 	}
 
+	public String getPDFHeaderLogo() {
+		return env.getProperty(ResidentConstants.MOSIP_PDF_HEADER_LOGO_URL);
+	}
+
 	public byte[] signPdf(InputStream in, String password) {
 		logger.debug("UinCardGeneratorImpl::generateUinCard()::entry");
 		byte[] pdfSignatured = null;
