@@ -39,12 +39,12 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
 		
 		try {
 			 ClientHttpResponse response = ex.execute(req, reqBody);
-			 if(req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+			 if(req!=null && req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
 				 recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", response.getStatusCode(), response.getStatusText(), currentThread.getName());
 			 }
 			return response;
 		} catch (Throwable e) {
-			if(req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+			if(req!=null && req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
 				recordTimer(req.getMethod(), req.getURI().toString(), start, e.getClass().getSimpleName(), null, "Error", currentThread.getName());
 			}
 			throw e;
@@ -52,18 +52,20 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
     }
     
     private void recordTimer(HttpMethod httpMethod, String url, long start, String error, HttpStatus httpStatus, String statusText, String thread) {
-		Timer timer = Timer.builder(REST_CLIENT_RESPONSE_TIME_ID)
-        		.tag("label", REST_CLIENT_RESPONSE_TIME_DESCRIPTION)
-        		.tag("httpMethod", httpMethod.name())
-        		.tag("url", url)
-        		.tag("httpStatus", httpStatus == null ? "NA" : httpStatus.toString())
-        		.tag("statusText", statusText == null ? "NA" : statusText)
-        		.tag("thread", thread)
-        		.tag("error", error)
-        		.tag("service", "resident")
-        		.publishPercentileHistogram(true)
-                .publishPercentiles(0.5, 0.95, 0.99)
-        		.register(registry);
-		timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+		if(httpMethod!=null && httpMethod.name()!=null) {
+			Timer timer = Timer.builder(REST_CLIENT_RESPONSE_TIME_ID)
+					.tag("label", REST_CLIENT_RESPONSE_TIME_DESCRIPTION)
+					.tag("httpMethod", httpMethod.name())
+					.tag("url", url)
+					.tag("httpStatus", httpStatus == null ? "NA" : httpStatus.toString())
+					.tag("statusText", statusText == null ? "NA" : statusText)
+					.tag("thread", thread)
+					.tag("error", error)
+					.tag("service", "resident")
+					.publishPercentileHistogram(true)
+					.publishPercentiles(0.5, 0.95, 0.99)
+					.register(registry);
+			timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+		}
 	}
 }
