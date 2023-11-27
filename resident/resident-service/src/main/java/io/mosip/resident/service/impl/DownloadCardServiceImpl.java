@@ -135,8 +135,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			identityDTO = identityService.getIdentity(individualId);
-			String uin = identityDTO.getUIN();
-			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
+			Tuple2<String, IdType> individualIdAndType = identityService.getIdAndTypeForIndividualId(individualId);
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, individualIdAndType.getT1(),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
 			residentTransactionEntity = tupleResponse.getT2();
 			if (residentTransactionEntity != null) {
@@ -202,7 +202,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
@@ -275,16 +275,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return Tuples.of(utility.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
 	}
 
-	Map<String, Object> getIdentityData(String individualId) throws IOException {
+	private Map<String, Object> getIdentityData(String individualId) {
 		Map<String, Object> identityAttributes = null;
 		try {
-			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
+			identityAttributes = (Map<String, Object>) identityService.getIdentity(individualId);
 		} catch (ResidentServiceCheckedException e) {
 			logger.error("Unable to get attributes- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
-		} catch (IOException e) {
-			logger.error("Unable to get attributes- " + e);
-			throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
 		}
 		return identityAttributes;
 	}
@@ -461,8 +458,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private String getRidForIndividualId(String individualId) {
-		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(IdType.AID.name())) {
+		IdType idType = identityService.getIndividualIdType(individualId);
+		if (idType.equals(IdType.AID)) {
 			return individualId;
 		} else {
 			try {

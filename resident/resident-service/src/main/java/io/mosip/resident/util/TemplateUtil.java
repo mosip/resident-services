@@ -118,6 +118,7 @@ public class TemplateUtil {
 				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
 		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK,
 				utility.createTrackServiceRequestLink(residentTransactionEntity.getEventId()));
+		templateVariables.put(TemplateVariablesConstants.PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
 				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
@@ -351,7 +352,7 @@ public class TemplateUtil {
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		return identityServiceImpl.getIndividualIdType(individualId);
+		return identityServiceImpl.getIndividualIdType(individualId).name();
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,

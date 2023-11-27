@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static io.mosip.resident.util.Utility.IDENTITY;
+import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
 
 /**
  * Resident identity service implementation class.
@@ -237,7 +237,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	
 		try {
-			if(getIndividualIdType(idvid).equalsIgnoreCase(IdType.UIN.name())){
+			if(getIndividualIdType(idvid).equals(IdType.UIN)){
 				return idvid;
 			}
 			return getIdentity(idvid).getUIN();
@@ -345,25 +345,29 @@ public class IdentityServiceImpl implements IdentityService {
      * @param aid - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
-	public Tuple2<String, IdType> getIndividualIdAndTypeForAid(String aid)
+	public Tuple2<String, IdType> getIdAndTypeForIndividualId(String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-			IdentityDTO identity = getIdentity(aid);
+		String id;
+		IdType idType = getIndividualIdType(individualId);
+		if(idType.equals(IdType.AID)) {
+			IdentityDTO identity = getIdentity(individualId);
 			String uin = identity.getUIN();
-			String individualId;
-			IdType idType;
 			if(useVidOnly) {
 				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
-					individualId = perpVid.get();
+					id = perpVid.get();
 					idType = IdType.VID;
 				} else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
 				}
 			} else {
-				individualId = uin;
+				id = uin;
 				idType = IdType.UIN;
 			}
-			return Tuples.of(individualId, idType);
+		} else {
+			id = individualId;
+		}
+		return Tuples.of(id, idType);
 	}
 	
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
@@ -412,13 +416,13 @@ public class IdentityServiceImpl implements IdentityService {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public String getIndividualIdType(String individualId){
+	public IdType getIndividualIdType(String individualId){
 		if(requestValidator.validateUin(individualId)){
-			return IdType.UIN.name();
+			return IdType.UIN;
 		} else if(requestValidator.validateVid(individualId)){
-			return IdType.VID.name();
+			return IdType.VID;
 		} else {
-			return IdType.AID.name();
+			return IdType.AID;
 		}
 	}
 }

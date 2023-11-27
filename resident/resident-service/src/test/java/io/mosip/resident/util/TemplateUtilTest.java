@@ -23,6 +23,7 @@ import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.TemplateType;
@@ -38,7 +39,6 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceTest;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
 /**
@@ -58,9 +58,6 @@ public class TemplateUtilTest {
     @Mock
     private IdentityServiceImpl identityServiceImpl;
 
-    @Mock
-    private RequestValidator validator;
-    
     @Mock
     private Utility utility;
     
@@ -111,7 +108,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(eventId);
-        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(PROPERTY);

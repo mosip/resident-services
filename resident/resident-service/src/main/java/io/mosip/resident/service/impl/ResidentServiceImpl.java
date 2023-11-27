@@ -1234,7 +1234,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		residentTransactionEntity.setLangCode(this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE));
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
 		return residentTransactionEntity;
 	}
 
@@ -1824,7 +1824,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
-			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIndividualIdAndTypeForAid(reqDto.getIndividualId());
+			Tuple2<String, IdType> individualIdAndType = identityServiceImpl.getIdAndTypeForIndividualId(reqDto.getIndividualId());
 			boolean validStatus = individualIdAndType != null;
 			if (performOtpValidation) {
 				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualIdAndType.getT1(), reqDto.getOtp());
@@ -2066,7 +2066,7 @@ public class ResidentServiceImpl implements ResidentService {
 		servHistoryMap.put("statusFilter", statusFilterTemplateData);
 		servHistoryMap.put("serviceType", serviceTypeTemplateData);
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
-
+		servHistoryMap.put(TemplateVariablesConstants.PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		InputStream serviceHistTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream serviceHistTemplateData = templateManager.merge(serviceHistTemplate, servHistoryMap);
 		StringWriter writer = new StringWriter();

@@ -24,7 +24,7 @@ public interface IdAuthService {
 			throws OtpValidationFailedException, ResidentServiceCheckedException;
 	
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
-			throws OtpValidationFailedException;
+			throws OtpValidationFailedException, ResidentServiceCheckedException;
 
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
 			AuthTypeStatus authTypeStatus, Long unlockForSeconds) throws ApisResourceAccessException;

@@ -201,6 +201,8 @@ public class ResidentConstants {
     public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
     public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
 
+    public static final String MOSIP_PDF_HEADER_LOGO_URL = "mosip.pdf.header.logo.url";
+
     public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
     public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
     
@@ -289,6 +291,7 @@ public class ResidentConstants {
     public static final String REQUEST_ID = "requestId";
     public static final String AUTH_TYPES = "authTypes";
     public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
+    public static final String RESIDENT_REST_TEMPLATE_METRICS_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.metrics.interceptor.filter.enabled";
     public static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 //    Partner related constant
@@ -305,5 +308,12 @@ public class ResidentConstants {
 	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
 
     public static final String API_RESPONSE_TIME_ID = "api.response.time";
+    
+    public static final String DB_QUERY_RESPONSE_TIME_DESCRIPTION = "DB Query Response Time";
+    public static final String DB_QUERY_RESPONSE_TIME_ID = "db.query.response.time";
+    
+    public static final String REST_CLIENT_RESPONSE_TIME_DESCRIPTION = "Rest Client Response Time";
+    public static final String REST_CLIENT_RESPONSE_TIME_ID = "rest.client.response.time";
     public static final String UNDER_SCORE = "_";
+    public static final String IDENTITY = "identity";
 }
