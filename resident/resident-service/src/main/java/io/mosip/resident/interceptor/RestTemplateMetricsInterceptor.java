@@ -4,6 +4,7 @@ import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_
 import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_ID;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,14 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
 		
 		try {
 			 ClientHttpResponse response = ex.execute(req, reqBody);
-		     recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", response.getStatusCode(), response.getStatusText(), currentThread.getName());
-		     return response;
+			 if(req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+				 recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", response.getStatusCode(), response.getStatusText(), currentThread.getName());
+			 }
+			return response;
 		} catch (Throwable e) {
-	        recordTimer(req.getMethod(), req.getURI().toString(), start, e.getClass().getSimpleName(), null, "Error", currentThread.getName());
+			if(req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+				recordTimer(req.getMethod(), req.getURI().toString(), start, e.getClass().getSimpleName(), null, "Error", currentThread.getName());
+			}
 			throw e;
 		}
     }
