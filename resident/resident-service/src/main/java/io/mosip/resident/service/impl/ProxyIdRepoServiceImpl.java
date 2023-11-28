@@ -6,12 +6,10 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AttributeListDto;
 import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -28,7 +26,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
-import static io.mosip.resident.constant.TemplateVariablesConstants.ATTRIBUTE_LIST;
 
 /**
  * @author Manoj SP
@@ -71,11 +68,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				ResponseWrapper<AttributeListDto> listDtoResponseWrapper = new ResponseWrapper<>();
-				if(attributeList != null) {
-					listDtoResponseWrapper.setResponse(getRemainingUpdateCountFromConfig(attributeList));
-				} else {
-					throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, ATTRIBUTE_LIST);
-				}
+				listDtoResponseWrapper.setResponse(getRemainingUpdateCountFromConfig(attributeList));
 				logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 				return listDtoResponseWrapper;
 			}
@@ -99,15 +92,21 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		Map<String, Object> attributeUpdateCountLimit = (Map<String, Object>) identityObj;
 		AttributeListDto attributeListDto= new AttributeListDto();
 		List<UpdateCountDto> updateCountDtoList = new ArrayList<>();
-		for(String attribute:attributeList){
-			if(attributeUpdateCountLimit.containsKey(attribute)){
-				UpdateCountDto updateCountDto= new UpdateCountDto();
-				updateCountDto.setAttributeName(attribute);
-				updateCountDto.setNoOfUpdatesLeft((Integer) attributeUpdateCountLimit.get(attribute));
-				updateCountDtoList.add(updateCountDto);
-			}
+		if(attributeList == null || attributeList.isEmpty()){
+			attributeUpdateCountLimit.keySet().forEach(key ->
+					addAttributeInUpdateCountDtoList(key, attributeUpdateCountLimit, updateCountDtoList));
+		} else {
+			attributeList.stream()
+					.filter(attributeUpdateCountLimit::containsKey)
+					.forEach(attribute -> addAttributeInUpdateCountDtoList(attribute, attributeUpdateCountLimit, updateCountDtoList));
 		}
 		attributeListDto.setAttributes(updateCountDtoList);
 		return attributeListDto;
+	}
+	private void addAttributeInUpdateCountDtoList(String key, Map<String, Object> attributeUpdateCountLimit, List<UpdateCountDto> updateCountDtoList){
+		UpdateCountDto updateCountDto= new UpdateCountDto();
+		updateCountDto.setAttributeName(key);
+		updateCountDto.setNoOfUpdatesLeft((Integer) attributeUpdateCountLimit.get(key));
+		updateCountDtoList.add(updateCountDto);
 	}
 }
