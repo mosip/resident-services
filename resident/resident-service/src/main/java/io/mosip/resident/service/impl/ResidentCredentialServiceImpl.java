@@ -33,6 +33,7 @@ import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
@@ -190,7 +191,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 						ResponseWrapper.class);
 				residentCredentialResponseDto = JsonUtil.readValue(
 						JsonUtil.writeValueAsString(responseDto.getResponse()), ResidentCredentialResponseDto.class);
-				additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
+				additionalAttributes.put(IdType.RID.name(), residentCredentialResponseDto.getRequestId());
 				if(!Utility.isSecureSession()){
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
@@ -428,7 +429,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			credentialRequestStatusResponseDto.setId(credentialRequestStatusDto.getId());
 			credentialRequestStatusResponseDto.setRequestId(credentialRequestStatusDto.getRequestId());
 			credentialRequestStatusResponseDto.setStatusCode(credentialRequestStatusDto.getStatusCode());
-			additionalAttributes.put("RID", credentialRequestStatusResponseDto.getRequestId());
+			additionalAttributes.put(IdType.RID.name(), credentialRequestStatusResponseDto.getRequestId());
 			additionalAttributes.put("status", credentialRequestStatusResponseDto.getStatusCode());
 			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
 					additionalAttributes);
@@ -494,7 +495,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			}
 			credentialCancelRequestResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(response.getResponse()),
 					CredentialCancelRequestResponseDto.class);
-			additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
+			additionalAttributes.put(IdType.RID.name(), credentialCancelRequestResponseDto.getRequestId());
 			sendNotification(credentialCancelRequestResponseDto.getId(), NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS,
 					additionalAttributes);
 

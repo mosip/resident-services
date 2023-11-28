@@ -146,7 +146,7 @@ public class DownloadCardServiceTest {
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
 				Mockito.any())).thenReturn(Tuples.of(true, residentTransactionEntity));
 		identityMap = new IdentityDTO();
-		identityMap.put("UIN", "8251649601");
+		identityMap.put(IdType.UIN.name(), "8251649601");
 		identityMap.put("email", "manojvsp12@gmail.com");
 		identityMap.put("phone", "9395910872");
 		identityMap.put("dateOfBirth", "1970");

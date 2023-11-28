@@ -893,7 +893,7 @@ public class ResidentServiceImpl implements ResidentService {
 				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
 			}
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put("RID", response.getRegistrationId());
+			additionalAttributes.put(IdType.RID.name(), response.getRegistrationId());
 			logger.debug(EventEnum.OBTAINED_RID_UIN_UPDATE.getDescription(), dto.getTransactionID());
 
 			NotificationResponseDTO notificationResponseDTO;

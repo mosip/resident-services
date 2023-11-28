@@ -28,6 +28,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.LogDescription;
@@ -43,42 +44,18 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 
 /**
- * The Class PacketGeneratorRequestValidator.
+ * The Class RequestHandlerRequestValidator.
  * 
  * @author Rishabh Keshari
  */
 @Component
 public class RequestHandlerRequestValidator {
 
-	/** The Constant VER. */
-	private static final String VER = "version";
-
-	/** The Constant DATETIME_TIMEZONE. */
-	private static final String DATETIME_TIMEZONE = "mosip.registration.processor.timezone";
-
-	/** The Constant DATETIME_PATTERN. */
-	private static final String DATETIME_PATTERN = "resident.datetime.pattern";
-
 	/** The mosip logger. */
 	private final Logger logger = LoggerConfiguration.logConfig(RequestHandlerRequestValidator.class);
 
-	/** The Constant ID_REPO_SERVICE. */
-	private static final String REQUEST_HANDLER_SERVICE = "RequestHandlerService";
-
-	/** The Constant TIMESTAMP. */
-	private static final String TIMESTAMP = "requesttime";
-
 	/** The Constant ID_FIELD. */
 	private static final String ID_FIELD = "id";
-
-	/** The Constant UIN. */
-	private static final String UIN = "UIN";
-
-	/** The Constant VID. */
-	private static final String VID = "VID";
-
-	/** The Constant VID. */
-	private static final String RID = "RID";
 
 	/** The Constant VID. */
 	private static final String EMAIL = "Email";
@@ -94,9 +71,6 @@ public class RequestHandlerRequestValidator {
 
 	/** The Constant RES_UPDATE_SERVICE_ID. */
 	private static final String RES_UPDATE_SERVICE_ID = "mosip.registration.processor.resident.service.id";
-
-	/** The Constant REG_PACKET_GENERATOR_APPLICATION_VERSION. */
-	private static final String REG_PACKET_GENERATOR_APPLICATION_VERSION = "mosip.registration.processor.packetgenerator.version";
 
 	/** The Constant REG_UINCARD_REPRINT_SERVICE_ID. */
 	private static final String REG_LOST_PACKET_SERVICE_ID = "mosip.registration.processor.lost.id";
@@ -445,7 +419,7 @@ public class RequestHandlerRequestValidator {
 	 *             the reg base checked exception
 	 */
 	public boolean isValidIdType(String idType) throws BaseCheckedException {
-		if (idType != null && (idType.equalsIgnoreCase(UIN) || idType.equalsIgnoreCase(VID)))
+		if (idType != null && (idType.equalsIgnoreCase(IdType.UIN.name()) || idType.equalsIgnoreCase(IdType.VID.name())))
 			return true;
 		else
 			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),

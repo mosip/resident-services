@@ -548,10 +548,10 @@ public class ResidentController {
 	 */
 	private String getIdType(String id) {
 		if (validator.validateUin(id))
-			return "UIN";
+			return IdType.UIN.name();
 		if (validator.validateVid(id))
-			return "VID";
-		return "RID";
+			return IdType.VID.name();
+		return IdType.RID.name();
 	}
 
 	@ResponseFilter

@@ -866,7 +866,7 @@ public class RequestValidatorTest {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(false);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.updateuin");
@@ -881,7 +881,7 @@ public class RequestValidatorTest {
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
@@ -897,7 +897,7 @@ public class RequestValidatorTest {
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.updateuin");
@@ -912,7 +912,7 @@ public class RequestValidatorTest {
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -947,7 +947,7 @@ public class RequestValidatorTest {
     @Test(expected = InvalidInputException.class)
     public void testValidUpdateRequestIndividualIdNull() throws Exception {
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.updateuin");
@@ -959,7 +959,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateUpdateRequest() throws Exception {
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -975,7 +975,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateUpdateRequestV2() throws Exception {
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -1006,7 +1006,7 @@ public class RequestValidatorTest {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(false);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.print");
@@ -1020,7 +1020,7 @@ public class RequestValidatorTest {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.print");
         requestWrapper.setVersion("v1");
@@ -1033,7 +1033,7 @@ public class RequestValidatorTest {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("12345678");
         requestDTO.setCardType(CardType.MASKED_UIN.name());
         requestDTO.setOtp("111111");
@@ -1050,7 +1050,7 @@ public class RequestValidatorTest {
 
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setCardType(CardType.MASKED_UIN.name());
@@ -1066,7 +1066,7 @@ public class RequestValidatorTest {
 
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setCardType(CardType.MASKED_UIN.name());
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
@@ -1081,9 +1081,9 @@ public class RequestValidatorTest {
 
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
-        requestDTO.setIndividualIdType("VID");
+        requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
-        requestDTO.setCardType("VID");
+        requestDTO.setCardType(IdType.VID.name());
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.print");
         requestWrapper.setVersion("v1");
@@ -2899,7 +2899,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -2928,7 +2928,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -2960,7 +2960,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -2998,7 +2998,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("");
@@ -3042,7 +3042,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
@@ -3086,7 +3086,7 @@ public class RequestValidatorTest {
         Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-        requestDTO.setIndividualIdType("UIN");
+        requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
         requestDTO.setTransactionID("1234567");
