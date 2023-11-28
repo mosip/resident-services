@@ -2,6 +2,7 @@ package io.mosip.resident.batch;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
@@ -95,7 +96,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
         txn.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -112,7 +113,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -128,7 +129,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(ISSUED.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -144,7 +145,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(ISSUED.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -161,7 +162,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -177,7 +178,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(PAYMENT_CONFIRMED.name());
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
@@ -193,7 +194,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(PRINTING.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -211,7 +212,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -229,7 +230,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -247,7 +248,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(IN_TRANSIT.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -266,7 +267,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -284,7 +285,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -302,7 +303,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -320,7 +321,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -344,7 +345,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
@@ -369,7 +370,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
 		txn.setAid("aid");
 		txn.setEventId("eventId");
-		txn.setRefIdType("UIN");
+		txn.setRefIdType(IdType.UIN.name());
 		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");

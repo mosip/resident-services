@@ -1368,8 +1368,8 @@ public class RequestValidator {
 
 	public void validateDownloadCardVid(String vid) {
 		if (!validateVid(vid)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "VID"));
-			throw new InvalidInputException("VID");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, IdType.VID.name()));
+			throw new InvalidInputException(IdType.VID.name());
 		}
 	}
 

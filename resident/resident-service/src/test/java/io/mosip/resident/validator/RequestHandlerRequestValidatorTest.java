@@ -32,6 +32,7 @@ import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.LogDescription;
 import io.mosip.resident.dto.MachineDto;
 import io.mosip.resident.dto.MachineResponseDto;
@@ -455,13 +456,13 @@ public class RequestHandlerRequestValidatorTest {
 
 	@Test
 	public void testIsValidIdType() throws Exception {
-		boolean result = requestHandlerRequestValidator.isValidIdType("UIN");
+		boolean result = requestHandlerRequestValidator.isValidIdType(IdType.UIN.name());
 		assertTrue(result);
 	}
 
 	@Test
 	public void testIsValidIdType2() throws BaseCheckedException {
-		boolean result = requestHandlerRequestValidator.isValidIdType("VID");
+		boolean result = requestHandlerRequestValidator.isValidIdType(IdType.VID.name());
 		assertTrue(result);
 	}
 

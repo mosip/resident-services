@@ -4,6 +4,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.TemplateType;
@@ -115,7 +116,7 @@ public class NotificationServiceTest {
 		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
 		Map<String, Object> additionalAttributes = new HashMap<>();
-		additionalAttributes.put("RID", "10008200070004420191203104356");
+		additionalAttributes.put(IdType.RID.name(), "10008200070004420191203104356");
 		Mockito.lenient().when(utility.getMappingJsonObject()).thenReturn(Mockito.mock(JSONObject.class));
 		reqDto = new NotificationRequestDto();
 		reqDto.setId("3527812406");

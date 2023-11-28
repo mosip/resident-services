@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
@@ -54,7 +55,7 @@ public class ResidentServiceReqEUinTest {
 		dto.setTransactionID("1234567890");
 		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setIndividualId("123456789");
-		dto.setCardType("UIN");
+		dto.setCardType(CardType.UIN.name());
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
 	}
 	@Test

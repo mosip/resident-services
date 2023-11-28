@@ -329,7 +329,7 @@ public class IdAuthServiceTest {
         AutnTxnDto autnTxnDto = new AutnTxnDto();
         autnTxnDto.setAuthtypeCode("OTP-AUTH");
         autnTxnDto.setEntityName("ida_app_user");
-        autnTxnDto.setReferenceIdType("UIN");
+        autnTxnDto.setReferenceIdType(IdType.UIN.name());
         autnTxnDto.setRequestdatetime(DateUtils.getUTCCurrentDateTime());
         autnTxnDto.setStatusCode("N");
         autnTxnDto.setStatusComment("OTP Authentication Failed");
