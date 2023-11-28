@@ -20,6 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusDTO;
@@ -62,7 +63,7 @@ public class RidStatusServiceTest {
 	public void setup() throws IOException, ApisResourceAccessException {
 		requestDTO = new RequestDTO();
 		requestDTO.setIndividualId("10006100435989220191202104224");
-		requestDTO.setIndividualIdType("RID");
+		requestDTO.setIndividualIdType(IdType.RID.name());
 
 		Mockito.when(env.getProperty(STATUS_CHECK_ID)).thenReturn("id");
 		Mockito.when(env.getProperty(STATUS_CHECEK_VERSION)).thenReturn("version");

@@ -38,6 +38,7 @@ import io.mosip.commons.packet.exception.PacketCreatorException;
 import io.mosip.commons.packet.facade.PacketWriter;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.PacketGeneratorResDto;
@@ -109,8 +110,8 @@ public class UinCardRePrintServiceTest {
 
         regProcRePrintRequestDto = new RegProcRePrintRequestDto();
         regProcRePrintRequestDto.setId("5984924027");
-        regProcRePrintRequestDto.setIdType("UIN");
-        regProcRePrintRequestDto.setCardType("UIN");
+        regProcRePrintRequestDto.setIdType(IdType.UIN.name());
+        regProcRePrintRequestDto.setCardType(CardType.UIN.name());
         regProcRePrintRequestDto.setCenterId("10001");
         regProcRePrintRequestDto.setMachineId("10001");
         regProcRePrintRequestDto.setRegistrationType(RegistrationType.RES_REPRINT.name());
@@ -191,7 +192,7 @@ public class UinCardRePrintServiceTest {
     @Test(expected = FileNotFoundException.class)
     public void testVid() throws IOException, BaseCheckedException {
         regProcRePrintRequestDto.setCardType(CardType.MASKED_UIN.name());
-        /*regProcRePrintRequestDto.setIdType("VID");
+        /*regProcRePrintRequestDto.setIdType(IdType.VID.name());
         regProcRePrintRequestDto.setId("1234");*/
 
         VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
@@ -210,7 +211,7 @@ public class UinCardRePrintServiceTest {
     @Test(expected = FileNotFoundException.class)
     public void testVidWithNoUin() throws IOException, BaseCheckedException {
         regProcRePrintRequestDto.setCardType(CardType.MASKED_UIN.name());
-        regProcRePrintRequestDto.setIdType("VID");
+        regProcRePrintRequestDto.setIdType(IdType.VID.name());
         regProcRePrintRequestDto.setId("1234");
 
         VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
