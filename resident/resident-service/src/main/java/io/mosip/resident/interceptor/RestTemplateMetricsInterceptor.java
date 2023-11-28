@@ -1,12 +1,8 @@
 package io.mosip.resident.interceptor;
 
-import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_ID;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.mosip.resident.constant.ResidentConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpMethod;
@@ -17,9 +13,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import io.mosip.resident.constant.ResidentConstants;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_ID;
 
 /**
  * @author Loganathan S
