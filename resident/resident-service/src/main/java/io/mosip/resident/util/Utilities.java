@@ -83,9 +83,6 @@ public class Utilities {
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
 
-	/** The Constant UIN. */
-	private static final String UIN = "UIN";
-
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = "\\";
 

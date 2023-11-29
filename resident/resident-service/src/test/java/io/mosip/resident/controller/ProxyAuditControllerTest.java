@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
 import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
@@ -115,7 +116,7 @@ public class ProxyAuditControllerTest {
 
 	@Test
 	public void testAuthAuditLog() throws Exception {
-		Mockito.when(auditUtil.getRefIdHashAndType()).thenReturn(Tuples.of("23455683456", "AID"));
+		Mockito.when(auditUtil.getRefIdHashAndType()).thenReturn(Tuples.of("23455683456", IdType.AID.name()));
 		reqJson = gson.toJson(authenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
@@ -123,7 +124,7 @@ public class ProxyAuditControllerTest {
 	
 	@Test
 	public void testAuditLogWithId() throws Exception {
-		Mockito.when(auditUtil.getRefIdHashAndTypeFromIndividualId(Mockito.anyString())).thenReturn(Tuples.of("23455683456", "AID"));
+		Mockito.when(auditUtil.getRefIdHashAndTypeFromIndividualId(Mockito.anyString())).thenReturn(Tuples.of("23455683456", IdType.AID.name()));
 		unauthenticatedAuditRequestDto.setId("23456");
 		reqJson = gson.toJson(unauthenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)

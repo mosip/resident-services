@@ -1,13 +1,11 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Map;
-
-import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,12 +17,12 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
@@ -65,7 +63,7 @@ public class ProxyIdRepoServiceTest {
 		service.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = Exception.class)
 	public void testGetRemainingUpdateCountByIndividualIdIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();

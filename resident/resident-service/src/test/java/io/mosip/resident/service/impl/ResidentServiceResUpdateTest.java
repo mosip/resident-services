@@ -487,7 +487,7 @@ public class ResidentServiceResUpdateTest {
 	public void testValidationOfAuthIndividualIdWithVIDSuccess() throws ResidentServiceCheckedException,
 			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
 		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812406");
-		dto.setIndividualIdType("VID");
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("4447812406");
 		residentServiceImpl.reqUinUpdate(dto);
 	}
@@ -497,7 +497,7 @@ public class ResidentServiceResUpdateTest {
 			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
 
 		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812407");
-		dto.setIndividualIdType("VID");
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("4447812406");
 		try {
 			residentServiceImpl.reqUinUpdate(dto);

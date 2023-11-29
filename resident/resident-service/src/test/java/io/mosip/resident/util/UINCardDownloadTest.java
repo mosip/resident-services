@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 
+import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.exception.ApisResourceAccessException;
 
@@ -28,22 +29,22 @@ public class UINCardDownloadTest {
 	@Test
 	public void testgetUINCard() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(arr);
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
+		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardregprocfailure() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(res.getBytes());
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
+		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardregprocNull() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(null);
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
+		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardFailure() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new ApisResourceAccessException());
-		uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN);
+		uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN);
 	}
 
 }

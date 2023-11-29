@@ -1,11 +1,8 @@
 package io.mosip.resident.interceptor;
 
-import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_ID;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.mosip.resident.constant.ResidentConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpMethod;
@@ -16,9 +13,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import io.mosip.resident.constant.ResidentConstants;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.REST_CLIENT_RESPONSE_TIME_ID;
 
 /**
  * @author Loganathan S
@@ -38,27 +37,33 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
 		
 		try {
 			 ClientHttpResponse response = ex.execute(req, reqBody);
-		     recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", response.getStatusCode(), response.getStatusText(), currentThread.getName());
-		     return response;
+			 if(req!=null && req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+				 recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", response.getStatusCode(), response.getStatusText(), currentThread.getName());
+			 }
+			return response;
 		} catch (Throwable e) {
-	        recordTimer(req.getMethod(), req.getURI().toString(), start, e.getClass().getSimpleName(), null, "Error", currentThread.getName());
+			if(req!=null && req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
+				recordTimer(req.getMethod(), req.getURI().toString(), start, e.getClass().getSimpleName(), null, "Error", currentThread.getName());
+			}
 			throw e;
 		}
     }
     
     private void recordTimer(HttpMethod httpMethod, String url, long start, String error, HttpStatus httpStatus, String statusText, String thread) {
-		Timer timer = Timer.builder(REST_CLIENT_RESPONSE_TIME_ID)
-        		.tag("label", REST_CLIENT_RESPONSE_TIME_DESCRIPTION)
-        		.tag("httpMethod", httpMethod.name())
-        		.tag("url", url)
-        		.tag("httpStatus", httpStatus == null ? "NA" : httpStatus.toString())
-        		.tag("statusText", statusText == null ? "NA" : statusText)
-        		.tag("thread", thread)
-        		.tag("error", error)
-        		.tag("service", "resident")
-        		.publishPercentileHistogram(true)
-                .publishPercentiles(0.5, 0.95, 0.99)
-        		.register(registry);
-		timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+		if(httpMethod!=null && httpMethod.name()!=null) {
+			Timer timer = Timer.builder(REST_CLIENT_RESPONSE_TIME_ID)
+					.tag("label", REST_CLIENT_RESPONSE_TIME_DESCRIPTION)
+					.tag("httpMethod", httpMethod.name())
+					.tag("url", url)
+					.tag("httpStatus", httpStatus == null ? "NA" : httpStatus.toString())
+					.tag("statusText", statusText == null ? "NA" : statusText)
+					.tag("thread", thread)
+					.tag("error", error)
+					.tag("service", "resident")
+					.publishPercentileHistogram(true)
+					.publishPercentiles(0.5, 0.95, 0.99)
+					.register(registry);
+			timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+		}
 	}
 }

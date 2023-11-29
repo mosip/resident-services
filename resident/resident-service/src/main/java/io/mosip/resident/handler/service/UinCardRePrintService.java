@@ -38,6 +38,7 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.PacketMetaInfoConstants;
@@ -96,24 +97,11 @@ public class UinCardRePrintService {
     @Autowired
     AuditUtil audit;
 
-    /** The vid type. */
-    @Value("${id.repo.vidType}")
-    private String vidType;
-
     /** The Constant VID_CREATE_ID. */
     public static final String VID_CREATE_ID = "vid.create.id";
 
     /** The Constant REG_PROC_APPLICATION_VERSION. */
     public static final String REG_PROC_APPLICATION_VERSION = "resident.vid.version";
-
-    /** The Constant DATETIME_PATTERN. */
-    public static final String DATETIME_PATTERN = "resident.datetime.pattern";
-
-    /** The Constant UIN. */
-    public static final String UIN = "UIN";
-
-    /** The Constant VID. */
-    public static final String VID = "VID";
 
     /** The reg proc logger. */
     private final Logger logger = LoggerConfiguration.logConfig(UinCardRePrintService.class);
@@ -146,7 +134,7 @@ public class UinCardRePrintService {
                 String cardType = requestDto.getCardType();
                 String regType = requestDto.getRegistrationType();
 
-                if (requestDto.getIdType().equalsIgnoreCase(UIN))
+                if (requestDto.getIdType().equalsIgnoreCase(IdType.UIN.name()))
                     uin = requestDto.getId();
                 else
                     vid = requestDto.getId();
@@ -364,9 +352,9 @@ public class UinCardRePrintService {
      */
     public boolean isValidUinVID(RegProcRePrintRequestDto requestDto) throws BaseCheckedException, IOException {
         boolean isValid = false;
-        if (requestDto.getIdType().equalsIgnoreCase(UIN)) {
+        if (requestDto.getIdType().equalsIgnoreCase(IdType.UIN.name())) {
             isValid = validator.isValidUin(requestDto.getId());
-        } else if (requestDto.getIdType().equalsIgnoreCase(VID)) {
+        } else if (requestDto.getIdType().equalsIgnoreCase(IdType.VID.name())) {
             isValid = validator.isValidVid(requestDto.getId());
         }
         return isValid;
