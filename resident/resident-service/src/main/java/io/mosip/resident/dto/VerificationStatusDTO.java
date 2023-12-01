@@ -15,5 +15,6 @@ public class VerificationStatusDTO {
 	 * This field used to store the status of the verification
 	 */
 	private boolean verificationStatus;
+	private String maskedUserId;
 
 }

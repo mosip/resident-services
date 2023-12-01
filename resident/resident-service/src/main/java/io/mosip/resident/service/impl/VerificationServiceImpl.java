@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.dto.IdentityDTO;
@@ -18,6 +19,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.Utility;
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 
 @Component
 public class VerificationServiceImpl implements VerificationService {
@@ -45,6 +48,7 @@ public class VerificationServiceImpl implements VerificationService {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::entry");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
+        String maskedUserId = "";
         IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
         String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
         boolean entityExist =
@@ -52,9 +56,19 @@ public class VerificationServiceImpl implements VerificationService {
                         (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
         if (entityExist) {
             verificationStatus = true;
+            String userId = "";
+            if(channel.equalsIgnoreCase(EMAIL)) {
+            	userId = identityDTO.getEmail();
+            } else if (channel.equalsIgnoreCase(PHONE)) {
+            	userId = identityDTO.getPhone();
+			}
+            if(StringUtils.isNotBlank(userId)) {
+            	maskedUserId = utility.convertToMaskData(userId);
+            }
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);
+        verificationStatusDTO.setMaskedUserId(maskedUserId);
         verificationResponseDTO.setResponse(verificationStatusDTO);
         verificationResponseDTO.setId(residentChannelVerificationStatusId);
         verificationResponseDTO.setVersion(residentChannelVerificationStatusVersion);

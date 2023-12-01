@@ -27,6 +27,8 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -69,7 +71,7 @@ public class VerificationServiceTest {
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		when(residentTransactionRepository.existsByRefIdAndStatusCode(anyString(), anyString()))
 				.thenReturn(false);
-		VerificationResponseDTO verificationResponseDTO1 = verificationService.checkChannelVerificationStatus("email",
+		VerificationResponseDTO verificationResponseDTO1 = verificationService.checkChannelVerificationStatus(EMAIL,
 				"8251649601");
 		assertEquals(false, verificationResponseDTO1.getResponse().isVerificationStatus());
 	}
@@ -79,8 +81,9 @@ public class VerificationServiceTest {
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		when(residentTransactionRepository.existsByRefIdAndStatusCode(anyString(), anyString()))
 				.thenReturn(true);
-		VerificationResponseDTO verificationResponseDTO = verificationService.checkChannelVerificationStatus("email",
+		VerificationResponseDTO verificationResponseDTO = verificationService.checkChannelVerificationStatus(PHONE,
 				"8251649601");
+		verificationService.checkChannelVerificationStatus(EMAIL, "8251649601");
 		assertEquals(true, verificationResponseDTO.getResponse().isVerificationStatus());
 	}
 }
