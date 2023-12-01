@@ -86,15 +86,6 @@ public class Utilities {
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = "\\";
 
-	/** The Constant RE_PROCESSING. */
-	private static final String RE_PROCESSING = "re-processing";
-
-	/** The Constant HANDLER. */
-	private static final String HANDLER = "handler";
-
-	/** The Constant NEW_PACKET. */
-	private static final String NEW_PACKET = "New-packet";
-
 	@Value("${IDSchema.Version}")
 	private String idschemaVersion;
 
@@ -137,12 +128,6 @@ public class Utilities {
 	/** The vid version. */
 	@Value("${resident.vid.version}")
 	private String vidVersion;
-
-
-	/** The Constant NAME. */
-	private static final String NAME = "name";
-
-	private static final String VALUE = "value";
 
 	private String mappingJsonString = null;
 
