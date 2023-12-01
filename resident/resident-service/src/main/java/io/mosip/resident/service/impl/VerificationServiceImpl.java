@@ -59,12 +59,15 @@ public class VerificationServiceImpl implements VerificationService {
             String userId = "";
             if(channel.equalsIgnoreCase(EMAIL)) {
             	userId = identityDTO.getEmail();
+            	if(StringUtils.isNotBlank(userId)) {
+            		maskedUserId = utility.maskEmail(userId);
+            	}
             } else if (channel.equalsIgnoreCase(PHONE)) {
             	userId = identityDTO.getPhone();
+            	if(StringUtils.isNotBlank(userId)) {
+            		maskedUserId = utility.maskPhone(userId);
+            	}
 			}
-            if(StringUtils.isNotBlank(userId)) {
-            	maskedUserId = utility.convertToMaskData(userId);
-            }
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);
