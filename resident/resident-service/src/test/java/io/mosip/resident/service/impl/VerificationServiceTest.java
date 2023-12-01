@@ -85,5 +85,9 @@ public class VerificationServiceTest {
 				"8251649601");
 		verificationService.checkChannelVerificationStatus(EMAIL, "8251649601");
 		assertEquals(true, verificationResponseDTO.getResponse().isVerificationStatus());
+		identityValue.setEmail(null);
+		verificationService.checkChannelVerificationStatus(EMAIL, "8251649601");
+		identityValue.setPhone(null);
+		verificationService.checkChannelVerificationStatus(PHONE, "8251649601");
 	}
 }

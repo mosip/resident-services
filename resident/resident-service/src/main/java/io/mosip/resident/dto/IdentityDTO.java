@@ -85,7 +85,7 @@ public class IdentityDTO extends LinkedHashMap<String, Object>{
 	}
 	
 	public String getAttribute(String attributeName) {
-		return attributeName == null ? null : String.valueOf(this.get(attributeName));
+		return this.get(attributeName) == null ? null : String.valueOf(this.get(attributeName));
 	}
 	
 	public void setAttribute(String attributeName, String value) {
