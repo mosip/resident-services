@@ -41,6 +41,7 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -158,9 +159,23 @@ public class AuditUtilTest {
         assertEquals(localDateTime, httpEntity.getBody().getRequest().getActionTimeStamp());
 
         assertEquals(auditUrlInput, auditUrl);
-
     }
-    
+
+    @Test(expected = RuntimeException.class)
+    public void testSetAuditRequestDtoWithApisResourceAccessException() throws Exception {
+    	EventEnum eventEnum = EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API");
+    	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
+    	auditUtil.setAuditRequestDto(eventEnum);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
+    	EventEnum eventEnum = EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API");
+    	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn(null);
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
+        auditUtil.setAuditRequestDto(eventEnum);
+    }
+
 	@Test
 	public void testGetRefIdandTypeNoID() {
 		Tuple2<String, String> response = auditUtil.getRefIdHashAndType();
