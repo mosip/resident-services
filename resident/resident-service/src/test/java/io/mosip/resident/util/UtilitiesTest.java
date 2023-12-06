@@ -1,6 +1,51 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
@@ -18,49 +63,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.exceptions.base.MockitoException;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {Utilities.class})
 @RunWith(PowerMockRunner.class)
@@ -101,7 +103,7 @@ public class UtilitiesTest {
 
     JSONObject identityVID;
 
-    private JSONObject amrAcrJson;
+    private Map<String, Object> amrAcrJson;
 
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
@@ -119,7 +121,7 @@ public class UtilitiesTest {
         File amrAcrJsonFile = new File(classLoader.getResource("amr-acr-mapping.json").getFile());
         InputStream insputStream = new FileInputStream(amrAcrJsonFile);
         String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
-        amrAcrJson = JsonUtil.readValue(amrAcrJsonString, JSONObject.class);
+        amrAcrJson = JsonUtil.readValue(amrAcrJsonString, Map.class);
         ReflectionTestUtils.setField(utilities, "amrAcrJsonFile", "amr-acr-mapping.json");
     }
 
@@ -325,9 +327,10 @@ public class UtilitiesTest {
         utilities.getEmailAttribute();
     }
 
-    @Test(expected = Exception.class)
-    public void testGetAmrAcrMapping() throws ResidentServiceCheckedException {
-        thrown.expect(MockitoException.class);
+    @Test
+    public void testGetAmrAcrMapping() throws ResidentServiceCheckedException, IOException {
+    	Mockito.when(residentRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(amrAcrJson.toString());
+    	Mockito.when(objMapper.readValue(amrAcrJson.toString().getBytes(UTF_8), Map.class)).thenReturn(amrAcrJson);
         utilities.getAmrAcrMapping();
     }
 
@@ -408,6 +411,7 @@ public class UtilitiesTest {
 
     @Test
     public void testGetJson() {
+    	ReflectionTestUtils.setField(utilities, "regProcessorIdentityJson", null);
         utilities.getJson("http://localhost", "http://localhost");
     }
 
@@ -428,7 +432,7 @@ public class UtilitiesTest {
         assertEquals(identityJsonObj.get("UIN"), uin.get("UIN"));
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = ResidentServiceCheckedException.class)
     public void testGetRidStatusFailed() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
@@ -440,7 +444,24 @@ public class UtilitiesTest {
         utilities.getRidStatus("123");
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRidStatusWithParseException() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+    	ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+    	ArrayList<Object> objectArrayList = new ArrayList<>();
+        Map<String, Object> packetData = new HashMap<>();
+        packetData.put("createdDateTimes", "12/10/2012");
+        objectArrayList.add(packetData);
+        packetData.put("createdDateTimes", "05/09/2012");
+        objectArrayList.add(packetData);
+        response.setResponse(objectArrayList);
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        Mockito.when(objMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(objectArrayList);
+        Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
+        Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        utilities.getRidStatus("123");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testGetPacketStatusFailed() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
@@ -454,8 +475,8 @@ public class UtilitiesTest {
         utilities.getPacketStatus("10241102241004720230627060344");
     }
 
-    @Test
-    public void testGetPacketStatus() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetPacketStatusError() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
         arrayList.add("123");
@@ -463,12 +484,32 @@ public class UtilitiesTest {
         Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
         ArrayList<Object> objectArrayList = new ArrayList<>();
         Map<String, Object> packetData = new HashMap<>();
-        packetData.put("statusCode", "SUCCESS");
-        packetData.put("transactionTypeCode", "SUCCESS");
+        packetData.put("statusCode", "");
+        packetData.put("transactionTypeCode", "");
         objectArrayList.add(packetData);
         Mockito.when(objMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(objectArrayList);
         Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
-        Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("SUCCESS");
+        utilities.getPacketStatus("10241102241004720230627060344");
+    }
+
+    @Test
+    public void testGetPacketStatus() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+    	ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+    	ArrayList<Object> objectArrayList = new ArrayList<>();
+        Map<String, Object> packetData = new HashMap<>();
+        packetData.put("statusCode", "SUCCESS");
+        packetData.put("transactionTypeCode", "SUCCESS");
+        packetData.put("createdDateTimes", "2012-10-15");
+        objectArrayList.add(packetData);
+        packetData.put("statusCode", "SUCCESS");
+        packetData.put("transactionTypeCode", "SUCCESS");
+        packetData.put("createdDateTimes", "2012-09-02");
+        objectArrayList.add(packetData);
+        response.setResponse(objectArrayList);
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        Mockito.when(objMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(objectArrayList);
+        Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
+        Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("yyyy-MM-dd").thenReturn("SUCCESS");
         Map<String, String> result = utilities.getPacketStatus("10241102241004720230627060344");
         assertEquals("SUCCESS", result.get("aidStatus"));
     }

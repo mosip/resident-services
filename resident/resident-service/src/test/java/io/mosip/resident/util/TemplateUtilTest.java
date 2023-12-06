@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -188,6 +190,18 @@ public class TemplateUtilTest {
     }
 
     @Test
+    public void getAckTemplateVariablesForUpdateMyUinDownloadLinkNotAvailable() {
+    	getUISchemaData();
+    	residentTransactionEntity.setAttributeList("fullName");
+    	residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
+        Map<String, String> ackTemplateVariables1 = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
+        assertEquals(OTP,ackTemplateVariables1.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        Map<String, String> ackTemplateVariables2 = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
+        assertEquals(OTP,ackTemplateVariables2.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+    }
+
+    @Test
     public void getAckTemplateVariablesForGenerateVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
@@ -208,6 +222,7 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
+        residentTransactionEntity.setAuthTypeCode("");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
         assertEquals("Failed",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
@@ -217,6 +232,7 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
+        residentTransactionEntity.setAuthTypeCode(null);
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
@@ -225,6 +241,14 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForVidCardDownloadTest() {
+        assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(residentTransactionEntity, "eng", 0, LOCALE_EN_US).size());
+    }
+
+    @Test
+    public void getAckTemplateVariablesForVidCardDownloadLinkNotAvailable() {
+    	residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
+        assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(residentTransactionEntity, "eng", 0, LOCALE_EN_US).size());
+        residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(residentTransactionEntity, "eng", 0, LOCALE_EN_US).size());
     }
 
@@ -254,8 +278,9 @@ public class TemplateUtilTest {
         assertEquals(eventId,templateUtil.getNotificationSendOtpVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
-    public void getNotificationCommonTemplateVariablesTestFailedApiResourceException() throws ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
+    @Test
+    public void getNotificationCommonTemplateVariablesTestException() throws ResidentServiceCheckedException, IOException {
+        Mockito.when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
         assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
@@ -367,6 +392,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code").thenReturn(null).thenReturn("template-type-code");
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
@@ -385,6 +411,16 @@ public class TemplateUtilTest {
 
     @Test
     public void getDescriptionTemplateVariablesForAuthenticationRequestTest() {
+    	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
+                "OTP Authentication Success");
+        assertEquals("OTP Authentication Success",
+                templateUtil.getDescriptionTemplateVariablesForAuthenticationRequest
+                        (residentTransactionEntity, null, "eng"));
+    }
+
+    @Test
+    public void getDescriptionTemplateVariablesForAuthenticationRequestTestNullTempTypeCode() {
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
     	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "OTP Authentication Success");
         assertEquals("OTP Authentication Success",
@@ -464,8 +500,7 @@ public class TemplateUtilTest {
     public void getDescriptionTemplateVariablesForSecureMyIdTest(){
         residentTransactionEntity.setAttributeList("fullName,dateOfBirth,UIN,perpetualVID,phone,email");
         assertEquals("OTP, OTP, OTP, OTP, OTP, OTP", templateUtil.getDescriptionTemplateVariablesForSecureMyId(
-                residentTransactionEntity,
-                "OTP", "eng"));
+                residentTransactionEntity, "OTP", "eng"));
     }
 
     @Test
@@ -473,8 +508,15 @@ public class TemplateUtilTest {
     	residentTransactionEntity.setAttributeList(null);
         residentTransactionEntity.setPurpose("UNLOCKED,dateOfBirth,UIN,perpetualVID,phone,email");
         assertEquals("OTP, OTP, OTP, OTP, OTP, OTP", templateUtil.getDescriptionTemplateVariablesForSecureMyId(
-                residentTransactionEntity,
-                "OTP", "eng"));
+                residentTransactionEntity, "OTP", "eng"));
+    }
+
+    @Test
+    public void getDescriptionTemplateVariablesForSecureMyIdUnlockedTestNullDescription(){
+    	residentTransactionEntity.setAttributeList("");
+        residentTransactionEntity.setPurpose(null);
+        assertEquals("OTP", templateUtil.getDescriptionTemplateVariablesForSecureMyId(
+                residentTransactionEntity, "OTP", "eng"));
     }
 
     @Test
@@ -495,5 +537,33 @@ public class TemplateUtilTest {
     public void getNotificationCommonTemplateVariablesSecureSessionTest() {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void testGetEventTypeBasedOnLangcodeIf() {
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getEventTypeBasedOnLangcode(RequestType.AUTHENTICATION_REQUEST, "eng"));
+    }
+
+    @Test
+    public void testGetServiceTypeBasedOnLangcode() {
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
+    }
+
+    @Test
+    public void testGetEventStatusBasedOnLangcode() {
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    }
+
+    @Test
+    public void testGetAttributeBasedOnLangcodeIf() {
+    	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
+    	assertEquals("otp", templateUtil.getAttributeBasedOnLangcode("fullName", "eng"));
     }
 }
