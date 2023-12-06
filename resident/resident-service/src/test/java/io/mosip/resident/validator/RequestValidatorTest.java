@@ -1479,6 +1479,7 @@ public class RequestValidatorTest {
         AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
         aidStatusRequestDTO.setIndividualId("17");
         aidStatusRequestDTO.setTransactionId("1234567890");
+        aidStatusRequestDTO.setOtp("111111");
         RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
         requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
         requestWrapper.setId("mosip.resident.checkstatus");
