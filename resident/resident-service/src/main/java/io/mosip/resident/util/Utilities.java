@@ -234,7 +234,7 @@ public class Utilities {
 				"Utilities::getUinByVid():: RETRIEVEIUINBYVID GET service call ended successfully");
 
 		if (!response.getErrors().isEmpty()) {
-			throw new VidCreationException("VID creation exception");
+			throw new IndividualIdNotFoundException(String.format("%s: %s", ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage(), vid));
 
 		} else {
 			uin = response.getResponse().getUin();
