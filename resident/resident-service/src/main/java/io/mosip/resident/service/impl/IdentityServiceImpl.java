@@ -235,17 +235,10 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
-	
-		try {
-			if(getIndividualIdType(idvid).equals(IdType.UIN)){
-				return idvid;
-			}
-			return getIdentity(idvid).getUIN();
-		} catch (VidCreationException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
+		if(getIndividualIdType(idvid).equals(IdType.UIN)){
+			return idvid;
 		}
-
+		return getIdentity(idvid).getUIN();
 	}
 	
 	@Override
@@ -331,9 +324,6 @@ public class IdentityServiceImpl implements IdentityService {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
 		Map<String, ?> claims = getClaimsFromToken(Set.of(claimName), accessToken);
 		String individualId = (String) claims.get(claimName);
-		if(individualId==null){
-			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), claimName));
-		}
 		return getIDATokenForIndividualId(individualId);
 	}
 	
