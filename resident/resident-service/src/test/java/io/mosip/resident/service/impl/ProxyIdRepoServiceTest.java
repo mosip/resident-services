@@ -78,7 +78,7 @@ public class ProxyIdRepoServiceTest {
 		service.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRemainingUpdateCountByIndividualIdIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
