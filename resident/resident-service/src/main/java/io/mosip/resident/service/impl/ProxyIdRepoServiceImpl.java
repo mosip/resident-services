@@ -31,6 +31,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
 	private static final String NO_RECORDS_FOUND_ID_REPO_ERROR_CODE = "IDR-IDC-007";
+	private static final int ZERO = 0;
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -56,8 +57,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				String errorCode = responseWrapper.getErrors().get(0).getErrorCode();
-				if(errorCode != null && !errorCode.isEmpty() && errorCode.equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
+						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
+						!responseWrapper.getErrors().get(ZERO).getErrorCode().isEmpty() &&
+						responseWrapper.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
