@@ -30,6 +30,7 @@ import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_E
 public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
+	private static final String NO_RECORDS_FOUND_ID_REPO_ERROR_CODE = "IDR-IDC-007";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -55,7 +56,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				if(responseWrapper.getErrors().get(0).getErrorCode().equalsIgnoreCase("IDR-IDC-007")) {
+				String errorCode = responseWrapper.getErrors().get(0).getErrorCode();
+				if(errorCode != null && !errorCode.isEmpty() && errorCode.equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
