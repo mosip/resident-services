@@ -1018,6 +1018,7 @@ public class RequestValidator {
 		validateRequestNewApi(reqDto, RequestIdType.CHECK_STATUS);
 		validateTransactionId(reqDto.getRequest().getTransactionId());
 		validateIndividualIdV2(reqDto.getRequest().getIndividualId(), "AID status");
+		validateOTP(reqDto.getRequest().getOtp());
 	}
 
 	public void validateChannelVerificationStatus(String channel, String individualId) {
