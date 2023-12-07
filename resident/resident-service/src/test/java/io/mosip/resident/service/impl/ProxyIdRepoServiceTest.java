@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.MappingJsonConstants;
@@ -17,10 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -80,7 +77,7 @@ public class ProxyIdRepoServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRemainingUpdateCountByIndividualIdIf()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
 		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode());

@@ -54,8 +54,12 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
-			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
+				if(responseWrapper.getErrors().get(0).getErrorCode().equalsIgnoreCase("IDR-IDC-007")) {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
+				}else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+				}
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 			return responseWrapper;
