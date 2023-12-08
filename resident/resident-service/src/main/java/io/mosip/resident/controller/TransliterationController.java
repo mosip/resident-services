@@ -55,9 +55,6 @@ public class TransliterationController {
 	@Autowired
 	private AuditUtil audit;
 
-	/** The Constant for GET UPDATED DATE TIME application. */
-	private static final String TRANS = "resident.transliteration.transliterate";
-
 	/**
 	 * Post API to transliterate from transliteration application.
 	 *

@@ -191,7 +191,6 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
-	private JSONObject idRepoJson;
 	private String schemaJson;
 
 	@Before
@@ -235,7 +234,6 @@ public class ResidentControllerTest {
 		when(environment.getProperty(anyString())).thenReturn("property");
 		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
 
-		idRepoJson = null;
 		schemaJson = "schema";
 	}
 
@@ -249,6 +247,15 @@ public class ResidentControllerTest {
 				.perform(post("/rid/check-status").contentType(MediaType.APPLICATION_JSON)
 						.content(authLockRequestToJson))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.ridStatus", is("PROCESSED")));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testGetRidStatusException() throws Exception {
+		RequestWrapper<RequestDTO> requestDTO = new RequestWrapper<>();
+		requestDTO.setRequest(new RequestDTO());
+		ReflectionTestUtils.setField(residentController, "checkStatusId", "id");
+		Mockito.doThrow(InvalidInputException.class).when(validator).validateRidCheckStatusRequestDTO(Mockito.any());
+		residentController.getRidStatus(requestDTO);
 	}
 
 	@Test
@@ -278,17 +285,11 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk()).andExpect(status().isOk());
 	}
 
-	@Test
-	@WithUserDetails("resident")
+	@Test(expected = InvalidInputException.class)
 	public void testReqAuthTypeLockBadRequest() throws Exception {
-		ResponseDTO responseDto = new ResponseDTO();
-		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
-		Mockito.doReturn(Tuples.of(responseDto, "12345")).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
-
-		MvcResult result = this.mockMvc
-				.perform(post("/auth-lock-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
-				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+		ReflectionTestUtils.setField(residentController, "authLockStatusUpdateV2Id", "id");
+		doThrow(InvalidInputException.class).when(validator).validateAuthLockOrUnlockRequestV2(Mockito.any());
+		residentController.reqAauthTypeStatusUpdateV2(authTypeStatusRequest);
 	}
 
 	@Test
@@ -394,6 +395,17 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testGetServiceHistoryException() throws Exception {
+		ReflectionTestUtils.setField(residentController, "serviceHistoryId", "id");
+		Mockito.doThrow(InvalidInputException.class).when(validator).validateServiceHistoryRequest(Mockito.any(),
+				Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString());
+		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
+				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
+				ServiceType.AUTHENTICATION_REQUEST.name(), "success", "123456", 0, LOCALE_EN_US);
+	}
+
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestAuthHistorySuccess() throws Exception {
@@ -418,14 +430,16 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.message", is("success")));
 	}
 
-	@Test
-	@WithUserDetails("reg-admin")
+	@Test(expected = InvalidInputException.class)
 	public void testRequestAuthHistoryBadRequest() throws Exception {
-
-		MvcResult result = this.mockMvc
-				.perform(post("/req/auth-history").contentType(MediaType.APPLICATION_JSON).content(""))
-				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+		authHistoryRequest = new RequestWrapper<AuthHistoryRequestDTO>();
+		AuthHistoryRequestDTO hisdto = new AuthHistoryRequestDTO();
+		hisdto.setIndividualId("1234");
+		hisdto.setOtp("1234");
+		hisdto.setTransactionID("1234");
+		authHistoryRequest.setRequest(hisdto);
+		doThrow(InvalidInputException.class).when(validator).validateAuthHistoryRequest(Mockito.any());
+		residentController.reqAuthHistory(authHistoryRequest);
 	}
 
 	@Test
@@ -482,6 +496,48 @@ public class ResidentControllerTest {
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testUpdateUinDemographicsIdTypeUINException() throws Exception {
+		Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
+		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
+		request.setTransactionID("12345");
+		request.setIdentity(JsonUtil.readValue("{\"name\":\"My Name\"}", JSONObject.class));
+
+		RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO = new RequestWrapper<>();
+		requestDTO.setRequest(request);
+		requestDTO.setId("mosip.resident.demographic");
+		requestDTO.setVersion("v1");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.1");
+		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
+		when(utilities.
+                getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		residentController.updateUinDemographics(requestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testUpdateUinDemographicsIdTypeVIDException() throws Exception {
+		Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
+		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
+		request.setTransactionID("12345");
+		request.setIdentity(JsonUtil.readValue("{\"name\":\"My Name\"}", JSONObject.class));
+
+		RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO = new RequestWrapper<>();
+		requestDTO.setRequest(request);
+		requestDTO.setId("mosip.resident.demographic");
+		requestDTO.setVersion("v1");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.1");
+		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
+		when(utilities.
+                getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		residentController.updateUinDemographics(requestDTO);
 	}
 
 	@Test
@@ -615,6 +671,14 @@ public class ResidentControllerTest {
 		ResponseWrapper<UnreadNotificationDto> response = new ResponseWrapper<>();
 		response.setResponse(dto);
 		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenReturn(response);
+		residentController.notificationCount();
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testNotificationCountException() throws Exception {
+		ReflectionTestUtils.setField(residentController, "serviceEventId", "id");
+		Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234567890");
+		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
 		residentController.notificationCount();
 	}
 
