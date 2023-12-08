@@ -156,7 +156,7 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.UINCardDownloadHelper;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
@@ -195,7 +195,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UPDATED = " updated";
 
 	@Autowired
-	private UINCardDownloadService uinCardDownloadService;
+	private UINCardDownloadHelper uinCardDownloadHelper;
 
 	@Autowired
 	private ResidentUpdateService residentUpdateService;
@@ -442,7 +442,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				logger.debug(EventEnum.VALIDATE_OTP_SUCCESS.getDescription(), dto.getTransactionID());
-				response = uinCardDownloadService.getUINCard(dto.getIndividualId(), dto.getCardType(), idtype);
+				response = uinCardDownloadHelper.getUINCard(dto.getIndividualId(), dto.getCardType(), idtype);
 				logger.debug(EventEnum.SEND_NOTIFICATION_SUCCESS.getDescription(), dto.getTransactionID());
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_DOW_UIN_SUCCESS, null);
 			} else {

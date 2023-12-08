@@ -19,8 +19,8 @@ import io.mosip.resident.dto.UINCardRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 
 @Component
-public class UINCardDownloadService {
-	private static final Logger logger = LoggerConfiguration.logConfig(UINCardDownloadService.class);
+public class UINCardDownloadHelper {
+	private static final Logger logger = LoggerConfiguration.logConfig(UINCardDownloadHelper.class);
 	@Autowired
     private Environment env;
 
