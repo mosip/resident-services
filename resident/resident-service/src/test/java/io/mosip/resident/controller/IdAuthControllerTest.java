@@ -2,6 +2,8 @@ package io.mosip.resident.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -24,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -81,12 +85,13 @@ public class IdAuthControllerTest {
 	Gson gson = new GsonBuilder().serializeNulls().create();
 
 	String reqJson;
+	private RequestWrapper<IdAuthRequestDto> requestWrapper;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(idAuthController).build();
-		RequestWrapper<IdAuthRequestDto> requestWrapper = new RequestWrapper<IdAuthRequestDto>();
+		requestWrapper = new RequestWrapper<IdAuthRequestDto>();
 		IdAuthRequestDto idAuthRequestDto = new IdAuthRequestDto();
 		idAuthRequestDto.setTransactionId("1234567890");
 		idAuthRequestDto.setIndividualId("8251649601");
@@ -94,6 +99,7 @@ public class IdAuthControllerTest {
 		requestWrapper.setRequest(idAuthRequestDto);
 		reqJson = gson.toJson(requestWrapper);
 		Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
+		ReflectionTestUtils.setField(idAuthController, "validateOtpId", "validate-otp-id");
 	}
 
 	@Test
@@ -104,12 +110,11 @@ public class IdAuthControllerTest {
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 
-	@Test(expected = Exception.class)
+	@Test(expected = OtpValidationFailedException.class)
 	public void testValidateOtpFailed() throws Exception {
-		Mockito.when(idAuthService.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenThrow(new OtpValidationFailedException());
-		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(reqJson.getBytes())).andExpect(status().isOk());
+		Mockito.doThrow(new OtpValidationFailedException("otp validation failed", Map.of(ResidentConstants.EVENT_ID, "123456"))).when(idAuthService)
+				.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+		idAuthController.validateOtp(requestWrapper);
 	}
 
 }

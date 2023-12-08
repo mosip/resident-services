@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -365,6 +366,15 @@ public class ProxyMasterDataControllerTest {
     public void testGetAllDynamicFieldFailure() throws Exception {
         Mockito.when(proxyMasterdataService.getAllDynamicFieldByName("gender")).thenThrow(new ResidentServiceCheckedException());
         mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/dynamicfields/all/gender"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetImmediateChildrenByLocCode() throws Exception {
+    	ResponseWrapper<LocationImmediateChildrenResponseDto> responseWrapper = new ResponseWrapper<>();
+    	responseWrapper.setResponse(new LocationImmediateChildrenResponseDto());
+        Mockito.when(proxyMasterdataService.getImmediateChildrenByLocCode(Mockito.anyString(), Mockito.anyList())).thenReturn(responseWrapper.getResponse());
+        mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/locations/immediatechildren/KNT?languageCodes=eng"))
                 .andExpect(status().isOk());
     }
 }
