@@ -23,28 +23,28 @@ public class UINCardDownloadTest {
     private ResidentServiceRestClient residentServiceRestClient;
 
 	@InjectMocks
-    UINCardDownloadService uinCardDownloadService;
+    UINCardDownloadHelper uinCardDownloadHelper;
 	byte[] arr= new byte[10];
 	String res="{\"errors\":[{\"message\":\"error occured\"}]}";
 	@Test
 	public void testgetUINCard() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(arr);
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
+		assertEquals(arr,uinCardDownloadHelper.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardregprocfailure() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(res.getBytes());
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
+		assertEquals(arr,uinCardDownloadHelper.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardregprocNull() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(null);
-		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
+		assertEquals(arr,uinCardDownloadHelper.getUINCard("123456789", CardType.UIN.name(), IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardFailure() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new ApisResourceAccessException());
-		uinCardDownloadService.getUINCard("123456789", CardType.UIN.name(), IdType.UIN);
+		uinCardDownloadHelper.getUINCard("123456789", CardType.UIN.name(), IdType.UIN);
 	}
 
 }
