@@ -43,7 +43,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.UINCardDownloadHelper;
 
 /**
  * @author M1022006
@@ -64,7 +64,7 @@ public class ResidentServiceRequestAuthLockTest {
 	private RidValidator<String> ridValidator;
 
 	@Mock
-	private UINCardDownloadService uinCardDownloadService;
+	private UINCardDownloadHelper uinCardDownloadHelper;
 
 	@Mock
 	private IdAuthService idAuthService;

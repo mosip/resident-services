@@ -23,7 +23,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.UINCardDownloadHelper;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceReqEUinTest {
@@ -31,7 +31,7 @@ public class ResidentServiceReqEUinTest {
 	ResidentServiceImpl residentServiceImpl;
 
 	@Mock
-	private UINCardDownloadService uinCardDownloadService;
+	private UINCardDownloadHelper uinCardDownloadHelper;
 
 	@Mock
 	private IdAuthService idAuthService;
@@ -44,7 +44,7 @@ public class ResidentServiceReqEUinTest {
 	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException, OtpValidationFailedException {
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(true);
-		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(card);
+		Mockito.when(uinCardDownloadHelper.getUINCard(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(card);
 		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(mock(NotificationResponseDTO.class));
 	}
 	
@@ -71,7 +71,7 @@ public class ResidentServiceReqEUinTest {
 	
 	@Test(expected=ResidentServiceException.class)
 	public void testReqEuinUINCardFetchFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(),Mockito.anyString(), Mockito.any())).thenThrow(new ApisResourceAccessException("Unable to fetch uin card"));
+		Mockito.when(uinCardDownloadHelper.getUINCard(Mockito.anyString(),Mockito.anyString(), Mockito.any())).thenThrow(new ApisResourceAccessException("Unable to fetch uin card"));
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
