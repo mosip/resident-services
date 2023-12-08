@@ -40,6 +40,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.dto.AuditResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;

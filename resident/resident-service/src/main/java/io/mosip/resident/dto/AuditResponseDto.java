@@ -1,4 +1,4 @@
-package io.mosip.resident.util;
+package io.mosip.resident.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
