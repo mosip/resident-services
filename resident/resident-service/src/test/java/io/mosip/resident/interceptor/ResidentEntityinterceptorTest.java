@@ -2,11 +2,14 @@ package io.mosip.resident.interceptor;
 
 import static org.junit.Assert.assertFalse;
 
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ResidentServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -44,7 +48,18 @@ public class ResidentEntityinterceptorTest {
     }
 
     @Test
-    public void testOnSave(){
+    public void testOnSaveSuccess(){
+        assertFalse(residentEntityInterceptor.onSave(residentTransactionEntity,
+                null, state, propertyName, null));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testOnSaveFailure(){
+        ReflectionTestUtils.setField(residentEntityInterceptor, "appId", "resident");
+        ReflectionTestUtils.setField(residentEntityInterceptor, "refId", "resident");
+        Mockito.when(objectStoreHelper.encryptDecryptData(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()))
+                        .thenThrow(new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+                                ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage()));
         assertFalse(residentEntityInterceptor.onSave(residentTransactionEntity,
                 null, state, propertyName, null));
     }
