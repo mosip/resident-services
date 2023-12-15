@@ -60,7 +60,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyMasterdataService;
 
@@ -228,7 +227,7 @@ public class UtilitiesTest {
         assertEquals(uin, response.get("UIN"));
     }
 
-    @Test(expected = VidCreationException.class)
+    @Test(expected = IndividualIdNotFoundException.class)
     public void testGetUinByVidThrowVidCreationException() throws ApisResourceAccessException, IOException {
         ErrorDTO error = new ErrorDTO(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
         List<ErrorDTO> errorResponse = new ArrayList<>();

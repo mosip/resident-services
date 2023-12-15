@@ -1,12 +1,13 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,17 +19,12 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 @ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
@@ -44,12 +40,6 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;
-
-	@Mock
-	private ResidentConfigServiceImpl residentConfigService;
-
-	@Mock
-	private ObjectMapper mapper;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -78,21 +68,57 @@ public class ProxyIdRepoServiceTest {
 		service.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
-	@Test
-	public void testGetRemainingUpdateCountByIndividualIdIf()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRemainingUpdateCountByIndividualIdIfIf()
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
-		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode());
+		error.setErrorCode("IDR-IDC-007");
 		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		responseWrapper.setErrors(List.of(error));
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		when(residentConfigService.getIdentityMapping()).thenReturn("{ \"fullName\": \"3\" }");
-		when(mapper.readValue("{ \"fullName\": \"3\" }".getBytes(), Map.class)).thenReturn(Map.of(MappingJsonConstants.ATTRIBUTE_UPDATE_COUNT_LIMIT, Map.of("fullName", 3)));
 		service.getRemainingUpdateCountByIndividualId(null);
-		service.getRemainingUpdateCountByIndividualId(List.of());
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRemainingUpdateCountByIndividualIdIfElse()
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		ServiceError error = new ServiceError();
+		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
+		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
+		responseWrapper.setErrors(List.of(error));
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRemainingUpdateCountByIndividualIdErrorCodeEmpty()
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		ServiceError error = new ServiceError();
+		error.setErrorCode("");
+		responseWrapper.setErrors(List.of(error));
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRemainingUpdateCountByIndividualIdErrorCodeNull()
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		ServiceError error = new ServiceError();
+		error.setErrorCode(null);
+		responseWrapper.setErrors(List.of(error));
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
 		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 }

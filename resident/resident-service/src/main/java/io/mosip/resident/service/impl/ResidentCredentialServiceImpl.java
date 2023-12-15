@@ -128,10 +128,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Value("${mosip.resident.request.credential.credentialType}")
 	private String credentialType;
 	
-	@Value("${mosip.resident.request.credential.isEncrypt}")
+	@Value("${mosip.resident.request.credential.isEncrypt:false}")
 	private boolean isEncrypt;
 	
-	@Value("${mosip.resident.request.credential.encryption.key}")
+	@Value("${mosip.resident.request.credential.encryption.key:null}")
 	private String encryptionKey;
 
 	@Value("${mosip.registration.processor.rid.delimiter}")
