@@ -31,7 +31,7 @@
 		<kernel.khazana.version>1.2.0.1-B2</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.0.1-B3</pre-registration-application-service.version>
 		<kernel-openid-bridge-api.version>1.2.0.1-B3</kernel-openid-bridge-api.version>
-		<kernel.idobjectvalidator.version>1.2.0.1-B3</kernel.idobjectvalidator.version>
+		<kernel.idobjectvalidator.version>1.2.0.1-B2</kernel.idobjectvalidator.version>
 	</properties>
 	<dependencies>
 		<dependency>
