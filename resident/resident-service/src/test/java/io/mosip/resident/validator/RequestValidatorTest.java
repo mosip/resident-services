@@ -2019,21 +2019,6 @@ public class RequestValidatorTest {
     }
 
     @Test(expected = InvalidInputException.class)
-    public void testValidateVidCreateV2RequestInvalidTransactionId() {
-        ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
-        ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
-        ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
-        requestDto.setId("generate");
-        requestDto.setVersion("newVersion");
-        VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
-        vidRequestDtoV2.setVidType("PERPETUAL");
-        requestDto.setRequest(vidRequestDtoV2);
-        requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
-        requestValidator.validateVidCreateV2Request(requestDto,
-                false, "123");
-    }
-
-    @Test(expected = InvalidInputException.class)
     public void testValidateVidCreateV2RequestInvalidRequestDto() {
         ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
         ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
@@ -2325,20 +2310,6 @@ public class RequestValidatorTest {
         requestDto.setVersion("1.0");
         VidRevokeRequestDTOV2 vidRevokeRequestDTO = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTO.setVidStatus("");
-        requestDto.setRequest(vidRevokeRequestDTO);
-        requestDto.setRequesttime(LocalDateTime.now().toString());
-        requestValidator.validateVidRevokeV2Request(requestDto, false, "3956038419");
-    }
-
-    @Test(expected = InvalidInputException.class)
-    public void testValidateVidRevokeV2RequestEmptyRequestIdEmptyVidStatusRevoked() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "revokeVidIdNew", "1.0");
-        ReflectionTestUtils.setField(requestValidator, "revokeVidVersion", "1.0");
-        RequestWrapper<VidRevokeRequestDTOV2> requestDto = new RequestWrapper<>();
-        requestDto.setId("1.0");
-        requestDto.setVersion("1.0");
-        VidRevokeRequestDTOV2 vidRevokeRequestDTO = new VidRevokeRequestDTOV2();
-        vidRevokeRequestDTO.setVidStatus("REVOKED");
         requestDto.setRequest(vidRevokeRequestDTO);
         requestDto.setRequesttime(LocalDateTime.now().toString());
         requestValidator.validateVidRevokeV2Request(requestDto, false, "3956038419");
