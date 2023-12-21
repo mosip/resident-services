@@ -214,8 +214,16 @@ public enum EventEnum {
 	GENERATE_VID_SUCCESS("RES-SER-206", SUCCESS, "Request for generating VID: Success",
 			"Request for generating VID for transaction id %s is success", "RS-GEN_REV_VID", "Generate/Revoke VID",
 			RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+
+	GENERATE_VID_SUCCESS_V1("RES-SER-206", SUCCESS, "Request for generating VID: Success",
+			"Request for generating VID is success", "RS-GEN_REV_VID", "Generate/Revoke VID",
+			RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	REVOKE_VID_SUCCESS("RES-SER-207", SUCCESS, "Request for revoking VID: Success",
 			"Request for revoking VID for transaction id %s is success", "RS-GEN_REV_VID", "Generate/Revoke VID",
+			RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+
+	REVOKE_VID_SUCCESS_V1("RES-SER-207", SUCCESS, "Request for revoking VID: Success",
+			"Request for revoking VID is success", "RS-GEN_REV_VID", "Generate/Revoke VID",
 			RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	SEND_NOTIFICATION_SUCCESS("RES-SER-208", SUCCESS, "Send notification: Success",
 			"Sending notification for transaction id %s", "RS-NOT", "Notification section", RESIDENT_APPLICATION_ID,
