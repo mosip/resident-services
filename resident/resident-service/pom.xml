@@ -14,14 +14,14 @@
 	<version>1.2.0.1-B3</version>
 	<properties>
 		<commons.packet.manager.version>1.2.0.1-B3</commons.packet.manager.version>
-		<kernel.core.version>1.2.0.1-B3</kernel.core.version>
+		<kernel.core.version>1.2.0.1-B2</kernel.core.version>
 		<kernel.virusscanner.clamav.version>1.2.0.1-B3</kernel.virusscanner.clamav.version>
-		<id-repository-core.version>1.2.0.1-B3</id-repository-core.version>
+		<id-repository-core.version>1.2.0.1-B2</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1-B3</kernel-keymanager-service.version>
 		<kernel.authcodeflowproxy.api.version>1.2.0.1-B3</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
-		<kernel-websubclient-api.version>1.2.0.1-B3</kernel-websubclient-api.version>
+		<kernel-websubclient-api.version>1.2.0.1-B1</kernel-websubclient-api.version>
 		<kernel.authadapter.version>1.2.0.1-B3</kernel.authadapter.version>
 
 		<springdoc.version>1.5.10</springdoc.version>
