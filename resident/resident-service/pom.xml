@@ -15,7 +15,7 @@
 	<properties>
 		<commons.packet.manager.version>1.2.0.1-B3</commons.packet.manager.version>
 		<kernel.core.version>1.2.0.1-B2</kernel.core.version>
-		<kernel.virusscanner.clamav.version>1.2.0.1-B3</kernel.virusscanner.clamav.version>
+		<kernel.virusscanner.clamav.version>1.2.0.1-B1</kernel.virusscanner.clamav.version>
 		<id-repository-core.version>1.2.0.1-B2</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1-B3</kernel-keymanager-service.version>
 		<kernel.authcodeflowproxy.api.version>1.2.0.1-B3</kernel.authcodeflowproxy.api.version>
