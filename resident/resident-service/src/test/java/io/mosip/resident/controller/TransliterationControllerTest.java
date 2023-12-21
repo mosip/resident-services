@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,6 +59,9 @@ public class TransliterationControllerTest {
 
     @Mock
     private ResidentVidServiceImpl residentVidService;
+
+    @Mock
+    private Environment environment;
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
