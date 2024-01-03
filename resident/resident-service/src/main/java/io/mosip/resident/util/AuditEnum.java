@@ -6,7 +6,7 @@ import static io.mosip.resident.constant.RegistrationConstants.RESIDENT_APPLICAT
 import static io.mosip.resident.constant.RegistrationConstants.RESIDENT_APPLICATION_NAME;
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
-public enum EventEnum {
+public enum AuditEnum implements AuditEvent {
 
 	VALIDATE_REQUEST("RES-SER-110", INFO, "Validating input request", "Validating input request of %s", "RS-VAL_REQ",
 			"Validate request", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
@@ -544,7 +544,7 @@ public enum EventEnum {
 
 	private String applicationName;
 
-	private EventEnum(String eventId, String type, String name, String description, String moduleId, String moduleName,
+	private AuditEnum(String eventId, String type, String name, String description, String moduleId, String moduleName,
 			String applicationId, String applicationName) {
 		this.eventId = eventId;
 		this.type = type;
@@ -556,42 +556,42 @@ public enum EventEnum {
 		this.applicationName = applicationName;
 	}
 
+	@Override
 	public String getEventId() {
 		return eventId;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public String getModuleId() {
 		return moduleId;
 	}
 
+	@Override
 	public String getModuleName() {
 		return moduleName;
 	}
 
-	public void setDescription(String des) {
-		this.description = des;
-	}
-
+	@Override
 	public String getApplicationId() {
 		return applicationId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	@Override
 	public String getApplicationName() {
 		return applicationName;
 	}
@@ -599,28 +599,25 @@ public enum EventEnum {
 	/*
 	 * Replace %s value in description with second parameter passed
 	 */
-	public static EventEnum getEventEnumWithValue(EventEnum e, String s) {
-		e.setDescription(String.format(e.getDescription(), s));
-		return e;
+	public static AuditEvent getAuditEventWithValue(AuditEnum auditEnum, String s) {
+		AuditObject auditObject = auditEnum.createAuditObject();
+		auditObject.setDescription(String.format(auditEnum.getDescription(), s));
+		return auditObject;
 	}
 
 	/*
 	 * Replace %s value in description with second parameter passed and name
 	 * property of enum with third parameter
 	 */
-	public static EventEnum getEventEnumWithValue(EventEnum e, String edescription, String ename) {
-		e.setDescription(String.format(e.getDescription(), edescription));
-		e.setName(String.format(e.getName(), ename));
-		return e;
+	public static AuditEvent getAuditEventWithValue(AuditEnum auditEnum, String edescription, String ename) {
+		AuditObject auditObject = auditEnum.createAuditObject();
+		auditObject.setDescription(String.format(auditEnum.getDescription(), edescription));
+		auditObject.setName(String.format(auditEnum.getName(), ename));
+		return auditObject;
 	}
 
-	/*
-	 * Replace second parameter with %s in name property and in description property
-	 */
-	public static EventEnum getEventEnumWithDynamicName(EventEnum e, String s) {
-		e.setName(Character.toUpperCase(s.charAt(0)) + s.substring(1));
-		e.setDescription(String.format(e.getDescription(), s));
-		return e;
+	private AuditObject createAuditObject() {
+		return new AuditObject(eventId, type, name, description, moduleId, moduleName, applicationId, applicationName);
 	}
 
 }

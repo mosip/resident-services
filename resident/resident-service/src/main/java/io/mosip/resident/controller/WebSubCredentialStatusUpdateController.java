@@ -26,7 +26,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.WebSubCredentialStatusUpdateService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -74,7 +74,7 @@ public class WebSubCredentialStatusUpdateController {
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: entry");
 			webSubCredentialStatusUpdateService.updateCredentialStatus(eventModel);
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
+			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
 			logger.debug("WebSubCredentialStatusUpdateController::credentialStatusUpdateCallback()::exit");
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -82,7 +82,7 @@ public class WebSubCredentialStatusUpdateController {
 					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
 							+ ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_FAILURE);
 			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
 		}

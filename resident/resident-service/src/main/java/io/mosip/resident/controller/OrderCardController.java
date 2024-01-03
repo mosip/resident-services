@@ -31,7 +31,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -88,10 +88,10 @@ public class OrderCardController {
 		try {
 			responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.SEND_PHYSICAL_CARD_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.SEND_CARD_ID)));
 		}
-		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.SEND_PHYSICAL_CARD_SUCCESS);
 		logger.debug("OrderCardController::sendPhysicalCard()::exit");
 		return responseWrapper;
 	}
