@@ -22,7 +22,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PinUnpinStatusService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -57,9 +57,9 @@ public class PinStatusController {
 		try {
 			requestValidator.validateEventId(eventId);
 			response = pinUnpinStatusService.pinStatus(eventId, true);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_SUCCESS, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.PIN_STATUS_SUCCESS, eventId));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_FAILURE, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.PIN_STATUS_FAILURE, eventId));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.PINNED_EVENTID_ID)));
 			throw e;
 		}
@@ -79,9 +79,9 @@ public class PinStatusController {
 		try {
 			requestValidator.validateEventId(eventId);
 			response = pinUnpinStatusService.pinStatus(eventId, false);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_SUCCESS, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UN_PIN_STATUS_SUCCESS, eventId));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_FAILURE, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UN_PIN_STATUS_FAILURE, eventId));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.UNPINNED_EVENTID_ID)));
 			throw e;
 		}

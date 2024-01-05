@@ -2,8 +2,8 @@ package io.mosip.resident.controller;
 
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
-import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
-import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
+import static io.mosip.resident.util.AuditEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
+import static io.mosip.resident.util.AuditEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
 
 import java.util.List;
 

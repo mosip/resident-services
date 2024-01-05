@@ -27,7 +27,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -80,10 +80,10 @@ public class IdAuthController {
 		try {
 		tupleResponse = idAuthService.validateOtpV1(requestWrapper.getRequest().getTransactionId(),
 				requestWrapper.getRequest().getIndividualId(), requestWrapper.getRequest().getOtp());
-		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
+		auditUtil.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request Success"));
 		} catch (OtpValidationFailedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_FAILURE,
+			auditUtil.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_OTP_FAILURE,
 					requestWrapper.getRequest().getTransactionId(), "OTP Validation Failed"));
 			throw new OtpValidationFailedException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
