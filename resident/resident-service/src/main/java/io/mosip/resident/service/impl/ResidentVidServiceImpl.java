@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.exception.IndividualIdNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -491,7 +492,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 			notificationRequestDto.setId(uin);
-			String uinForVid = utilities.getUinByVid(vid);
+			String uinForVid = null;
+			try {
+				utilities.getUinByVid(vid);
+			}catch (IndividualIdNotFoundException e){
+				logger.error(EventEnum.INVALID_INDIVIDUAL_ID.getDescription(), vid);
+				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorCode(),
+						ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage());
+			}
 			if(uinForVid != null && !uin.equalsIgnoreCase(uinForVid)) {
 				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
