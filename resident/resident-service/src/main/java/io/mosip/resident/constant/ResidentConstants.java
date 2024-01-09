@@ -316,4 +316,5 @@ public class ResidentConstants {
     public static final String REST_CLIENT_RESPONSE_TIME_ID = "rest.client.response.time";
     public static final String UNDER_SCORE = "_";
     public static final String IDENTITY = "identity";
+    public static final String HYPHEN = "-";
 }

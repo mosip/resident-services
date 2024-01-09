@@ -385,7 +385,7 @@ public class RequestValidator {
 			}
 		}
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
+		if (otpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionId",
 					"Request to generate VID"));
 
@@ -739,7 +739,7 @@ public class RequestValidator {
 			}
 		}
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
+		if (isOtpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionId", "Request to revoke VID"));
 			throw new InvalidInputException("transactionId");
 		}
