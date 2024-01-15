@@ -250,6 +250,14 @@ public class ApiExceptionHandler {
 		return createResponseEntity(errorResponse, exception, HttpStatus.OK);
 	}
 
+	@ExceptionHandler(VidCreationException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final VidCreationException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
 	private ResponseWrapper<ServiceError> getAuthFailedResponse() {
 		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
