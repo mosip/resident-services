@@ -13,12 +13,13 @@ import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import reactor.util.function.Tuple2;
 
 public interface ResidentCredentialService {
 
-	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
+	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException, OtpValidationFailedException;
 	
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request, String id) throws ResidentServiceCheckedException;
 
