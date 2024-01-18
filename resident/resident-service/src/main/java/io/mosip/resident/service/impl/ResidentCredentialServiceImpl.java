@@ -139,7 +139,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
-			throws ResidentServiceCheckedException, OtpValidationFailedException {
+			throws ResidentServiceCheckedException {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		try {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
@@ -156,7 +156,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (OtpValidationFailedException e) {
 			trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 					additionalAttributes);
-			throw e;
+			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
+					e);
 		}
 	}
 

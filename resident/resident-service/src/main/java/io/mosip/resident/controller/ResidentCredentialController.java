@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import io.mosip.resident.exception.OtpValidationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -99,14 +98,13 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
-			throws ResidentServiceCheckedException, OtpValidationFailedException {
+			throws ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialController::reqCredential()::entry");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		try {
 			validator.validateReqCredentialRequest(requestDTO);
 			response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
-		} catch (InvalidInputException | ResidentServiceException | ResidentCredentialServiceException |
-				 ResidentServiceCheckedException | OtpValidationFailedException e) {
+		} catch (InvalidInputException | ResidentServiceException | ResidentCredentialServiceException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.CREDENTIAL_STORE_ID));
 			throw e;
