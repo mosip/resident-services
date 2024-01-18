@@ -156,7 +156,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (OtpValidationFailedException e) {
 			trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 					additionalAttributes);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
+			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED_OLD_ERROR_CODE.getErrorCode(), e.getErrorText(),
 					e);
 		}
 	}
