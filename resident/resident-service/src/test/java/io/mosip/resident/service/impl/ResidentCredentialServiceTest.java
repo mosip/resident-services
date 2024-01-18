@@ -172,7 +172,7 @@ public class ResidentCredentialServiceTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGenerateCredentialWithIndividualIdNull() throws ResidentServiceCheckedException, OtpValidationFailedException {
+	public void testGenerateCredentialWithIndividualIdNull() throws ResidentServiceCheckedException {
 		residentCredentialRequestDto.setIndividualId(null);
 
 		residentCredentialService.reqCredential(residentCredentialRequestDto);
@@ -188,7 +188,7 @@ public class ResidentCredentialServiceTest {
 		residentCredentialService.reqCredential(residentCredentialRequestDto);
 	}
 
-	@Test(expected = Exception.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testGenerateCredentialWithOtpValidationFailedException()
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		when(idAuthService.validateOtp(residentCredentialRequestDto.getTransactionID(),
@@ -198,7 +198,7 @@ public class ResidentCredentialServiceTest {
 		residentCredentialService.reqCredential(residentCredentialRequestDto);
 	}
 
-	@Test(expected = Exception.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testGenerateCredentialWithOtpValidationNotificationFailed()
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		when(idAuthService.validateOtp(residentCredentialRequestDto.getTransactionID(),
