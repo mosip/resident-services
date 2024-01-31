@@ -427,7 +427,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			additionalAttributes.put("status", credentialRequestStatusResponseDto.getStatusCode());
 			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
 					additionalAttributes);
-
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),

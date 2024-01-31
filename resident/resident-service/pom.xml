@@ -7,31 +7,31 @@
 	<parent>
 		<groupId>io.mosip.resident</groupId>
 		<artifactId>resident-parent</artifactId>
-		<version>1.2.0.1-B2</version>
+		<version>1.2.0.1-B3</version>
 	</parent>
 	<artifactId>resident-service</artifactId>
 	<name>resident-service</name>
-	<version>1.2.0.1-B2</version>
+	<version>1.2.0.1-B3</version>
 	<properties>
-		<commons.packet.manager.version>1.2.0.1-B1</commons.packet.manager.version>
-		<kernel.core.version>1.2.0.1-B1</kernel.core.version>
+		<commons.packet.manager.version>1.2.0.1-B2</commons.packet.manager.version>
+		<kernel.core.version>1.2.0.1-B2</kernel.core.version>
 		<kernel.virusscanner.clamav.version>1.2.0.1-B1</kernel.virusscanner.clamav.version>
-		<id-repository-core.version>1.2.0.1-B1</id-repository-core.version>
-		<kernel-keymanager-service.version>1.2.0.1-B1</kernel-keymanager-service.version>
-		<kernel.authcodeflowproxy.api.version>1.2.0.1-B2</kernel.authcodeflowproxy.api.version>
+		<id-repository-core.version>1.2.0.1-B2</id-repository-core.version>
+		<kernel-keymanager-service.version>1.2.0.1-B3</kernel-keymanager-service.version>
+		<kernel.authcodeflowproxy.api.version>1.2.0.1-B3</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
 		<kernel-websubclient-api.version>1.2.0.1-B1</kernel-websubclient-api.version>
-		<kernel.authadapter.version>1.2.0.1-B2</kernel.authadapter.version>
+		<kernel.authadapter.version>1.2.0.1-B3</kernel.authadapter.version>
 
 		<springdoc.version>1.5.10</springdoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
 		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
-		<kernel.khazana.version>1.2.0.1-B1</kernel.khazana.version>
-		<pre-registration-application-service.version>1.2.0.1-B1</pre-registration-application-service.version>
-		<kernel-openid-bridge-api.version>1.2.0.1-B2</kernel-openid-bridge-api.version>
-		<kernel.idobjectvalidator.version>1.2.0.1-B1</kernel.idobjectvalidator.version>
+		<kernel.khazana.version>1.2.0.1-B2</kernel.khazana.version>
+		<pre-registration-application-service.version>1.2.0.1-B3</pre-registration-application-service.version>
+		<kernel-openid-bridge-api.version>1.2.0.1-B3</kernel-openid-bridge-api.version>
+		<kernel.idobjectvalidator.version>1.2.0.1-B2</kernel.idobjectvalidator.version>
 	</properties>
 	<dependencies>
 		<dependency>
