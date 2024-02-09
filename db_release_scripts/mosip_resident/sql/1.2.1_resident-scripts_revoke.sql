@@ -18,7 +18,7 @@ REVOKE SELECT, INSERT, REFERENCES, UPDATE, DELETE
 ON resident.resident_grievance_ticket
 TO residentuser;
 
-ALTER TABLE resident.resident_session alter column machine_type type varchar(30)
+ALTER TABLE resident.resident_session alter column machine_type type varchar(30);
 
 DROP INDEX IF EXISTS idx_resident_user_actions_ida_token;
 
