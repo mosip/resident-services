@@ -9,13 +9,6 @@
 -- --------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------
-\c mosip_resident sysadmin
-
-\ir ddl/otp_transaction.sql
-\ir ddl/resident_transaction.sql
-\ir ddl/resident_grievance_ticket.sql
-\ir ddl/resident_user_actions.sql
-\ir ddl/resident_sessions.sql
 
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
 ON resident.otp_transaction
