@@ -4,6 +4,8 @@ import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DES
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 import static io.mosip.resident.util.AuditEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
 import static io.mosip.resident.util.AuditEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
+import static io.mosip.resident.util.AuditEnum.GET_PENDING_DRAFT_FAILURE;
+import static io.mosip.resident.util.AuditEnum.GET_PENDING_DRAFT_SUCCESS;
 
 import java.util.List;
 
@@ -73,6 +75,33 @@ public class ProxyIdRepoController {
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);
+			ExceptionUtils.logRootCause(e);
+			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+			return ResponseEntity.ok(responseWrapper);
+		}
+	}
+
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+	@GetMapping(path = "/get-pending-drafts", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "Get Pending Drafts", description = "Get Pending Drafts", tags = {
+			"proxy-id-repo-identity-update-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Request authenticated successfully", content = @Content(array = @ArraySchema(schema = @Schema(implementation = IdRepoAppException.class)))),
+			@ApiResponse(responseCode = "400", description = "No Records Found", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseEntity<ResponseWrapper<?>> getPendingDrafts() {
+		logger.debug("ProxyIdRepoController::getPendingDrafts()::entry");
+		try {
+			ResponseWrapper<?> responseWrapper = proxySerivce
+					.getPendingDrafts();
+			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
+			logger.debug("ProxyIdRepoController::getPendingDrafts()::exit");
+			return ResponseEntity.ok(responseWrapper);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_FAILURE);
 			ExceptionUtils.logRootCause(e);
 			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));

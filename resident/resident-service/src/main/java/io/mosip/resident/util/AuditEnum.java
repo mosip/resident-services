@@ -526,6 +526,10 @@ public enum AuditEnum implements AuditEvent {
 	INVALID_PAGE_SIZE_VALUE("RES-SER-447", FAILURE, "Invalid page size value", "Invalid page size value %s", "RS-VAL",
 			"Validation", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	INVALID_LANGUAGE_CODE("RES-SER-500", FAILURE, "Invalid language code", "invalid lang code", "RS-VAL",
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	GET_PENDING_DRAFT_SUCCESS("RES-SER-501", FAILURE, "Get pending draft success", "Get pending draft success", "RS-VAL",
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	GET_PENDING_DRAFT_FAILURE("RES-SER-502", FAILURE, "Get pending draft failure", "Get pending draft failure", "RS-VAL",
 			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
 
 	private final String eventId;
