@@ -7,6 +7,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -88,10 +89,10 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<?>> getPendingDrafts() {
+	public ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> getPendingDrafts() {
 		logger.debug("ProxyIdRepoController::getPendingDrafts()::entry");
 		try {
-			ResponseWrapper<?> responseWrapper = proxySerivce
+			ResponseWrapper<DraftResidentResponseDto> responseWrapper = proxySerivce
 					.getPendingDrafts();
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
 			logger.debug("ProxyIdRepoController::getPendingDrafts()::exit");
@@ -99,7 +100,7 @@ public class ProxyIdRepoController {
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_FAILURE);
 			ExceptionUtils.logRootCause(e);
-			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+			ResponseWrapper<DraftResidentResponseDto> responseWrapper = new ResponseWrapper<>();
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 			return ResponseEntity.ok(responseWrapper);
 		}

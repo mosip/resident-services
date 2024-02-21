@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -7,9 +8,14 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.dto.DraftResponseDto;
+import io.mosip.resident.dto.DraftUinResidentResponseDto;
+import io.mosip.resident.dto.DraftUinResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.validator.RequestValidator;
@@ -51,6 +57,12 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
@@ -89,7 +101,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getPendingDrafts() throws ResidentServiceCheckedException {
+	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts() throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
 			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
@@ -99,10 +111,11 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put(IdType.UIN.name(), individualId);
 
-			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_GET_DRAFT_UIN,
+			ResponseWrapper<DraftResponseDto> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_GET_DRAFT_UIN,
 					pathsegements, ResponseWrapper.class);
-			responseWrapper.setId(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_ID, ResidentConstants.GET_PENDING_DRAFT_ID));
-			responseWrapper.setVersion(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_VERSION,
+			ResponseWrapper<DraftResidentResponseDto> responseWrapperResident = new ResponseWrapper<>();
+			responseWrapperResident.setId(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_ID, ResidentConstants.GET_PENDING_DRAFT_ID));
+			responseWrapperResident.setVersion(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_VERSION,
 					ResidentConstants.GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE));
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
 				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
@@ -113,15 +126,33 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 				}
+			} else {
+				DraftResponseDto draftResponseDto = objectMapper.convertValue(responseWrapper.getResponse(), DraftResponseDto.class);
+				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto));
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::exit");
-			return responseWrapper;
+			return responseWrapperResident;
 
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response) {
+		List<DraftUinResponseDto> draftsList = response.getDrafts();
+		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
+		for(DraftUinResponseDto draftUinResponseDto: draftsList){
+			DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
+			draftUinResidentResponseDto.setEid(residentTransactionRepository.findByAid(draftUinResponseDto.getRid()));
+			draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
+			draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
+			draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
+		}
+		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
+		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
+		return draftResidentResponseDto;
 	}
 
 }
