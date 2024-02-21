@@ -5,6 +5,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
@@ -14,6 +15,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,6 +47,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	@Autowired
 	private RequestValidator requestValidator;
+
+	@Autowired
+	private Environment environment;
 
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
@@ -92,10 +97,13 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				individualId = identityServiceImpl.getUinForIndividualId(individualId);
 			}
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
-			pathsegements.put("UIN", individualId);
+			pathsegements.put(IdType.UIN.name(), individualId);
 
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_GET_DRAFT_UIN,
 					pathsegements, ResponseWrapper.class);
+			responseWrapper.setId(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_ID, ResidentConstants.GET_PENDING_DRAFT_ID));
+			responseWrapper.setVersion(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_VERSION,
+					ResidentConstants.GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE));
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
 				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
 						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
