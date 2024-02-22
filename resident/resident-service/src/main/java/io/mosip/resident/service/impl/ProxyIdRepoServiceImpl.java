@@ -3,21 +3,27 @@ package io.mosip.resident.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ConsentStatusType;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.dto.DraftResponseDto;
 import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.DraftUinResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +37,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
+import static io.mosip.resident.constant.ResidentConstants.UPDATED;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
 /**
@@ -62,6 +73,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private Utility utility;
 
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
@@ -128,7 +142,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				}
 			} else {
 				DraftResponseDto draftResponseDto = objectMapper.convertValue(responseWrapper.getResponse(), DraftResponseDto.class);
-				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto));
+				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId));
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::exit");
 			return responseWrapperResident;
@@ -140,12 +154,14 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		}
 	}
 
-	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response) {
+	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<DraftUinResponseDto> draftsList = response.getDrafts();
 		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
 		for(DraftUinResponseDto draftUinResponseDto: draftsList){
 			DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
-			draftUinResidentResponseDto.setEid(residentTransactionRepository.findByAid(draftUinResponseDto.getRid()));
+			draftUinResidentResponseDto.setEid(getEventIdFromRid(draftUinResponseDto.getRid(), individualId,
+					draftUinResponseDto.getAttributes()));
+			draftUinResidentResponseDto.setAid(draftUinResponseDto.getRid());
 			draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
 			draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
 			draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
@@ -153,6 +169,32 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
 		return draftResidentResponseDto;
+	}
+
+	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		String eventId = residentTransactionRepository.findByAid(rid);
+		if(eventId == null){
+			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
+			eventId = utility.createEventId();
+			residentTransactionEntity.setEventId(eventId);
+			residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+			residentTransactionEntity.setIndividualId(individualId);
+			residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualIdFromSession()));
+			residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
+			if(attributes!=null){
+				String attributeList = String.join(SEMI_COLON, attributes);
+				residentTransactionEntity.setAttributeList(attributeList);
+				residentTransactionEntity.setStatusComment(attributeList+UPDATED);
+			}
+			residentTransactionEntity.setConsent(ConsentStatusType.ACCEPTED.name());
+			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			residentTransactionEntity.setAid(rid);
+			residentTransactionEntity.setCredentialRequestId(rid + environment.getProperty(ResidentConstants.REG_PROC_RID_DELIMETER));
+			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
+		return eventId;
 	}
 
 }

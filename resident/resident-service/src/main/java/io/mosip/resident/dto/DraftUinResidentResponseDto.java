@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 public class DraftUinResidentResponseDto {
     private String eid;
+    private String aid;
     private String createdDTimes;
     private List<String> attributes;
 }

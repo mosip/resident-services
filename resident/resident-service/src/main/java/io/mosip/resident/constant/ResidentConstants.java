@@ -322,4 +322,6 @@ public class ResidentConstants {
 
     public static final String GET_PENDING_DRAFT_VERSION = "mosip.resident.get.pending.drafts.version";
     public static final String GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE = "1.0";
+    public static final String UPDATED = " updated";
+    public static final String REG_PROC_RID_DELIMETER = "mosip.registration.processor.rid.delimiter";
 }

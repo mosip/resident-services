@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +41,7 @@ import static io.mosip.resident.util.AuditEnum.GET_PENDING_DRAFT_SUCCESS;
  *
  */
 @RestController
+@RequestMapping("/identity")
 @Tag(name = "proxy-idrepo-controller", description = "Proxy IdRepo Controller")
 public class ProxyIdRepoController {
 
@@ -52,7 +54,7 @@ public class ProxyIdRepoController {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
 
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping(path = "/identity/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })
 	@ApiResponses(value = {
