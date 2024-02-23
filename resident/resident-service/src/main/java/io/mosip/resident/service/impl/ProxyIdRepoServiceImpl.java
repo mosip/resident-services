@@ -3,7 +3,6 @@ package io.mosip.resident.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
@@ -37,9 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
-import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
-import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.ResidentConstants.UPDATED;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
