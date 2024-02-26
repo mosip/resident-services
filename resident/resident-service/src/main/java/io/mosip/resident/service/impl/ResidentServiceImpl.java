@@ -192,7 +192,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Integer DEFAULT_PAGE_SIZE = 10;
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	private static final String UPDATED = " updated";
 
 	@Autowired
 	private UINCardDownloadHelper uinCardDownloadHelper;
@@ -1086,7 +1085,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setStatusComment(attributeList+UPDATED);
+		residentTransactionEntity.setStatusComment(attributeList+ResidentConstants.UPDATED);
 		return residentTransactionEntity;
 	}
 

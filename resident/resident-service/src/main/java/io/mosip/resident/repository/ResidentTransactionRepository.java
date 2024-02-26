@@ -200,5 +200,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
 			@Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
 
+
+
 	// Service history methods end---
+
+	@Query(value = "select event_id from resident_transaction where aid = :rid", nativeQuery = true)
+	String findByAid(@Param("rid") String rid);
+
 }
