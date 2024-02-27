@@ -530,7 +530,13 @@ public enum AuditEnum implements AuditEvent {
 	GET_PENDING_DRAFT_SUCCESS("RES-SER-501", FAILURE, "Get pending draft success", "Get pending draft success", "RS-VAL",
 			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	GET_PENDING_DRAFT_FAILURE("RES-SER-502", FAILURE, "Get pending draft failure", "Get pending draft failure", "RS-VAL",
-			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	DISCARD_DRAFT_SUCCESS("RES-SER-249", SUCCESS, "Discard Draft: Success",
+			"Draft discarded successfully", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	DISCARD_DRAFT_EXCEPTION("RES-SER-250", FAILURE, "Discard Draft: Failed",
+			"Draft discarded failed", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
 
 	private final String eventId;
 
