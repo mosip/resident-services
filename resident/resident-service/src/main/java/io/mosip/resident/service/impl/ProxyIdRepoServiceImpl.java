@@ -168,7 +168,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String eventId = residentTransactionRepository.findByAid(rid);
+		String eventId = residentTransactionRepository.findEventIdByAid(rid);
 		if(eventId == null){
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 			eventId = utility.createEventId();

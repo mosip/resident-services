@@ -15,6 +15,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.WebSubCredentialStatusUpdateService;
+import io.mosip.resident.service.WebSubRegprocWorkFlowService;
 import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.AuditUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +52,7 @@ public class WebSubRegprocWorkFlowController {
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
     @Autowired
-    private WebSubCredentialStatusUpdateService webSubCredentialStatusUpdateService;
+    private WebSubRegprocWorkFlowService webSubRegprocWorkFlowService;
 
     @Autowired
     private AuditUtil auditUtil;
@@ -73,7 +74,7 @@ public class WebSubRegprocWorkFlowController {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubRegprocWorkFlowController :: regProcWorkFlowCallback() :: entry");
-			webSubCredentialStatusUpdateService.updateCredentialStatus(eventModel);
+			webSubRegprocWorkFlowService.updateResidentStatus(workflowCompletedEventDTO);
 			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
 			logger.debug("WebSubRegprocWorkFlowController::regProcWorkFlowCallback()::exit");
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
