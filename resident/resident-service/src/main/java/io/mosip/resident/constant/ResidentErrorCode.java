@@ -134,7 +134,8 @@ public enum ResidentErrorCode {
 
 	INVALID_RID_EXCEPTION("RES-TUG-001", "RID entered is not valid"),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
-	OTP_VALIDATION_FAILED_OLD_ERROR_CODE("IDA-MLC-018", "OTP validation failed");;
+	OTP_VALIDATION_FAILED_OLD_ERROR_CODE("IDA-MLC-018", "OTP validation failed"),
+	REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE("RES-SER-523", "Callback url is not available for Regproc workflow completed event");
 
 	private final String errorCode;
 	private final String errorMessage;

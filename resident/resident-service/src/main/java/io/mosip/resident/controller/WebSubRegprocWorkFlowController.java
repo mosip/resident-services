@@ -11,8 +11,6 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.WorkflowCompletedEventDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.WebSubRegprocWorkFlowService;
 import io.mosip.resident.util.AuditEnum;
@@ -54,7 +52,7 @@ public class WebSubRegprocWorkFlowController {
     @Autowired
     private AuditUtil auditUtil;
 
-    @PostMapping(value = "/callback/credentialStatusUpdate", consumes = "application/json")
+    @PostMapping(value = "/callback/regprocworkflow", consumes = "application/json")
     @Operation(summary = "WebSubCredentialStatusUpdateController", description = "WebSubCredentialStatusUpdateController",
             tags = {"WebSubCredentialStatusUpdateController"})
     @ApiResponses(value = {
@@ -72,17 +70,17 @@ public class WebSubRegprocWorkFlowController {
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubRegprocWorkFlowController :: regProcWorkFlowCallback() :: entry");
 			webSubRegprocWorkFlowService.updateResidentStatus(workflowCompletedEventDTO);
-			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
+			auditUtil.setAuditRequestDto(AuditEnum.REG_PROC_WORK_FLOW_CALL_BACK_SUCCESS);
 			logger.debug("WebSubRegprocWorkFlowController::regProcWorkFlowCallback()::exit");
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
-					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
-							+ ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
+					ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorCode()
+							+ ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_FAILURE);
-			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
-					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
+			auditUtil.setAuditRequestDto(AuditEnum.REG_PROC_WORK_FLOW_CALL_BACK_FAILURE);
+			throw new ResidentServiceException(ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorCode(),
+					ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
 		}
 	}
 
