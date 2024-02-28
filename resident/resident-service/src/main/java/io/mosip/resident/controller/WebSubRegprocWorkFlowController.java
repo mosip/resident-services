@@ -14,7 +14,6 @@ import io.mosip.resident.dto.WorkflowCompletedEventDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.WebSubCredentialStatusUpdateService;
 import io.mosip.resident.service.WebSubRegprocWorkFlowService;
 import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.AuditUtil;
@@ -29,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;

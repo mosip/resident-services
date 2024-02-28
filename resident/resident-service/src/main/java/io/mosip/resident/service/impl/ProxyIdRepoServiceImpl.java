@@ -49,7 +49,6 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
 	private static final String NO_RECORDS_FOUND_ID_REPO_ERROR_CODE = "IDR-IDC-007";
-	private static final int ZERO = 0;
 	private static final String INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE = "IDR-IDC-002";
 
 	@Autowired
@@ -91,10 +90,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
-						!responseWrapper.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+				if(responseWrapper.getErrors().get(ResidentConstants.ZERO) != null && !responseWrapper.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
@@ -128,10 +127,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			responseWrapperResident.setVersion(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_VERSION,
 					ResidentConstants.GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE));
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
-						!responseWrapper.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE)) {
+				if(responseWrapper.getErrors().get(ResidentConstants.ZERO) != null && !responseWrapper.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE)) {
 					throw new InvalidInputException(IdType.UIN.name());
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
