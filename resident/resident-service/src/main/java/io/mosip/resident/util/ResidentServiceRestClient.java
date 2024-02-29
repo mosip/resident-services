@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.mosip.idrepository.core.dto.IdResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -331,4 +332,68 @@ public class ResidentServiceRestClient {
 			return new HttpEntity<>(headers);
 	}
 
+	public Object deleteApi(ApiName apiName, List<String> pathsegments, String queryParamName, String queryParamValue,
+							Class<?> responseType) throws ApisResourceAccessException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "",
+				"ResidentServiceRestClient::deleteApi()::entry");
+		Object obj = null;
+		String apiHostIpPort = environment.getProperty(apiName.name());
+
+		UriComponentsBuilder builder = null;
+		UriComponents uriComponents = null;
+		if (apiHostIpPort != null) {
+
+			builder = UriComponentsBuilder.fromUriString(apiHostIpPort);
+			if (!((pathsegments == null) || (pathsegments.isEmpty()))) {
+				for (String segment : pathsegments) {
+					if (!((segment == null) || (("").equals(segment)))) {
+						builder.pathSegment(segment);
+					}
+				}
+
+			}
+
+			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
+
+				String[] queryParamNameArr = queryParamName.split(",");
+				String[] queryParamValueArr = queryParamValue.split(",");
+				for (int i = 0; i < queryParamNameArr.length; i++) {
+					builder.queryParam(queryParamNameArr[i], queryParamValueArr[i]);
+				}
+
+			}
+
+			try {
+
+				uriComponents = builder.build(false).encode();
+				logger.debug(uriComponents.toUri().toString(), "URI", "", "");
+				obj = deleteApi(uriComponents.toUri(), responseType);
+
+			} catch (Exception e) {
+				logger.error(LoggerFileConstant.SESSIONID.toString(),
+						LoggerFileConstant.REGISTRATIONID.toString(), "",
+						e.getMessage() + ExceptionUtils.getStackTrace(e));
+				assert uriComponents != null;
+				throw new ApisResourceAccessException("Exception occured while accessing " + uriComponents.toUri().toString(), e);
+
+			}
+		}
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "",
+				"ResidentServiceRestClient::deleteApi::exit");
+		return obj;
+	}
+
+	public <T> T deleteApi(URI uri, Class<?> responseType) throws Exception {
+		T result = null;
+
+		try {
+			result = (T) residentRestTemplate.exchange(uri, HttpMethod.DELETE, setRequestHeader(null, null), responseType)
+					.getBody();
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
+			throw e;
+		}
+		return result;
+	}
 }

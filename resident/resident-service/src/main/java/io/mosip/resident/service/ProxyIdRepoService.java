@@ -12,4 +12,6 @@ public interface ProxyIdRepoService {
 			throws ResidentServiceCheckedException;
 
     ResponseWrapper<DraftResidentResponseDto> getPendingDrafts() throws ResidentServiceCheckedException;
+
+    ResponseWrapper<?> discardDraft(String eid) throws ResidentServiceCheckedException;
 }
