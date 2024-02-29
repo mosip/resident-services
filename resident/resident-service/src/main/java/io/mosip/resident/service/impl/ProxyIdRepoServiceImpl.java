@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.dto.IdResponseDTO;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -147,6 +148,44 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	@Override
+	public ResponseWrapper<?> discardDraft(String eid) throws ResidentServiceCheckedException{
+		try {
+			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::entry");
+			List<String> pathsegments = new ArrayList<String>();
+			pathsegments.add(getAidFromEid(eid));
+			IdResponseDTO response = (IdResponseDTO) residentServiceRestClient.
+					deleteApi(ApiName.IDREPO_IDENTITY_DISCARD_DRAFT, pathsegments, "", "", IdResponseDTO.class);
+
+			if (response.getErrors() != null && !response.getErrors().isEmpty()){
+				if(response.getErrors().get(ZERO) != null && !response.getErrors().get(ZERO).toString().isEmpty() &&
+						response.getErrors().get(ZERO).getErrorCode() != null &&
+						!response.getErrors().get(ZERO).getErrorCode().isEmpty() &&
+						response.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
+				}else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+				}
+			}
+
+			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::exit");
+			return response;
+
+		} catch (ApisResourceAccessException e) {
+			logger.error(ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+	}
+
+	private String getAidFromEid(String eid) throws ResidentServiceCheckedException {
+		String aid = residentTransactionRepository.findAidByEventId(eid);
+		if(aid==null){
+			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+		}
+		return aid;
 	}
 
 	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
