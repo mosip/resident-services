@@ -7,6 +7,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -20,6 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +61,9 @@ public class ProxyIdRepoController {
 
 	@Autowired
 	private RequestValidator requestValidator;
+
+	@Autowired
+	private Environment environment;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
 
@@ -126,20 +132,21 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<?>> discardPendingDraft(
+	public ResponseEntity<Object> discardPendingDraft(
 			@PathVariable String eid) {
 		logger.debug("ProxyIdRepoController::discardPendingDraft()::entry");
 		try {
 			requestValidator.validateEventId(eid);
-			ResponseWrapper<?> responseWrapper = proxySerivce
-					.discardDraft(eid);
 			auditUtil.setAuditRequestDto(DISCARD_DRAFT_SUCCESS);
 			logger.debug("ProxyIdRepoController::discardPendingDraft()::exit");
-			return ResponseEntity.ok(responseWrapper);
+			return proxySerivce
+					.discardDraft(eid);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(DISCARD_DRAFT_EXCEPTION);
 			ExceptionUtils.logRootCause(e);
 			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+			responseWrapper.setId(environment.getProperty(ResidentConstants.DISCARD_DRAFT_ID));
+			responseWrapper.setVersion(environment.getProperty(ResidentConstants.DISCARD_DRAFT_VERSION));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 			return ResponseEntity.ok(responseWrapper);
 		}

@@ -28,6 +28,8 @@ import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -151,7 +153,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	@Override
-	public ResponseWrapper<?> discardDraft(String eid) throws ResidentServiceCheckedException{
+	public ResponseEntity<Object> discardDraft(String eid) throws ResidentServiceCheckedException{
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::entry");
 			List<String> pathsegments = new ArrayList<String>();
@@ -160,10 +162,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					deleteApi(ApiName.IDREPO_IDENTITY_DISCARD_DRAFT, pathsegments, "", "", IdResponseDTO.class);
 
 			if (response.getErrors() != null && !response.getErrors().isEmpty()){
-				if(response.getErrors().get(ZERO) != null && !response.getErrors().get(ZERO).toString().isEmpty() &&
-						response.getErrors().get(ZERO).getErrorCode() != null &&
-						!response.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						response.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+				if(response.getErrors().get(ResidentConstants.ZERO) != null && !response.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						response.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!response.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						response.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
@@ -171,7 +173,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::exit");
-			return response;
+			return ResponseEntity.status(HttpStatus.OK).build();
 
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
