@@ -205,7 +205,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	// Service history methods end---
 
 	@Query(value = "select event_id from resident_transaction where aid = :rid", nativeQuery = true)
-	String findEventIdByAid(@Param("rid") String rid);
+	String findByAid(@Param("rid") String rid);
 
-	ResidentTransactionEntity findByAid(String aid);
+	@Query(value = "select aid from resident_transaction where event_id = :eventId", nativeQuery = true)
+	String findAidByEventId(@Param("eventId") String eventId);
 }

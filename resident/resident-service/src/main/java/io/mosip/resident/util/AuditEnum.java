@@ -531,12 +531,12 @@ public enum AuditEnum implements AuditEvent {
 			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	GET_PENDING_DRAFT_FAILURE("RES-SER-502", FAILURE, "Get pending draft failure", "Get pending draft failure", "RS-VAL",
 			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
-	REG_PROC_WORK_FLOW_CALL_BACK_SUCCESS("RES-SER-503", SUCCESS, "Reg proc work flow callback: Success",
-			"Reg proc work flow callback is Success", "RS-CRED_STAT_UPD",
-			"Reg proc work flow", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
-	REG_PROC_WORK_FLOW_CALL_BACK_FAILURE("RES-SER-504", FAILURE, "Reg proc work flow callback: Failed",
-			"Reg proc work flow callback is Failed", "RS-CRED_STAT_UPD",
-			"Reg proc work flow callback", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
+	DISCARD_DRAFT_SUCCESS("RES-SER-249", SUCCESS, "Discard Draft: Success",
+			"Draft discarded successfully", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	DISCARD_DRAFT_EXCEPTION("RES-SER-250", FAILURE, "Discard Draft: Failed",
+			"Draft discarded failed", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
 
 	private final String eventId;
 
