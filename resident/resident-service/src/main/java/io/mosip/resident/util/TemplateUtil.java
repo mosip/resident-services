@@ -518,8 +518,13 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, getEventTypeBasedOnLangcode(dto.getRequestType(), langCode));
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
-		
-		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());
+		TemplateType status = dto.getTemplateType();
+		if (TemplateType.REGPROC_SUCCESS.equals(status)){
+			status = TemplateType.IN_PROGRESS;
+		} else if (TemplateType.REGPROC_FAILED.equals(status)) {
+			status = TemplateType.FAILURE;
+		}
+		templateVariables.put(TemplateVariablesConstants.STATUS, status.getType());
 		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK,
 				utility.createTrackServiceRequestLink(dto.getEventId()));
 		return templateVariables;
