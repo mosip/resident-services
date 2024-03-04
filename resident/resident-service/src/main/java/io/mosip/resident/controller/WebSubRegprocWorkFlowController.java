@@ -11,6 +11,8 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.WorkflowCompletedEventDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.WebSubRegprocWorkFlowService;
 import io.mosip.resident.util.AuditEnum;
@@ -72,7 +74,7 @@ public class WebSubRegprocWorkFlowController {
 			webSubRegprocWorkFlowService.updateResidentStatus(workflowCompletedEventDTO);
 			auditUtil.setAuditRequestDto(AuditEnum.REG_PROC_WORK_FLOW_CALL_BACK_SUCCESS);
 			logger.debug("WebSubRegprocWorkFlowController::regProcWorkFlowCallback()::exit");
-		} catch (Exception e) {
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorCode()
