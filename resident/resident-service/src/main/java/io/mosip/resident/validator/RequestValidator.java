@@ -21,6 +21,10 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.Utility;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -125,6 +129,9 @@ public class RequestValidator {
 
 	@Autowired
 	private ProxyPartnerManagementService proxyPartnerManagementService;
+
+	@Autowired
+	private ProxyIdRepoService idRepoService;
 
 	private String euinId;
 
@@ -836,6 +843,9 @@ public class RequestValidator {
 			validateUinOrVid(requestDTO.getRequest().getIndividualId());
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
+			if(Utility.isSecureSession()){
+				validatePendingDraft();
+			}
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -883,6 +893,17 @@ public class RequestValidator {
 				audit.setAuditRequestDto(
 						AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
+			}
+		}
+	}
+
+	private void validatePendingDraft() throws ResidentServiceCheckedException {
+		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
+		if(getPendingDraftResponseDto!=null){
+			if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
+				if(getPendingDraftResponseDto.getResponse().getDrafts().get(ResidentConstants.ZERO).isCancellable()){
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN);
+				}
 			}
 		}
 	}

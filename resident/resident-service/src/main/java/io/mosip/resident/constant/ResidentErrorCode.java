@@ -135,7 +135,8 @@ public enum ResidentErrorCode {
 	INVALID_RID_EXCEPTION("RES-TUG-001", "RID entered is not valid"),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	OTP_VALIDATION_FAILED_OLD_ERROR_CODE("IDA-MLC-018", "OTP validation failed"),
-	REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE("RES-SER-523", "Callback url is not available for Regproc workflow completed event");
+	REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE("RES-SER-523", "Callback url is not available for Regproc workflow completed event"),
+	NOT_ALLOWED_TO_UPDATE_UIN("RES-SER-524", " Not allowed to update UIN as previous packet is pending. To proceed further please discard it.");
 
 	private final String errorCode;
 	private final String errorMessage;

@@ -200,6 +200,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			draftUinResidentResponseDto.setAid(draftUinResponseDto.getRid());
 			draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
 			draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
+			draftUinResidentResponseDto.setCancellable(true);
 			draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
 		}
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
