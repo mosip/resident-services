@@ -1246,7 +1246,10 @@ public class RequestValidator {
 		return inputData.matches(regex);
 	}
 
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException {
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		if(Utility.isSecureSession()){
+			validatePendingDraft();
+		}
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
