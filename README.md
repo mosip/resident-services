@@ -1,6 +1,6 @@
 
-[![Maven Package upon a push](https://github.com/mosip/resident-services/actions/workflows/push_trigger.yml/badge.svg?branch=release-1.2.0.1)](https://github.com/mosip/resident-services/actions/workflows/push_trigger.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mosip_resident-services&id=mosip_resident-services&branch=release-1.2.0.1&metric=alert_status)](https://sonarcloud.io/dashboard?id=mosip_resident-services&branch=release-1.2.0.1)
+[![Maven Package upon a push](https://github.com/mosip/resident-services/actions/workflows/push-trigger.yml/badge.svg?branch=master)](https://github.com/mosip/resident-services/actions/workflows/push-trigger.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mosip_resident-services&id=mosip_resident-services&branch=master&metric=alert_status)](https://sonarcloud.io/dashboard?id=mosip_resident-services&branch=master)
 
 # Resident Services
 ## Overview
