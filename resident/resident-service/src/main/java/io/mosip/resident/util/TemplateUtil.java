@@ -521,7 +521,7 @@ public class TemplateUtil {
 		TemplateType status = dto.getTemplateType();
 		if (TemplateType.REGPROC_SUCCESS.equals(status)){
 			status = TemplateType.IN_PROGRESS;
-		} else if (TemplateType.REGPROC_FAILED.equals(status)) {
+		} else if (TemplateType.REGPROC_FAILED.equals(status) | TemplateType.DISCARDED.equals(status)) {
 			status = TemplateType.FAILURE;
 		}
 		templateVariables.put(TemplateVariablesConstants.STATUS, status.getType());

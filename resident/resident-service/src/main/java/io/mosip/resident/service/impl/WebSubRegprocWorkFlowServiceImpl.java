@@ -1,7 +1,6 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -9,13 +8,12 @@ import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.WorkflowCompletedEventDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.WebSubRegprocWorkFlowService;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -36,11 +34,11 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
     ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
-    NotificationService notificationService;
+    Utility utility;
 
     @Override
     public void updateResidentStatus(WorkflowCompletedEventDTO workflowCompletedEventDTO) throws ResidentServiceCheckedException {
-
+        logger.debug("WebSubRegprocWorkFlowServiceImpl:updateResidentStatus entry");
         ResidentTransactionEntity residentTransactionEntity = null;
         String individualId = null;
         if (workflowCompletedEventDTO.getResultCode() != null) {
@@ -51,45 +49,19 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
             if (residentTransactionEntity != null) {
                 individualId = residentTransactionEntity.getIndividualId();
                 if (PacketStatus.getStatusCodeList(PacketStatus.FAILURE, environment).contains(workflowCompletedEventDTO.getResultCode())) {
-                    updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name() + " - " + ResidentConstants.FAILED,
+                    utility.updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name() + " - " + ResidentConstants.FAILED,
                             false, "Packet Failed in Regproc with status code-" +
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
+                    utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
                 } else if (PacketStatus.getStatusCodeList(PacketStatus.SUCCESS, environment).contains(workflowCompletedEventDTO.getResultCode())) {
-                    updateEntity(residentTransactionEntity.getStatusCode(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
+                    utility.updateEntity(residentTransactionEntity.getStatusCode(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
                             "Packet processed in Regproc with status code-" +
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
+                    utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
                 }
             }
         }
-    }
-
-    public void updateEntity(String statusCode, String requestSummary, boolean readStatus, String statusComment, ResidentTransactionEntity residentTransactionEntity) {
-        residentTransactionEntity.setStatusCode(statusCode);
-        residentTransactionEntity.setRequestSummary(requestSummary);
-        residentTransactionEntity.setReadStatus(readStatus);
-        residentTransactionEntity.setStatusComment(statusComment);
-        residentTransactionEntity.setUpdBy(ResidentConstants.RESIDENT);
-        residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-        saveEntity(residentTransactionEntity);
-    }
-
-    private void saveEntity(ResidentTransactionEntity residentTransactionEntity) {
-        residentTransactionRepository.save(residentTransactionEntity);
-    }
-
-    private void sendNotification(String eventId, String individualId, TemplateType templateType) {
-        try {
-            NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
-            notificationRequestDtoV2.setTemplateType(templateType);
-            notificationRequestDtoV2.setRequestType(RequestType.UPDATE_MY_UIN);
-            notificationRequestDtoV2.setEventId(eventId);
-            notificationRequestDtoV2.setId(individualId);
-            notificationService.sendNotification(notificationRequestDtoV2, null);
-        }catch (ResidentServiceCheckedException exception){
-            logger.error("Error while sending notification:- "+ exception);
-        }
+        logger.debug("WebSubRegprocWorkFlowServiceImpl:updateResidentStatus exit");
     }
 
 }

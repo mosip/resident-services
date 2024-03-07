@@ -28,18 +28,22 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.JsonValue;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -214,6 +218,12 @@ public class Utility {
 	private Map<String, String> specialCharsReplacementMap;
 
 	private JSONObject mappingJsonObject;
+
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	@PostConstruct
 	private void loadRegProcessorIdentityJson() {
@@ -1058,5 +1068,32 @@ public class Utility {
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getAllDynamicFieldByName}")
 	public void emptyGetAllDynamicFieldByName() {
 		logger.info("Emptying getAllDynamicFieldByName cache");
+	}
+
+	public void updateEntity(String statusCode, String requestSummary, boolean readStatus, String statusComment, ResidentTransactionEntity residentTransactionEntity) {
+		residentTransactionEntity.setStatusCode(statusCode);
+		residentTransactionEntity.setRequestSummary(requestSummary);
+		residentTransactionEntity.setReadStatus(readStatus);
+		residentTransactionEntity.setStatusComment(statusComment);
+		residentTransactionEntity.setUpdBy(ResidentConstants.RESIDENT);
+		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+		saveEntity(residentTransactionEntity);
+	}
+
+	public void saveEntity(ResidentTransactionEntity residentTransactionEntity) {
+		residentTransactionRepository.save(residentTransactionEntity);
+	}
+
+	public void sendNotification(String eventId, String individualId, TemplateType templateType) {
+		try {
+			NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+			notificationRequestDtoV2.setTemplateType(templateType);
+			notificationRequestDtoV2.setRequestType(RequestType.UPDATE_MY_UIN);
+			notificationRequestDtoV2.setEventId(eventId);
+			notificationRequestDtoV2.setId(individualId);
+			notificationService.sendNotification(notificationRequestDtoV2, null);
+		}catch (ResidentServiceCheckedException exception){
+			logger.error("Error while sending notification:- "+ exception);
+		}
 	}
 }

@@ -7,11 +7,13 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
+import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.dto.DraftResponseDto;
 import io.mosip.resident.dto.DraftUinResidentResponseDto;
@@ -37,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
@@ -53,6 +56,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
 	private static final String NO_RECORDS_FOUND_ID_REPO_ERROR_CODE = "IDR-IDC-007";
 	private static final String INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE = "IDR-IDC-002";
+	private static final String DISCARDED = "DISCARDED";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -157,7 +161,18 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::entry");
 			List<String> pathsegments = new ArrayList<String>();
-			pathsegments.add(getAidFromEid(eid));
+			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eid);
+			String aid = null;
+			String individualId = null;
+			if(residentTransactionEntity.isPresent()){
+				aid = residentTransactionEntity.get().getAid();
+				individualId = residentTransactionEntity.get().getIndividualId();
+				if(aid==null){
+					throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+				}
+			}
+			pathsegments.add(aid);
+
 			IdResponseDTO response = (IdResponseDTO) residentServiceRestClient.
 					deleteApi(ApiName.IDREPO_IDENTITY_DISCARD_DRAFT, pathsegments, "", "", IdResponseDTO.class);
 
@@ -171,6 +186,15 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 				}
 			}
+			if(response.getResponse().getStatus().equalsIgnoreCase(DISCARDED)){
+				if(residentTransactionEntity.isPresent()) {
+					utility.updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name()
+									+ " - " + ResidentConstants.FAILED,
+							false, "Draft Discarded successfully", residentTransactionEntity.get());
+					utility.sendNotification(residentTransactionEntity.get().getEventId(),
+							individualId, TemplateType.REGPROC_FAILED);
+				}
+			}
 
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::exit");
 			return ResponseEntity.status(HttpStatus.OK).build();
@@ -180,14 +204,6 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-	}
-
-	private String getAidFromEid(String eid) throws ResidentServiceCheckedException {
-		String aid = residentTransactionRepository.findAidByEventId(eid);
-		if(aid==null){
-			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
-		}
-		return aid;
 	}
 
 	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
