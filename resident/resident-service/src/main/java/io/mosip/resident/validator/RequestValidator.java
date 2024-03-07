@@ -22,6 +22,8 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.Utility;
@@ -843,9 +845,7 @@ public class RequestValidator {
 			validateUinOrVid(requestDTO.getRequest().getIndividualId());
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
-			if(Utility.isSecureSession()){
-				validatePendingDraft();
-			}
+			validateNewUpdateRequest();
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -897,12 +897,28 @@ public class RequestValidator {
 		}
 	}
 
+	private void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		if(Utility.isSecureSession()){
+			validatePendingDraft();
+			validateInProgressUpdateRequest();
+		}
+	}
+
+	private void validateInProgressUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
+				findByTokenIdAndRequestTypeCodeAndStatusCode(identityService.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+						EventStatusInProgress.NEW.name());
+		if(!residentTransactionEntityList.isEmpty()){
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
+		}
+	}
+
 	private void validatePendingDraft() throws ResidentServiceCheckedException {
 		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
 		if(getPendingDraftResponseDto!=null){
 			if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
 				if(getPendingDraftResponseDto.getResponse().getDrafts().get(ResidentConstants.ZERO).isCancellable()){
-					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN);
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
 				}
 			}
 		}
@@ -1247,9 +1263,7 @@ public class RequestValidator {
 	}
 
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		if(Utility.isSecureSession()){
-			validatePendingDraft();
-		}
+		validateNewUpdateRequest();
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
