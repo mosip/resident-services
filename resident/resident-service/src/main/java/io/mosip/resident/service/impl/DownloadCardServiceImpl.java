@@ -116,9 +116,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
 
-	@Value("${mosip.registration.processor.rid.delimiter}")
-	private String ridSuffix;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
 	@Override
@@ -143,7 +140,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
 					rid = getRidForIndividualId(individualId);
-					pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
+					pdfBytes = residentCredentialService.getCard(rid + utility.getRidDeliMeterValue(), null, null);
 					if (pdfBytes.length == 0) {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 						residentTransactionEntity.setStatusComment(
@@ -447,7 +444,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
 			if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
 					&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
-				residentCredentialService.getDataShareUrl(rid + ridSuffix);
+				residentCredentialService.getDataShareUrl(rid + utility.getRidDeliMeterValue());
 			}
 		} catch (ResidentCredentialServiceException e) {
 			logger.info("Since datashare URL is not available, marking the aid status as in-progress.");

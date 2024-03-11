@@ -293,9 +293,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
 
-	@Value("${mosip.registration.processor.rid.delimiter}")
-	private String ridSuffix;
-
 	private static String authTypes;
 
 	private TemplateManager templateManager;
@@ -1090,10 +1087,10 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private void updateResidentTransaction(ResidentTransactionEntity residentTransactionEntity,
-			PacketGeneratorResDto response) {
+			PacketGeneratorResDto response) throws ResidentServiceCheckedException {
 		String rid = response.getRegistrationId();
 		residentTransactionEntity.setAid(rid);
-		residentTransactionEntity.setCredentialRequestId(rid + ridSuffix);
+		residentTransactionEntity.setCredentialRequestId(rid + utility.getRidDeliMeterValue());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}

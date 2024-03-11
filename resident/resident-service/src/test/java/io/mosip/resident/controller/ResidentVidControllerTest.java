@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,9 @@ public class ResidentVidControllerTest {
 
 	@MockBean
 	private ResidentVidServiceImpl residentVidService;
+
+	@MockBean
+	private Utility utilityBean;
 
 	@InjectMocks
 	private ResidentVidController residentVidController;

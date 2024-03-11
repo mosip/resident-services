@@ -242,7 +242,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			residentTransactionEntity.setConsent(ConsentStatusType.ACCEPTED.name());
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 			residentTransactionEntity.setAid(rid);
-			residentTransactionEntity.setCredentialRequestId(rid + environment.getProperty(ResidentConstants.REG_PROC_RID_DELIMETER));
+			residentTransactionEntity.setCredentialRequestId(rid + utility.getRidDeliMeterValue());
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 			residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 			residentTransactionRepository.save(residentTransactionEntity);

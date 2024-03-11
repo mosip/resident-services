@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
@@ -24,6 +25,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.RegistrationConstants;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -83,6 +85,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.chrono.Chronology;
@@ -125,6 +128,8 @@ public class Utility {
 	private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
+	private static final String DIGITAL_CARD_PARTNER = "digitalcardPartner";
+	private static final String APP_ID_BASED_CREDENTIAL_ID_SUFFIX = "appIdBasedCredentialIdSuffix";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -180,6 +185,8 @@ public class Utility {
 
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String BEARER_PREFIX = "Bearer ";
+
+	private String ridDelimeterValue;
 
 	@Autowired(required = true)
 	@Qualifier("varres")
@@ -1095,5 +1102,30 @@ public class Utility {
 		}catch (ResidentServiceCheckedException exception){
 			logger.error("Error while sending notification:- "+ exception);
 		}
+	}
+
+	@PostConstruct
+	public String getRidDeliMeterValue() throws ResidentServiceCheckedException {
+		if (Objects.isNull(ridDelimeterValue)) {
+			try {
+				JsonNode policyJson = mapper.readValue(new URL(Objects.requireNonNull(env.getProperty(
+						ResidentConstants.REG_PROC_CREDENTIAL_PARTNER_POLICY_URL))), JsonNode.class);
+				JsonNode partnersArray = policyJson.get(ResidentConstants.PARTNERS);
+
+				for (JsonNode partner : partnersArray) {
+					if (DIGITAL_CARD_PARTNER.equals(partner.get(RegistrationConstants.ID).asText())) {
+						ridDelimeterValue = partner.get(APP_ID_BASED_CREDENTIAL_ID_SUFFIX).asText();
+					}
+				}
+
+			} catch (IOException e) {
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
+						"getRidDeliMeterValue",
+						ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode() + org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e));
+				throw new ResidentServiceCheckedException(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
+						ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage(), e);
+			}
+		}
+		return ridDelimeterValue;
 	}
 }
