@@ -916,10 +916,8 @@ public class RequestValidator {
 	private void validatePendingDraft() throws ResidentServiceCheckedException {
 		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
 		if(getPendingDraftResponseDto!=null){
-			if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
-				if(getPendingDraftResponseDto.getResponse().getDrafts().get(ResidentConstants.ZERO).isCancellable()){
-					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
-				}
+			if(getPendingDraftResponseDto.getResponse().isCancellable()){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
 			}
 		}
 	}
