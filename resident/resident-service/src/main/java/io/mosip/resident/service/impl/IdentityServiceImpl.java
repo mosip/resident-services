@@ -296,8 +296,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
-		return  "3487512416";
-//		return  getClaimValue(INDIVIDUAL_ID);
+		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
 	public String getClaimValue(String claim) throws ApisResourceAccessException {

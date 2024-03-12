@@ -1296,12 +1296,14 @@ public class RequestValidator {
 
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		validateNewUpdateRequest();
-		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
-		validateUpdateCountLimit(new HashSet<>(identity));
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
 		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
+		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+		if(!identity.isEmpty() && identity.get(ResidentConstants.ZERO)!=null){
+			validateUpdateCountLimit(new HashSet<>(identity));
+		}
 	}
 
 	private void validateSameUserId(String userId, IdentityDTO identityDTO) {
