@@ -1,5 +1,6 @@
 package io.mosip.resident.validator;
 
+import static io.mosip.idrepository.core.constant.IdRepoErrorConstants.UPDATE_COUNT_LIMIT_EXCEEDED;
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
@@ -11,20 +12,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.dto.AttributeListDto;
 import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.Utility;
 import org.json.simple.JSONObject;
@@ -134,6 +141,9 @@ public class RequestValidator {
 
 	@Autowired
 	private ProxyIdRepoService idRepoService;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	private String euinId;
 
@@ -846,6 +856,10 @@ public class RequestValidator {
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 			validateNewUpdateRequest();
+			if(Utility.isSecureSession()){
+				Set<String> identity = requestDTO.getRequest().getIdentity().keySet();
+				validateUpdateCountLimit(identity);
+			}
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -901,6 +915,26 @@ public class RequestValidator {
 		if(Utility.isSecureSession()){
 			validatePendingDraft();
 			validateInProgressUpdateRequest();
+		}
+	}
+
+	private void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
+		Set<String> attributesHavingLimitExceeded = new HashSet<>();
+		if(!identity.isEmpty()) {
+			ResponseWrapper<?> responseWrapper =  idRepoService.getRemainingUpdateCountByIndividualId(List.of());
+			AttributeListDto attributeListDto = objectMapper.convertValue(responseWrapper.getResponse(), AttributeListDto.class);
+
+			attributesHavingLimitExceeded = attributeListDto.getAttributes().stream()
+					.filter(updateCountDto -> identity.contains(updateCountDto.getAttributeName())
+							&& updateCountDto.getNoOfUpdatesLeft() == ResidentConstants.ZERO)
+					.map(UpdateCountDto::getAttributeName)
+					.collect(Collectors.toSet());
+
+		}
+		if (!attributesHavingLimitExceeded.isEmpty()) {
+			String exceededAttributes = String.join(ResidentConstants.COMMA, attributesHavingLimitExceeded);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode(),
+					String.format(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorMessage(), exceededAttributes));
 		}
 	}
 
@@ -1262,10 +1296,11 @@ public class RequestValidator {
 
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		validateNewUpdateRequest();
+		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+		validateUpdateCountLimit(new HashSet<>(identity));
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
 		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
 	}
 

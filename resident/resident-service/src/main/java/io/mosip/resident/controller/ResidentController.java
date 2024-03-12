@@ -433,7 +433,7 @@ public class ResidentController {
 	 * @throws ApisResourceAccessException
 	 */
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPatchUpdateUin()" + ")")
+    //@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPatchUpdateUin()" + ")")
 	@ResponseFilter
 	@PatchMapping(value = "/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
