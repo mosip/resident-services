@@ -1115,6 +1115,7 @@ public class Utility {
 				for (JsonNode partner : partnersArray) {
 					if (DIGITAL_CARD_PARTNER.equals(partner.get(RegistrationConstants.ID).asText())) {
 						ridDelimeterValue = partner.get(APP_ID_BASED_CREDENTIAL_ID_SUFFIX).asText();
+						break;
 					}
 				}
 
