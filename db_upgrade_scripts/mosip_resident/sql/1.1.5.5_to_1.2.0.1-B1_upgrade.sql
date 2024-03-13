@@ -18,7 +18,7 @@ ALTER DATABASE mosip_resident SET search_path TO resident,pg_catalog,public;
 CREATE ROLE residentuser WITH 
 	INHERIT
 	LOGIN
-	PASSWORD :dbuserpwd;
+	PASSWORD 'dbuserpwd';
 
 GRANT CONNECT
    ON DATABASE mosip_resident
