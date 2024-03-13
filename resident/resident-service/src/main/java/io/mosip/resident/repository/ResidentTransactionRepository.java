@@ -206,8 +206,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	// Service history methods end---
 
-	Optional<ResidentTransactionEntity> findTopEventIdByAidOrderByCrDtimesDesc
-			(String aid);
+	@Query(value = "select event_id from resident_transaction where aid = :rid order by cr_dtimes DESC LIMIT 1", nativeQuery = true)
+	String findEventIdByAid(@Param("rid") String rid);
 
 	ResidentTransactionEntity findByAid(String rid);
 }
