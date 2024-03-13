@@ -8,7 +8,7 @@ public enum TemplateType {
 	FAILURE("failure"),
 	REGPROC_SUCCESS("regproc-success"),
 	REGPROC_FAILED("regproc-failure"),
-	DISCARDED("discarded");
+	CANCELED("cancelled");
 
 	private String type;
 

@@ -188,8 +188,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 			if(response.getResponse().getStatus().equalsIgnoreCase(DISCARDED)){
 				if(residentTransactionEntity.isPresent()) {
-					utility.updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name()
-									+ " - " + ResidentConstants.FAILED,
+					utility.updateEntity(ResidentConstants.CANCELED, RequestType.UPDATE_MY_UIN.name()
+									+ " - " + ResidentConstants.CANCELED,
 							false, "Draft Discarded successfully", residentTransactionEntity.get());
 					utility.sendNotification(residentTransactionEntity.get().getEventId(),
 							individualId, TemplateType.REGPROC_FAILED);

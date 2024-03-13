@@ -91,7 +91,11 @@ public class TemplateUtil {
 	/**
 	 * Gets the ack template variables for authentication request.
 	 *
-	 * @param eventId the event id
+	 * @param residentTransactionEntity
+	 * @param requestType
+	 * @param languageCode
+	 * @param timeZoneOffset
+	 * @param locale
 	 * @return the ack template variables for authentication request
 	 */
 
@@ -521,7 +525,7 @@ public class TemplateUtil {
 		TemplateType status = dto.getTemplateType();
 		if (TemplateType.REGPROC_SUCCESS.equals(status)){
 			status = TemplateType.IN_PROGRESS;
-		} else if (TemplateType.REGPROC_FAILED.equals(status) | TemplateType.DISCARDED.equals(status)) {
+		} else if (TemplateType.REGPROC_FAILED.equals(status)) {
 			status = TemplateType.FAILURE;
 		}
 		templateVariables.put(TemplateVariablesConstants.STATUS, status.getType());
