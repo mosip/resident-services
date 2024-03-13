@@ -1712,6 +1712,8 @@ public class ResidentServiceImpl implements ResidentService {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.name())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+				}else if (status.equalsIgnoreCase(EventStatus.CANCELED.name())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllCancelledStatusList(env));
 				}
 			}
 		}else {
@@ -1778,6 +1780,8 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
+		} else if (statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)) {
+			templateType = TemplateType.CANCELED;
 		} else {
 			templateType = TemplateType.FAILURE;
 		}
@@ -1795,12 +1799,14 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
-			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-			return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
+		} else if (statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)) {
+			templateType = TemplateType.CANCELED;
 		} else {
 			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
 		}
+		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
 	}
 
 	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
@@ -1809,7 +1815,10 @@ public class ResidentServiceImpl implements ResidentService {
 			status = EventStatus.SUCCESS;
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
 			status = EventStatus.FAILED;
-		} else {
+		} else if(statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)){
+			status = EventStatus.CANCELED;
+		}
+		else {
 			status = EventStatus.IN_PROGRESS;
 		}
 		String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);
