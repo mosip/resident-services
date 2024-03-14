@@ -9,8 +9,8 @@ public enum EventStatusCanceled {
 	CANCELED;
 	
 	public static boolean containsStatus(String status) {
-        for (EventStatusCanceled eventStatusInProgress : EventStatusCanceled.values()) {
-            if (eventStatusInProgress.name().equals(status)) {
+        for (EventStatusCanceled eventStatusCanceled : EventStatusCanceled.values()) {
+            if (eventStatusCanceled.name().equals(status)) {
                 return true;
             }
         }
