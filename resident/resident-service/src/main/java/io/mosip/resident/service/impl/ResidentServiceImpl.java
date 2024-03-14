@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.constant.EventStatusCanceled;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -1780,7 +1781,7 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
-		} else if (statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)) {
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
 			templateType = TemplateType.CANCELED;
 		} else {
 			templateType = TemplateType.FAILURE;
@@ -1799,7 +1800,7 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
-		} else if (statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)) {
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
 			templateType = TemplateType.CANCELED;
 		} else {
 			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
@@ -1815,7 +1816,7 @@ public class ResidentServiceImpl implements ResidentService {
 			status = EventStatus.SUCCESS;
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
 			status = EventStatus.FAILED;
-		} else if(statusCode.equalsIgnoreCase(ResidentConstants.CANCELED)){
+		} else if(EventStatusCanceled.containsStatus(statusCode)){
 			status = EventStatus.CANCELED;
 		}
 		else {

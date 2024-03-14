@@ -7,7 +7,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
-import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusCanceled;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
@@ -188,8 +188,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 			if(response.getResponse().getStatus().equalsIgnoreCase(DISCARDED)){
 				if(residentTransactionEntity.isPresent()) {
-					utility.updateEntity(ResidentConstants.CANCELED, RequestType.UPDATE_MY_UIN.name()
-									+ " - " + ResidentConstants.CANCELED,
+					utility.updateEntity(EventStatusCanceled.CANCELED.name(), RequestType.UPDATE_MY_UIN.name()
+									+ " - " + EventStatusCanceled.CANCELED.name(),
 							false, "Draft Discarded successfully", residentTransactionEntity.get());
 					utility.sendNotification(residentTransactionEntity.get().getEventId(),
 							individualId, TemplateType.REGPROC_FAILED);

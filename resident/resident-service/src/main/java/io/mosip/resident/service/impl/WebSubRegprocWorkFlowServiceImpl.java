@@ -44,7 +44,7 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
         if (workflowCompletedEventDTO.getResultCode() != null) {
             if (workflowCompletedEventDTO.getInstanceId() != null) {
                 residentTransactionEntity =
-                        residentTransactionRepository.findByAid(workflowCompletedEventDTO.getInstanceId());
+                        residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(workflowCompletedEventDTO.getInstanceId());
             }
             if (residentTransactionEntity != null) {
                 individualId = residentTransactionEntity.getIndividualId();

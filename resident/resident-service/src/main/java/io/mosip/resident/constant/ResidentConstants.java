@@ -327,5 +327,4 @@ public class ResidentConstants {
     public static final String DISCARD_DRAFT_ID = "mosip.resident.discard.pending.drafts";
     public static final String DISCARD_DRAFT_VERSION = "mosip.resident.discard.pending.drafts.version";
     public static final String REG_PROC_CREDENTIAL_PARTNER_POLICY_URL = "mosip.resident.reg-processer-credential-partner-policy-url";
-    public static final String CANCELED = "CANCELED";
 }
