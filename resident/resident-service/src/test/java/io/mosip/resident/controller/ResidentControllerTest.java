@@ -140,6 +140,9 @@ public class ResidentControllerTest {
 	private ResidentVidService vidService;
 
 	@MockBean
+	private Utility utilityBean;
+
+	@MockBean
 	private IdAuthServiceImpl idAuthServiceImpl;
 
 	@MockBean

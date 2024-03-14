@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.constant.EventStatusCanceled;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -292,9 +293,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
-
-	@Value("${mosip.registration.processor.rid.delimiter}")
-	private String ridSuffix;
 
 	private static String authTypes;
 
@@ -1090,10 +1088,10 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private void updateResidentTransaction(ResidentTransactionEntity residentTransactionEntity,
-			PacketGeneratorResDto response) {
+			PacketGeneratorResDto response) throws ResidentServiceCheckedException {
 		String rid = response.getRegistrationId();
 		residentTransactionEntity.setAid(rid);
-		residentTransactionEntity.setCredentialRequestId(rid + ridSuffix);
+		residentTransactionEntity.setCredentialRequestId(rid + utility.getRidDeliMeterValue());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}
@@ -1715,6 +1713,8 @@ public class ResidentServiceImpl implements ResidentService {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.name())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+				}else if (status.equalsIgnoreCase(EventStatus.CANCELED.name())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllCancelledStatusList(env));
 				}
 			}
 		}else {
@@ -1781,6 +1781,8 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
+			templateType = TemplateType.CANCELED;
 		} else {
 			templateType = TemplateType.FAILURE;
 		}
@@ -1798,12 +1800,14 @@ public class ResidentServiceImpl implements ResidentService {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
-			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-			return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
+			templateType = TemplateType.CANCELED;
 		} else {
 			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
 		}
+		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
 	}
 
 	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
@@ -1812,7 +1816,10 @@ public class ResidentServiceImpl implements ResidentService {
 			status = EventStatus.SUCCESS;
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
 			status = EventStatus.FAILED;
-		} else {
+		} else if(EventStatusCanceled.containsStatus(statusCode)){
+			status = EventStatus.CANCELED;
+		}
+		else {
 			status = EventStatus.IN_PROGRESS;
 		}
 		String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);

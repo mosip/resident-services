@@ -68,6 +68,9 @@ public class ProxyAuditControllerTest {
     private ResidentServiceImpl residentService;
 
 	@MockBean
+	private Utility utilityBean;
+
+	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 

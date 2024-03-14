@@ -319,9 +319,12 @@ public class ResidentConstants {
     public static final String HYPHEN = "-";
 
     public static final String GET_PENDING_DRAFT_ID = "mosip.resident.get.pending.drafts";
-
     public static final String GET_PENDING_DRAFT_VERSION = "mosip.resident.get.pending.drafts.version";
     public static final String GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE = "1.0";
     public static final String UPDATED = " updated";
-    public static final String REG_PROC_RID_DELIMETER = "mosip.registration.processor.rid.delimiter";
+
+    public static final int ZERO = 0;
+    public static final String DISCARD_DRAFT_ID = "mosip.resident.discard.pending.drafts";
+    public static final String DISCARD_DRAFT_VERSION = "mosip.resident.discard.pending.drafts.version";
+    public static final String REG_PROC_CREDENTIAL_PARTNER_POLICY_URL = "mosip.resident.reg-processer-credential-partner-policy-url";
 }

@@ -1,32 +1,7 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -38,14 +13,17 @@ import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.constant.UISchemaTypes;
 import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AttributeListDto;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
@@ -55,6 +33,7 @@ import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
+import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
@@ -71,6 +50,7 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -81,12 +61,42 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
+import static io.mosip.resident.constant.RegistrationConstants.PARAM_ZERO;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
 @Component
 public class RequestValidator {
@@ -125,6 +135,12 @@ public class RequestValidator {
 
 	@Autowired
 	private ProxyPartnerManagementService proxyPartnerManagementService;
+
+	@Autowired
+	private ProxyIdRepoService idRepoService;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	private String euinId;
 
@@ -836,6 +852,11 @@ public class RequestValidator {
 			validateUinOrVid(requestDTO.getRequest().getIndividualId());
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
+			validateNewUpdateRequest();
+			if(Utility.isSecureSession()){
+				Set<String> identity = requestDTO.getRequest().getIdentity().keySet();
+				validateUpdateCountLimit(identity);
+			}
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -883,6 +904,50 @@ public class RequestValidator {
 				audit.setAuditRequestDto(
 						AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
+			}
+		}
+	}
+
+	private void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		if(Utility.isSecureSession()){
+			validatePendingDraft();
+			validateInProgressUpdateRequest();
+		}
+	}
+
+	private void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
+		Set<String> attributesHavingLimitExceeded = new HashSet<>();
+		if(!identity.isEmpty()) {
+			ResponseWrapper<?> responseWrapper =  idRepoService.getRemainingUpdateCountByIndividualId(List.of());
+			AttributeListDto attributeListDto = objectMapper.convertValue(responseWrapper.getResponse(), AttributeListDto.class);
+
+			attributesHavingLimitExceeded = attributeListDto.getAttributes().stream()
+					.filter(updateCountDto -> identity.contains(updateCountDto.getAttributeName())
+							&& updateCountDto.getNoOfUpdatesLeft() == ResidentConstants.ZERO)
+					.map(UpdateCountDto::getAttributeName)
+					.collect(Collectors.toSet());
+
+		}
+		if (!attributesHavingLimitExceeded.isEmpty()) {
+			String exceededAttributes = String.join(ResidentConstants.COMMA, attributesHavingLimitExceeded);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode(),
+					String.format(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorMessage(), exceededAttributes));
+		}
+	}
+
+	private void validateInProgressUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		if(residentTransactionRepository.
+				countByTokenIdAndRequestTypeCodeAndStatusCode(identityService.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+						EventStatusInProgress.NEW.name()) > PARAM_ZERO) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
+		}
+	}
+
+	private void validatePendingDraft() throws ResidentServiceCheckedException {
+		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
+		if(getPendingDraftResponseDto!=null){
+			if(getPendingDraftResponseDto.getResponse().isCancellable()){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
 			}
 		}
 	}
@@ -1225,12 +1290,16 @@ public class RequestValidator {
 		return inputData.matches(regex);
 	}
 
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException {
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		validateNewUpdateRequest();
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
 		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
+		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+		if(!identity.isEmpty() && identity.get(ResidentConstants.ZERO)!=null){
+			validateUpdateCountLimit(new HashSet<>(identity));
+		}
 	}
 
 	private void validateSameUserId(String userId, IdentityDTO identityDTO) {

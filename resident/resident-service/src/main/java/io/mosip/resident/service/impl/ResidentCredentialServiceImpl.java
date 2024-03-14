@@ -133,9 +133,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Value("${mosip.resident.request.credential.encryption.key:null}")
 	private String encryptionKey;
-
-	@Value("${mosip.registration.processor.rid.delimiter}")
-	private String ridSuffix;
 	
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
@@ -335,7 +332,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return getCard(requestId, applicationId, partnerReferenceId);
 	}
 	@Override
-	public byte[] getCard(String requestId, String appId, String partnerRefId) {
+	public byte[] getCard(String requestId, String appId, String partnerRefId) throws ResidentServiceCheckedException {
 		try {
 			String dataShareUrl = getDataShareUrl(requestId);
 			URI dataShareUri = URI.create(dataShareUrl);
@@ -353,17 +350,19 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (IOException e) {
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (ResidentServiceCheckedException e) {
+			throw e;
 		}
 
 	}
 
 	@Override
-	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException {
+	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::entry");
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		String credentialUrl = "";
-		if(requestId.contains(ridSuffix)) {
+		if(requestId.contains(utility.getRidDeliMeterValue())) {
 			credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
 		} else {
 			UUID requestUUID = UUID.fromString(requestId);

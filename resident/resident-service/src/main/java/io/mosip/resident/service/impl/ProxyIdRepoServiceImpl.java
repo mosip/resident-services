@@ -7,11 +7,13 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
+import io.mosip.resident.constant.EventStatusCanceled;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.dto.DraftResponseDto;
 import io.mosip.resident.dto.DraftUinResidentResponseDto;
@@ -28,6 +30,8 @@ import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
@@ -50,8 +55,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
 	private static final String NO_RECORDS_FOUND_ID_REPO_ERROR_CODE = "IDR-IDC-007";
-	private static final int ZERO = 0;
 	private static final String INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE = "IDR-IDC-002";
+	private static final String DISCARDED = "DISCARDED";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -92,10 +97,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
-						!responseWrapper.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+				if(responseWrapper.getErrors().get(ResidentConstants.ZERO) != null && !responseWrapper.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
@@ -129,10 +134,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			responseWrapperResident.setVersion(environment.getProperty(ResidentConstants.GET_PENDING_DRAFT_VERSION,
 					ResidentConstants.GET_PENDING_DRAFT_VERSION_DEFAULT_VALUE));
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()){
-				if(responseWrapper.getErrors().get(ZERO) != null && !responseWrapper.getErrors().get(ZERO).toString().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode() != null &&
-						!responseWrapper.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						responseWrapper.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE)) {
+				if(responseWrapper.getErrors().get(ResidentConstants.ZERO) != null && !responseWrapper.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						responseWrapper.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(INVALID_INPUT_PARAMETER_ID_REPO_ERROR_CODE)) {
 					throw new InvalidInputException(IdType.UIN.name());
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
@@ -152,41 +157,53 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	@Override
-	public ResponseWrapper<?> discardDraft(String eid) throws ResidentServiceCheckedException{
+	public ResponseEntity<Object> discardDraft(String eid) throws ResidentServiceCheckedException{
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::entry");
 			List<String> pathsegments = new ArrayList<String>();
-			pathsegments.add(getAidFromEid(eid));
+			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eid);
+			String aid = null;
+			String individualId = null;
+			if(residentTransactionEntity.isPresent()){
+				aid = residentTransactionEntity.get().getAid();
+				individualId = residentTransactionEntity.get().getIndividualId();
+				if(aid==null){
+					throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+				}
+			}
+			pathsegments.add(aid);
+
 			IdResponseDTO response = (IdResponseDTO) residentServiceRestClient.
 					deleteApi(ApiName.IDREPO_IDENTITY_DISCARD_DRAFT, pathsegments, "", "", IdResponseDTO.class);
 
 			if (response.getErrors() != null && !response.getErrors().isEmpty()){
-				if(response.getErrors().get(ZERO) != null && !response.getErrors().get(ZERO).toString().isEmpty() &&
-						response.getErrors().get(ZERO).getErrorCode() != null &&
-						!response.getErrors().get(ZERO).getErrorCode().isEmpty() &&
-						response.getErrors().get(ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
+				if(response.getErrors().get(ResidentConstants.ZERO) != null && !response.getErrors().get(ResidentConstants.ZERO).toString().isEmpty() &&
+						response.getErrors().get(ResidentConstants.ZERO).getErrorCode() != null &&
+						!response.getErrors().get(ResidentConstants.ZERO).getErrorCode().isEmpty() &&
+						response.getErrors().get(ResidentConstants.ZERO).getErrorCode().equalsIgnoreCase(NO_RECORDS_FOUND_ID_REPO_ERROR_CODE)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 				}else {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 				}
 			}
+			if(response.getResponse().getStatus().equalsIgnoreCase(DISCARDED)){
+				if(residentTransactionEntity.isPresent()) {
+					utility.updateEntity(EventStatusCanceled.CANCELED.name(), RequestType.UPDATE_MY_UIN.name()
+									+ " - " + EventStatusCanceled.CANCELED.name(),
+							false, "Draft Discarded successfully", residentTransactionEntity.get());
+					utility.sendNotification(residentTransactionEntity.get().getEventId(),
+							individualId, TemplateType.REGPROC_FAILED);
+				}
+			}
 
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::exit");
-			return response;
+			return ResponseEntity.status(HttpStatus.OK).build();
 
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-	}
-
-	private String getAidFromEid(String eid) throws ResidentServiceCheckedException {
-		String aid = residentTransactionRepository.findAidByEventId(eid);
-		if(aid==null){
-			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
-		}
-		return aid;
 	}
 
 	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -203,11 +220,12 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		}
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
+		draftResidentResponseDto.setCancellable(!draftUinResidentResponseDtos.isEmpty());
 		return draftResidentResponseDto;
 	}
 
 	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String eventId = residentTransactionRepository.findByAid(rid);
+		String eventId = residentTransactionRepository.findEventIdByAid(rid);
 		if(eventId == null){
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 			eventId = utility.createEventId();
@@ -224,7 +242,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			residentTransactionEntity.setConsent(ConsentStatusType.ACCEPTED.name());
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 			residentTransactionEntity.setAid(rid);
-			residentTransactionEntity.setCredentialRequestId(rid + environment.getProperty(ResidentConstants.REG_PROC_RID_DELIMETER));
+			residentTransactionEntity.setCredentialRequestId(rid + utility.getRidDeliMeterValue());
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 			residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 			residentTransactionRepository.save(residentTransactionEntity);

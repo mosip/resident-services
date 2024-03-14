@@ -116,6 +116,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	
 	private static final String PREFIX_RESIDENT_REQUEST_NOTIFICATION_STATUS_LIST = "resident.request.notification.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_FAILED_STATUS_LIST = "resident.request.failed.status.list.";
+	private static final String PREFIX_RESIDENT_REQUEST_CANCELLED_STATUS_LIST = "resident.request.cancelled.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_SUCCESS_STATUS_LIST = "resident.request.success.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_IN_PROGRESS_STATUS_LIST = "resident.request.in-progress.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST = "resident.request.new.status.list.";
@@ -165,6 +166,10 @@ public enum RequestType implements PreUpdateInBatchJob {
 
 	public Stream<String> getFailedStatusList(Environment env) {
 		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_FAILED_STATUS_LIST);
+	}
+
+	public Stream<String> getCancelledStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_CANCELLED_STATUS_LIST);
 	}
 	
 	public Stream<String> getInProgressStatusList(Environment env) {
@@ -224,6 +229,14 @@ public enum RequestType implements PreUpdateInBatchJob {
 		}).filter(str -> !str.isEmpty())
 		.distinct()	
 		.collect(Collectors.toUnmodifiableList());
+	}
+
+	public static List<String> getAllCancelledStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+					return requestType.getCancelledStatusList(env);
+				}).filter(str -> !str.isEmpty())
+				.distinct()
+				.collect(Collectors.toUnmodifiableList());
 	}
 
 	public static List<String> getAllFailedStatusList(Environment env) {

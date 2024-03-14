@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,6 +94,9 @@ public class IdentityControllerTest {
 	
 	@MockBean
     private ResidentServiceImpl residentService;
+
+	@MockBean
+	private Utility utilityBean;
 
 	private ResponseWrapper responseWrapper;
 
