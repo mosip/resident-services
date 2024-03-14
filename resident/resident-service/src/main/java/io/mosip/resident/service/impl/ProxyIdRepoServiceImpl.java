@@ -209,14 +209,16 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<DraftUinResponseDto> draftsList = response.getDrafts();
 		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
-		for(DraftUinResponseDto draftUinResponseDto: draftsList){
-			DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
-			draftUinResidentResponseDto.setEid(getEventIdFromRid(draftUinResponseDto.getRid(), individualId,
-					draftUinResponseDto.getAttributes()));
-			draftUinResidentResponseDto.setAid(draftUinResponseDto.getRid());
-			draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
-			draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
-			draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
+		if(draftsList!=null && !draftsList.isEmpty()) {
+			for (DraftUinResponseDto draftUinResponseDto : draftsList) {
+				DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
+				draftUinResidentResponseDto.setEid(getEventIdFromRid(draftUinResponseDto.getRid(), individualId,
+						draftUinResponseDto.getAttributes()));
+				draftUinResidentResponseDto.setAid(draftUinResponseDto.getRid());
+				draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
+				draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
+				draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
+			}
 		}
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
