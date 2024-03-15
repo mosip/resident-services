@@ -852,11 +852,6 @@ public class RequestValidator {
 			validateUinOrVid(requestDTO.getRequest().getIndividualId());
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
-			validateNewUpdateRequest();
-			if(Utility.isSecureSession()){
-				Set<String> identity = requestDTO.getRequest().getIdentity().keySet();
-				validateUpdateCountLimit(identity);
-			}
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -905,6 +900,11 @@ public class RequestValidator {
 						AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
 			}
+		}
+		validateNewUpdateRequest();
+		if(Utility.isSecureSession()){
+			Set<String> identity = requestDTO.getRequest().getIdentity().keySet();
+			validateUpdateCountLimit(identity);
 		}
 	}
 
@@ -1291,7 +1291,6 @@ public class RequestValidator {
 	}
 
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		validateNewUpdateRequest();
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
@@ -1300,6 +1299,7 @@ public class RequestValidator {
 		if(!identity.isEmpty() && identity.get(ResidentConstants.ZERO)!=null){
 			validateUpdateCountLimit(new HashSet<>(identity));
 		}
+		validateNewUpdateRequest();
 	}
 
 	private void validateSameUserId(String userId, IdentityDTO identityDTO) {
