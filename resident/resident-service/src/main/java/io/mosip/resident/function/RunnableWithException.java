@@ -1,4 +1,4 @@
-package io.mosip.resident.service.function;
+package io.mosip.resident.function;
 
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;

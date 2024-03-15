@@ -1,4 +1,4 @@
-package io.mosip.resident.service.function;
+package io.mosip.resident.function;
 
 /**
  * 
@@ -7,10 +7,11 @@ package io.mosip.resident.service.function;
  * @param <T> Type Argument 1
  * @param <U> Type Argument 2
  * @param <V> Type Argument 3
+ * @param <W> Type Argument 4
  * @param <R> Return type
  */
 @FunctionalInterface
-public interface ThreeArgsFunction<T, U, V, R> {
+public interface FourArgsFunction<T, U, V, W, R> {
 
     /**
      * Applies this function to the given arguments.
@@ -18,8 +19,9 @@ public interface ThreeArgsFunction<T, U, V, R> {
      * @param t the first function argument
      * @param u the second function argument
      * @param v the third function argument
+     * @param w the fourth function argument
      * @return the function result
      */
-    R apply(T t, U u, V v);
+    R apply(T t, U u, V v, W w);
 
 }
