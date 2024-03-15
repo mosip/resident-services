@@ -3,13 +3,13 @@ package io.mosip.resident.handler.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class ResidentUpdateService {
 	RequestHandlerRequestValidator validator;
 
 	@Value("${IDSchema.Version}")
-	private String defaultIdSchemaVersion;
+	private String idschemaVersion;
 
 	@Autowired
 	private IdSchemaUtil idSchemaUtil;
@@ -104,24 +104,17 @@ public class ResidentUpdateService {
 	private static final String TYPE = "type";
 	private static final String VALUE = "value";
 
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersionStr) throws BaseCheckedException, IOException {
-		return createPacket(request, defaultIdSchemaVersion, null, null);
-	}
-
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion, String sessionUin, IdResponseDTO1 idResponseDto) throws BaseCheckedException, IOException {
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
-		if(idSchemaVersion == null){
-			idSchemaVersion = defaultIdSchemaVersion;
-		}
 		byte[] packetZipBytes = null;
 		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
 		if (validator.isValidCenter(request.getCenterId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
-								request.getIdValue(), idResponseDto)
-						: validator.isValidVid(request.getIdValue(), sessionUin)) {
+								request.getIdValue())
+						: validator.isValidVid(request.getIdValue())) {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 					request.getIdValue(),
@@ -149,19 +142,19 @@ public class ResidentUpdateService {
 				if (request.getProofOfAddress() != null && !request.getProofOfAddress().isEmpty())
 					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_ADDRESS, map);
 				if (request.getProofOfDateOfBirth() != null && !request.getProofOfDateOfBirth().isEmpty())
-					setDemographicDocuments(request.getProofOfDateOfBirth(), demoJsonObject, PROOF_OF_DOB, map);
+					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_DOB, map);
 				if (request.getProofOfRelationship() != null && !request.getProofOfRelationship().isEmpty())
-					setDemographicDocuments(request.getProofOfRelationship(), demoJsonObject, PROOF_OF_RELATIONSHIP,
+					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_RELATIONSHIP,
 							map);
 				if (request.getProofOfIdentity() != null && !request.getProofOfIdentity().isEmpty())
-					setDemographicDocuments(request.getProofOfIdentity(), demoJsonObject, PROOF_OF_IDENTITY, map);
+					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_IDENTITY, map);
 
 				PacketDto packetDto = new PacketDto();
 				packetDto.setId(generateRegistrationId(request.getCenterId(), request.getMachineId()));
 				packetDto.setSource(utilities.getDefaultSource());
 				packetDto.setProcess(RegistrationType.RES_UPDATE.toString());
-				packetDto.setSchemaVersion(idSchemaVersion);
-				packetDto.setSchemaJson(idSchemaUtil.getIdSchema(Double.valueOf(idSchemaVersion)));
+				packetDto.setSchemaVersion(idschemaVersion);
+				packetDto.setSchemaJson(idSchemaUtil.getIdSchema(Double.valueOf(idschemaVersion)));
 				packetDto.setFields(idMap);
 				packetDto.setDocuments(map);
 				packetDto.setMetaInfo(getRegistrationMetaData(request.getIdValue(),
@@ -182,7 +175,7 @@ public class ResidentUpdateService {
 
 				packetZipBytes = IOUtils.toByteArray(fis);
 
-				String creationTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),

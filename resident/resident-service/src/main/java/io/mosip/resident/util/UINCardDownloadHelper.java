@@ -1,5 +1,7 @@
 package io.mosip.resident.util;
 
+import java.time.LocalDateTime;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,8 +21,8 @@ import io.mosip.resident.dto.UINCardRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 
 @Component
-public class UINCardDownloadHelper {
-	private static final Logger logger = LoggerConfiguration.logConfig(UINCardDownloadHelper.class);
+public class UINCardDownloadService {
+	private static final Logger logger = LoggerConfiguration.logConfig(UINCardDownloadService.class);
 	@Autowired
     private Environment env;
 
@@ -40,7 +42,7 @@ public class UINCardDownloadHelper {
 		request.setRequest(uincardDTO);
 		request.setId(env.getProperty(PRINT_ID));
 		request.setVersion(env.getProperty(PRINT_VERSION));
-		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 		byte[]	response;
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),

@@ -1,11 +1,33 @@
 package io.mosip.resident.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.pdf.PdfReader;
+
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
@@ -13,58 +35,18 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RegistrationConstants;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TransactionStage;
+import io.mosip.resident.dto.IdRequestDto;
+import io.mosip.resident.dto.IdResponseDTO;
 import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.RequestDto1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ProxyMasterdataService;
 import lombok.Data;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import reactor.util.function.Tuple3;
-import reactor.util.function.Tuples;
-
-import javax.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
-import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
-import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 
 /**
  * The Class Utilities.
@@ -78,13 +60,25 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @Data
 public class Utilities {
-	private static final String CREATE_DATE_TIMES = "createdDateTimes";
+
 	private final Logger logger = LoggerConfiguration.logConfig(Utilities.class);
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
 
+	/** The Constant UIN. */
+	private static final String UIN = "UIN";
+
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = "\\";
+
+	/** The Constant RE_PROCESSING. */
+	private static final String RE_PROCESSING = "re-processing";
+
+	/** The Constant HANDLER. */
+	private static final String HANDLER = "handler";
+
+	/** The Constant NEW_PACKET. */
+	private static final String NEW_PACKET = "New-packet";
 
 	@Value("${IDSchema.Version}")
 	private String idschemaVersion;
@@ -105,14 +99,6 @@ public class Utilities {
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Autowired
-	private ProxyMasterdataService proxyMasterdataService;
-
-	@Autowired
-	private Utility utility;
-
-	@Autowired
-	private IdentityService identityService;
 	/** The config server file storage URL. */
 	@Value("${config.server.file.storage.uri}")
 	private String configServerFileStorageURL;
@@ -129,19 +115,17 @@ public class Utilities {
 	@Value("${resident.vid.version}")
 	private String vidVersion;
 
+
+	/** The Constant NAME. */
+	private static final String NAME = "name";
+
+	private static final String VALUE = "value";
+
 	private String mappingJsonString = null;
 
     private static String regProcessorIdentityJson = "";
-	private SecureRandom secureRandom;
 
-	/** The acr-amr mapping json file. */
-	@Value("${amr-acr.json.filename}")
-	private String amrAcrJsonFile;
-
-	private static final String ACR_AMR = "acr_amr";
-
-
-	@PostConstruct
+    @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -170,40 +154,22 @@ public class Utilities {
 						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
 				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), error.get(0).getMessage());
 			}
-			return convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
+			String response = objMapper.writeValueAsString(idResponseDto.getResponse().getIdentity());
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+			try {
+				return (JSONObject) new JSONParser().parse(response);
+			} catch (org.json.simple.parser.ParseException e) {
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						ExceptionUtils.getStackTrace(e));
+				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
+			}
+
+
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::retrieveIdrepoJson()::exit UIN is null");
 		return null;
-	}
-
-	public JSONObject convertIdResponseIdentityObjectToJsonObject(Object identityObject) throws JsonProcessingException {
-		String response = objMapper.writeValueAsString(identityObject);
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-				"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
-		try {
-			return (JSONObject) new JSONParser().parse(response);
-		} catch (org.json.simple.parser.ParseException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-					ExceptionUtils.getStackTrace(e));
-			throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
-		}
-	}
-
-	public Tuple3<JSONObject, String, IdResponseDTO1> getIdentityDataFromIndividualID(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		IdResponseDTO1 idResponseDto = retrieveIdRepoJsonIdResponseDto(individualId);
-		JSONObject idRepoJson = convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
-		String schemaJson = getSchemaJsonFromIdRepoJson(idRepoJson);
-		return Tuples.of(idRepoJson, schemaJson, idResponseDto);
-	}
-
-	public String getSchemaJsonFromIdRepoJson(JSONObject idRepoJson) throws ResidentServiceCheckedException {
-		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
-		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-		Object idSchema = idSchemaResponse.getResponse();
-		Map<String, ?> map = objMapper.convertValue(idSchema, Map.class);
-		return ((String) map.get("schemaJson"));
 	}
 
 	public JSONObject getRegistrationProcessorMappingJson() throws IOException {
@@ -234,7 +200,7 @@ public class Utilities {
 				"Utilities::getUinByVid():: RETRIEVEIUINBYVID GET service call ended successfully");
 
 		if (!response.getErrors().isEmpty()) {
-			throw new IndividualIdNotFoundException(String.format("%s: %s", ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage(), vid));
+			throw new VidCreationException("VID creation exception");
 
 		} else {
 			uin = response.getResponse().getUin();
@@ -242,106 +208,53 @@ public class Utilities {
 		return uin;
 	}
 
-	public String getRidByIndividualId(String individualId) throws ApisResourceAccessException {
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
-				"Utilities::getRidByIndividualId():: entry");
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("individualId", individualId);
-		String rid = null;
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
-				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
+	public boolean linkRegIdWrtUin(String registrationID, String uin) throws ApisResourceAccessException, IOException {
 
-		ResponseWrapper<?> response = residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
-				pathsegments, ResponseWrapper.class);
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
+		IdResponseDTO idResponse = null;
+		RequestDto1 requestDto = new RequestDto1();
+		if (uin != null) {
 
-		if (!response.getErrors().isEmpty()) {
-			throw new IndividualIdNotFoundException("Individual ID not found exception");
+			JSONObject identityObject = new JSONObject();
+			identityObject.put(UIN, uin);
+			addSchemaVersion(identityObject);
+
+			requestDto.setRegistrationId(registrationID);
+			requestDto.setIdentity(identityObject);
+
+			IdRequestDto idRequestDTO = new IdRequestDto();
+			idRequestDTO.setId(idRepoUpdate);
+			idRequestDTO.setRequest(requestDto);
+			idRequestDTO.setMetadata(null);
+			idRequestDTO.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+			idRequestDTO.setVersion(vidVersion);
+
+			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
+					IdResponseDTO.class);
+
+			if (idResponse != null && idResponse.getResponse() != null) {
+
+				logger.info(LoggerFileConstant.SESSIONID.toString(),
+						LoggerFileConstant.REGISTRATIONID.toString(), registrationID, " UIN Linked with the RegID");
+
+				return true;
+			} else {
+
+				logger.error(LoggerFileConstant.SESSIONID.toString(),
+						LoggerFileConstant.REGISTRATIONID.toString(), registrationID,
+						" UIN not Linked with the RegID ");
+				return false;
+			}
 
 		} else {
-			rid = (String) ((Map<String, ?>)response.getResponse()).get(ResidentConstants.RID);
+
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
+					registrationID, " UIN is null ");
 		}
-		return rid;
+
+		return false;
 	}
 
-	public ArrayList<?> getRidStatus(String rid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
-				"Utilities::getRidStatus():: entry");
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("rid", rid);
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
-				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
-		ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>)residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
-				pathsegments, ResponseWrapper.class);
-		if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-			logger.debug(responseWrapper.getErrors().get(0).toString());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.RID_NOT_FOUND.getErrorCode(),
-					responseWrapper.getErrors().get(0).getMessage());
-		}
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
-		ArrayList<?> objectArrayList = objMapper.readValue(
-				objMapper.writeValueAsString(responseWrapper.getResponse()), ArrayList.class);
-		return sortedRegprocStageList(objectArrayList);
-	}
-
-	public ArrayList<?> sortedRegprocStageList(ArrayList<?> objectArrayList) {
-		if (objectArrayList.isEmpty() || !(objectArrayList.get(0) instanceof Map)) {
-			throw new IllegalArgumentException("Input ArrayList must contain Map objects.");
-		}
-		ArrayList<Map<String, String>> arrayListOfMaps = (ArrayList<Map<String, String>>) objectArrayList;
-		arrayListOfMaps.sort((map1, map2) -> {
-			SimpleDateFormat dateFormat = new SimpleDateFormat(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
-			String dateTime1 = map1.get(CREATE_DATE_TIMES);
-			String dateTime2 = map2.get(CREATE_DATE_TIMES);
-
-			try {
-				Date date1 = dateFormat.parse(dateTime1);
-				Date date2 = dateFormat.parse(dateTime2);
-				return date2.compareTo(date1);
-			} catch (ParseException e) {
-				throw new IllegalArgumentException("Date parsing error: " + e.getMessage());
-			}
-		});
-
-		return arrayListOfMaps;
-	}
-
-	public Map<String, String> getPacketStatus(String rid)
-			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		Map<String, String> packetStatusMap = new HashMap<>();
-		ArrayList<?> regTransactionList = getRidStatus(rid);
-		for (Object object : regTransactionList) {
-			if (object instanceof Map) {
-				Map<String, Object> packetData = (Map<String, Object>) object;
-				Optional<String> packetStatusCode = getPacketStatusCode(packetData);
-				Optional<String> transactionTypeCode = getTransactionTypeCode(packetData);
-				if (packetStatusCode.isPresent() && transactionTypeCode.isPresent()) {
-					packetStatusMap.put(AID_STATUS, packetStatusCode.get());
-					packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode.get());
-					return packetStatusMap;
-				}
-			}
-		}
-		throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
-				String.format("%s - Unable to get the RID status from Reg-proc",
-						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage()));
-	}
-
-	private Optional<String> getPacketStatusCode(Map<String, Object> packetData) {
-		String statusCode = (String) packetData.get(STATUS_CODE);
-		Optional<String> packetStatusCode = PacketStatus.getStatusCode(statusCode, env);
-		return packetStatusCode;
-	}
-
-	private Optional<String> getTransactionTypeCode(Map<String, Object> packetData) {
-		String transactionTypeCode = (String) packetData.get(TRANSACTION_TYPE_CODE);
-		Optional<String> typeCode = TransactionStage.getTypeCode(transactionTypeCode, env);
-		return typeCode;
-	}
-
-	public String getJson(String configServerFileStorageURL, String uri) {
+    public String getJson(String configServerFileStorageURL, String uri) {
         if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
         }
@@ -380,43 +293,23 @@ public class Utilities {
 		return response;
 	}
 
-	public IdResponseDTO1 retrieveIdRepoJsonIdResponseDto(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
-		IdResponseDTO1 response = null;
-		if (uin != null) {
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-					"Utilities::retrieveIdrepoJson()::entry");
-			List<String> pathSegments = new ArrayList<>();
-			pathSegments.add(uin);
-			IdResponseDTO1 idResponseDto;
-
-			idResponseDto = (IdResponseDTO1) utility.getCachedIdentityData(uin, identityService.getAccessToken(), IdResponseDTO1.class);
-			if (idResponseDto == null) {
-				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
-				return null;
-			}
-			if (!idResponseDto.getErrors().isEmpty()) {
-				List<ServiceError> error = idResponseDto.getErrors();
-				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
-				throw new IdRepoAppException(error.get(0).getErrorCode(), error.get(0).getMessage());
-			}
-
-			response = idResponseDto;
-
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
-		}
-
-		return response;
-	}
-
 	public String getDefaultSource() {
 		String[] strs = provider.split(",");
 		List<String> strList = Lists.newArrayList(strs);
 		Optional<String> optional = strList.stream().filter(s -> s.contains(sourceStr)).findAny();
 		String source = optional.isPresent() ? optional.get().replace(sourceStr + ":", "") : null;
 		return source;
+	}
+
+	private void addSchemaVersion(JSONObject identityObject) throws IOException {
+
+		JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
+		String schemaVersion = JsonUtil.getJSONValue(
+				JsonUtil.getJSONObject(regProcessorIdentityJson, MappingJsonConstants.IDSCHEMA_VERSION),
+				MappingJsonConstants.VALUE);
+
+		identityObject.put(schemaVersion, Float.valueOf(idschemaVersion));
+
 	}
 
 	public List<Map<String, String>> generateAudit(String rid) {
@@ -427,6 +320,7 @@ public class Utilities {
 			hostIP = InetAddress.getLocalHost().getHostAddress();
 			hostName = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException unknownHostException) {
+
 			hostIP = ServerUtil.getServerUtilInstance().getServerIp();
 			hostName = ServerUtil.getServerUtilInstance().getServerName();
 		}
@@ -435,7 +329,7 @@ public class Utilities {
 
 		Map<String, String> auditDtos = new HashMap<>();
 		auditDtos.put("uuid", UUID.randomUUID().toString());
-		String timestamp = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+		String timestamp = DateUtils.formatToISOString(LocalDateTime.now());
 		auditDtos.put("createdAt", timestamp);
 		auditDtos.put("eventId", "RPR_405");
 		auditDtos.put("eventName", "packet uploaded");
@@ -462,12 +356,12 @@ public class Utilities {
 	public String getLanguageCode() {
 		String langCode=null;
 		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
-		if (mandatoryLanguages!=null && !StringUtils.isBlank(mandatoryLanguages)) {
+		if (!StringUtils.isBlank(mandatoryLanguages)) {
 			String[] lanaguages = mandatoryLanguages.split(",");
 			langCode = lanaguages[0];
 		} else {
 			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			if (optionalLanguages!= null && !StringUtils.isBlank(optionalLanguages)) {
+			if (!StringUtils.isBlank(optionalLanguages)) {
 				String[] lanaguages = optionalLanguages.split(",");
 				langCode = lanaguages[0];
 			}
@@ -495,43 +389,5 @@ public class Utilities {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
-	}
-
-	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
-		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
-		return pdfReader.getNumberOfPages();
-	}
-
-	@PostConstruct
-	public void initializeSecureRandomInstance(){
-		secureRandom = new SecureRandom();
-	}
-
-	public SecureRandom getSecureRandom(){
-		return secureRandom;
-	}
-
-	@Cacheable(value = "amr-acr-mapping")
-	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
-		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
-				String.class);
-		Map<String, Object> amrAcrMap = Map.of();
-		try {
-			if (amrAcrJson != null) {
-				amrAcrMap = objMapper.readValue(amrAcrJson.getBytes(UTF_8), Map.class);
-			}
-		} catch (IOException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
-		}
-		Object obj = amrAcrMap.get(ACR_AMR);
-		Map<String, Object> map = (Map<String, Object>) obj;
-		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
-				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
-		return acrAmrMap;
-	}
-	@Cacheable(value = "getDynamicFieldBasedOnLangCodeAndFieldName", key = "{#fieldName, #langCode, #withValue}")
-	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
-		return proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 	}
 }

@@ -3,6 +3,7 @@ package io.mosip.resident.handler.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,6 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.PacketMetaInfoConstants;
@@ -97,11 +97,24 @@ public class UinCardRePrintService {
     @Autowired
     AuditUtil audit;
 
+    /** The vid type. */
+    @Value("${id.repo.vidType}")
+    private String vidType;
+
     /** The Constant VID_CREATE_ID. */
     public static final String VID_CREATE_ID = "vid.create.id";
 
     /** The Constant REG_PROC_APPLICATION_VERSION. */
     public static final String REG_PROC_APPLICATION_VERSION = "resident.vid.version";
+
+    /** The Constant DATETIME_PATTERN. */
+    public static final String DATETIME_PATTERN = "resident.datetime.pattern";
+
+    /** The Constant UIN. */
+    public static final String UIN = "UIN";
+
+    /** The Constant VID. */
+    public static final String VID = "VID";
 
     /** The reg proc logger. */
     private final Logger logger = LoggerConfiguration.logConfig(UinCardRePrintService.class);
@@ -134,7 +147,7 @@ public class UinCardRePrintService {
                 String cardType = requestDto.getCardType();
                 String regType = requestDto.getRegistrationType();
 
-                if (requestDto.getIdType().equalsIgnoreCase(IdType.UIN.name()))
+                if (requestDto.getIdType().equalsIgnoreCase(UIN))
                     uin = requestDto.getId();
                 else
                     vid = requestDto.getId();
@@ -148,7 +161,7 @@ public class UinCardRePrintService {
                     vidRequestDto.setVidType(env.getProperty(VID_TYPE));
                     request.setId(env.getProperty(VID_CREATE_ID));
                     request.setRequest(vidRequestDto);
-                    request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+                    request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
                     request.setVersion(env.getProperty(REG_PROC_APPLICATION_VERSION));
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -201,7 +214,7 @@ public class UinCardRePrintService {
                 FileInputStream fis = new FileInputStream(file);
 
                 packetZipBytes = IOUtils.toByteArray(fis);
-				String creationTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
 
                 packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
                         packetDto.getId(), creationTime, regType, packetZipBytes);
@@ -352,9 +365,9 @@ public class UinCardRePrintService {
      */
     public boolean isValidUinVID(RegProcRePrintRequestDto requestDto) throws BaseCheckedException, IOException {
         boolean isValid = false;
-        if (requestDto.getIdType().equalsIgnoreCase(IdType.UIN.name())) {
+        if (requestDto.getIdType().equalsIgnoreCase(UIN)) {
             isValid = validator.isValidUin(requestDto.getId());
-        } else if (requestDto.getIdType().equalsIgnoreCase(IdType.VID.name())) {
+        } else if (requestDto.getIdType().equalsIgnoreCase(VID)) {
             isValid = validator.isValidVid(requestDto.getId());
         }
         return isValid;
