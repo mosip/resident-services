@@ -25,11 +25,12 @@ CONN=$(PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --hos
 echo "Terminated connections"
 
 # Execute upgrade or rollback
-if [ $ACTION == "upgrade" ]; then
+if [ "$ACTION" == "upgrade" ]; then
   echo "Upgrading database from $CURRENT_VERSION to $UPGRADE_VERSION"
   UPGRADE_SCRIPT_FILE="sql/${CURRENT_VERSION}_to_${UPGRADE_VERSION}_upgrade.sql"
   if [ -f "$UPGRADE_SCRIPT_FILE" ]; then
     echo "Executing upgrade script $UPGRADE_SCRIPT_FILE"
+    PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $UPGRADE_SCRIPT_FILE
     PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 -v dbuserpwd="'${DB_USER_PWD}'" --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $UPGRADE_SCRIPT_FILE
   else
     echo "Upgrade script not found, exiting."
