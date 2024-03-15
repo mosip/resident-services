@@ -167,9 +167,6 @@ public class RegistrationConstants {
 	public static final String SINGLE = "single";
 	public static final String MULTIPLE = "multiple";
 	public static final String OTP_VALIDATION_SUCCESS = "success";
-	public static final String SUCCESS = "Success";
-	public static final String FAILURE = "Fail";
-	public static final String INFO = "INFO";
 	public static final String SPLITTER = "#TYPE#";
 	public static final String RESTART = "Restart";
 	public static final String SUPERVISOR = "REGISTRATION_SUPERVISOR";
@@ -1520,8 +1517,6 @@ public class RegistrationConstants {
 	public static final String MESSAGE_CODE = "message";
 	public static final String TPM_PUBLIC_KEY_SYNC_SERVICE_NAME = "tpm_public_key";
 	public static final String SERIAL_NUMBER = "serialnumber";
-	
-	public static final String SYSTEM="SYSTEM";
 
 	public static final String RESPONSE_SIGNATURE = "response-signature";
 	public static final String ON_BOARD_FACE = "FACE";
@@ -1678,11 +1673,12 @@ public class RegistrationConstants {
 	public static final String DATETIME_PATTERN = "resident.datetime.pattern";
 	public static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
 	public static final String EXTENSION_OF_FILE = ".zip";
-	
+
+	// Event enums
 	public static final  String RESIDENT_APPLICATION_NAME="Resident Service";
-	
 	public static final  String RESIDENT_APPLICATION_ID="RES_SER";
-	
-	
+	public static final String SUCCESS = "Success";
+	public static final String FAILURE = "Failure";
+	public static final String INFO = "INFO";
 
 }
