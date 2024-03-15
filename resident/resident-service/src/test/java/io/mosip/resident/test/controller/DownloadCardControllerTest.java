@@ -1,5 +1,7 @@
 package io.mosip.resident.test.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.security.PrivateKey;
@@ -7,6 +9,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.controller.DownloadCardController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,13 +35,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownloadCardController;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.ResidentVidService;
@@ -59,21 +62,21 @@ import reactor.util.function.Tuples;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class DownloadCardControllerTest {
-	
+
     @MockBean
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-    
+
     @Mock
     private Environment environment;
-    
+
     @Mock
     private Utility utility;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
 
     @MockBean
@@ -94,7 +97,7 @@ public class DownloadCardControllerTest {
 
     @MockBean
     private ResidentVidService vidService;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 
@@ -120,7 +123,7 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("file");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -131,9 +134,47 @@ public class DownloadCardControllerTest {
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
 
+    @Test(expected = Exception.class)
+    public void testGetCardFailed() throws Exception {
+        pdfbytes = "".getBytes();
+        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, ""));
+        mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isOk());
+    }
+
     @Test
     public void testDownloadPersonalizedCard() throws Exception {
-    	Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt())).thenReturn(Tuples.of(pdfbytes, "12345"));
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class))).thenReturn(Tuples.of(pdfbytes, "12345"));
+        MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
+                new MainRequestDTO<>();
+        DownloadPersonalizedCardDto downloadPersonalizedCardDto =
+                new DownloadPersonalizedCardDto();
+        downloadPersonalizedCardDto.setHtml("PGh0bWw+PGhlYWQ+PC9oZWFkPjxib2R5Pjx0YWJsZT48dHI+PHRkPk5hbWU8L3RkPjx0ZD5GUjwvdGQ+PC90cj48dHI+PHRkPkRPQjwvdGQ+PHRkPjE5OTIvMDQvMTU8L3RkPjwvdHI+PHRyPjx0ZD5QaG9uZSBOdW1iZXI8L3RkPjx0ZD45ODc2NTQzMjEwPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=");
+        downloadPersonalizedCardMainRequestDTO.setRequest(downloadPersonalizedCardDto);
+        reqJson = gson.toJson(downloadPersonalizedCardMainRequestDTO);
+        mockMvc.perform(MockMvcRequestBuilders.post("/download/personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDownloadPersonalizedCardFailed() throws Exception {
+        pdfbytes = "".getBytes();
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class))).thenReturn(Tuples.of(pdfbytes, ""));
+        MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
+                new MainRequestDTO<>();
+        DownloadPersonalizedCardDto downloadPersonalizedCardDto =
+                new DownloadPersonalizedCardDto();
+        downloadPersonalizedCardDto.setHtml("PGh0bWw+PGhlYWQ+PC9oZWFkPjxib2R5Pjx0YWJsZT48dHI+PHRkPk5hbWU8L3RkPjx0ZD5GUjwvdGQ+PC90cj48dHI+PHRkPkRPQjwvdGQ+PHRkPjE5OTIvMDQvMTU8L3RkPjwvdHI+PHRyPjx0ZD5QaG9uZSBOdW1iZXI8L3RkPjx0ZD45ODc2NTQzMjEwPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=");
+        downloadPersonalizedCardMainRequestDTO.setRequest(downloadPersonalizedCardDto);
+        reqJson = gson.toJson(downloadPersonalizedCardMainRequestDTO);
+        mockMvc.perform(MockMvcRequestBuilders.post("/download/personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isBadRequest());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadPersonalizedCardInvalidInputException() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateDownloadPersonalizedCard(any());
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
@@ -147,23 +188,47 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testRequestVidCard() throws Exception {
-		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
+        ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt()))
-				.thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
+        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class)))
+                .thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }
-    
+
+    @Test(expected = Exception.class)
+    public void testRequestVidCardFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateDownloadCardVid(any());
+        ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setStatus("success");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt(), Mockito.anyString()))
+                .thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
+        mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
+    }
+
     @Test
     public void testGetStatus() throws Exception {
-    	ResponseWrapper<CheckStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
-    	CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
-    	checkStatusResponseDTO.setAidStatus("process");
-    	responseWrapper.setResponse(checkStatusResponseDTO);
-		Mockito.when(downloadCardService.getIndividualIdStatus(Mockito.any()))
-				.thenReturn(responseWrapper);
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+        CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
+        checkStatusResponseDTO.setAidStatus("process");
+        responseWrapper.setResponse(checkStatusResponseDTO);
+        Mockito.when(downloadCardService.getIndividualIdStatus(Mockito.any()))
+                .thenReturn(responseWrapper);
+        mockMvc.perform(MockMvcRequestBuilders.get("/aid-stage/12345")).andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetStatusFailed() throws Exception {
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+        CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
+        checkStatusResponseDTO.setAidStatus("process");
+        responseWrapper.setResponse(checkStatusResponseDTO);
+        Mockito.when(downloadCardService.getIndividualIdStatus(Mockito.any()))
+                .thenThrow(new InvalidInputException());
         mockMvc.perform(MockMvcRequestBuilders.get("/aid-stage/12345")).andExpect(status().isOk());
     }
 

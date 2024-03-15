@@ -1,7 +1,8 @@
 package io.mosip.resident.util;
 
-import static org.junit.Assert.assertEquals;
-
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,11 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UINCardDownloadService;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UINCardDownloadTest {

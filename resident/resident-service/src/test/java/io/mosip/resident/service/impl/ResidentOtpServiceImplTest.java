@@ -83,9 +83,7 @@ public class ResidentOtpServiceImplTest {
 		IndividualIdOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		aidOtpRequestDTO.setIndividualId("9054257143");
 		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
-		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
 		Mockito.when(objectMapper.convertValue(aidOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
-		when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
 	}
 
 	@Test
@@ -113,7 +111,6 @@ public class ResidentOtpServiceImplTest {
 		otpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
 		aidOtpRequestDTO.setIndividualId("9054257143");
 		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
-		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
 		Mockito.when(objectMapper.convertValue(aidOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
 		OtpResponseDTO otpResponseDTO = new OtpResponseDTO();
 		otpResponseDTO.setResponse(new MaskedResponseDTO());
@@ -136,7 +133,6 @@ public class ResidentOtpServiceImplTest {
 		otpResponseDTO.setResponse(new MaskedResponseDTO());
 
 		Mockito.when(identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId())).thenReturn(identityDTO);
-		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 		Mockito.when(residentOtpServiceImpl.generateOtp(any())).thenThrow(new ResidentServiceCheckedException());
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(otpResponseDTO);
 		assertNotNull(residentOtpServiceImpl.generateOtpForIndividualId(aidOtpRequestDTO));
