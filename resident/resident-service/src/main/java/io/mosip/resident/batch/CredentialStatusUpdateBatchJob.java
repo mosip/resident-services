@@ -34,7 +34,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.function.RunnableWithException;
+import io.mosip.resident.service.function.RunnableWithException;
 import io.mosip.resident.helper.CredentialStatusUpdateHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.util.JsonUtil;
