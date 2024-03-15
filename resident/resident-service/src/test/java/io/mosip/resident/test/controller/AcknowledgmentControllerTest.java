@@ -1,10 +1,16 @@
 package io.mosip.resident.test.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import io.mosip.resident.controller.AcknowledgementController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,10 +24,14 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.controller.AcknowledgementController;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.service.IdAuthService;
@@ -31,6 +41,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * Acknowledgment Controller Test
@@ -41,6 +52,8 @@ import io.mosip.resident.validator.RequestValidator;
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration
 public class AcknowledgmentControllerTest {
+    private static final String LOCALE_EN_US = "en-US";
+
     @InjectMocks
     private AcknowledgementController acknowledgementController;
 
@@ -90,9 +103,35 @@ public class AcknowledgmentControllerTest {
 
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
-        Mockito.when(templateUtil.getFeatureName(Mockito.anyString())).thenReturn(RequestType.AUTHENTICATION_REQUEST.toString());
-        Mockito.when(acknowledgementService.getAcknowledgementPDF(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("test".getBytes());
-        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0);
+        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString())).thenReturn(Tuples.of("test".getBytes(), RequestType.AUTHENTICATION_REQUEST));
+        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
+        assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetAcknowledgementFailure() throws ResidentServiceCheckedException, IOException {
+        ReflectionTestUtils.setField(acknowledgementController, "ackDownloadId", "ack.id");
+        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString()))
+                .thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND));
+        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
+        assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetAcknowledgementFailureResidentServiceException() throws ResidentServiceCheckedException, IOException {
+        doThrow(new ResidentServiceException("error", "Error message")).
+                when(requestValidator).validateEventIdLanguageCode(any(), any());
+        ReflectionTestUtils.setField(acknowledgementController, "ackDownloadId", "ack.id");
+        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
+        assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetAcknowledgementFailureInvalidInputException() throws ResidentServiceCheckedException, IOException {
+        doThrow(new InvalidInputException()).
+                when(requestValidator).validateEventIdLanguageCode(any(), any());
+        ReflectionTestUtils.setField(acknowledgementController, "ackDownloadId", "ack.id");
+        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
         assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
     }
 

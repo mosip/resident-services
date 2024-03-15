@@ -1,5 +1,7 @@
 package io.mosip.resident.test.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
@@ -8,6 +10,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.controller.DownLoadMasterDataController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +35,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownLoadMasterDataController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ResidentVidService;
@@ -54,15 +57,15 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class DownloadMasterdataControllerTest {
-	
+
     @MockBean
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
 
     @MockBean
@@ -89,7 +92,7 @@ public class DownloadMasterdataControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 
@@ -118,7 +121,7 @@ public class DownloadMasterdataControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("fileName");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("fileName");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -127,11 +130,32 @@ public class DownloadMasterdataControllerTest {
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
-               andExpect(status().isOk());
+                andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadRegistrationCentersByHierarchyLevelInvalidInputException() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateLanguageCode(any());
+        Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
+                Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
+                andExpect(status().isOk());
     }
 
     @Test
-    public void testDownloadNearestRegistrationcenters() throws Exception {
+    public void testDownloadNearestRegistrationCenters() throws Exception {
+        Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
+                Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/nearestRegistrationcenters?langcode=eng&longitude=1&latitude=1&proximitydistance=1")).
+                andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadNearestRegistrationCentersFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateLanguageCode(any());
         Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
                 Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
@@ -141,6 +165,17 @@ public class DownloadMasterdataControllerTest {
 
     @Test
     public void testDownloadSupportingDocsByLanguage() throws Exception {
+        Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
+                thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/supporting-documents?langcode=eng")).
+                andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadSupportingDocsByLanguageFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateLanguageCode(any());
         Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
                 thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
