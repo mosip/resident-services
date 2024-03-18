@@ -5,7 +5,6 @@ import java.util.List;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import org.springframework.http.ResponseEntity;
 
 public interface ProxyIdRepoService {
 
@@ -14,5 +13,5 @@ public interface ProxyIdRepoService {
 
     ResponseWrapper<DraftResidentResponseDto> getPendingDrafts() throws ResidentServiceCheckedException;
 
-    ResponseEntity<Object> discardDraft(String eid) throws ResidentServiceCheckedException;
+    String discardDraft(String eid) throws ResidentServiceCheckedException;
 }

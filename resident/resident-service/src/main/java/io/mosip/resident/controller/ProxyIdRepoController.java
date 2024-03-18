@@ -134,20 +134,20 @@ public class ProxyIdRepoController {
 	public ResponseEntity<Object> discardPendingDraft(
 			@PathVariable String eid) {
 		logger.debug("ProxyIdRepoController::discardPendingDraft()::entry");
+		ResponseWrapper<String> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setId(environment.getProperty(ResidentConstants.DISCARD_DRAFT_ID));
+		responseWrapper.setVersion(environment.getProperty(ResidentConstants.DISCARD_DRAFT_VERSION));
 		try {
 			requestValidator.validateEventId(eid);
 			auditUtil.setAuditRequestDto(DISCARD_DRAFT_SUCCESS);
 			logger.debug("ProxyIdRepoController::discardPendingDraft()::exit");
-			return proxySerivce
-					.discardDraft(eid);
+			responseWrapper.setResponse(proxySerivce
+					.discardDraft(eid));
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(DISCARD_DRAFT_EXCEPTION);
 			ExceptionUtils.logRootCause(e);
-			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-			responseWrapper.setId(environment.getProperty(ResidentConstants.DISCARD_DRAFT_ID));
-			responseWrapper.setVersion(environment.getProperty(ResidentConstants.DISCARD_DRAFT_VERSION));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-			return ResponseEntity.ok(responseWrapper);
 		}
+		return ResponseEntity.ok(responseWrapper);
 	}
 }
