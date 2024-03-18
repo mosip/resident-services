@@ -30,8 +30,6 @@ import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -157,7 +155,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	@Override
-	public ResponseEntity<Object> discardDraft(String eid) throws ResidentServiceCheckedException{
+	public String discardDraft(String eid) throws ResidentServiceCheckedException{
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::entry");
 			List<String> pathsegments = new ArrayList<String>();
@@ -197,7 +195,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 
 			logger.debug("ProxyIdRepoServiceImpl::discardDraft()::exit");
-			return ResponseEntity.status(HttpStatus.OK).build();
+			return response.getResponse().getStatus();
 
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
