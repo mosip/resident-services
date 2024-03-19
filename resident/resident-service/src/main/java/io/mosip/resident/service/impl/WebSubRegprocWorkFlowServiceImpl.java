@@ -54,7 +54,7 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
                     utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
                 } else if (PacketStatus.getStatusCodeList(PacketStatus.SUCCESS, environment).contains(workflowCompletedEventDTO.getResultCode())) {
-                    utility.updateEntity(residentTransactionEntity.getStatusCode(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
+                    utility.updateEntity(EventStatusInProgress.IDENTITY_UPDATED.name(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
                             "Packet processed in Regproc with status code-" +
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
                     utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
