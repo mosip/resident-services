@@ -557,8 +557,10 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			LocationImmediateChildrenResponseDto responseDto = getImmediateChildrenByLocCodeAndLanguageCodes(locationCode, languageCodesNotCached);
 			languageCodesNotCached.forEach(
 					languageCodeNotCached ->{
-						locations.put(languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
-						cache.put(locationCode+"_"+languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+						if(responseDto.getLocations().containsKey(languageCodeNotCached)) {
+							locations.put(languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+							cache.put(locationCode + "_" + languageCodeNotCached, responseDto.getLocations().get(languageCodeNotCached));
+						}
 					}
 			);
 		}

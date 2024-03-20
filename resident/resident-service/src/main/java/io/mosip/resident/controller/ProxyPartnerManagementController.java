@@ -21,7 +21,7 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -74,12 +74,12 @@ public class ProxyPartnerManagementController {
 		try {
 			responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
 			e.setMetadata(
 					Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.AUTH_PROXY_PARTNERS_ID)));
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_PARTNERS_BY_PARTNER_TYPE_SUCCESS);
 		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType()::exit");
 		return responseWrapper;
 	}

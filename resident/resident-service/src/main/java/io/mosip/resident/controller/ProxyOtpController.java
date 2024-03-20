@@ -34,7 +34,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,16 +100,16 @@ public class ProxyOtpController {
 			responseEntity = proxyOtpService.sendOtp(userOtpRequest, identityDTO);
 		}
 		catch (InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID)));
 		} catch (ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
 		} catch (ResidentServiceException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw e;
 		}
 		log.debug("ProxyOtpController::sendOTP()::exit");
@@ -141,7 +141,7 @@ public class ProxyOtpController {
 			requestValidator.validateUpdateDataRequest(userIdOtpRequest);
 		} catch (InvalidInputException e) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED, userId, "Validate OTP Failed"));
+					AuditEnum.getAuditEventWithValue(AuditEnum.OTP_VALIDATION_FAILED, userId, "Validate OTP Failed"));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID)));

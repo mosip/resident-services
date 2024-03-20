@@ -50,7 +50,7 @@ import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -115,7 +115,7 @@ public class ResidentUpdateService {
 			idSchemaVersion = defaultIdSchemaVersion;
 		}
 		byte[] packetZipBytes = null;
-		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
+		audit.setAuditRequestDto(AuditEnum.CREATE_PACKET);
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
 		if (validator.isValidCenter(request.getCenterId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
@@ -204,7 +204,7 @@ public class ResidentUpdateService {
 				if (e instanceof BaseCheckedException) {
 					throw (BaseCheckedException) e;
 				}
-				audit.setAuditRequestDto(EventEnum.UNKNOWN_EXCEPTION);
+				audit.setAuditRequestDto(AuditEnum.UNKNOWN_EXCEPTION);
 				throw new BaseCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), e);
 

@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,9 @@ public class ResidentVerificationControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
+
+	@MockBean
+	private Utility utilityBean;
 
 	@MockBean
 	private DocumentService docService;

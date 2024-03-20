@@ -53,7 +53,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -105,11 +105,11 @@ public class ResidentCredentialController {
 			validator.validateReqCredentialRequest(requestDTO);
 			response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
 		} catch (InvalidInputException | ResidentServiceException | ResidentCredentialServiceException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.CREDENTIAL_STORE_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_SUCCESS);
 		logger.debug("ResidentCredentialController::reqCredential()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -143,14 +143,14 @@ public class ResidentCredentialController {
 			tupleResponse = residentCredentialService.shareCredential(request.getRequest(), purpose,
 					requestDTO.getRequest().getSharableAttributes());
 		} catch (InvalidInputException | ResidentServiceCheckedException | ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, shareCredentialId));
 			throw e;
 		}
 		response.setId(shareCredentialId);
 		response.setVersion(shareCredentialVersion);
 		response.setResponse(tupleResponse.getT1());
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_SUCCESS);
 		logger.debug("ResidentCredentialController::requestShareCredWithPartner()::exit");
 		return ResponseEntity.status(HttpStatus.OK).header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(response);
@@ -171,10 +171,10 @@ public class ResidentCredentialController {
 		try {
 			response.setResponse(residentCredentialService.getStatus(requestId));
 		} catch (ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
 		logger.debug("ResidentCredentialController::getCredentialStatus()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -194,11 +194,11 @@ public class ResidentCredentialController {
 		try {
 			pdfBytes = residentCredentialService.getCard(requestId);
 		} catch (ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.REQ_CARD_EXCEPTION);
 			throw e;
 		}
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		audit.setAuditRequestDto(EventEnum.REQ_CARD_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.REQ_CARD_SUCCESS);
 		logger.debug("ResidentCredentialController::getCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + requestId + ".pdf\"")
@@ -220,10 +220,10 @@ public class ResidentCredentialController {
 		try {
 			response.setResponse(residentCredentialService.getCredentialTypes());
 		} catch (ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_TYPES_EXCEPTION);
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.CREDENTIAL_TYPES_SUCCESS);
 		logger.debug("ResidentCredentialController::getCredentialTypes()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -244,10 +244,10 @@ public class ResidentCredentialController {
 		try {
 			response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		} catch (ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
 		logger.debug("ResidentCredentialController::cancelCredentialRequest()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -267,10 +267,10 @@ public class ResidentCredentialController {
 		try {
 			response = residentCredentialService.getPolicyByCredentialType(partnerId, credentialType);
 		} catch (ResidentCredentialServiceException e) {
-			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.REQ_POLICY_EXCEPTION);
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.REQ_POLICY_SUCCESS);
 		logger.debug("ResidentCredentialController::getPolicyByCredentialType()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

@@ -22,7 +22,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,11 +63,11 @@ public class VerificationController {
 			validator.validateChannelVerificationStatus(channel, individualId);
 			verificationResponseDTO = verificationService.checkChannelVerificationStatus(channel, individualId);
 		} catch (ResidentServiceCheckedException | ResidentServiceException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.VERIFICATION_STATUS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.VERIFICATION_STATUS_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.VERIFICATION_STATUS_SUCCESS);
 		logger.debug("VerificationController::getChannelVerificationStatus()::exit");
 		return verificationResponseDTO;
 	}

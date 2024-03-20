@@ -85,7 +85,7 @@ import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
@@ -166,11 +166,11 @@ public class ResidentController {
 			logger.debug("ResidentController::Request for checking RID status");
 			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
 		} catch (InvalidInputException | ApisResourceAccessException | ResidentServiceException | RIDInvalidException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_STATUS_FAILURE, e.getMessage()));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.RID_STATUS_FAILURE, e.getMessage()));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.RID_STATUS_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.RID_STATUS_SUCCESS);
 		logger.debug("ResidentController::getRidStatus()::exit");
 		return response;
 	}
@@ -189,7 +189,7 @@ public class ResidentController {
 		validator.validateEuinRequest(requestDTO);
 		logger.debug(String.format("ResidentController::Requesting euin for transaction id: %s", requestDTO.getRequest().getTransactionID()));
 		byte[] pdfbytes = residentService.reqEuin(requestDTO.getRequest());
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQ_EUIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfbytes));
 		logger.debug("ResidentController::reqEuin()::exit");
@@ -215,7 +215,7 @@ public class ResidentController {
 		logger.debug(String.format("ResidentController::Requesting print uin for transaction id: %s", requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResidentReprintResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqPrintUin(requestDTO.getRequest()));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQ_PRINTUIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::reqPrintUin()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -238,7 +238,7 @@ public class ResidentController {
 		logger.debug(String.format("ResidentController::Requesting auth lock for transaction id: %s", requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQ_AUTH_LOCK_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::reqAauthLock()::exit");
 		return response;
@@ -261,7 +261,7 @@ public class ResidentController {
 		logger.debug(String.format("ResidentController::Requesting auth unlock for transaction id: %s", requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.UNLOCK));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQ_AUTH_UNLOCK_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::reqAuthUnlock()::exit");
 		return response;
@@ -289,10 +289,10 @@ public class ResidentController {
 			response.setResponse(tupleResponse.getT1());
 			response.setId(authLockStatusUpdateV2Id);
 			response.setVersion(authLockStatusUpdateV2Version);
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_SUCCESS);
+			audit.setAuditRequestDto(AuditEnum.REQ_AUTH_LOCK_UNLOCK_SUCCESS);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
+					AuditEnum.getAuditEventWithValue(AuditEnum.REQUEST_FAILED, "Request for auth lock failed"));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, authLockStatusUpdateV2Id));
 			throw e;
 		}
@@ -322,12 +322,12 @@ public class ResidentController {
 			response = new ResponseWrapper<>();
 			response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQUEST_FAILED,
 					requestDTO.getRequest().getTransactionID(), "Request for auth history"));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.AUTH_HISTORY_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.REQ_AUTH_HISTORY_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::reqAuthHistory()::exit");
 		return response;
@@ -353,11 +353,11 @@ public class ResidentController {
 			responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset, locale);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_FAILED, eventId));
+					AuditEnum.getAuditEventWithValue(AuditEnum.CHECK_AID_STATUS_REQUEST_FAILED, eventId));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.EVENTS_EVENTID_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS, eventId));
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.CHECK_AID_STATUS_REQUEST_SUCCESS, eventId));
 		logger.debug("ResidentController::checkEventIdStatus()::exit");
 		return responseWrapper;
 	}
@@ -392,11 +392,11 @@ public class ResidentController {
 					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
 					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.GET_SERVICE_HISTORY_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, serviceHistoryId));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.GET_SERVICE_HISTORY_SUCCESS);
 		logger.debug("ResidentController::getServiceHistory()::exit");
 		return responseWrapper;
 	}	
@@ -419,7 +419,7 @@ public class ResidentController {
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()).getT1());
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::updateUin()::exit");
 		return response;
@@ -472,11 +472,11 @@ public class ResidentController {
 			response.setVersion(requestDTO.getVersion());
 			response.setResponse(tupleResponse.getT1());
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.UPDATE_UIN_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.UPDATE_UIN_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.UPDATE_UIN_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::updateUinDemographics()::exit");
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(response);
@@ -491,10 +491,10 @@ public class ResidentController {
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		try {
 			responseWrapper = residentService.getAuthLockStatus(individualId);
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_STATUS_SUCCESS);
+			audit.setAuditRequestDto(AuditEnum.REQ_AUTH_LOCK_STATUS_SUCCESS);
 			return responseWrapper;
 		} catch (ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_STATUS_FAILED);
+			audit.setAuditRequestDto(AuditEnum.REQ_AUTH_LOCK_STATUS_FAILED);
 			responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorCode(),
 					ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
 		}
@@ -523,10 +523,10 @@ public class ResidentController {
 			logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
 			pdfBytesAndCardType = residentService.downloadCard(eventId);
 			resource = new InputStreamResource(new ByteArrayInputStream(pdfBytesAndCardType.getT1()));
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		} catch (CardNotReadyException | ResidentServiceException | EventIdNotPresentException
 				| InvalidRequestTypeCodeException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
+			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
@@ -572,11 +572,11 @@ public class ResidentController {
 			logger.debug("ResidentController::Request for checking AID status");
 			resp = residentService.getAidStatus(reqDto.getRequest(), true);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e) {
-			audit.setAuditRequestDto(EventEnum.AID_STATUS_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.AID_STATUS_FAILURE);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
 		}
-		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.AID_STATUS_SUCCESS);
 		logger.debug("ResidentController::getAidStatus()::exit");
 		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(resp);
@@ -604,11 +604,11 @@ public class ResidentController {
 		try {
 			count = residentService.getnotificationCount(individualId);
 		} catch (ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.UNREAD_NOTIF_COUNT_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.UNREAD_NOTIF_COUNT_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, serviceEventId));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.UNREAD_NOTIF_COUNT_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.UNREAD_NOTIF_COUNT_SUCCESS);
 		logger.debug("ResidentController::notificationCount()::exit");
 		return count;
 	}
@@ -633,11 +633,11 @@ public class ResidentController {
 			idaToken = identityServiceImpl.getResidentIdaToken();
 			response = residentService.getbellClickdttimes(idaToken);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.GET_NOTIF_CLICK_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.GET_NOTIF_CLICK_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_CLICK_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.GET_NOTIF_CLICK_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.GET_NOTIF_CLICK_SUCCESS);
 		logger.debug("ResidentController::bellClickdttimes::exit");
 		return response;
 	}
@@ -683,11 +683,11 @@ public class ResidentController {
 			notificationDtoList = residentService.getNotificationList(pageIndex, pageSize, id, langCode,
 					timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.GET_NOTIFICATION_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.GET_NOTIFICATION_SUCCESS);
 		logger.debug("ResidentController::getNotificationsList()::exit");
 		return notificationDtoList;
 	}
@@ -718,11 +718,11 @@ public class ResidentController {
 					fromDate, toDate, serviceType, statusFilter, timeZoneOffset, locale);
 			resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.DOWNLOAD_SERVICE_HISTORY_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.SERVICE_HISTORY_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("ResidentController::downLoadServiceHistory::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
@@ -754,11 +754,11 @@ public class ResidentController {
 			String idaToken = identityServiceImpl.getResidentIdaToken();
 			userInfoDto = residentService.getUserinfo(idaToken, languageCode, timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.GET_PROFILE_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.GET_PROFILE_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.PROFILE_ID));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.GET_PROFILE_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.GET_PROFILE_SUCCESS);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

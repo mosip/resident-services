@@ -9,7 +9,7 @@ import io.mosip.preregistration.core.common.dto.MainResponseDTO;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -83,7 +83,7 @@ public class TransliterationController {
 		try {
 			requestValidator.validateId(requestDTO);
 		} catch (InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.TRANSLITERATION_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.TRANSLITERATION_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.TRANSLITERATE_ID));
 			throw e;
 		}

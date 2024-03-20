@@ -33,7 +33,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
@@ -112,7 +112,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                     ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage(), ex);
         } finally {
             if (isSuccess) {
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_SUCCESS,
+                audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.SEND_OTP_SUCCESS,
                         userid, "Send OTP"));
             } else {
 
@@ -122,7 +122,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 lst.add(errors);
                 response.setErrors(lst);
                 response.setResponse(null);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
+                audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.SEND_OTP_FAILURE,
                         userid, "Send OTP"));
             }
         }

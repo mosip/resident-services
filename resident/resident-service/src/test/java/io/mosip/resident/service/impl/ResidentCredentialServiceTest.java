@@ -114,7 +114,6 @@ public class ResidentCredentialServiceTest {
 	public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
 		ReflectionTestUtils.setField(residentCredentialService, "max", 982608);
 		ReflectionTestUtils.setField(residentCredentialService, "min", 120078);
-		ReflectionTestUtils.setField(residentCredentialService, "ridSuffix", "-pdf");
 		List<String> attributeList = new ArrayList<>();
 		attributeList.add("name");
 		attributeList.add("gender");
@@ -133,6 +132,7 @@ public class ResidentCredentialServiceTest {
 		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
 		when(utility.createEventId()).thenReturn("1111111111111111");
+		when(utility.getRidDeliMeterValue()).thenReturn("-PDF");
 	}
 
 	@Test
@@ -585,7 +585,7 @@ public class ResidentCredentialServiceTest {
 		URI dataShareUri = URI.create(credentialRequestStatusDto.getUrl());
 		when(residentServiceRestClient.getApi(dataShareUri, byte[].class)).thenReturn("card data".getBytes());
 
-		byte[] card = residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763-pdf");
+		byte[] card = residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763-PDF");
 		assertNotNull(card);
 	}
 

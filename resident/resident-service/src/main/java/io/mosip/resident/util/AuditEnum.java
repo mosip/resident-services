@@ -6,7 +6,7 @@ import static io.mosip.resident.constant.RegistrationConstants.RESIDENT_APPLICAT
 import static io.mosip.resident.constant.RegistrationConstants.RESIDENT_APPLICATION_NAME;
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
-public enum EventEnum {
+public enum AuditEnum implements AuditEvent {
 
 	VALIDATE_REQUEST("RES-SER-110", INFO, "Validating input request", "Validating input request of %s", "RS-VAL_REQ",
 			"Validate request", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
@@ -526,7 +526,23 @@ public enum EventEnum {
 	INVALID_PAGE_SIZE_VALUE("RES-SER-447", FAILURE, "Invalid page size value", "Invalid page size value %s", "RS-VAL",
 			"Validation", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
 	INVALID_LANGUAGE_CODE("RES-SER-500", FAILURE, "Invalid language code", "invalid lang code", "RS-VAL",
-			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	GET_PENDING_DRAFT_SUCCESS("RES-SER-501", FAILURE, "Get pending draft success", "Get pending draft success", "RS-VAL",
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	GET_PENDING_DRAFT_FAILURE("RES-SER-502", FAILURE, "Get pending draft failure", "Get pending draft failure", "RS-VAL",
+			"Validation section", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	DISCARD_DRAFT_SUCCESS("RES-SER-249", SUCCESS, "Discard Draft: Success",
+			"Draft discarded successfully", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	DISCARD_DRAFT_EXCEPTION("RES-SER-250", FAILURE, "Discard Draft: Failed",
+			"Draft discarded failed", "RS-DRAFT",
+			"Discard draft", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	REG_PROC_WORK_FLOW_CALL_BACK_SUCCESS("RES-SER-503", SUCCESS, "Reg proc work flow callback: Success",
+			"Reg proc work flow callback is Success", "RS-CRED_STAT_UPD",
+			"Reg proc work flow", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME),
+	REG_PROC_WORK_FLOW_CALL_BACK_FAILURE("RES-SER-504", FAILURE, "Reg proc work flow callback: Failed",
+			"Reg proc work flow callback is Failed", "RS-CRED_STAT_UPD",
+			"Reg proc work flow callback", RESIDENT_APPLICATION_ID, RESIDENT_APPLICATION_NAME);
 
 	private final String eventId;
 
@@ -544,7 +560,7 @@ public enum EventEnum {
 
 	private String applicationName;
 
-	private EventEnum(String eventId, String type, String name, String description, String moduleId, String moduleName,
+	private AuditEnum(String eventId, String type, String name, String description, String moduleId, String moduleName,
 			String applicationId, String applicationName) {
 		this.eventId = eventId;
 		this.type = type;
@@ -556,42 +572,42 @@ public enum EventEnum {
 		this.applicationName = applicationName;
 	}
 
+	@Override
 	public String getEventId() {
 		return eventId;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public String getModuleId() {
 		return moduleId;
 	}
 
+	@Override
 	public String getModuleName() {
 		return moduleName;
 	}
 
-	public void setDescription(String des) {
-		this.description = des;
-	}
-
+	@Override
 	public String getApplicationId() {
 		return applicationId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	@Override
 	public String getApplicationName() {
 		return applicationName;
 	}
@@ -599,28 +615,25 @@ public enum EventEnum {
 	/*
 	 * Replace %s value in description with second parameter passed
 	 */
-	public static EventEnum getEventEnumWithValue(EventEnum e, String s) {
-		e.setDescription(String.format(e.getDescription(), s));
-		return e;
+	public static AuditEvent getAuditEventWithValue(AuditEnum auditEnum, String s) {
+		AuditObject auditObject = auditEnum.createAuditObject();
+		auditObject.setDescription(String.format(auditEnum.getDescription(), s));
+		return auditObject;
 	}
 
 	/*
 	 * Replace %s value in description with second parameter passed and name
 	 * property of enum with third parameter
 	 */
-	public static EventEnum getEventEnumWithValue(EventEnum e, String edescription, String ename) {
-		e.setDescription(String.format(e.getDescription(), edescription));
-		e.setName(String.format(e.getName(), ename));
-		return e;
+	public static AuditEvent getAuditEventWithValue(AuditEnum auditEnum, String edescription, String ename) {
+		AuditObject auditObject = auditEnum.createAuditObject();
+		auditObject.setDescription(String.format(auditEnum.getDescription(), edescription));
+		auditObject.setName(String.format(auditEnum.getName(), ename));
+		return auditObject;
 	}
 
-	/*
-	 * Replace second parameter with %s in name property and in description property
-	 */
-	public static EventEnum getEventEnumWithDynamicName(EventEnum e, String s) {
-		e.setName(Character.toUpperCase(s.charAt(0)) + s.substring(1));
-		e.setDescription(String.format(e.getDescription(), s));
-		return e;
+	private AuditObject createAuditObject() {
+		return new AuditObject(eventId, type, name, description, moduleId, moduleName, applicationId, applicationName);
 	}
 
 }
