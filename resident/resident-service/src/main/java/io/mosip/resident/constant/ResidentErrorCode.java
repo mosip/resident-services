@@ -133,7 +133,12 @@ public enum ResidentErrorCode {
 	RESIDENT_SYS_EXCEPTION("RES-SER-SYS-001", "System exception occured"),
 
 	INVALID_RID_EXCEPTION("RES-TUG-001", "RID entered is not valid"),
-	UNAUTHORIZED("RES-ATH-401", "Authentication Failed");
+	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
+	OTP_VALIDATION_FAILED_OLD_ERROR_CODE("IDA-MLC-018", "OTP validation failed"),
+	REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE("RES-SER-523", "Callback url is not available for Regproc workflow completed event"),
+	NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET("RES-SER-524", " Not allowed to update UIN as previous packet is pending. To proceed further please discard it."),
+	NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST("RES-SER-525", "  Not allowed to update UIN as previous packet is pending and it cannot be cancelled."),
+	UPDATE_COUNT_LIMIT_EXCEEDED("RES-SER-526", "Update count limit for the attributes exceeded:- %s");
 
 	private final String errorCode;
 	private final String errorMessage;

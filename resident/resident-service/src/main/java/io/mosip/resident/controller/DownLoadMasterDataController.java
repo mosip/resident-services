@@ -30,7 +30,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -91,10 +91,10 @@ public class DownLoadMasterDataController {
 			InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
 					hierarchyLevel, name);
 			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
 			throw e;
@@ -125,10 +125,10 @@ public class DownLoadMasterDataController {
 			InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode, longitude,
 					latitude, proximityDistance);
 			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
 			throw e;
@@ -155,10 +155,10 @@ public class DownLoadMasterDataController {
 			validator.validateLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
 			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
 			throw e;

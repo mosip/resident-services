@@ -5,7 +5,10 @@ public enum TemplateType {
 	REQUEST_RECEIVED("request-received"),
 	IN_PROGRESS("in-progress"),
 	SUCCESS("success"),
-	FAILURE("failure");
+	FAILURE("failure"),
+	REGPROC_SUCCESS("regproc-success"),
+	REGPROC_FAILED("regproc-failure"),
+	CANCELED("cancelled");
 
 	private String type;
 

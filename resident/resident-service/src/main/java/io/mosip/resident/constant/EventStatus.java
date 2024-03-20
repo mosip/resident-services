@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  * @author Kamesh Shekhar Prasad
  */
 public enum EventStatus {
-    FAILED, SUCCESS, IN_PROGRESS, ALL;
+    FAILED, SUCCESS, IN_PROGRESS, CANCELED, ALL;
 	
 	
 	public static Optional<EventStatus> getEventStatusForText(String status) {

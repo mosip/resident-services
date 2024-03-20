@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +65,9 @@ public class WebSubCredentialStatusUpdateControllerTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@MockBean
+	private Utility utilityBean;
 
 	@InjectMocks
 	WebSubCredentialStatusUpdateController webSubCredentialStatusUpdateController;

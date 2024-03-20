@@ -53,7 +53,7 @@ import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -191,7 +191,7 @@ public class UinCardRePrintService {
 				List<PacketInfo> packetInfos = packetWriter.createPacket(packetDto);
 
                 if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null) {
-                	audit.setAuditRequestDto(EventEnum.PACKET_CREATED_EXCEPTION);
+                	audit.setAuditRequestDto(AuditEnum.PACKET_CREATED_EXCEPTION);
                     throw new PacketCreatorException(ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorCode(), ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorMessage());
             }
                 file = new File(env.getProperty("object.store.base.location")

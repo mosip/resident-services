@@ -80,6 +80,15 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     @Value("${resident.websub.credential-status.secret}")
     private String credentialStatusUpdateSecret;
+
+    @Value("${mosip.regproc.workflow.complete.topic}")
+    private String regProcWorkflowCompleteTopic;
+
+    @Value("${resident.websub.callback.regproc.workflow.complete.url}")
+    private String regProcWorkFlowCompleteCallbackUrl;
+
+    @Value("${resident.websub.regproc.workflow.complete.secret}")
+    private String regProcWorkFlowCompleteSecret;
     
     
 
@@ -109,6 +118,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 		authTypStatusTopicSubsriptions();
 		authTransactionTopicSubscription();
 		credentialStatusUpdateTopicSubscription();
+        regProcCompleteTopicSubscription();
 	}
 
 	private void tryRegisteringTopics() {
@@ -138,6 +148,15 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         subscribe(credentialStatusUpdateTopic, credentialStatusUpdateCallbackUrl, credentialStatusUpdateSecret, hubUrl);
         logger.info("subscribe", "",
                 "Subscribed to topic: " + credentialStatusUpdateTopic);
+    }
+
+    public void regProcCompleteTopicSubscription() {
+        logger.debug("subscribe", "",
+                "Trying to subscribe to topic: " + regProcWorkflowCompleteTopic + " callback-url: "
+                        + regProcWorkFlowCompleteCallbackUrl);
+        subscribe(regProcWorkflowCompleteTopic, regProcWorkFlowCompleteCallbackUrl, regProcWorkFlowCompleteSecret, hubUrl);
+        logger.info("subscribe", "",
+                "Subscribed to topic: " + regProcWorkflowCompleteTopic);
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {

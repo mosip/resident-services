@@ -36,7 +36,7 @@ public enum PacketStatus {
 		return Optional.empty();
 	}
 
-	private static List<String> getStatusCodeList(PacketStatus packetStatus, Environment env) {
+	public static List<String> getStatusCodeList(PacketStatus packetStatus, Environment env) {
 		List<String> statusCode = List.of();
 		if (packetStatus.statusCodePropertyName != null) {
 			String propertyName = env.getProperty(packetStatus.statusCodePropertyName);
