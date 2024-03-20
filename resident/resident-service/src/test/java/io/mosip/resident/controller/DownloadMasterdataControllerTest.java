@@ -95,6 +95,9 @@ public class DownloadMasterdataControllerTest {
     @MockBean
     private ResidentServiceImpl residentService;
 
+    @MockBean
+    private Utility utilityBean;
+
     @Mock
     private Utility utility;
 

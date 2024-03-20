@@ -26,7 +26,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -71,10 +71,10 @@ public class ResidentOtpController {
 		try {
 			otpResponseDTO = residentOtpService.generateOtp(otpRequestDto);
 		} catch (ResidentServiceException e) {
-			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.OTP_GEN_EXCEPTION);
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.OTP_GEN_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.OTP_GEN_SUCCESS);
 		logger.debug("ResidentOtpController::reqOtp()::exit");
 		return otpResponseDTO;
 	}
@@ -95,15 +95,15 @@ public class ResidentOtpController {
 			requestValidator.validateReqOtp(individualIdRequestDto);
 			individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.OTP_AID_GEN_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.OTP_AID_GEN_EXCEPTION);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
 		} catch (ResidentServiceException | InvalidInputException e) {
-			audit.setAuditRequestDto(EventEnum.OTP_AID_GEN_EXCEPTION);
+			audit.setAuditRequestDto(AuditEnum.OTP_AID_GEN_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
 			throw e;
 		}
-		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
+		audit.setAuditRequestDto(AuditEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
 		individualIdResponseDto.setId(otpRequestId);
 		individualIdResponseDto.setVersion(otpRequestVersion);
 		logger.debug("ResidentOtpController::reqOtpForIndividualId()::exit");

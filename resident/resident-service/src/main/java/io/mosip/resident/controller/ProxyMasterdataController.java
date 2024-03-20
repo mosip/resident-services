@@ -10,7 +10,7 @@ import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.swagger.annotations.ApiOperation;
@@ -79,10 +79,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = utility.getValidDocumentByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_VALID_DOCUMENT_SUCCESS);
 		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::exit");
 		return responseWrapper;
 	}
@@ -110,10 +110,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
 		return responseWrapper;
 	}
@@ -143,10 +143,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode(locationCode, langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_IMMEDIATE_CHILDREN_SUCCESS);
 		logger.debug("ProxyMasterdataController::getImmediateChildrenByLocCodeAndLangCode()::exit");
 		return responseWrapper;
 	}
@@ -175,10 +175,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode(locationCode, langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_DETAILS_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_DETAILS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationDetailsByLocCodeAndLangCode()::exit");
 		return responseWrapper;
 	}
@@ -211,10 +211,10 @@ public class ProxyMasterdataController {
 			responseWrapper = proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
 					longitude, latitude, proximityDistance);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::exit");
 		return responseWrapper;
 	}
@@ -243,10 +243,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getApplicantValidDocument(applicantId, languages);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_APPLICANT_VALID_DOCUMENT_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_APPLICANT_VALID_DOCUMENT_SUCCESS);
 		logger.debug("ProxyMasterdataController::getApplicantValidDocument()::exit");
 		return responseWrapper;
 	}
@@ -278,10 +278,10 @@ public class ProxyMasterdataController {
 			responseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,
 					hierarchyLevel, name);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::exit");
 		return responseWrapper;
 	}
@@ -323,10 +323,10 @@ public class ProxyMasterdataController {
 			responseWrapper = proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, pageNumber,
 					pageSize, orderBy, sortBy);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTERS_PAGINATED_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::exit");
 		return responseWrapper;
 	}
@@ -357,10 +357,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getRegistrationCenterWorkingDays(registrationCenterID, langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_REG_CENTER_WORKING_DAYS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCenterWorkingDays()::exit");
 		return responseWrapper;
 	}
@@ -394,10 +394,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLatestIdSchema(schemaVersion, domain, type);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_LATEST_ID_SCHEMA_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::exit");
 		return responseWrapper;
 	}
@@ -427,10 +427,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_TEMPLATES_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_TEMPLATES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
 		return responseWrapper;
 	}
@@ -461,10 +461,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_SUCCESS);
 		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
 		return responseWrapper;
 	}
@@ -494,10 +494,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(documentcategorycode,langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_DOCUMENT_TYPES_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_DOCUMENT_TYPES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::exit");
 		return responseWrapper;
 	}
@@ -527,10 +527,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(gendertype,langCode);
 		} catch (ResidentServiceCheckedException | IOException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_GENDER_CODE_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_GENDER_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::exit");
 		return responseWrapper;
 	}
@@ -552,10 +552,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationHierarchyLevels(lastUpdated);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
 		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
 		return responseWrapper;
 	}
@@ -571,10 +571,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getAllDynamicFieldByName(fieldName);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
 		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::exit");
 		return responseWrapper;
 	}

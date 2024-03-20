@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,6 +94,9 @@ public class AuthTransactionCallbackControllerTest {
 	@MockBean
 	private ProxyIdRepoService proxyIdRepoService;
 
+	@MockBean
+	private Utility utility;
+
 	@InjectMocks
 	VerificationController verificationController;
 
@@ -100,6 +104,7 @@ public class AuthTransactionCallbackControllerTest {
 	private ObjectMapper objectMapper;
 
 	private EventModel eventModel;
+
 
 	@Before
 	public void setup() throws Exception {

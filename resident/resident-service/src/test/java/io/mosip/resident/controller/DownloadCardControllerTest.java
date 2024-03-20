@@ -77,6 +77,9 @@ public class DownloadCardControllerTest {
 	@MockBean
 	private ObjectStoreHelper objectStore;
 
+    @MockBean
+    private Utility utilityBean;
+
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")

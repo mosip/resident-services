@@ -25,6 +25,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	List<ResidentTransactionEntity> findByRequestTrnId(String requestTrnId);
 
+	int countByTokenIdAndRequestTypeCodeAndStatusCode(String tokenId, String requestTypeCode, String statusCode);
+
 	ResidentTransactionEntity findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc
 	(String requestTrnId, String tokenId, List<String> statusCodes);
 
@@ -200,5 +202,12 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
 			@Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
 
+
+
 	// Service history methods end---
+
+	@Query(value = "select event_id from resident_transaction where aid = :rid order by cr_dtimes DESC LIMIT 1", nativeQuery = true)
+	String findEventIdByAid(@Param("rid") String rid);
+
+	ResidentTransactionEntity findTopByAidOrderByCrDtimesDesc(String rid);
 }
