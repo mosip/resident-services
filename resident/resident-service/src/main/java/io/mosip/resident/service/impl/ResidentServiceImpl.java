@@ -1756,6 +1756,8 @@ public class ResidentServiceImpl implements ResidentService {
 			templateType = TemplateType.SUCCESS;
 		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
 			templateType = TemplateType.CANCELED;
+		}else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
+			templateType = TemplateType.REGPROC_SUCCESS;
 		} else {
 			templateType = TemplateType.FAILURE;
 		}
@@ -1775,7 +1777,7 @@ public class ResidentServiceImpl implements ResidentService {
 			templateType = TemplateType.SUCCESS;
 		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
 			templateType = TemplateType.CANCELED;
-		} else if (statusCode.equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
+		} else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
 			templateType = TemplateType.REGPROC_SUCCESS;
 		} else {
 			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
