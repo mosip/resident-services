@@ -30,7 +30,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -84,11 +84,11 @@ public class AcknowledgementController {
         	logger.debug("AcknowledgementController::get acknowledgement download url");
 	        Tuple2<byte[], RequestType> tupleResponse = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
 	        resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
-	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
+	        auditUtil.setAuditRequestDto(AuditEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
 	        requestType = tupleResponse.getT2();
 	        logger.debug("AcknowledgementController::getAcknowledgement()::exit");
         } catch(ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(e.getErrorCode(), e.getErrorText(), e,

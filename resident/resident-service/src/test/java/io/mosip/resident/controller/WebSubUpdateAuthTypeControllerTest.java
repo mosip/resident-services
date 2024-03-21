@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,6 +98,9 @@ public class WebSubUpdateAuthTypeControllerTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@MockBean
+	private Utility utilityBean;
 
 	@Before
 	public void setup() throws Exception {

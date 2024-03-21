@@ -17,7 +17,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -64,7 +64,7 @@ public class ProxyConfigController {
 	public ResponseWrapper<?> getResidentProperties() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentProperties()::entry");
 		ResponseWrapper<?> propertiesResponse = residentConfigService.getUIProperties();
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getResidentProperties()::exit");
 		return propertiesResponse;
 	}
@@ -85,10 +85,10 @@ public class ProxyConfigController {
 		try {
 			propertiesResponse = residentConfigService.getUISchema(schemaType);
 		} catch (ResidentServiceException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
+			auditUtil.setAuditRequestDto(AuditEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getResidentUISchema()::exit");
 		return propertiesResponse;
 	}
@@ -105,7 +105,7 @@ public class ProxyConfigController {
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getIdentityMapping()::entry");
 		String propertiesResponse=residentConfigService.getIdentityMapping();
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getIdentityMapping()::exit");
 		return propertiesResponse;
 	}

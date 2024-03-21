@@ -25,7 +25,7 @@ import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
 import io.mosip.resident.mock.service.MockService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -92,7 +92,7 @@ public class MockApiController {
     	logger.debug("MockApiController::getRIDDigitalCard()::entry");
         byte[] pdfBytes = mockService.getRIDDigitalCardV2(rid);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+        auditUtil.setAuditRequestDto(AuditEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
         logger.debug("MockApiController::getRIDDigitalCard()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +

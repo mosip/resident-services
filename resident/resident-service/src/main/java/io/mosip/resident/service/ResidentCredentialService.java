@@ -35,8 +35,8 @@ public interface ResidentCredentialService {
 	public ResponseWrapper<PartnerCredentialTypePolicyDto> getPolicyByCredentialType(String partnerId,
 			String credentialType);
 
-	public byte[] getCard(String requestId, String applicationId, String partnerReferenceId);
+	public byte[] getCard(String requestId, String applicationId, String partnerReferenceId) throws ResidentServiceCheckedException;
 
-	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException;
+	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException;
 
 }

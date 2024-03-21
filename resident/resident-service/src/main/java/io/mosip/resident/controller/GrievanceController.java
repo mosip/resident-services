@@ -26,7 +26,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -64,12 +64,12 @@ public class GrievanceController {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
+			auditUtil.setAuditRequestDto(AuditEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
 		logger.debug("GrievanceController::grievanceTicket()::exit");
 		return response;
 	}

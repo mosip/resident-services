@@ -21,7 +21,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
@@ -376,7 +376,7 @@ public class NotificationService {
 		} catch (IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 					e.getMessage() + ExceptionUtils.getStackTrace(e));
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
+			audit.setAuditRequestDto(AuditEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}
@@ -502,7 +502,7 @@ public class NotificationService {
 			}
 
 		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
+			audit.setAuditRequestDto(AuditEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}

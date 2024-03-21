@@ -96,14 +96,14 @@ public class AuditUtil {
 		hostName = getServerName();
 	}
 
-	public void setAuditRequestDto(EventEnum eventEnum) {
+	public void setAuditRequestDto(AuditEvent auditEvent) {
 		asyncUtil.asyncRun(() -> {
 			AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
 			auditRequestDto.setHostIp(hostIpAddress);
 			auditRequestDto.setHostName(hostName);
-			auditRequestDto.setApplicationId(eventEnum.getApplicationId());
-			auditRequestDto.setApplicationName(eventEnum.getApplicationName());
+			auditRequestDto.setApplicationId(auditEvent.getApplicationId());
+			auditRequestDto.setApplicationName(auditEvent.getApplicationName());
 			if(Utility.isSecureSession()) {
 				String name = null;
 				try {
@@ -127,12 +127,12 @@ public class AuditUtil {
 				auditRequestDto.setCreatedBy("Unknown");
 			}
 			auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
-			auditRequestDto.setDescription(eventEnum.getDescription());
-			auditRequestDto.setEventType(eventEnum.getType());
-			auditRequestDto.setEventName(eventEnum.getName());
-			auditRequestDto.setModuleId(eventEnum.getModuleId());
-			auditRequestDto.setModuleName(eventEnum.getModuleName());
-			auditRequestDto.setEventId(eventEnum.getEventId());
+			auditRequestDto.setDescription(auditEvent.getDescription());
+			auditRequestDto.setEventType(auditEvent.getType());
+			auditRequestDto.setEventName(auditEvent.getName());
+			auditRequestDto.setModuleId(auditEvent.getModuleId());
+			auditRequestDto.setModuleName(auditEvent.getModuleName());
+			auditRequestDto.setEventId(auditEvent.getEventId());
 			Tuple2<String, String> refIdHashAndType = getRefIdHashAndType();
 			auditRequestDto.setId(refIdHashAndType.getT1());
 			auditRequestDto.setIdType(refIdHashAndType.getT2());

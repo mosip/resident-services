@@ -7,6 +7,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,9 @@ public class ProxyConfigControllerTest {
 
 	@MockBean
 	private AuditUtil auditUtil;
+
+	@MockBean
+	private Utility utilityBean;
 
 	@InjectMocks
 	private ProxyConfigController proxyConfigController;

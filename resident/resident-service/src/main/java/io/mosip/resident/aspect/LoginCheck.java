@@ -11,7 +11,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utility;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -105,12 +105,12 @@ public class LoginCheck {
 			}
 		}
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
-			audit.setAuditRequestDto(EventEnum.LOGIN_REQ_SUCCESS);
+			audit.setAuditRequestDto(AuditEnum.LOGIN_REQ_SUCCESS);
 			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
 					utility.getClientIp(req), req.getRemoteHost(), getMachineType(req));
 			residentSessionRepository.save(newSessionData);
 		} else {
-			audit.setAuditRequestDto(EventEnum.LOGIN_REQ_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.LOGIN_REQ_FAILURE);
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
@@ -129,14 +129,14 @@ public class LoginCheck {
 	@AfterThrowing(pointcut = "login()", throwing = "e")
 	public void onLoginReqFailure(RuntimeException e) {
 		logger.debug("LoginCheck::onLoginReqFailure()::entry");
-		audit.setAuditRequestDto(EventEnum.LOGIN_REQ_FAILURE);
+		audit.setAuditRequestDto(AuditEnum.LOGIN_REQ_FAILURE);
 	}
 
 	@Before("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..)) && args(state,redirectURI,stateParam,res)")
 	public void onLoginReq(String state, String redirectURI, String stateParam, HttpServletResponse res) {
 		logger.debug("LoginCheck::onLoginReq()::entry");
 		if (res.getStatus() == resStatusCode) {
-			audit.setAuditRequestDto(EventEnum.LOGIN_REQ);
+			audit.setAuditRequestDto(AuditEnum.LOGIN_REQ);
 		}
 		logger.debug("LoginCheck::onLoginReq()::exit");
 	}
@@ -153,17 +153,17 @@ public class LoginCheck {
 	@AfterThrowing(pointcut = "loginRedirect()", throwing = "e")
 	public void onLoginFailure(RuntimeException e) {
 		logger.debug("LoginCheck::onLoginFailure()::entry");
-		audit.setAuditRequestDto(EventEnum.LOGIN_REQ_FAILURE);
+		audit.setAuditRequestDto(AuditEnum.LOGIN_REQ_FAILURE);
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..)) && args(token,redirectURI,res)")
 	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) throws ApisResourceAccessException {
 		logger.debug("LoginCheck::onLogoutSuccess()::entry");
-		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ);
+		audit.setAuditRequestDto(AuditEnum.LOGOUT_REQ);
 		if (res.getStatus() == resStatusCode) {
-			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_SUCCESS);
+			audit.setAuditRequestDto(AuditEnum.LOGOUT_REQ_SUCCESS);
 		} else {
-			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.LOGOUT_REQ_FAILURE);
 		}
 		if(token!=null && !token.isEmpty()){
 			utility.clearUserInfoCache(token);
@@ -179,7 +179,7 @@ public class LoginCheck {
 	@AfterThrowing(pointcut = "logoutUser()", throwing = "e")
 	public void onLogoutFailure(RuntimeException e) {
 		logger.debug("LoginCheck::onLogoutFailure()::entry");
-		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
+		audit.setAuditRequestDto(AuditEnum.LOGOUT_REQ_FAILURE);
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.validateAdminToken(..)) && args(request,res)")
@@ -190,11 +190,11 @@ public class LoginCheck {
 		for (Cookie cookie : cookies) {
 			if (cookie.getName().contains(authTokenHeader)) {
 				authToken = cookie.getValue();
-				audit.setAuditRequestDto(EventEnum.VALIDATE_TOKEN_SUCCESS);
+				audit.setAuditRequestDto(AuditEnum.VALIDATE_TOKEN_SUCCESS);
 			}
 		}
 		if (authToken == null) {
-			audit.setAuditRequestDto(EventEnum.VALIDATE_TOKEN_FAILURE);
+			audit.setAuditRequestDto(AuditEnum.VALIDATE_TOKEN_FAILURE);
 		}
 		logger.debug("LoginCheck::onValidateTokenSuccess()::exit");
 	}
@@ -206,7 +206,7 @@ public class LoginCheck {
 	@AfterThrowing(pointcut = "validateAdminToken()", throwing = "e")
 	public void onValidateTokenFailure(RuntimeException e) {
 		logger.debug("LoginCheck::onValidateTokenFailure()::entry");
-		audit.setAuditRequestDto(EventEnum.VALIDATE_TOKEN_FAILURE);
+		audit.setAuditRequestDto(AuditEnum.VALIDATE_TOKEN_FAILURE);
 	}
 	
 	private Optional<String> getCookieValueFromHeader(String cookie) {
