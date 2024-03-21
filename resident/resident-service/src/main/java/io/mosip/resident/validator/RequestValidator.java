@@ -901,21 +901,16 @@ public class RequestValidator {
 				throw new InvalidInputException("identityJson");
 			}
 		}
-		validateNewUpdateRequest();
-		if(Utility.isSecureSession()){
-			Set<String> identity = requestDTO.getRequest().getIdentity().keySet();
-			validateUpdateCountLimit(identity);
-		}
 	}
 
-	private void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if(Utility.isSecureSession()){
 			validatePendingDraft();
 			validateInProgressUpdateRequest();
 		}
 	}
 
-	private void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
+	public void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
 		Set<String> attributesHavingLimitExceeded = new HashSet<>();
 		if(!identity.isEmpty()) {
 			ResponseWrapper<?> responseWrapper =  idRepoService.getRemainingUpdateCountByIndividualId(List.of());
