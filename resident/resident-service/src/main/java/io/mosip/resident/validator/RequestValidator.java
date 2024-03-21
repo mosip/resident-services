@@ -1294,8 +1294,8 @@ public class RequestValidator {
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
-		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
 		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
 		if(!identity.isEmpty() && identity.get(ResidentConstants.ZERO)!=null){
 			validateUpdateCountLimit(new HashSet<>(identity));
 		}
