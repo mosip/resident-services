@@ -242,6 +242,14 @@ public class ApiExceptionHandler {
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
+	@ExceptionHandler(IndividualIdNotFoundException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final IndividualIdNotFoundException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
 	@ExceptionHandler(VidRevocationException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 																				 final VidRevocationException e) throws IOException{

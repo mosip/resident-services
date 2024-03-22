@@ -880,11 +880,7 @@ public class RequestValidator {
 			List<String> attributeKeysFromRequest = identityDataFromRequest.keySet().stream().collect(Collectors.toList());
 			// checking if the attributes coming from request body present in attributes list coming from properties
 			if(!attributesWithoutDocumentsRequired.containsAll(attributeKeysFromRequest)) {
-				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
-					audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "transactionID",
-							"Request for update uin"));
-					throw new InvalidInputException("transactionID");
-				}
+				validateTransactionId(requestDTO.getRequest().getTransactionID());
 			}
 		} else {
 			if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
