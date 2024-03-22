@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import io.mosip.resident.constant.EventStatusCanceled;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -239,6 +241,9 @@ public class ResidentServiceImpl implements ResidentService {
 	/** The json validator. */
 	@Autowired
 	private IdObjectValidator idObjectValidator;
+
+	@Autowired
+	private RequestValidator requestValidator;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -800,6 +805,13 @@ public class ResidentServiceImpl implements ResidentService {
 					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
+				requestValidator.validateNewUpdateRequest();
+				if(Utility.isSecureSession()){
+					Set<String> identity = dto.getIdentity().keySet();
+					if(!identity.isEmpty()) {
+						requestValidator.validateUpdateCountLimit(identity);
+					}
+				}
 			} else {
 				residentUpdateResponseDTO = new ResidentUpdateResponseDTO();
 				responseDto = residentUpdateResponseDTO;
@@ -979,6 +991,14 @@ public class ResidentServiceImpl implements ResidentService {
 			sendFailureNotification(residentTransactionEntity, dto, idRepoJson);
 			logger.error(AuditEnum.SEND_NOTIFICATION_FAILURE.getDescription(), dto.getTransactionID());
 			if (Utility.isSecureSession()) {
+				if(e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode())
+				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET.getErrorCode())
+				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode())){
+					throw new ResidentServiceException(
+							e.getErrorCode(),
+							e.getErrorText(),
+							e, Map.of(ResidentConstants.EVENT_ID, eventId));
+				}
 				throw new ResidentServiceException(
 						ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 						ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage() + dto.getTransactionID(),
