@@ -232,7 +232,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			residentTransactionEntity.setEventId(eventId);
 			residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 			residentTransactionEntity.setIndividualId(individualId);
-			residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualIdFromSession()));
+			residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 			residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 			if(attributes!=null){
 				String attributeList = String.join(SEMI_COLON, attributes);

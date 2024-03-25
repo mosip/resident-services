@@ -494,7 +494,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			notificationRequestDto.setId(uin);
 			String uinForVid = null;
 			try {
-				utilities.getUinByVid(vid);
+				uinForVid = utilities.getUinByVid(vid);
 			}catch (IndividualIdNotFoundException e){
 				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorCode(),
 						ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage());

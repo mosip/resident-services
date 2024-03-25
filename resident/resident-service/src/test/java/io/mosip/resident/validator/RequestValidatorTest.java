@@ -2908,7 +2908,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");
@@ -2940,7 +2940,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");
@@ -3022,7 +3022,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");
