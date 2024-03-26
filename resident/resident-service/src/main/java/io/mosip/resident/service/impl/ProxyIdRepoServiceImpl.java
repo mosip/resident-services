@@ -142,10 +142,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				}
 			} else {
 				DraftResponseDto draftResponseDto = objectMapper.convertValue(responseWrapper.getResponse(), DraftResponseDto.class);
-				DraftResidentResponseDto responseDto = convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId);
-				if(!responseDto.getDrafts().isEmpty()){
-					responseWrapperResident.setResponse(responseDto);
-				}
+				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId));
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::exit");
 			return responseWrapperResident;
