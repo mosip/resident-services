@@ -142,7 +142,10 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				}
 			} else {
 				DraftResponseDto draftResponseDto = objectMapper.convertValue(responseWrapper.getResponse(), DraftResponseDto.class);
-				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId));
+				DraftResidentResponseDto responseDto = convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId);
+				if(!responseDto.getDrafts().isEmpty()){
+					responseWrapperResident.setResponse(responseDto);
+				}
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::exit");
 			return responseWrapperResident;
@@ -207,21 +210,45 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<DraftUinResponseDto> draftsList = response.getDrafts();
 		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
+		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
 		if(draftsList!=null && !draftsList.isEmpty()) {
 			for (DraftUinResponseDto draftUinResponseDto : draftsList) {
-				DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
-				draftUinResidentResponseDto.setEid(getEventIdFromRid(draftUinResponseDto.getRid(), individualId,
-						draftUinResponseDto.getAttributes()));
-				draftUinResidentResponseDto.setAid(draftUinResponseDto.getRid());
-				draftUinResidentResponseDto.setAttributes(draftUinResponseDto.getAttributes());
-				draftUinResidentResponseDto.setCreatedDTimes(draftUinResponseDto.getCreatedDTimes());
-				draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
+				setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
+						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos);
 			}
+			draftResidentResponseDto.setCancellable(true);
+		}else{
+			List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
+					findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+							EventStatusInProgress.NEW.name());
+			if(!residentTransactionEntityList.isEmpty()){
+				for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
+					setDraftValue(residentTransactionEntity.getAid(), individualId,
+							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
+							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
+							draftUinResidentResponseDtos);
+				}
+			}
+			draftResidentResponseDto.setCancellable(false);
 		}
-		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
-		draftResidentResponseDto.setCancellable(!draftUinResidentResponseDtos.isEmpty());
 		return draftResidentResponseDto;
+	}
+
+	private void setDraftValue(String rid, String individualId, List<String> attributeList, String eventId, String createdDtimes,
+							   List<DraftUinResidentResponseDto> draftUinResidentResponseDtos) throws ResidentServiceCheckedException,
+			ApisResourceAccessException {
+		DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
+		if (eventId == null) {
+			draftUinResidentResponseDto.setEid(getEventIdFromRid(rid, individualId,
+					attributeList));
+		} else {
+			draftUinResidentResponseDto.setEid(eventId);
+		}
+		draftUinResidentResponseDto.setAid(rid);
+		draftUinResidentResponseDto.setAttributes(attributeList);
+		draftUinResidentResponseDto.setCreatedDTimes(createdDtimes);
+		draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
 	}
 
 	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {

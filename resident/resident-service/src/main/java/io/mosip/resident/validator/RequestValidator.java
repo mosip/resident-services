@@ -13,10 +13,8 @@ import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.EventStatus;
-import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
-import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
@@ -94,7 +92,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.constant.RegistrationConstants.PARAM_ZERO;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
@@ -902,7 +899,6 @@ public class RequestValidator {
 	public void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if(Utility.isSecureSession()){
 			validatePendingDraft();
-			validateInProgressUpdateRequest();
 		}
 	}
 
@@ -926,20 +922,15 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateInProgressUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if(residentTransactionRepository.
-				countByTokenIdAndRequestTypeCodeAndStatusCode(identityService.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
-						EventStatusInProgress.NEW.name()) > PARAM_ZERO) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
-		}
-	}
-
 	private void validatePendingDraft() throws ResidentServiceCheckedException {
 		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
-		if(getPendingDraftResponseDto!=null){
+		if(getPendingDraftResponseDto.getResponse()!=null){
 			if(getPendingDraftResponseDto.getResponse().isCancellable()){
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
+			} else {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
 			}
+
 		}
 	}
 
