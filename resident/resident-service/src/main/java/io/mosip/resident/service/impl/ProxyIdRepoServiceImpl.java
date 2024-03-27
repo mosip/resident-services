@@ -213,17 +213,16 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
 						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos, true);
 			}
-		}else{
-			List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
-					findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
-							EventStatusInProgress.NEW.name());
-			if(!residentTransactionEntityList.isEmpty()){
-				for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
-					setDraftValue(residentTransactionEntity.getAid(), individualId,
-							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
-							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
-							draftUinResidentResponseDtos, false);
-				}
+		}
+		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
+				findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+						EventStatusInProgress.NEW.name());
+		if(!residentTransactionEntityList.isEmpty()){
+			for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
+				setDraftValue(residentTransactionEntity.getAid(), individualId,
+						List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
+						residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
+						draftUinResidentResponseDtos, false);
 			}
 		}
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
