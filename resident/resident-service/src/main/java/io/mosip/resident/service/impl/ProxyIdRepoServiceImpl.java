@@ -34,10 +34,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
@@ -208,10 +210,12 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		List<DraftUinResponseDto> draftsList = response.getDrafts();
 		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
+		Set<String> eventIdList = new HashSet<>();
 		if(draftsList!=null && !draftsList.isEmpty()) {
 			for (DraftUinResponseDto draftUinResponseDto : draftsList) {
-				setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
+				String eventId = setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
 						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos, true);
+				eventIdList.add(eventId);
 			}
 		}
 		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
@@ -219,31 +223,33 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 						EventStatusInProgress.NEW.name());
 		if(!residentTransactionEntityList.isEmpty()){
 			for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
-				setDraftValue(residentTransactionEntity.getAid(), individualId,
-						List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
-						residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
-						draftUinResidentResponseDtos, false);
+				if(!eventIdList.contains(residentTransactionEntity.getEventId())) {
+					setDraftValue(residentTransactionEntity.getAid(), individualId,
+							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
+							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
+							draftUinResidentResponseDtos, false);
+				}
 			}
 		}
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
 		return draftResidentResponseDto;
 	}
 
-	private void setDraftValue(String rid, String individualId, List<String> attributeList, String eventId, String createdDtimes,
+	private String setDraftValue(String rid, String individualId, List<String> attributeList, String eventId, String createdDtimes,
 							   List<DraftUinResidentResponseDto> draftUinResidentResponseDtos, boolean cancellableStatus) throws ResidentServiceCheckedException,
 			ApisResourceAccessException {
 		DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
 		if (eventId == null) {
-			draftUinResidentResponseDto.setEid(getEventIdFromRid(rid, individualId,
-					attributeList));
-		} else {
-			draftUinResidentResponseDto.setEid(eventId);
+			eventId = getEventIdFromRid(rid, individualId, attributeList);
 		}
+		draftUinResidentResponseDto.setEid(eventId);
 		draftUinResidentResponseDto.setAid(rid);
 		draftUinResidentResponseDto.setAttributes(attributeList);
 		draftUinResidentResponseDto.setCreatedDTimes(createdDtimes);
 		draftUinResidentResponseDto.setCancellable(cancellableStatus);
 		draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
+
+		return eventId;
 	}
 
 	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
