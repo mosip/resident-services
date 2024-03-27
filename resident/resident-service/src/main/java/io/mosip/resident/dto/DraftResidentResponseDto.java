@@ -12,5 +12,4 @@ import java.util.List;
 @Data
 public class DraftResidentResponseDto {
     private List<DraftUinResidentResponseDto> drafts;
-    private boolean cancellable;
 }

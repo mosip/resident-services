@@ -32,6 +32,7 @@ import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
@@ -924,13 +925,15 @@ public class RequestValidator {
 
 	private void validatePendingDraft() throws ResidentServiceCheckedException {
 		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
-		if(getPendingDraftResponseDto.getResponse()!=null){
-			if(getPendingDraftResponseDto.getResponse().isCancellable()){
-				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
-			} else {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
+		if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
+			List<DraftUinResidentResponseDto> draftResidentResponseDto = getPendingDraftResponseDto.getResponse().getDrafts();
+			for(DraftUinResidentResponseDto uinResidentResponseDto : draftResidentResponseDto){
+				if(uinResidentResponseDto.isCancellable()){
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
+				} else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
+				}
 			}
-
 		}
 	}
 

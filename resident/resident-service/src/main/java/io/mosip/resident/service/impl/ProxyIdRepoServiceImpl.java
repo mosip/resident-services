@@ -211,9 +211,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		if(draftsList!=null && !draftsList.isEmpty()) {
 			for (DraftUinResponseDto draftUinResponseDto : draftsList) {
 				setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
-						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos);
+						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos, true);
 			}
-			draftResidentResponseDto.setCancellable(true);
 		}else{
 			List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
 					findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
@@ -223,17 +222,16 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					setDraftValue(residentTransactionEntity.getAid(), individualId,
 							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
 							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
-							draftUinResidentResponseDtos);
+							draftUinResidentResponseDtos, false);
 				}
 			}
-			draftResidentResponseDto.setCancellable(false);
 		}
 		draftResidentResponseDto.setDrafts(draftUinResidentResponseDtos);
 		return draftResidentResponseDto;
 	}
 
 	private void setDraftValue(String rid, String individualId, List<String> attributeList, String eventId, String createdDtimes,
-							   List<DraftUinResidentResponseDto> draftUinResidentResponseDtos) throws ResidentServiceCheckedException,
+							   List<DraftUinResidentResponseDto> draftUinResidentResponseDtos, boolean cancellableStatus) throws ResidentServiceCheckedException,
 			ApisResourceAccessException {
 		DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
 		if (eventId == null) {
@@ -245,6 +243,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		draftUinResidentResponseDto.setAid(rid);
 		draftUinResidentResponseDto.setAttributes(attributeList);
 		draftUinResidentResponseDto.setCreatedDTimes(createdDtimes);
+		draftUinResidentResponseDto.setCancellable(cancellableStatus);
 		draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
 	}
 
