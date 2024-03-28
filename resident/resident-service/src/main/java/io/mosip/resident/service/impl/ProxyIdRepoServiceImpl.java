@@ -31,6 +31,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import reactor.util.function.Tuple2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +80,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private Utility utility;
 
+	@Autowired
+	private ResidentServiceImpl residentService;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
@@ -117,7 +121,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	@Override
-	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts() throws ResidentServiceCheckedException {
+	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
 			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
@@ -144,7 +148,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 				}
 			} else {
 				DraftResponseDto draftResponseDto = objectMapper.convertValue(responseWrapper.getResponse(), DraftResponseDto.class);
-				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId));
+				responseWrapperResident.setResponse(convertDraftResponseDtoToResidentResponseDTo(draftResponseDto, individualId, langCode));
 			}
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::exit");
 			return responseWrapperResident;
@@ -206,7 +210,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		}
 	}
 
-	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private DraftResidentResponseDto convertDraftResponseDtoToResidentResponseDTo(DraftResponseDto response, String individualId, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<DraftUinResponseDto> draftsList = response.getDrafts();
 		List<DraftUinResidentResponseDto> draftUinResidentResponseDtos = new ArrayList<>();
 		DraftResidentResponseDto draftResidentResponseDto = new DraftResidentResponseDto();
@@ -214,7 +218,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		if(draftsList!=null && !draftsList.isEmpty()) {
 			for (DraftUinResponseDto draftUinResponseDto : draftsList) {
 				String eventId = setDraftValue(draftUinResponseDto.getRid(), individualId, draftUinResponseDto.getAttributes(),
-						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos, true);
+						null, draftUinResponseDto.getCreatedDTimes(), draftUinResidentResponseDtos, true, langCode, null);
 				eventIdList.add(eventId);
 			}
 		}
@@ -227,7 +231,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					setDraftValue(residentTransactionEntity.getAid(), individualId,
 							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
 							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
-							draftUinResidentResponseDtos, false);
+							draftUinResidentResponseDtos, false, langCode, residentTransactionEntity);
 				}
 			}
 		}
@@ -236,24 +240,36 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	private String setDraftValue(String rid, String individualId, List<String> attributeList, String eventId, String createdDtimes,
-							   List<DraftUinResidentResponseDto> draftUinResidentResponseDtos, boolean cancellableStatus) throws ResidentServiceCheckedException,
+								 List<DraftUinResidentResponseDto> draftUinResidentResponseDtos, boolean cancellableStatus,
+								 String langCode, ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException,
 			ApisResourceAccessException {
 		DraftUinResidentResponseDto draftUinResidentResponseDto = new DraftUinResidentResponseDto();
+		if(residentTransactionEntity==null){
+			residentTransactionEntity = getEventIdFromRid(rid, individualId, attributeList);
+		}
 		if (eventId == null) {
-			eventId = getEventIdFromRid(rid, individualId, attributeList);
+			eventId = residentTransactionEntity.getEventId();
 		}
 		draftUinResidentResponseDto.setEid(eventId);
 		draftUinResidentResponseDto.setAid(rid);
 		draftUinResidentResponseDto.setAttributes(attributeList);
 		draftUinResidentResponseDto.setCreatedDTimes(createdDtimes);
 		draftUinResidentResponseDto.setCancellable(cancellableStatus);
+		draftUinResidentResponseDto.setDescription(getDescription(residentTransactionEntity, langCode));
 		draftUinResidentResponseDtos.add(draftUinResidentResponseDto);
 
 		return eventId;
 	}
 
-	private String getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String eventId = residentTransactionRepository.findEventIdByAid(rid);
+	private String getDescription(ResidentTransactionEntity residentTransactionEntity, String langCode) throws ResidentServiceCheckedException {
+		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+		return residentService.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
+				RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()));
+	}
+
+	private ResidentTransactionEntity getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntityAlreadyPresent = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(rid);
+		String eventId = residentTransactionEntityAlreadyPresent.getEventId();
 		if(eventId == null){
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 			eventId = utility.createEventId();
@@ -274,8 +290,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 			residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 			residentTransactionRepository.save(residentTransactionEntity);
+			return residentTransactionEntity;
 		}
-		return eventId;
+		return residentTransactionEntityAlreadyPresent;
 	}
 
 }

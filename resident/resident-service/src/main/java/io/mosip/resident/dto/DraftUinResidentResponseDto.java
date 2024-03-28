@@ -16,4 +16,5 @@ public class DraftUinResidentResponseDto {
     private String createdDTimes;
     private List<String> attributes;
     private boolean cancellable;
+    private String description;
 }
