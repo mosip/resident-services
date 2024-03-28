@@ -110,6 +110,7 @@ public class ProxyIdRepoController {
 			ResponseWrapper<DraftResidentResponseDto> responseWrapper = proxySerivce
 					.getPendingDrafts(langCode);
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
+			requestValidator.validateLanguageCode(langCode);
 			logger.debug("ProxyIdRepoController::getPendingDrafts()::exit");
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
