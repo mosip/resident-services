@@ -924,7 +924,7 @@ public class RequestValidator {
 	}
 
 	private void validatePendingDraft() throws ResidentServiceCheckedException {
-		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts();
+		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts(null);
 		if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
 			List<DraftUinResidentResponseDto> draftResidentResponseDto = getPendingDraftResponseDto.getResponse().getDrafts();
 			for(DraftUinResidentResponseDto uinResidentResponseDto : draftResidentResponseDto){

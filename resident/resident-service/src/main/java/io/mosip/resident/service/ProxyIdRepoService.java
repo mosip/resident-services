@@ -11,7 +11,7 @@ public interface ProxyIdRepoService {
 	ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException;
 
-    ResponseWrapper<DraftResidentResponseDto> getPendingDrafts() throws ResidentServiceCheckedException;
+    ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException;
 
     String discardDraft(String eid) throws ResidentServiceCheckedException;
 }
