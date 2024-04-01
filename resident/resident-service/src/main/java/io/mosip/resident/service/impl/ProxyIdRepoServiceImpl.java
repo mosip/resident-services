@@ -262,6 +262,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	}
 
 	private String getDescription(ResidentTransactionEntity residentTransactionEntity, String langCode) throws ResidentServiceCheckedException {
+		if(langCode == null){
+			return "";
+		}
 		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
 		return residentService.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
 				RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()));
