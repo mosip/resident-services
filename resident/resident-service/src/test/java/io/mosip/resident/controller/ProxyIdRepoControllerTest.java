@@ -7,7 +7,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Objects;
 
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -48,6 +53,9 @@ public class ProxyIdRepoControllerTest {
 	@Mock
 	private AuditUtil auditUtil;
 
+	@Mock
+	private RequestValidator requestValidator;
+
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
@@ -67,5 +75,28 @@ public class ProxyIdRepoControllerTest {
 				.getRemainingUpdateCountByIndividualId(List.of());
 		assertEquals(List.of(new ServiceError(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 				API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage())), response.getBody().getErrors());
+	}
+
+	@Test
+	public void testGetPendingDrafts() throws ResidentServiceCheckedException {
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setVersion("v1");
+		responseWrapper.setId("1");
+		when(service.getPendingDrafts(any())).thenReturn(responseWrapper);
+		ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> response = controller
+				.getPendingDrafts("eng");
+		assertNotNull(response);
+	}
+
+	@Test
+	public void testGetPendingDraftsFailure() throws ResidentServiceCheckedException {
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setVersion("v1");
+		responseWrapper.setId("1");
+		when(service.getPendingDrafts(any())).thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION));
+		ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> response = controller
+				.getPendingDrafts("eng");
+		assertEquals(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
+				Objects.requireNonNull(response.getBody()).getErrors().get(0).getErrorCode());
 	}
 }
