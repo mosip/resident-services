@@ -220,15 +220,24 @@ public class ProxyIdRepoServiceTest {
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setEventId("123");
 
+		ResidentTransactionEntity residentTransactionEntity1 = new ResidentTransactionEntity();
+		residentTransactionEntity1.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity1.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
+		residentTransactionEntity1.setEventId("1234");
+
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
 		when(residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(Mockito.anyString())).thenReturn(residentTransactionEntity);
+		when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeAndStatusCode(Mockito.anyString()
+		, Mockito.anyString(), Mockito.anyString())).thenReturn(List.of(residentTransactionEntity, residentTransactionEntity1));
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
+		when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
 		when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
 				"eng"));
 		assertEquals("123", service.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
 	}
+
 }

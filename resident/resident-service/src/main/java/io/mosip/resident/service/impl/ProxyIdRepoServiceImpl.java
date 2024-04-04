@@ -227,7 +227,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 						EventStatusInProgress.NEW.name());
 		if(!residentTransactionEntityList.isEmpty()){
 			for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
-				if(!eventIdList.contains(residentTransactionEntity.getEventId())) {
+				if(!eventIdList.contains(residentTransactionEntity.getEventId()) && residentTransactionEntity.getAttributeList()!=null) {
 					setDraftValue(residentTransactionEntity.getAid(), individualId,
 							List.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.COMMA)),
 							residentTransactionEntity.getEventId(), residentTransactionEntity.getCrDtimes().toString(),
