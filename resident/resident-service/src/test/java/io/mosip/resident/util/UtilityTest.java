@@ -1382,4 +1382,28 @@ public class UtilityTest {
 		String logoData = utility.getPDFHeaderLogo();
 		assertNotNull(logoData);
 	}
+
+	@Test
+	public void test_formatWithOffsetForUI_en_USWWithFormattingStyleLong() {
+		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.LONG.name());
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
+		assertEquals("August 14, 1993 at 4:54:00 PM IST", formatWithOffsetForFileName);
+	}
+
+	@Test
+	public void test_formatWithOffsetForUI_en_USWWithFormattingStyleFull() {
+		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.FULL.name());
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
+		assertEquals("Saturday, August 14, 1993 at 4:54:00 PM India Standard Time", formatWithOffsetForFileName);
+	}
+
+	@Test
+	public void test_formatWithOffsetForUI_en_USWWithFormattingStyleShort() {
+		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.SHORT.name());
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
+		assertEquals("8/14/93, 4:54 PM", formatWithOffsetForFileName);
+	}
 }

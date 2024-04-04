@@ -88,6 +88,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -715,13 +717,18 @@ public class Utility {
 		if (locale != null) {
 			Chronology chronology = Chronology.ofLocale(locale);
 			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.valueOf(formattingStyle)).withLocale(locale).withChronology(chronology);
-			String dateTime = localDateTime.format(formatter);
-			return dateTime;
+			return addZoneIdToLocalDateTime(formatter, localDateTime);
 		} else {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(defaultDateTimePattern);
 			String dateTime = localDateTime.format(formatter);
 			return dateTime;
 		}
+	}
+
+	private String addZoneIdToLocalDateTime(DateTimeFormatter formatter, LocalDateTime localDateTime){
+		ZoneId zoneId = ZoneId.systemDefault();
+		ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, zoneId);
+		return zonedDateTime.format(formatter);
 	}
 
 	public String getClientIp(HttpServletRequest req) {
