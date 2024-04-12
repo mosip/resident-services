@@ -42,7 +42,7 @@ import io.mosip.resident.dto.SyncResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EncryptorUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
@@ -108,7 +108,6 @@ public class SyncAndUploadService {
 					return registartionId + RegistrationConstants.EXTENSION_OF_FILE;
 				}
 			};
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PACKET_SYNC,registartionId));
 			RegSyncResponseDTO regSyncResponseDTO = packetSync(registartionId, regType, packetZipBytes, creationTime);
 
 			if (regSyncResponseDTO != null) {
@@ -157,7 +156,6 @@ public class SyncAndUploadService {
 					logger.info(LoggerFileConstant.SESSIONID.toString(),
 							LoggerFileConstant.REGISTRATIONID.toString(), registartionId,
 							packerGeneratorResDto.getMessage());
-					audit.setAuditRequestDto(EventEnum.PACKET_CREATED);
 					return packerGeneratorResDto;
 				}
 
@@ -165,7 +163,7 @@ public class SyncAndUploadService {
 				packerGeneratorResDto.setRegistrationId(registartionId);
 				packerGeneratorResDto.setStatus(FAILURE);
 				packerGeneratorResDto.setMessage("Packet sync failure");
-				audit.setAuditRequestDto(EventEnum.PACKET_CREATED_FAILURE);
+				audit.setAuditRequestDto(AuditEnum.PACKET_CREATED_FAILURE);
 				return packerGeneratorResDto;
 
 			}

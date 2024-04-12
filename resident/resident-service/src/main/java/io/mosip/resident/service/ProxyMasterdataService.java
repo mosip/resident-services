@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -152,17 +153,26 @@ public interface ProxyMasterdataService {
 			throws ResidentServiceCheckedException;
 	
 	/**
-	 * Get gender types by language code.
-	 * 
-	 * @param langCode
-	 * @return ResponseWrapper object
-	 * @throws ResidentServiceCheckedException
-	 */
-	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException;
+     * Get gender types by language code.
+     *
+     * @param fieldName
+     * @param langCode
+     * @param withValue
+     * @return ResponseWrapper object
+     * @throws ResidentServiceCheckedException
+     */
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String gendertype, String langCode) throws ResidentServiceCheckedException, IOException;
 
-	
+	String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode);
+
+
+    ResponseWrapper<?> getLocationHierarchyLevels(String lastUpdated) throws ResidentServiceCheckedException;
+
+    ResponseWrapper<?> getAllDynamicFieldByName(String fieldName) throws ResidentServiceCheckedException;
+
+    LocationImmediateChildrenResponseDto getImmediateChildrenByLocCode(String locationCode, List<String> languageCodes) throws ResidentServiceCheckedException;
 }

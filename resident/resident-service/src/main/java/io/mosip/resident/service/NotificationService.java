@@ -1,29 +1,5 @@
 package io.mosip.resident.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -41,19 +17,41 @@ import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.dto.SMSRequestDTO;
-import io.mosip.resident.dto.TemplateDto;
-import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -65,6 +63,7 @@ public class NotificationService {
 	private static final String LINE_BREAK = "<br>";
 	private static final String EMAIL_CHANNEL = "email";
 	private static final String PHONE_CHANNEL = "phone";
+	private static final String IDENTITY = "identity";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
 	@Autowired
 	private TemplateManager templateManager;
@@ -96,6 +95,9 @@ public class NotificationService {
 	@Autowired
 	private TemplateUtil templateUtil;
 
+	@Autowired
+	private IdentityService identityService;
+
 	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
@@ -110,17 +112,29 @@ public class NotificationService {
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
 	
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
-		return sendNotification(dto, null, null, null);
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
+		return sendNotification(dto, null, null, null, identity);
 	}
-
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone) throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+	
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone, Map identity) throws ResidentServiceCheckedException {
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Set<String> templateLangauges = new HashSet<String>();
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges);
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityService.getIdentity(dto.getId()) : identity;
+		Map mapperIdentity = getMapperIdentity();
+
+		Set<String> templateLangauges;
+		try {
+			templateLangauges = getTemplateLanguages(demographicIdentity, mapperIdentity);
+		} catch (ReflectiveOperationException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges, demographicIdentity, mapperIdentity);
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
@@ -162,9 +176,9 @@ public class NotificationService {
 			}
 		}
 
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				IS_EMAIL_NOTIFICATION_SUCCESS + emailStatus);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		if (smsStatus && emailStatus) {
@@ -186,15 +200,40 @@ public class NotificationService {
 			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
-			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 					"NotificationService::sendNotification()::Failure" );
 		}
 
-		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendSMSNotification()::isSuccess?::" + notificationResponse.getMessage());
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), LoggerFileConstant.UIN.name(),
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Map getMapperIdentity() throws ResidentServiceCheckedException {
+		JSONObject mappingJsonObject = utility.getMappingJsonObject();
+		Map mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		return mapperIdentity;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Set<String> getTemplateLanguages(Map demographicIdentity, Map mapperIdentity) throws ReflectiveOperationException {
+		Set<String> preferredLanguage = utility.getPreferredLanguage(demographicIdentity);
+		Set<String> templateLangauges = new HashSet<>();
+		if (preferredLanguage.isEmpty()) {
+			List<String> defaultTemplateLanguages = utility.getDefaultTemplateLanguages();
+			if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
+				Set<String> dataCapturedLanguages = utility.getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+				templateLangauges.addAll(dataCapturedLanguages);
+			} else {
+				templateLangauges.addAll(defaultTemplateLanguages);
+			}
+		} else {
+			templateLangauges.addAll(preferredLanguage);
+		}
+		return templateLangauges;
 	}
 
 	private String getOtp(NotificationRequestDto notificationRequestDto) {
@@ -214,52 +253,10 @@ public class NotificationService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getTemplate(String langCode, String templatetypecode) throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
+	private String getTemplate(String langCode, String templateTypeCode) {
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templateTypeCode,
 				"NotificationService::getTemplate()::entry");
-		List<String> pathSegments = new ArrayList<>();
-		pathSegments.add(langCode);
-		pathSegments.add(templatetypecode);
-		try {
-			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
-					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class);
-			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
-				audit.setAuditRequestDto(EventEnum.TEMPLATE_EXCEPTION);
-				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorMessage()
-								+ (resp != null ? resp.getErrors().get(0) : ""));
-			}
-			TemplateResponseDto templateResponse = JsonUtil.readValue(JsonUtil.writeValueAsString(resp.getResponse()),
-					TemplateResponseDto.class);
-			logger.info(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
-					"NotificationService::getTemplate()::getTemplateResponse::" + JsonUtil.writeValueAsString(resp));
-			List<TemplateDto> response = templateResponse.getTemplates();
-			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
-					"NotificationService::getTemplate()::exit");
-			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "");
-		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
-			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
-					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
-		} catch (ApisResourceAccessException e) {
-			if (e.getCause() instanceof HttpClientErrorException) {
-				HttpClientErrorException httpClientException = (HttpClientErrorException) e.getCause();
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						httpClientException.getResponseBodyAsString());
-
-			} else if (e.getCause() instanceof HttpServerErrorException) {
-				HttpServerErrorException httpServerException = (HttpServerErrorException) e.getCause();
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						httpServerException.getResponseBodyAsString());
-			} else {
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
-			}
-		}
-
+		return templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)
@@ -306,10 +303,10 @@ public class NotificationService {
 			if(notificationTemplate==null) {
 				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				} else{
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP))));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP)), mailingAttributes));
 				}
 
 			} else {
@@ -379,7 +376,7 @@ public class NotificationService {
 		} catch (IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 					e.getMessage() + ExceptionUtils.getStackTrace(e));
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
+			audit.setAuditRequestDto(AuditEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}
@@ -414,17 +411,17 @@ public class NotificationService {
 			if(notificationTemplate==null) {
 				if(newEmail==null) {
 					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				}
 				else {
 					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp), mailingAttributes));
 
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp), mailingAttributes));
 				}
 			} else {
 				emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
@@ -505,7 +502,7 @@ public class NotificationService {
 			}
 
 		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
+			audit.setAuditRequestDto(AuditEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}
