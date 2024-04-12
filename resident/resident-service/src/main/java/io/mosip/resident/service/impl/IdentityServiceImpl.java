@@ -331,7 +331,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	/**
-     * @param aid - it can be UIN, VID or AID.
+     * @param individualId - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
 	public Tuple2<String, IdType> getIdAndTypeForIndividualId(String individualId)

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.mosip.resident.service.ProxyIdRepoService;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -140,6 +141,9 @@ public class RequestValidatorTest {
 
     @Mock
     private ObjectMapper objectMapper;
+
+    @Mock
+    private ProxyIdRepoService idRepoService;
 
     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -2763,6 +2767,7 @@ public class RequestValidatorTest {
         otpRequestDTOV2.setUserId("kam@g.com");
         userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2, 2));
         userIdOtpRequest.setRequest(otpRequestDTOV2);
+        when(idRepoService.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
@@ -2903,7 +2908,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");
@@ -2935,7 +2940,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");
@@ -3017,7 +3022,7 @@ public class RequestValidatorTest {
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
         requestDTO.setOtp("1234567");
-        requestDTO.setTransactionID("1234567");
+        requestDTO.setTransactionID("1234567890");
         requestDTO.setIdentityJson("abcdef");
         JSONObject jsonObject1 = new JSONObject();
         jsonObject1.put("identity", "abc");

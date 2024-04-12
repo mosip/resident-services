@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -135,6 +136,9 @@ public class ResidentServiceResUpdateTest {
 	@Mock
 	private ResidentConfigServiceImpl residentConfigService;
 
+	@Mock
+	RequestValidator requestValidator;
+
 	ResidentUpdateRequestDto dto;
 
 	PacketGeneratorResDto updateDto;
@@ -157,6 +161,9 @@ public class ResidentServiceResUpdateTest {
 		dto.setDocuments(documents);
 		dto.setIdentityJson(
 				"ewogICJpZGVudGl0eSIgOiB7CiAgICAiZGF0ZU9mQmlydGgiIDogIjE5OTUvMDgvMDgiLAogICAgImFnZSIgOiAyNywKICAgICJwaG9uZSIgOiAiOTc4NjU0MzIxMCIsCiAgICAiZW1haWwiIDogImdpcmlzaC55YXJydUBtaW5kdHJlZS5jb20iLAogICAgInByb29mT2ZBZGRyZXNzIiA6IHsKICAgICAgInZhbHVlIiA6ICJQT0FfQ2VydGlmaWNhdGUgb2YgcmVzaWRlbmNlIiwKICAgICAgInR5cGUiIDogIkNPUiIsCiAgICAgICJmb3JtYXQiIDogImpwZyIKICAgIH0sCgkiVUlOIjogIjM1Mjc4MTI0MDYiLAogICAgIklEU2NoZW1hVmVyc2lvbiIgOiAxLjAKICB9Cn0=");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDENTITY", "name");
+		dto.setIdentity(new JSONObject());
 		dto.setIndividualId("3527812406");
 		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setTransactionID("12345");

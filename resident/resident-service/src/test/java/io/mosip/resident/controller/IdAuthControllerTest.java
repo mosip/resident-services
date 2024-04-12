@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +82,9 @@ public class IdAuthControllerTest {
 	
 	@MockBean
     private ResidentServiceImpl residentService;
+
+	@MockBean
+	private Utility utilityBean;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 

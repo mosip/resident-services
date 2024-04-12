@@ -110,7 +110,7 @@ public class AuditUtilTest {
 
     @Test
     public void setAuditRequestDtoTest() throws Exception {
-        EventEnum eventEnum = EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API");
+        AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
         AuditResponseDto auditResponseDto = new AuditResponseDto();
         auditResponseDto.setStatus(true);
         ResponseWrapper<AuditResponseDto> responseWrapper = new ResponseWrapper<>();
@@ -130,7 +130,7 @@ public class AuditUtilTest {
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN);
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
 		
-        auditUtil.setAuditRequestDto(eventEnum);
+        auditUtil.setAuditRequestDto(auditEvent);
 
         verify(restTemplate, times(1)).exchange(stringCaptor.capture(), Mockito.any(), httpEntityCaptor.capture(), Mockito.any(Class.class), Mockito.any(Object.class));
         final HttpEntity<RequestWrapper<AuditRequestDTO>> httpEntity = httpEntityCaptor.getValue();
@@ -138,14 +138,14 @@ public class AuditUtilTest {
 
         assertNotNull("Response Body is not null", httpEntity.getBody());
 
-        assertEquals(eventEnum.getApplicationId(), httpEntity.getBody().getRequest().getApplicationId());
-        assertEquals(eventEnum.getApplicationName(), httpEntity.getBody().getRequest().getApplicationName());
-        assertEquals(eventEnum.getDescription(), httpEntity.getBody().getRequest().getDescription());
-        assertEquals(eventEnum.getType(), httpEntity.getBody().getRequest().getEventType());
-        assertEquals(eventEnum.getName(), httpEntity.getBody().getRequest().getEventName());
-        assertEquals(eventEnum.getEventId(), httpEntity.getBody().getRequest().getEventId());
-        assertEquals(eventEnum.getModuleId(), httpEntity.getBody().getRequest().getModuleId());
-        assertEquals(eventEnum.getModuleName(), httpEntity.getBody().getRequest().getModuleName());
+        assertEquals(auditEvent.getApplicationId(), httpEntity.getBody().getRequest().getApplicationId());
+        assertEquals(auditEvent.getApplicationName(), httpEntity.getBody().getRequest().getApplicationName());
+        assertEquals(auditEvent.getDescription(), httpEntity.getBody().getRequest().getDescription());
+        assertEquals(auditEvent.getType(), httpEntity.getBody().getRequest().getEventType());
+        assertEquals(auditEvent.getName(), httpEntity.getBody().getRequest().getEventName());
+        assertEquals(auditEvent.getEventId(), httpEntity.getBody().getRequest().getEventId());
+        assertEquals(auditEvent.getModuleId(), httpEntity.getBody().getRequest().getModuleId());
+        assertEquals(auditEvent.getModuleName(), httpEntity.getBody().getRequest().getModuleName());
 		assertEquals("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308",
 				httpEntity.getBody().getRequest().getId());
 		assertEquals(IdType.UIN.name(), httpEntity.getBody().getRequest().getIdType());
@@ -164,17 +164,17 @@ public class AuditUtilTest {
 
     @Test(expected = RuntimeException.class)
     public void testSetAuditRequestDtoWithApisResourceAccessException() throws Exception {
-    	EventEnum eventEnum = EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API");
+    	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
     	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
-    	auditUtil.setAuditRequestDto(eventEnum);
+    	auditUtil.setAuditRequestDto(auditEvent);
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
-    	EventEnum eventEnum = EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API");
+    	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
     	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn(null);
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
-        auditUtil.setAuditRequestDto(eventEnum);
+        auditUtil.setAuditRequestDto(auditEvent);
     }
 
 	@Test

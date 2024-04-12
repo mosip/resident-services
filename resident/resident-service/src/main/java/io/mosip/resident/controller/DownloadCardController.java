@@ -44,7 +44,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -105,14 +105,14 @@ public class DownloadCardController {
 				throw new CardNotReadyException();
 			}
 		} catch (ResidentServiceException | InvalidInputException | CardNotReadyException | OtpValidationFailedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID)));
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
 		logger.debug("DownloadCardController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
@@ -136,7 +136,7 @@ public class DownloadCardController {
 		try {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
@@ -148,7 +148,7 @@ public class DownloadCardController {
         if(tupleResponse.getT1().length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_SUCCESS);
+        auditUtil.setAuditRequestDto(AuditEnum.DOWNLOAD_PERSONALIZED_CARD_SUCCESS);
         logger.debug("DownloadCardController::downloadPersonalizedCard()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\""
@@ -171,14 +171,14 @@ public class DownloadCardController {
 			requestValidator.validateDownloadCardVid(vid);
 			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset, locale);
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
 		logger.debug("DownloadCardController::requestVidCard()::exit");
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
@@ -193,14 +193,14 @@ public class DownloadCardController {
 			requestValidator.validateAidStatusIndividualId(aid);
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
 		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
+			auditUtil.setAuditRequestDto(AuditEnum.AID_STAGE_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
 			throw e;
 		}
-    	auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_SUCCESS);
+    	auditUtil.setAuditRequestDto(AuditEnum.AID_STAGE_SUCCESS);
     	logger.debug("DownloadCardController::getStatus()::exit");
         return ResponseEntity.ok()
                 .body(responseWrapper);
