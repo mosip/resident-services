@@ -1,6 +1,10 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.annotation.PreAuthenticateContentAndVerifyIntent;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
@@ -23,7 +27,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.AuthTransactionCallBackService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,6 +50,7 @@ public class AuthTransactionCallbackController {
     @Autowired
     private AuditUtil auditUtil;
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PostMapping(value = "/callback/authTransaction", consumes = "application/json")
     @Operation(summary = "AuthTransactionCallbackController", description = "AuthTransactionCallbackController",
             tags = {"AuthTransactionCallbackController"})
@@ -57,30 +62,24 @@ public class AuthTransactionCallbackController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-status.secret}", callback = "${resident.websub.callback.authTransaction-status.relative.url}", topic = "${resident.websub.authTransaction-status.topic}")
-    public void authTypeCallback(@RequestBody EventModel eventModel) throws ApisResourceAccessException, NoSuchAlgorithmException {
-
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-
-        if(eventModel.getEvent() != null && eventModel.getEvent().getData() != null) {
-            logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-            try {
-                logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
-            } catch (ResidentServiceCheckedException e) {
-                logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
-                                + ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
-                                + ExceptionUtils.getStackTrace(e));
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_FAILURE);
-                throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
-            }
-        }
-    }
+	public void authTransactionCallback(@RequestBody Map<String, Object> eventModel)
+			throws ApisResourceAccessException, NoSuchAlgorithmException {
+		try {
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"AuthTransactionCallbackController :: authTransactionCallback() :: entry");
+			authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
+			auditUtil.setAuditRequestDto(AuditEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
+			logger.debug("AuthTransactionCallbackController::authTransactionCallback()::exit");
+		} catch (ResidentServiceCheckedException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
+							+ ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e));
+			auditUtil.setAuditRequestDto(AuditEnum.AUTH_TYPE_CALL_BACK_FAILURE);
+			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
+					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
+		}
+	}
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,13 +13,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -29,6 +26,7 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to create service class implementation for getting acknowledgement API.
@@ -41,9 +39,6 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
-
-    @Autowired
-    private ProxyMasterdataServiceImpl proxyMasterdataServiceImpl;
 
     @Autowired
     private TemplateUtil templateUtil;
@@ -66,7 +61,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private Utility utility;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
+    public Tuple2<byte[], RequestType> getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
 
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -77,18 +72,15 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset);
+            RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
+            Tuple2<Map<String, String>, String> ackTemplateVariables = requestType.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, timeZoneOffset, locale);
 			String requestProperty = ackTemplateVariables.getT2();
-            ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
-                    getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
-            Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-            String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
+            String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
             Map<String, String> templateVariables = ackTemplateVariables.getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return utility.signPdf(templateValue, null);
-
+            return Tuples.of(utility.signPdf(templateValue, null), requestType);
     }
 
     public Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {
