@@ -4,9 +4,7 @@ import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DES
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -59,20 +57,19 @@ public class GrievanceController {
     @PostMapping("/grievance/ticket")
 	public ResponseWrapper<Object> grievanceTicket(
 			@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO)
-            throws ResidentServiceCheckedException, ApisResourceAccessException, IOException, NoSuchAlgorithmException, io.mosip.resident.exception.NoSuchAlgorithmException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("GrievanceController::grievanceTicket()::entry");
 		ResponseWrapper<Object> response = null;
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
-		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException |
-                 ApisResourceAccessException | io.mosip.resident.exception.NoSuchAlgorithmException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-                    Objects.requireNonNull(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID))));
+					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
 			throw e;
 		}
-        auditUtil.setAuditRequestDto(AuditEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
+		auditUtil.setAuditRequestDto(AuditEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
 		logger.debug("GrievanceController::grievanceTicket()::exit");
 		return response;
 	}

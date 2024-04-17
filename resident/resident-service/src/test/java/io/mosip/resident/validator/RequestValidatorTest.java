@@ -1,7 +1,9 @@
 package io.mosip.resident.validator;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,13 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
-import io.mosip.resident.util.*;
 import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -97,6 +94,8 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -106,9 +105,6 @@ public class RequestValidatorTest {
 
     @Mock
     private UinValidator<String> uinValidator;
-
-    @Mock
-    private EmailPhoneValidator emailPhoneValidator;
 
     @Mock
     private VidValidator<String> vidValidator;
@@ -149,12 +145,6 @@ public class RequestValidatorTest {
     @Mock
     private ProxyIdRepoService idRepoService;
 
-    @Mock
-    private ValidateNewUpdateRequest validateNewUpdateRequest;
-
-    @Mock
-    private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
-
     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     @InjectMocks
@@ -163,26 +153,8 @@ public class RequestValidatorTest {
     private Object schema;
     private String schemaJson;
 
-    private JSONObject idRepoJson;
-    private JSONObject identity;
-
-    @Mock
-    private UinVidValidator uinVidValidator;
-
-    @Mock
-    private AvailableClaimUtility availableClaimUtility;
-
-    @Mock
-    private IdentityUtil identityUtil;
-
-    @Mock
-    private ValidateOtpCharLimit validateOtpCharLimit;
-
-    @InjectMocks
-    private ValidateSameData validateSameData;
-
     @Before
-    public void setup() throws ParseException {
+    public void setup() {
         schema = "{\\\"$schema\\\":\\\"http:\\/\\/json-schema.org\\/draft-07\\/schema#\\\",\\\"description\\\":\\\"MOSIP Sample identity\\\",\\\"additionalProperties\\\":false,\\\"title\\\":\\\"MOSIP identity\\\",\\\"type\\\":\\\"object\\\",\\\"definitions\\\":{\\\"simpleType\\\":{\\\"uniqueItems\\\":true,\\\"additionalItems\\\":false,\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"language\\\",\\\"value\\\"],\\\"properties\\\":{\\\"language\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"documentType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"type\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"},\\\"refNumber\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"]}}},\\\"biometricsType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"version\\\":{\\\"type\\\":\\\"number\\\",\\\"minimum\\\":0},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"properties\\\":{\\\"identity\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"IDSchemaVersion\\\",\\\"fullName\\\",\\\"dateOfBirth\\\",\\\"gender\\\",\\\"addressLine1\\\",\\\"addressLine2\\\",\\\"addressLine3\\\",\\\"region\\\",\\\"province\\\",\\\"city\\\",\\\"zone\\\",\\\"postalCode\\\",\\\"phone\\\",\\\"email\\\",\\\"proofOfIdentity\\\",\\\"individualBiometrics\\\"],\\\"properties\\\":{\\\"proofOfAddress\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"gender\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"city\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"postalCode\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[(?i)A-Z0-9]{5}$|^NA$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfException-1\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"referenceIdentityNumber\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^([0-9]{10,30})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"kyc\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"province\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"zone\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfDateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"addressLine1\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine2\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"residenceStatus\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"kyc\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine3\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"email\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[A-Za-z0-9_\\\\\\\\-]+(\\\\\\\\.[A-Za-z0-9_]+)*@[A-Za-z0-9_-]+(\\\\\\\\.[A-Za-z0-9_]+)*(\\\\\\\\.[a-zA-Z]{2,})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerRID\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"fullName\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"dateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(1869|18[7-9][0-9]|19[0-9][0-9]|20[0-9][0-9])\\/([0][1-9]|1[0-2])\\/([0][1-9]|[1-2][0-9]|3[01])$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualAuthBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"introducerUIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfIdentity\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"IDSchemaVersion\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"number\\\",\\\"fieldType\\\":\\\"default\\\",\\\"minimum\\\":0},\\\"proofOfException\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"phone\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[+]*([0-9]{1})([0-9]{9})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerName\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfRelationship\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"UIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"region\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"}}}}}";
         schemaJson = (String) schema;
         Map<RequestIdType, String> map = new HashMap<RequestIdType, String>();
@@ -222,16 +194,10 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "numericDataRegex", "^[0-9]+$");
         ReflectionTestUtils.setField(requestValidator, "transactionIdRegex", "^[0-9]{10}$");
         ReflectionTestUtils.setField(requestValidator, "eventIdRegex", "^[0-9]{16}$");
-        String[] valuesOfExcludedAttributeList = {"UIN", "IDSchemaVersion"};
-        ReflectionTestUtils.setField(validateSameData,  "valuesOfExcludedAttributeList", valuesOfExcludedAttributeList);
         Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
-        JSONParser parser = new JSONParser();
-        idRepoJson = (JSONObject) parser.parse("{\"gender\":[{\"language\":\"eng\",\"value\":\"Female\"},{\"language\":\"ara\",\"value\":\"أنثى\"},{\"language\":\"fra\",\"value\":\"Femelle\"},{\"language\":\"tam\",\"value\":\"பெண்\"},{\"language\":\"hin\",\"value\":\"महिला\"},{\"language\":\"kan\",\"value\":\"ಹೆಣ್ಣು\"}],\"city\":[{\"language\":\"eng\",\"value\":\"TEST_CITYeng\"},{\"language\":\"ara\",\"value\":\"TEST_CITYara\"},{\"language\":\"fra\",\"value\":\"TEST_CITYfra\"},{\"language\":\"tam\",\"value\":\"TEST_CITYtam\"},{\"language\":\"hin\",\"value\":\"TEST_CITYhin\"},{\"language\":\"kan\",\"value\":\"TEST_CITYkan\"}],\"postalCode\":\"14022\"}");
-        identity = (JSONObject) parser.parse("{\"email\":\"kam@g1.com\",\"gender\":[{\"language\":\"eng\",\"value\":\"Female\"},{\"language\":\"ara\",\"value\":\"أنثى\"},{\"language\":\"fra\",\"value\":\"Femelle\"},{\"language\":\"tam\",\"value\":\"பெண்\"},{\"language\":\"hin\",\"value\":\"महिला\"},{\"language\":\"kan\",\"value\":\"ಹೆಣ್ಣು\"}]}");
-
     }
 
     @Test(expected = InvalidInputException.class)
@@ -382,7 +348,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccess() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -400,7 +365,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccessForUnlock() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -765,7 +729,6 @@ public class RequestValidatorTest {
     @Test
     public void testValidateEuinRequestSuccess() throws Exception {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
         euinRequestDTO.setIndividualIdType(IdType.VID.name());
         euinRequestDTO.setIndividualId("1234567");
@@ -999,7 +962,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequest() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
@@ -1016,7 +978,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
@@ -1073,7 +1034,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testReprintSuccess() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
@@ -1172,7 +1132,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthHistoryRequestSuccess() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
         authRequestDTO.setIndividualId("1234567");
         authRequestDTO.setOtp("1245");
@@ -1230,7 +1189,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthUnlockRequestSuccess() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
         authUnLockRequestDto.setTransactionID("12345");
         authUnLockRequestDto.setIndividualId("12345");
@@ -1556,7 +1514,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateChannelVerificationStatusSuccess() throws Exception {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         String channel = "PHONE";
         requestValidator.validateChannelVerificationStatus(channel, "12345678");
     }
@@ -1665,16 +1622,16 @@ public class RequestValidatorTest {
 
     @Test
     public void testPhoneValidator() throws Exception {
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         String phone = "1234567890";
-        emailPhoneValidator.phoneValidator(phone);
+        requestValidator.phoneValidator(phone);
     }
 
     @Test
     public void testEmailValidator() throws Exception {
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         String email = "abc@gmail.com";
-        emailPhoneValidator.emailValidator(email);
+        requestValidator.emailValidator(email);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -1738,7 +1695,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateDownloadCardVid() throws Exception {
-        Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "reprintId", "mosip.resident.print");
         requestValidator.validateDownloadCardVid("12345");
     }
@@ -1935,9 +1891,10 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8809393939");
-        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -1965,7 +1922,8 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateDataRequestInvalidPhoneUserId() throws Exception {
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1980,8 +1938,9 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectPhoneUserId() throws Exception {
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1997,7 +1956,8 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectEmailId() throws Exception {
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
@@ -2079,7 +2039,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateVidCreateV2RequestSuccess() {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
         ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
         ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
@@ -2108,14 +2067,14 @@ public class RequestValidatorTest {
     public void testValidateUin() {
         Mockito.when(uinValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_UIN.getErrorCode(),
                 ResidentErrorCode.INVALID_UIN.getErrorMessage()));
-        assertEquals(false, uinVidValidator.validateUin("123"));
+        assertEquals(false, requestValidator.validateUin("123"));
     }
 
     @Test
     public void testValidateVid() {
         Mockito.when(vidValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_VID.getErrorCode(),
                 ResidentErrorCode.INVALID_VID.getErrorMessage()));
-        assertEquals(false, uinVidValidator.validateVid("123"));
+        assertEquals(false, requestValidator.validateVid("123"));
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2130,7 +2089,8 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testInvalidUserId() {
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         requestValidator.validateUserIdAndTransactionId("shgasbieh", "3232323232");
     }
 
@@ -2571,19 +2531,19 @@ public class RequestValidatorTest {
         residentTransactionEntity.setTokenId("123");
         Optional<ResidentTransactionEntity> residentTransactionEntity1 = Optional.of(residentTransactionEntity);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity1);
-        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("2");
+        Mockito.when(identityService.getResidentIdaToken()).thenReturn("2");
         ReflectionTestUtils.invokeMethod(requestValidator, "validateEventIdBelongToSameSession", "12");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidateEmailId() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         ReflectionTestUtils.invokeMethod(requestValidator, "validateEmailId", "123");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidatePhone() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(false);
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         ReflectionTestUtils.invokeMethod(requestValidator, "validatePhoneNumber", "w");
     }
 
@@ -2664,8 +2624,8 @@ public class RequestValidatorTest {
     public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
@@ -2682,7 +2642,6 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateReqCredentialRequestSuccess() {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
         ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
         residentCredentialRequestDto.setIndividualId("1232323232");
@@ -2767,14 +2726,16 @@ public class RequestValidatorTest {
         requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
     }
 
-    @Test(expected = InvalidInputException.class)
+    @Test(expected = ResidentServiceException.class)
     public void testValidateProxySendOtpRequestInCorrectPhoneUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8878787878");
-        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2787,16 +2748,16 @@ public class RequestValidatorTest {
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test
+    @Test(expected = ResidentServiceException.class)
     public void testValidateProxySendOtpRequestInCorrectEmailUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
-        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
-        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2806,18 +2767,20 @@ public class RequestValidatorTest {
         otpRequestDTOV2.setUserId("kam@g.com");
         userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2, 2));
         userIdOtpRequest.setRequest(otpRequestDTOV2);
-        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
+        when(idRepoService.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test(expected = InvalidInputException.class)
+    @Test(expected = ResidentServiceException.class)
     public void testValidateProxySendOtpRequestFailed() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityUtil.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2845,12 +2808,12 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateOtpCharLimit() {
-        validateOtpCharLimit.validateOtpCharLimit("111111");
+        requestValidator.validateOtpCharLimit("111111");
     }
 
-    @Test
+    @Test(expected = ResidentServiceException.class)
     public void testValidateOtpCharLimitFailed() {
-        validateOtpCharLimit.validateOtpCharLimit("11111111");
+        requestValidator.validateOtpCharLimit("11111111");
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2899,7 +2862,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2Failed() throws Exception {
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2928,7 +2891,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2Passed() throws Exception {
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2960,7 +2923,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2PassedWithLanguageCode() throws Exception {
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2998,7 +2961,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2InvalidTransactionId() throws Exception {
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -3037,7 +3000,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateUpdateRequestV2FailedWithLanguageCode() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");
@@ -3081,7 +3044,7 @@ public class RequestValidatorTest {
     @Test(expected = RuntimeException.class)
     public void testValidateUpdateRequestV2FailedWithRunTimeException() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");
@@ -3224,70 +3187,5 @@ public class RequestValidatorTest {
             return;
         }
         fail();
-    }
-
-    @Test
-    public void testValidateSameData_SameStringAttribute() {
-        identity.put("email", "existing@example.com");
-        idRepoJson.put("email", "existing@example.com");
-
-        Exception exception = assertThrows(ResidentServiceCheckedException.class, () -> {
-            validateSameData.validateSameData(idRepoJson, identity);
-        });
-
-        String expectedMessage = "Same data already present for Attribute:- gender and Language code: eng";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void testValidateSameData_SameJsonObjectAttribute() {
-        JSONArray genderArray = new JSONArray();
-        JSONObject genderObject = new JSONObject();
-        genderObject.put(ResidentConstants.LANGUAGE, "eng");
-        genderObject.put(ResidentConstants.VALUE, "Female");
-        genderArray.add(genderObject);
-
-        identity.put("gender", genderArray);
-
-        Exception exception = assertThrows(ResidentServiceCheckedException.class, () -> {
-            validateSameData.validateSameData(idRepoJson, identity);
-        });
-
-        String expectedMessage = "Same data already present for Attribute:- gender and Language code: eng";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void testValidateSameData_NoSameData() {
-        identity.put("email", "new@example.com");
-        JSONArray newGenderArray = new JSONArray();
-        JSONObject newGenderObject = new JSONObject();
-        newGenderObject.put(ResidentConstants.LANGUAGE, "spa");
-        newGenderObject.put(ResidentConstants.VALUE, "Mujer");
-        newGenderArray.add(newGenderObject);
-
-        identity.put("gender", newGenderArray);
-
-        assertDoesNotThrow(() -> validateSameData.validateSameData(idRepoJson, identity));
-    }
-
-    @Test
-    public void testValidateVidCreateVidRequestDtoSucess() {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
-        ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
-        ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
-        ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
-        requestDto.setId("generate");
-        requestDto.setVersion("newVersion");
-        VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
-        vidRequestDtoV2.setVidType("PERPETUAL");
-        requestDto.setRequest(vidRequestDtoV2);
-        requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
-        requestValidator.validateVidCreateV2Request(requestDto,
-                false, "123");
     }
 }

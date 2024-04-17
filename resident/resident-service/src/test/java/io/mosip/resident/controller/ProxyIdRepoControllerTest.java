@@ -5,11 +5,8 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DraftResidentResponseDto;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.impl.PendingDrafts;
-import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Test;
@@ -33,9 +30,7 @@ import java.util.Objects;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
@@ -54,7 +49,7 @@ public class ProxyIdRepoControllerTest {
 
 	@Mock
 	private ProxyIdRepoService service;
-
+	
 	@Mock
 	private AuditUtil auditUtil;
 
@@ -64,18 +59,12 @@ public class ProxyIdRepoControllerTest {
 	@Mock
 	private Environment environment;
 
-	@Mock
-	private PendingDrafts pendingDrafts;
-
-	@Mock
-	private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
-
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(any())).thenReturn(responseWrapper);
+		when(service.getRemainingUpdateCountByIndividualId(any())).thenReturn(responseWrapper);
 		ResponseEntity<ResponseWrapper<?>> response = controller
 				.getRemainingUpdateCountByIndividualId(List.of());
 		assertNotNull(response);
@@ -83,7 +72,7 @@ public class ProxyIdRepoControllerTest {
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualIdException() throws ResidentServiceCheckedException {
-		when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(any()))
+		when(service.getRemainingUpdateCountByIndividualId(any()))
 				.thenThrow(new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION));
 		ResponseEntity<ResponseWrapper<?>> response = controller
 				.getRemainingUpdateCountByIndividualId(List.of());
@@ -96,19 +85,10 @@ public class ProxyIdRepoControllerTest {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(pendingDrafts.getPendingDrafts(any())).thenReturn(responseWrapper);
+		when(service.getPendingDrafts(any())).thenReturn(responseWrapper);
 		ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> response = controller
 				.getPendingDrafts("eng");
 		assertNotNull(response);
-	}
-
-	@Test
-	public void testGetPendingDraftsInvalidLangCode() throws ResidentServiceCheckedException {
-		doThrow(new InvalidInputException("languageCode"))
-				.when(requestValidator)
-				.validateLanguageCode("invalid");
-
-		assertThrows(InvalidInputException.class, () -> controller.getPendingDrafts("invalid"));
 	}
 
 	@Test
@@ -116,7 +96,7 @@ public class ProxyIdRepoControllerTest {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(pendingDrafts.getPendingDrafts(any())).thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION));
+		when(service.getPendingDrafts(any())).thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION));
 		ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> response = controller
 				.getPendingDrafts("eng");
 		assertEquals(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),

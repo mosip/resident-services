@@ -13,12 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.mosip.resident.util.*;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.util.Utilities;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +84,10 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -118,7 +121,7 @@ public class ResidentController {
 	private Environment environment;
 
 	@Autowired
-	private IdentityDataUtil identityDataUtil;
+	private Utilities utilities;
 
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
@@ -145,12 +148,6 @@ public class ResidentController {
 	private Integer maxEventsServiceHistoryPageSize;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
-
-	@Autowired
-	private UinVidValidator uinVidValidator;
-
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
 
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
@@ -447,12 +444,12 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
-            throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::updateUinDemographics()::entry");
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
-		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		Tuple2<Object, String> tupleResponse = null;
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
@@ -461,7 +458,7 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			Tuple3<JSONObject, String, IdResponseDTO1> identityData = identityDataUtil.
+			Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
 					getIdentityDataFromIndividualID(individualId);
 			JSONObject idRepoJson = identityData.getT1();
 			String schemaJson = identityData.getT2();
@@ -479,7 +476,7 @@ public class ResidentController {
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.UPDATE_UIN_ID));
 			throw e;
 		}
-        audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
+		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::updateUinDemographics()::exit");
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(response);
@@ -491,7 +488,7 @@ public class ResidentController {
 	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		logger.debug("ResidentController::getAuthLockStatus()::entry");
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		try {
 			responseWrapper = residentService.getAuthLockStatus(individualId);
 			audit.setAuditRequestDto(AuditEnum.REQ_AUTH_LOCK_STATUS_SUCCESS);
@@ -550,9 +547,9 @@ public class ResidentController {
 	 * @return The method is returning the type of ID.
 	 */
 	private String getIdType(String id) {
-		if (uinVidValidator.validateUin(id))
+		if (validator.validateUin(id))
 			return IdType.UIN.name();
-		if (uinVidValidator.validateVid(id))
+		if (validator.validateVid(id))
 			return IdType.VID.name();
 		return IdType.RID.name();
 	}
@@ -603,7 +600,7 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<UnreadNotificationDto> count = new ResponseWrapper<>();
 		logger.debug("ResidentController::notificationCount()::entry");
-		String individualId = availableClaimUtility.getResidentIdaToken();
+		String individualId = identityServiceImpl.getResidentIdaToken();
 		try {
 			count = residentService.getnotificationCount(individualId);
 		} catch (ResidentServiceCheckedException e) {
@@ -633,7 +630,7 @@ public class ResidentController {
 		String idaToken = null;
 		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
 		try {
-			idaToken = availableClaimUtility.getResidentIdaToken();
+			idaToken = identityServiceImpl.getResidentIdaToken();
 			response = residentService.getbellClickdttimes(idaToken);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			audit.setAuditRequestDto(AuditEnum.GET_NOTIF_CLICK_FAILURE);
@@ -655,7 +652,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::bellupdateClickdttimes()::entry");
-		String idaToken = availableClaimUtility.getResidentIdaToken();
+		String idaToken = identityServiceImpl.getResidentIdaToken();
 		int response = residentService.updatebellClickdttimes(idaToken);
 		logger.debug("ResidentController::bellupdateClickdttimes()::exit");
 		return response;
@@ -682,7 +679,7 @@ public class ResidentController {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = new ResponseWrapper<>();
 		try {
 			validator.validateLanguageCode(langCode);
-			id = availableClaimUtility.getResidentIdaToken();
+			id = identityServiceImpl.getResidentIdaToken();
 			notificationDtoList = residentService.getNotificationList(pageIndex, pageSize, id, langCode,
 					timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
@@ -754,7 +751,7 @@ public class ResidentController {
 		ResponseWrapper<UserInfoDto> userInfoDto = new ResponseWrapper<>();
 		try {
 			validator.validateProfileApiRequest(languageCode);
-			String idaToken = availableClaimUtility.getResidentIdaToken();
+			String idaToken = identityServiceImpl.getResidentIdaToken();
 			userInfoDto = residentService.getUserinfo(idaToken, languageCode, timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(AuditEnum.GET_PROFILE_FAILURE);

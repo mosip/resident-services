@@ -1,4 +1,4 @@
-/*
+package io.mosip.resident.util;/*
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

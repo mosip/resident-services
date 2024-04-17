@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -57,6 +57,11 @@ import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -106,30 +111,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
+	private ResidentVidService vidService;
+
+	@Autowired
 	private ResidentCredentialService residentCredentialService;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
-
-	@Autowired
-	private SessionUserNameUtility sessionUserNameUtility;
-
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Autowired
-	private UinVidValidator uinVidValidator;
-
-	@Autowired
-	private MaskDataUtility maskDataUtility;
-
-	@Autowired
-	private IdentityUtil identityUtil;
-
-	@Autowired
-	private PerpetualVidUtility perpetualVidUtility;
-
-	@Autowired
-	private AvailableClaimValueUtility availableClaimValueUtility;
 
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
@@ -144,7 +131,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		IdentityDTO identityDTO = null;
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			identityDTO = identityUtil.getIdentity(individualId);
+			identityDTO = identityService.getIdentity(individualId);
 			Tuple2<String, IdType> individualIdAndType = identityService.getIdAndTypeForIndividualId(individualId);
 			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, individualIdAndType.getT1(),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
@@ -210,10 +197,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
-		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
-		residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
+		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
+		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
 
@@ -230,7 +217,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		Tuple2<List<String>, Map<String, Object>> identityAttribute = null;
 		try {
-			individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+			individualId = identityService.getResidentIndvidualIdFromSession();
 			Map<String, Object> identityAttributes = getIdentityData(individualId);
 			residentTransactionEntity = createResidentTransactionEntity(individualId,
 					downloadPersonalizedCardMainRequestDTO.getRequest(), (String) identityAttributes.get(IdType.UIN.name()));
@@ -288,7 +275,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private Map<String, Object> getIdentityData(String individualId) {
 		Map<String, Object> identityAttributes = null;
 		try {
-			identityAttributes = (Map<String, Object>) identityUtil.getIdentity(individualId);
+			identityAttributes = (Map<String, Object>) identityService.getIdentity(individualId);
 		} catch (ResidentServiceCheckedException e) {
 			logger.error("Unable to get attributes- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
@@ -304,9 +291,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = utility.createEventId();
 		residentTransactionEntity.setEventId(eventId);
 		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
 					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
@@ -353,7 +340,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String uinForVid = "";
 		IdentityDTO identityDTO = null;
 		try {
-			identityDTO = identityUtil.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
+			identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
 			if(identityDTO!=null) {
 				uinForVid = utilities.getUinByVid(vid);
 				String uinForIndividualId = identityDTO.getUIN();
@@ -385,7 +372,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
-					availableClaimValueUtility.getAvailableClaimValue(environment.getProperty(ResidentConstants.IMAGE)));
+					identityService.getAvailableclaimValue(environment.getProperty(ResidentConstants.IMAGE)));
 			credentialReqestDto.setAdditionalData(additionalAttributes);
 			requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
 			requestDto.setRequest(credentialReqestDto);
@@ -468,7 +455,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private String getRidForIndividualId(String individualId) {
-		IdType idType = uinVidValidator.getIndividualIdType(individualId);
+		IdType idType = identityService.getIndividualIdType(individualId);
 		if (idType.equals(IdType.AID)) {
 			return individualId;
 		} else {
@@ -502,9 +489,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(uin));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(uin));
 		residentTransactionEntity.setIndividualId(uin);
-		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
@@ -526,7 +513,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			name = identityDTO.getFullName();
 		}
 		if (uin != null) {
-			vidResponse = perpetualVidUtility.retrieveVids(timeZoneOffset, locale, uin);
+			vidResponse = vidService.retrieveVids(timeZoneOffset, locale, uin);
 		}
 		if (vidResponse != null) {
 			List<Map<String, ?>> vidList = vidResponse.getResponse();

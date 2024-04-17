@@ -21,10 +21,9 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.PerpetualVidUtility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,6 +33,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -76,11 +76,14 @@ public class ResidentVidController {
 	private AuditUtil auditUtil;
 
 	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Autowired
-	private PerpetualVidUtility perpetualVidUtility;
-
+	private IdentityServiceImpl identityServiceImpl;
+	
+	@Value("${resident.vid.policy.id}")
+	private String vidPolicyId;
+	
+	@Value("${resident.vid.version}")
+	private String version;
+	
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping(path = "/vid/policy")
 	@Operation(summary = "Retrieve VID policy", description = "Retrieve VID policy", tags = { "Resident Service" })
@@ -257,7 +260,7 @@ public class ResidentVidController {
 	}
 	
 	private String getResidentIndividualId() throws ApisResourceAccessException {
-		return availableClaimUtility.getResidentIndvidualIdFromSession();
+		return identityServiceImpl.getResidentIndvidualIdFromSession();
 	}
 	
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
@@ -277,7 +280,7 @@ public class ResidentVidController {
 		ResponseWrapper<List<Map<String, ?>>> retrieveVids = new ResponseWrapper<>();
 		String residentIndividualId = getResidentIndividualId();
 		try {
-			retrieveVids = perpetualVidUtility.retrieveVids(residentIndividualId, timeZoneOffset, locale);
+			retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset, locale);
 		} catch (ResidentServiceException | ApisResourceAccessException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_VIDS_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.GET_VIDS_ID));

@@ -111,13 +111,11 @@ public class TransliterationController {
 					responseDTO = transliterationService.translitratorService(transliterationRequestDTOMainRequestDTO);
 				}
 			}
-			if(responseDTO!=null){
-				TransliterationResponseDTO transliterationResponseDTO = responseDTO.getResponse();
-				transliterationResponseDTO.setToFieldLang(requestDTO.getRequest().getToFieldLang());
-				transliterationResponseDTO.setFromFieldValue(requestDTO.getRequest().getFromFieldValue());
-				transliterationResponseDTO.setFromFieldLang(requestDTO.getRequest().getFromFieldLang());
-				responseDTO.setResponse(transliterationResponseDTO);
-			}
+			TransliterationResponseDTO transliterationResponseDTO = responseDTO.getResponse();
+			transliterationResponseDTO.setToFieldLang(requestDTO.getRequest().getToFieldLang());
+			transliterationResponseDTO.setFromFieldValue(requestDTO.getRequest().getFromFieldValue());
+			transliterationResponseDTO.setFromFieldLang(requestDTO.getRequest().getFromFieldLang());
+			responseDTO.setResponse(transliterationResponseDTO);
 			return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(transliterationService.translitratorService(requestDTO));

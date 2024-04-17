@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,22 +34,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
@@ -103,6 +103,10 @@ import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -112,7 +116,7 @@ import reactor.util.function.Tuples;
  * @author Jyoti Prakash Nayak
  *
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
@@ -120,37 +124,37 @@ public class ResidentControllerTest {
 
 	private static final String LOCALE_EN_US = "en-US";
 
-	@Mock
+	@MockBean
 	private ProxyIdRepoService proxyIdRepoService;
 
-	@Mock
+	@MockBean
 	private ResidentServiceImpl residentService;
 
 	@Mock
 	CbeffImpl cbeff;
 
-	@Mock
+	@MockBean
 	private RequestValidator validator;
 
-	@Mock
+	@MockBean
 	private ResidentVidService vidService;
 
-	@Mock
+	@MockBean
 	private Utility utilityBean;
 
-	@Mock
+	@MockBean
 	private IdAuthServiceImpl idAuthServiceImpl;
 
-	@Mock
+	@MockBean
 	private IdentityServiceImpl identityServiceImpl;
 
-	@Mock
+	@MockBean
 	private DocumentService docService;
 
-	@Mock
+	@MockBean
 	private ScopeValidator scopeValidator;
 
-	@Mock
+	@MockBean
 	private ObjectStoreHelper objectStore;
 
 	@Mock
@@ -163,15 +167,12 @@ public class ResidentControllerTest {
 	private Environment environment;
 
 	@Mock
-	private IdentityDataUtil identityDataUtil;
+	private Utilities utilities;
 
-	@Mock
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Mock
+	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
-	@Mock
+	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
@@ -195,14 +196,9 @@ public class ResidentControllerTest {
 	private MockMvc mockMvc;
 	private String schemaJson;
 
-	@Mock
-	private UinVidValidator uinVidValidator;
-
 	@Before
 	public void setUp() throws ApisResourceAccessException, IOException {
 		MockitoAnnotations.initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(residentController).build();
-
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
@@ -236,8 +232,11 @@ public class ResidentControllerTest {
 		authStatusRequestToJson = gson.toJson(authTypeStatusRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
+		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn(IdType.UIN);
 		when(environment.getProperty(anyString())).thenReturn("property");
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
+
 		schemaJson = "schema";
 	}
 
@@ -299,10 +298,14 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("resident")
 	public void testRequestAuthLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdate(Mockito.any(), Mockito.any());
 
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-lock").contentType(MediaType.APPLICATION_JSON).content(""))
-				.andExpect(status().isBadRequest()).andReturn();
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -322,7 +325,8 @@ public class ResidentControllerTest {
 	public void testRequestEuinBadRequest() throws Exception {
 
 		MvcResult result = this.mockMvc.perform(post("/req/euin").contentType(MediaType.APPLICATION_JSON).content(""))
-				.andExpect(status().isBadRequest()).andReturn();
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -359,6 +363,7 @@ public class ResidentControllerTest {
 	public void testRequestAuthUnLockSuccess() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		responseDto.setStatus("success");
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdate(Mockito.any(), Mockito.any());
 
 		this.mockMvc
@@ -370,16 +375,22 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestAuthUnLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdate(Mockito.any(), Mockito.any());
 
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
-				.andExpect(status().isBadRequest()).andReturn();
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetServiceHistorySuccess() throws Exception {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.any())).thenReturn(response);
 		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
 				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
 				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, 0, LOCALE_EN_US);
@@ -434,7 +445,7 @@ public class ResidentControllerTest {
 		residentController.reqAuthHistory(authHistoryRequest);
 	}
 
-	@Test(expected = Exception.class)
+	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestUINUpdate() throws Exception {
 		ResidentUpdateRequestDto dto = new ResidentUpdateRequestDto();
@@ -473,14 +484,17 @@ public class ResidentControllerTest {
 		requestDTO.setVersion("v1");
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
+		when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
 		IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
 		ResponseDTO1 responseDTO1 = new ResponseDTO1();
 		responseDTO1.setIdentity(jsonObject);
 		idResponseDTO1.setResponse(responseDTO1);
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.anyString())).thenReturn(idResponseDTO1);
+		when(utilities.convertIdResponseIdentityObjectToJsonObject(Mockito.any())).thenReturn(jsonObject);
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, idResponseDTO1);
-		when(identityDataUtil.
+		when(utilities.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
@@ -489,7 +503,7 @@ public class ResidentControllerTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testUpdateUinDemographicsIdTypeUINException() throws Exception {
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
 		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
 		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
 		request.setTransactionID("12345");
@@ -502,15 +516,15 @@ public class ResidentControllerTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
-		when(identityDataUtil.
+		when(utilities.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);
 	}
 
 	@Test(expected = InvalidInputException.class)
 	public void testUpdateUinDemographicsIdTypeVIDException() throws Exception {
-		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
+		Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
 		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
 		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
 		request.setTransactionID("12345");
@@ -523,9 +537,9 @@ public class ResidentControllerTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
-		when(identityDataUtil.
+		when(utilities.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);
 	}
 
@@ -533,7 +547,7 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testAuthLockStatus() throws Exception {
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
 		assertEquals(responseWrapper, resultRequestWrapper);
@@ -547,7 +561,7 @@ public class ResidentControllerTest {
 				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
 		responseWrapper.setResponsetime(null);
 
-		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException("error", "error"));
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
@@ -622,6 +636,7 @@ public class ResidentControllerTest {
 		ResponseWrapper<UserInfoDto> response = new ResponseWrapper<>();
 		response.setResponse(user);
 		residentController.userinfo(null, 0, LOCALE_EN_US);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
 		this.mockMvc.perform(get("/profile"))
 				.andExpect(status().isOk());
 	}
@@ -640,13 +655,14 @@ public class ResidentControllerTest {
 		dto.setLastbellnotifclicktime(LocalDateTime.now());
 		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
 		response.setResponse(dto);
+		Mockito.when(residentService.getbellClickdttimes(Mockito.anyString())).thenReturn(response);
 		residentController.bellClickdttimes();
 	}
 
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testBellClickdttimesWithException() throws Exception {
-		when(availableClaimUtility.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
 		residentController.bellClickdttimes();
 	}
 
@@ -657,13 +673,14 @@ public class ResidentControllerTest {
 		dto.setUnreadCount(10L);
 		ResponseWrapper<UnreadNotificationDto> response = new ResponseWrapper<>();
 		response.setResponse(dto);
+		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenReturn(response);
 		residentController.notificationCount();
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testNotificationCountException() throws Exception {
 		ReflectionTestUtils.setField(residentController, "serviceEventId", "id");
-		Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("1234567890");
+		Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234567890");
 		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
 		residentController.notificationCount();
 	}
@@ -671,6 +688,8 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testBellupdateClickdttimes() throws Exception {
+		int response = 10;
+		Mockito.when(residentService.updatebellClickdttimes(Mockito.anyString())).thenReturn(response);
 		residentController.bellupdateClickdttimes();
 	}
 
@@ -681,13 +700,15 @@ public class ResidentControllerTest {
 		dto.setData(List.of());
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		response.setResponse(dto);
+		Mockito.when(residentService.getNotificationList(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(),
+				Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
 		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testGetNotificationsListWithException() throws Exception {
-		when(availableClaimUtility.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
 		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
 	}
 
@@ -707,6 +728,7 @@ public class ResidentControllerTest {
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
 				Mockito.any())).thenReturn(response);
+		Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("filename");
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
 		Mockito.when(
 				residentService.downLoadServiceHistory(Mockito.any(), Mockito.anyString(), Mockito.any(), Mockito.any(),

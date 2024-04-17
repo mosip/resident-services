@@ -20,10 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.util.*;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
-import io.mosip.resident.validator.ValidateNewUpdateRequest;
-import io.mosip.resident.validator.ValidateSameData;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -81,6 +79,9 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 @RunWith(SpringRunner.class)
@@ -125,9 +126,6 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-
-	@Mock
-	private ValidateSameData validateSameData;
 	
 	@Mock
 	private ProxyMasterdataService proxyMasterdataService;
@@ -140,18 +138,6 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	RequestValidator requestValidator;
-
-	@Mock
-	ValidateNewUpdateRequest validateNewUpdateRequest;
-
-	@Mock
-	private MaskDataUtility maskDataUtility;
-
-	@Mock
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Mock
-	private AccessTokenUtility accessTokenUtility;
 
 	ResidentUpdateRequestDto dto;
 
@@ -226,9 +212,6 @@ public class ResidentServiceResUpdateTest {
 		notificationResponse.setMessage("Notification sent");
 		notificationResponse.setStatus("success");
 		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenReturn(notificationResponse);
-
-		Mockito.when(env.getProperty(ApiName.MACHINESTATUSUPDATE.name())).thenReturn("http://localhost");
-		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(new io.mosip.kernel.core.http.ResponseWrapper<>());
 
 		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
 		List<MachineDto> machineDtos = new ArrayList<>();
@@ -640,22 +623,6 @@ public class ResidentServiceResUpdateTest {
 	public void testReqUinUpdateBadIdentityJson() throws ResidentServiceCheckedException {
 		dto.setIdentityJson("abc");
 		residentServiceImpl.reqUinUpdate(dto);
-	}
-
-	@Test
-	public void testValidationOfFailedStatusForUpdateUin() throws ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		residentTransactionEntity.setRequestSummary("failed");
-		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
-		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
-		dto.setIndividualId("3527812407");
-		try {
-			residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
-		} catch (ResidentServiceException e) {
-			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
-					((ValidationFailedException) e.getCause()).getErrorCode());
-		}
 	}
 
 }

@@ -4,12 +4,8 @@ import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DES
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import io.mosip.resident.util.AvailableClaimUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -66,9 +62,6 @@ public class OrderCardController {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardController.class);
 
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
 	/**
 	 * Send a physical card.
 	 * 
@@ -117,7 +110,7 @@ public class OrderCardController {
 			@RequestParam(name = "redirectUri") String redirectUri )
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::getphysicalCardOrder()::entry");
-		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String redirectURL = orderCardService.getRedirectUrl(partnerId,individualId);
 		logger.debug("OrderCardController::getphysicalCardOrder()::exit");
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectURL)).build();
@@ -141,54 +134,11 @@ public class OrderCardController {
 			@RequestParam(name = "error_message",required = false) String errorMessage)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::entry");
-		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String response = orderCardService.physicalCardOrder(redirectUrl, paymentTransactionId, eventId,
 				residentFullAddress,individualId,errorCode,errorMessage);
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::exit");
-		String safeResponseUrl = validateAndSanitizeUrl(response);
-
-		if (safeResponseUrl == null) {
-			logger.warn("OrderCardController::physicalCardOrderRedirect()::Invalid redirect URL: {}", response);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid redirect URL");
-		}
-
-		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(safeResponseUrl)).build();
-
+		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(response)).build();
 	}
-
-	private String validateAndSanitizeUrl(String url) {
-		if (url == null || url.isEmpty()) {
-			logger.warn("URL is null or empty.");
-			return null;
-		}
-
-		try {
-			URI uri = new URI(url);
-			String host = uri.getHost();
-			String scheme = uri.getScheme(); // Extract protocol (http/https)
-			String path = uri.getPath();
-
-			// Ensure path is normalized with a trailing slash
-			String normalizedPath = (path == null || path.isEmpty()) ? "/" : path;
-
-			// Reconstruct base URL with scheme, host, and normalized path
-			String baseUrl = scheme + "://" + host + normalizedPath;
-
-			// Example: Whitelisted domains with protocol and trailing slash
-			List<String> allowedUrls = List.of(Objects.requireNonNull(env.getProperty(ResidentConstants.ALLOWED_URL)));
-
-			logger.debug("Validating URL. Constructed Base URL: {}, Allowed URLs: {}", baseUrl, allowedUrls);
-
-			if (host != null && scheme != null && allowedUrls.contains(baseUrl)) {
-				return uri.toString();
-			}
-		} catch (URISyntaxException e) {
-			logger.error("Invalid URL syntax: {}", url, e);
-		}
-
-		logger.warn("URL validation failed for: {}", url);
-		return null; // URL is invalid or not allowed
-	}
-
 
 }

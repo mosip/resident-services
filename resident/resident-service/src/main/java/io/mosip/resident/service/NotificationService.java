@@ -20,8 +20,14 @@ import io.mosip.resident.dto.SMSRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.*;
-import io.mosip.resident.validator.EmailPhoneValidator;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -59,7 +65,6 @@ public class NotificationService {
 	private static final String PHONE_CHANNEL = "phone";
 	private static final String IDENTITY = "identity";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
-
 	@Autowired
 	private TemplateManager templateManager;
 
@@ -80,12 +85,18 @@ public class NotificationService {
 	
 	@Autowired
 	private Utilities utilities;
+
+	@Autowired
+	private RequestValidator requestValidator;
 	
 	@Autowired
 	private AuditUtil audit;
 	
 	@Autowired
 	private TemplateUtil templateUtil;
+
+	@Autowired
+	private IdentityService identityService;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";
@@ -101,21 +112,6 @@ public class NotificationService {
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
 	
-	@Autowired
-	private MaskDataUtility maskDataUtility;
-
-	@Autowired
-	private IdentityUtil identityUtil;
-	
-	@Autowired
-	private EmailPhoneValidator emailPhoneValidator;
-
-	@Autowired
-	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
-
-	@Autowired
-	private SmsTemplateTypeCode smsTemplateTypeCode;
-
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
 		return sendNotification(dto, null, null, null, identity);
@@ -127,7 +123,7 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityUtil.getIdentity(dto.getId()) : identity;
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityService.getIdentity(dto.getId()) : identity;
 		Map mapperIdentity = getMapperIdentity();
 
 		Set<String> templateLangauges;
@@ -188,19 +184,19 @@ public class NotificationService {
 		if (smsStatus && emailStatus) {
 			notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
 			if(email != null && phone != null) {
-				notificationResponse.setMaskedPhone(maskDataUtility.maskPhone(phone));
-				notificationResponse.setMaskedEmail(maskDataUtility.maskEmail(email));
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
 			}
 			notificationResponse.setStatus(SUCCESS);
 		} else if (smsStatus) {	
 			notificationResponse.setMessage(SMS_SUCCESS);
 			if(phone != null) {
-				notificationResponse.setMaskedPhone(maskDataUtility.maskPhone(phone));
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
 			} 
 		} else if (emailStatus) {
 			notificationResponse.setMessage(EMAIL_SUCCESS);
 			if(email != null) {
-				notificationResponse.setMaskedEmail(maskDataUtility.maskEmail(email));
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
 			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
@@ -260,7 +256,7 @@ public class NotificationService {
 	private String getTemplate(String langCode, String templateTypeCode) {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templateTypeCode,
 				"NotificationService::getTemplate()::entry");
-		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)
@@ -296,7 +292,7 @@ public class NotificationService {
 			phone =  (String) mailingAttributes.get(TemplateVariablesConstants.PHONE);
 		}
 
-		if (nullValueCheck(phone) || !(emailPhoneValidator.phoneValidator(phone))) {
+		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
 			return false;
@@ -306,10 +302,10 @@ public class NotificationService {
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
 				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
-					languageTemplate = templateMerge(getTemplate(language, smsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				} else{
-					languageTemplate = templateMerge(getTemplate(language, smsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP)), mailingAttributes));
 				}
 
@@ -402,7 +398,7 @@ public class NotificationService {
 		if(newEmail!=null){
 			otp=(String) mailingAttributes.get(TemplateVariablesConstants.OTP);
 		}
-		if (nullValueCheck(email) || !(emailPhoneValidator.emailValidator(email))) {
+		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
 			return false;

@@ -2,6 +2,7 @@ package io.mosip.resident.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -24,22 +25,25 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ProxyMasterdataService;
 import lombok.Data;
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
 
-import jakarta.annotation.PostConstruct;
-
-import java.io.*;
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
@@ -53,11 +57,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
 import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 /**
@@ -80,6 +86,9 @@ public class Utilities {
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = "\\";
 
+	@Value("${IDSchema.Version}")
+	private String idschemaVersion;
+
 	@Value("${provider.packetwriter.resident}")
 	private String provider;
 
@@ -96,6 +105,14 @@ public class Utilities {
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Autowired
+	private Utility utility;
+
+	@Autowired
+	private IdentityService identityService;
 	/** The config server file storage URL. */
 	@Value("${config.server.file.storage.uri}")
 	private String configServerFileStorageURL;
@@ -104,19 +121,34 @@ public class Utilities {
 	@Value("${registration.processor.identityjson}")
 	private String residentIdentityJson;
 
+	/** The id repo update. */
+	@Value("${id.repo.update}")
+	private String idRepoUpdate;
+
+	/** The vid version. */
+	@Value("${resident.vid.version}")
+	private String vidVersion;
+
 	private String mappingJsonString = null;
 
-	private static String regProcessorIdentityJson = "";
+    private static String regProcessorIdentityJson = "";
 	private SecureRandom secureRandom;
 
-	@PostConstruct
-	private void loadRegProcessorIdentityJson() {
-		regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
-		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
-	}
+	/** The acr-amr mapping json file. */
+	@Value("${amr-acr.json.filename}")
+	private String amrAcrJsonFile;
 
-	public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+	private static final String ACR_AMR = "acr_amr";
+
+
+	@PostConstruct
+    private void loadRegProcessorIdentityJson() {
+        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
+        logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
+    }
+
+    public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 
 		if (uin != null) {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
@@ -156,6 +188,22 @@ public class Utilities {
 					ExceptionUtils.getStackTrace(e));
 			throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
 		}
+	}
+
+	public Tuple3<JSONObject, String, IdResponseDTO1> getIdentityDataFromIndividualID(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		IdResponseDTO1 idResponseDto = retrieveIdRepoJsonIdResponseDto(individualId);
+		JSONObject idRepoJson = convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
+		String schemaJson = getSchemaJsonFromIdRepoJson(idRepoJson);
+		return Tuples.of(idRepoJson, schemaJson, idResponseDto);
+	}
+
+	public String getSchemaJsonFromIdRepoJson(JSONObject idRepoJson) throws ResidentServiceCheckedException {
+		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
+		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+		Object idSchema = idSchemaResponse.getResponse();
+		Map<String, ?> map = objMapper.convertValue(idSchema, Map.class);
+		return ((String) map.get("schemaJson"));
 	}
 
 	public JSONObject getRegistrationProcessorMappingJson() throws IOException {
@@ -294,11 +342,11 @@ public class Utilities {
 	}
 
 	public String getJson(String configServerFileStorageURL, String uri) {
-		if (StringUtils.isBlank(regProcessorIdentityJson)) {
-			return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
-		}
-		return regProcessorIdentityJson;
-	}
+        if (StringUtils.isBlank(regProcessorIdentityJson)) {
+            return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
+        }
+        return regProcessorIdentityJson;
+    }
 
 	public String retrieveIdrepoJsonStatus(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 		String response = null;
@@ -324,6 +372,37 @@ public class Utilities {
 			}
 
 			response = idResponseDto.getResponse().getStatus();
+
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+		}
+
+		return response;
+	}
+
+	public IdResponseDTO1 retrieveIdRepoJsonIdResponseDto(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+		IdResponseDTO1 response = null;
+		if (uin != null) {
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson()::entry");
+			List<String> pathSegments = new ArrayList<>();
+			pathSegments.add(uin);
+			IdResponseDTO1 idResponseDto;
+
+			idResponseDto = (IdResponseDTO1) utility.getCachedIdentityData(uin, identityService.getAccessToken(), IdResponseDTO1.class);
+			if (idResponseDto == null) {
+				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
+				return null;
+			}
+			if (!idResponseDto.getErrors().isEmpty()) {
+				List<ServiceError> error = idResponseDto.getErrors();
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
+				throw new IdRepoAppException(error.get(0).getErrorCode(), error.get(0).getMessage());
+			}
+
+			response = idResponseDto;
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
@@ -395,22 +474,22 @@ public class Utilities {
 		}
 		return langCode;
 	}
-
-
-	public String getPhoneAttribute() throws ResidentServiceCheckedException {
-		return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
-	}
-
-	public String getEmailAttribute() throws ResidentServiceCheckedException {
-		return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
-	}
+	
+	    
+    public String getPhoneAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
+    }
+    
+    public String getEmailAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
+    }
 
 	private String getIdMappingAttributeForKey(String attributeKey) throws ResidentServiceCheckedException {
 		try {
 			JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
 			String phoneAttribute = JsonUtil.getJSONValue(
-					JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
-					MappingJsonConstants.VALUE);
+			        JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
+			        MappingJsonConstants.VALUE);
 			return phoneAttribute;
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -419,16 +498,10 @@ public class Utilities {
 	}
 
 	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
-		byte[] pdfBytes = outputStream.toByteArray();
-		return getPageCountWithPDDocument(pdfBytes);
+		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
+		return pdfReader.getNumberOfPages();
 	}
 
-	private static int getPageCountWithPDDocument(byte[] pdfBytes) throws IOException {
-		try (InputStream inputStream = new ByteArrayInputStream(pdfBytes);
-			 PDDocument document = PDDocument.load(inputStream, MemoryUsageSetting.setupTempFileOnly())) {
-			return document.getNumberOfPages();
-		}
-	}
 	@PostConstruct
 	public void initializeSecureRandomInstance(){
 		secureRandom = new SecureRandom();
@@ -438,4 +511,27 @@ public class Utilities {
 		return secureRandom;
 	}
 
+	@Cacheable(value = "amr-acr-mapping")
+	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
+		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
+				String.class);
+		Map<String, Object> amrAcrMap = Map.of();
+		try {
+			if (amrAcrJson != null) {
+				amrAcrMap = objMapper.readValue(amrAcrJson.getBytes(UTF_8), Map.class);
+			}
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		Object obj = amrAcrMap.get(ACR_AMR);
+		Map<String, Object> map = (Map<String, Object>) obj;
+		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
+				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
+		return acrAmrMap;
+	}
+	@Cacheable(value = "getDynamicFieldBasedOnLangCodeAndFieldName", key = "{#fieldName, #langCode, #withValue}")
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
+		return proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+	}
 }

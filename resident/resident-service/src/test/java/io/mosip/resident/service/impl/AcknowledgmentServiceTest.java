@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,9 +62,6 @@ public class AcknowledgmentServiceTest {
 
     @Mock
     private TemplateUtil templateUtil;
-
-    @Mock
-    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
     @InjectMocks
     private TemplateManagerBuilderImpl templateManagerBuilder;
@@ -125,7 +121,7 @@ public class AcknowledgmentServiceTest {
         responseWrapper.setResponse(signatureResponseDto);
         Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
         Mockito.when(
-				templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn("file text template");
     }
 

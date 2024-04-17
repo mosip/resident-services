@@ -4,6 +4,7 @@ import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -85,9 +86,6 @@ public class UtilitiesTest {
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
 
-    @Mock
-    IdentityDataUtil identityDataUtil;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -100,26 +98,11 @@ public class UtilitiesTest {
     @Mock
     private Utility utility;
 
-    @Mock
-    private AcrMappingUtil acrMappingUtil;
-
-    @Mock
-    private AccessTokenUtility accessTokenUtility;
-
     JSONObject identity;
 
     JSONObject identityVID;
 
     private Map<String, Object> amrAcrJson;
-
-    @Mock
-    private CachedIdentityDataUtil cachedIdentityDataUtil;
-
-    @Mock
-    private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
-
-    @Mock
-    private DynamicFieldBasedOnLangCodeAndFieldName dynamicFieldBasedOnLangCodeAndFieldName;
 
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
@@ -138,6 +121,7 @@ public class UtilitiesTest {
         InputStream insputStream = new FileInputStream(amrAcrJsonFile);
         String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
         amrAcrJson = JsonUtil.readValue(amrAcrJsonString, Map.class);
+        ReflectionTestUtils.setField(utilities, "amrAcrJsonFile", "amr-acr-mapping.json");
     }
 
     @Test
@@ -346,7 +330,7 @@ public class UtilitiesTest {
     public void testGetAmrAcrMapping() throws ResidentServiceCheckedException, IOException {
     	Mockito.when(residentRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(amrAcrJson.toString());
     	Mockito.when(objMapper.readValue(amrAcrJson.toString().getBytes(UTF_8), Map.class)).thenReturn(amrAcrJson);
-        acrMappingUtil.getAmrAcrMapping();
+        utilities.getAmrAcrMapping();
     }
 
     @Test
@@ -358,17 +342,23 @@ public class UtilitiesTest {
         responseWrapper.setResponse("Response");
         responseWrapper.setResponsetime(LocalDateTime.of(1, 1, 1, 1, 1));
         responseWrapper.setVersion("https://example.org/example");
-        when((ResponseWrapper<Object>) dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
-                (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
+        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+                (String) Mockito.any(), (String) Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
-        proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        assertSame(responseWrapper,
+                utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
+        verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) Mockito.any(),
+                (String) Mockito.any(), anyBoolean());
     }
     @Test
     public void testGetDynamicFieldBasedOnLangCodeAndFieldName2() throws ResidentServiceCheckedException {
-        when((ResponseWrapper<Object>) dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
-                (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
+        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+                (String) Mockito.any(), (String) Mockito.any(), anyBoolean()))
                 .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
-        proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) Mockito.any(),
+                (String) Mockito.any(), anyBoolean());
     }
 
     @Test
@@ -530,11 +520,11 @@ public class UtilitiesTest {
         assertEquals("RESIDENT", utilities.getDefaultSource());
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void testGetIdentityDataFromIndividualIDNullIdeResponseDto()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
-        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(objMapper.writeValueAsString((Object) Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
         responseDTO1.setDocuments(new ArrayList<>());
@@ -548,18 +538,21 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any())).thenReturn(null);
-        identityDataUtil.getIdentityDataFromIndividualID("42");
-        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any());
+        when(utility.getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any())).thenReturn(null);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) Mockito.any());
+        verify(utility).getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any());
     }
 
-    @Test
+    @Test(expected = IdRepoAppException.class)
     public void testGetIdentityDataFromIndividualIDIdRepoAppException()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
-        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(objMapper.writeValueAsString((Object) Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
         responseDTO1.setDocuments(new ArrayList<>());
@@ -574,20 +567,23 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
-        identityDataUtil.getIdentityDataFromIndividualID("42");
-        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any());
+        when(utility.getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any())).thenReturn(idResponseDTO1);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) Mockito.any());
+        verify(utility).getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any());
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testGetIdentityDataFromIndividual()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
+        when(identityService.getAccessToken()).thenReturn("ABC123");
         JSONObject identity = new JSONObject();
         identity.put(ResidentConstants.ID_SCHEMA_VERSION, "0.1");
-        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn(identity.toJSONString());
+        when(objMapper.writeValueAsString((Object) Mockito.any())).thenReturn(identity.toJSONString());
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
         JSONObject object = new JSONObject();
         Object schema = "{\\\"$schema\\\":\\\"http:\\/\\/json-schema.org\\/draft-07\\/schema#\\\",\\\"description\\\":\\\"MOSIP Sample identity\\\",\\\"additionalProperties\\\":false,\\\"title\\\":\\\"MOSIP identity\\\",\\\"type\\\":\\\"object\\\",\\\"definitions\\\":{\\\"simpleType\\\":{\\\"uniqueItems\\\":true,\\\"additionalItems\\\":false,\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"language\\\",\\\"value\\\"],\\\"properties\\\":{\\\"language\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"documentType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"type\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"},\\\"refNumber\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"]}}},\\\"biometricsType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"version\\\":{\\\"type\\\":\\\"number\\\",\\\"minimum\\\":0},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"properties\\\":{\\\"identity\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"IDSchemaVersion\\\",\\\"fullName\\\",\\\"dateOfBirth\\\",\\\"gender\\\",\\\"addressLine1\\\",\\\"addressLine2\\\",\\\"addressLine3\\\",\\\"region\\\",\\\"province\\\",\\\"city\\\",\\\"zone\\\",\\\"postalCode\\\",\\\"phone\\\",\\\"email\\\",\\\"proofOfIdentity\\\",\\\"individualBiometrics\\\"],\\\"properties\\\":{\\\"proofOfAddress\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"gender\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"city\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"postalCode\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[(?i)A-Z0-9]{5}$|^NA$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfException-1\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"referenceIdentityNumber\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^([0-9]{10,30})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"kyc\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"province\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"zone\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfDateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"addressLine1\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine2\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"residenceStatus\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"kyc\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine3\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"email\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[A-Za-z0-9_\\\\\\\\-]+(\\\\\\\\.[A-Za-z0-9_]+)*@[A-Za-z0-9_-]+(\\\\\\\\.[A-Za-z0-9_]+)*(\\\\\\\\.[a-zA-Z]{2,})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerRID\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"fullName\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"dateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(1869|18[7-9][0-9]|19[0-9][0-9]|20[0-9][0-9])\\/([0][1-9]|1[0-2])\\/([0][1-9]|[1-2][0-9]|3[01])$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualAuthBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"introducerUIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfIdentity\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"IDSchemaVersion\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"number\\\",\\\"fieldType\\\":\\\"default\\\",\\\"minimum\\\":0},\\\"proofOfException\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"phone\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[+]*([0-9]{1})([0-9]{9})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerName\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfRelationship\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"UIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"region\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"}}}}}";
@@ -611,13 +607,13 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
-        assertEquals("schema", identityDataUtil.getIdentityDataFromIndividualID("42").getT2());
-        verify(accessTokenUtility).getAccessToken();
-        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
-        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any());
+        when(utility.getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any())).thenReturn(idResponseDTO1);
+        assertEquals("schema", utilities.getIdentityDataFromIndividualID("42").getT2());
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) Mockito.any());
+        verify(utility).getCachedIdentityData((String) Mockito.any(), (String) Mockito.any(),
+                (Class<Object>) Mockito.any());
     }
 
 

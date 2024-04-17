@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import io.mosip.resident.util.IdentityDataUtil;
-import io.mosip.resident.util.SessionUserNameUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,12 +47,6 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
-
-	@Autowired
-	private IdentityDataUtil identityDataUtil;
-
-	@Autowired
-	private SessionUserNameUtility sessionUserNameUtility;
 
 	@Override
 	public void updateAuthTypeStatus(Map<String, Object> eventModel)
@@ -124,7 +116,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
 								residentTransactionEntity.setStatusCode(status);
 								residentTransactionEntity.setReadStatus(false);
-								residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
+								residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 							});
 							residentTransactionRepository.saveAll(residentTransactionEntities);

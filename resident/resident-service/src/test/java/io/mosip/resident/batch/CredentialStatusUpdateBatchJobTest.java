@@ -16,7 +16,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.IdentityUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,9 +82,6 @@ public class CredentialStatusUpdateBatchJobTest {
 
 	@Mock
 	private CredentialStatusUpdateHelper credentialStatusUpdateHelper;
-
-	@Mock
-	private IdentityUtil identityUtil;
 
 	@Before
 	public void init() {
@@ -339,7 +335,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setFullName("kamesh");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
@@ -361,7 +357,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setFullName("kamesh");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
 		RegStatusCheckResponseDTO regStatusCheckResponseDTO = new RegStatusCheckResponseDTO();
 		regStatusCheckResponseDTO.setRidStatus("123");
 		when(residentService.getRidStatus(Mockito.anyString())).thenReturn(regStatusCheckResponseDTO);
@@ -385,7 +381,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setFullName("kamesh");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
 		RegStatusCheckResponseDTO regStatusCheckResponseDTO = new RegStatusCheckResponseDTO();
 		regStatusCheckResponseDTO.setRidStatus("123");
 		when(residentService.getRidStatus(Mockito.anyString())).thenReturn(regStatusCheckResponseDTO);

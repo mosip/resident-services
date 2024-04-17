@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.mosip.resident.util.*;
+import io.mosip.resident.util.Utilities;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
@@ -61,10 +62,14 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -101,9 +106,6 @@ public class ResidentVidServiceTest {
     @Mock
     private Utilities utilities;
 
-    @Mock
-    private UinVidValidator uinVidValidator;
-
     @InjectMocks
     private ResidentVidServiceImpl residentVidService;
     
@@ -124,28 +126,7 @@ public class ResidentVidServiceTest {
     
 	@Value("${perpatual.vid-type:PERPETUAL}")
 	private String perpatualVidType;
-
-    @Mock
-    private IdentityUtil identityUtil;
-
-    @Mock
-    private AvailableClaimUtility availableClaimUtility;
-
-    @InjectMocks
-    private PerpetualVidUtility perpetualVidUtility;
-
-    @Mock
-    private MaskDataUtility maskDataUtility;
-
-    @Mock
-    private Environment environment;
-
-    @Mock
-    private UinForIndividualId uinForIndividualId;
-
-    @Mock
-    private PerpetualVidUtil perpetualVidUtil;
-
+    
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
 
@@ -154,6 +135,8 @@ public class ResidentVidServiceTest {
         requestDto.setTransactionID("12345");
         requestDto.setIndividualId("1234567890");
         requestDto.setVidType("Temporary");
+        
+        ReflectionTestUtils.setField(residentVidService, "perpatualVidType", "PERPETUAL");
 
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMessage("Vid successfully generated");
@@ -165,7 +148,7 @@ public class ResidentVidServiceTest {
         identityValue.setEmail("aaa@bbb.com");
         identityValue.setPhone("987654321");
         identityValue.setUIN("123");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
         
         ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("ID.json").getFile());
@@ -200,6 +183,8 @@ public class ResidentVidServiceTest {
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
         vid = "2038096257310540";
+        when(mapper.convertValue("1516239022", LocalDateTime.class)).thenReturn(LocalDateTime.now());
+        when(mapper.convertValue("1234343434", LocalDateTime.class)).thenReturn(LocalDateTime.now());
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123");
     }
 
@@ -294,7 +279,7 @@ public class ResidentVidServiceTest {
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-        when(uinForIndividualId.getUinForIndividualId(vid)).thenReturn("1234567890");
+        when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
 
 		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "1234567890");
 
@@ -365,23 +350,24 @@ public class ResidentVidServiceTest {
 
     @Test
     public void testRetrieveVids() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testRetrieveVidsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
-                .thenThrow(new ApisResourceAccessException());
-        perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(new ApisResourceAccessException());
+        residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US);
     }
 
     @Test
     public void testRetrieveVidsInvalidYear() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
@@ -389,9 +375,9 @@ public class ResidentVidServiceTest {
         vidDetails.remove("expiryTimestamp");
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
@@ -399,9 +385,11 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", -1);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
-        assertEquals(2,
-                perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(0,
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
@@ -409,37 +397,42 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", null);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
     
 	@Test
 	public void getPerpatualVidTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Optional<String> response = perpetualVidUtil.getPerpatualVid("9054257141");
-		Optional<String> perpetualVid = Optional.empty();
+		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+		Optional<String> response = residentVidService.getPerpatualVid("9054257141");
+		Optional<String> perpetualVid = Optional.of("123");
 		assertEquals(perpetualVid, response);
 	}
 
 	@Test
 	public void getPerpatualVidEmptyTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		vidResponse.setResponse(List.of());
-		Optional<String> response = perpetualVidUtil.getPerpatualVid("9054257141");
+		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+		Optional<String> response = residentVidService.getPerpatualVid("9054257141");
 		assertEquals(Optional.empty(), response);
 	}
 
-    @Test(expected = Exception.class)
+    @Test
     public void testGenerateVidV2() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
-        ReflectionTestUtils.setField(perpetualVidUtility, "perpatualVidType", "Perpetual");
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode policy = objectMapper.readValue(this.getClass().getClassLoader().getResource("vid_policy.json"),
                 ObjectNode.class);
+        when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenReturn(policy);
         Map<Object, Object> vidPolicyMap = new HashMap<>();
         List<Map<String, String>> vidList = new ArrayList<>();
         Map<String, String> vids= new HashMap<>();
@@ -447,10 +440,15 @@ public class ResidentVidServiceTest {
         vids.put("vidPolicy", "vidPolicy");
         vidList.add(vids);
         vidPolicyMap.put("vidPolicies",vidList);
+        when(mapper.readValue("{\"vidPolicies\":[{\"vidType\":\"Perpetual\",\"vidPolicy\":{\"validForInMinutes\":null,\"transactionsAllowed\":null,\"instancesAllowed\":1,\"autoRestoreAllowed\":true,\"restoreOnAction\":\"REVOKE\"}},{\"vidType\":\"Temporary\",\"vidPolicy\":{\"validForInMinutes\":30,\"transactionsAllowed\":1,\"instancesAllowed\":5,\"autoRestoreAllowed\":false,\"restoreOnAction\":\"REGENERATE\"}}]}",
+                Map.class)).thenReturn(vidPolicyMap);
         VidPolicy vidPolicy = new VidPolicy();
         vidPolicy.setAllowedInstances(1);
         vidPolicy.setAutoRestoreAllowed(true);
         vidPolicy.setRestoreOnAction("true");
+
+        when(mapper.convertValue("vidPolicy", VidPolicy.class)).thenReturn(vidPolicy);
+        when(env.getProperty(Mockito.anyString())).thenReturn("false");
 
         String vid = "12345";
         VidGeneratorResponseDto vidGeneratorResponseDto = new VidGeneratorResponseDto();
@@ -459,12 +457,15 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
-
+        when(mapper.writeValueAsString(Mockito.any())).thenReturn("response");
+        when(mapper.readValue("response", VidGeneratorResponseDto.class)).thenReturn(vidGeneratorResponseDto);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMaskedEmail("Ka**g.com");
         notificationResponseDTO.setMaskedPhone("88**09");
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));
@@ -477,8 +478,9 @@ public class ResidentVidServiceTest {
     public void testRevokeVidV2Failed() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTOV2.setTransactionID("1234567896");
         vidRevokeRequestDTOV2.setVidStatus("Active");
@@ -490,7 +492,8 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTOV2.setTransactionID("1234567896");
         vidRevokeRequestDTOV2.setVidStatus("Active");
@@ -509,7 +512,8 @@ public class ResidentVidServiceTest {
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTOV2.setTransactionID("1234567896");
         vidRevokeRequestDTOV2.setVidStatus("Active");
@@ -517,17 +521,19 @@ public class ResidentVidServiceTest {
                 residentVidService.revokeVid(vidRevokeRequestDTOV2, "2076439409167031", "2037293183 ").getResponse().getMessage());
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testGenerateVidV2NullNotificationResponse() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode policy = objectMapper.readValue(this.getClass().getClassLoader().getResource("vid_policy.json"),
                 ObjectNode.class);
+        when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenReturn(policy);
         Map<Object, Object> vidPolicyMap = new HashMap<>();
         List<Map<String, String>> vidList = new ArrayList<>();
         Map<String, String> vids= new HashMap<>();
@@ -535,10 +541,15 @@ public class ResidentVidServiceTest {
         vids.put("vidPolicy", "vidPolicy");
         vidList.add(vids);
         vidPolicyMap.put("vidPolicies",vidList);
+        when(mapper.readValue("{\"vidPolicies\":[{\"vidType\":\"Perpetual\",\"vidPolicy\":{\"validForInMinutes\":null,\"transactionsAllowed\":null,\"instancesAllowed\":1,\"autoRestoreAllowed\":true,\"restoreOnAction\":\"REVOKE\"}},{\"vidType\":\"Temporary\",\"vidPolicy\":{\"validForInMinutes\":30,\"transactionsAllowed\":1,\"instancesAllowed\":5,\"autoRestoreAllowed\":false,\"restoreOnAction\":\"REGENERATE\"}}]}",
+                Map.class)).thenReturn(vidPolicyMap);
         VidPolicy vidPolicy = new VidPolicy();
         vidPolicy.setAllowedInstances(1);
         vidPolicy.setAutoRestoreAllowed(true);
         vidPolicy.setRestoreOnAction("true");
+
+        when(mapper.convertValue("vidPolicy", VidPolicy.class)).thenReturn(vidPolicy);
+        when(env.getProperty(Mockito.anyString())).thenReturn("false");
 
         String vid = "12345";
         VidGeneratorResponseDto vidGeneratorResponseDto = new VidGeneratorResponseDto();
@@ -547,11 +558,15 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
+        when(mapper.writeValueAsString(Mockito.any())).thenReturn("response");
+        when(mapper.readValue("response", VidGeneratorResponseDto.class)).thenReturn(vidGeneratorResponseDto);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMaskedEmail(null);
         notificationResponseDTO.setMaskedPhone(null);
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));
@@ -560,17 +575,19 @@ public class ResidentVidServiceTest {
                 generateVid(vidRequestDtoV2, "123232323").getResponse().getVid());
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = VidCreationException.class)
     public void testGenerateVidV2NullNotificationResponseApiResourceException() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode policy = objectMapper.readValue(this.getClass().getClassLoader().getResource("vid_policy.json"),
                 ObjectNode.class);
+        when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenReturn(policy);
         Map<Object, Object> vidPolicyMap = new HashMap<>();
         List<Map<String, String>> vidList = new ArrayList<>();
         Map<String, String> vids= new HashMap<>();
@@ -578,10 +595,15 @@ public class ResidentVidServiceTest {
         vids.put("vidPolicy", "vidPolicy");
         vidList.add(vids);
         vidPolicyMap.put("vidPolicies",vidList);
+        when(mapper.readValue("{\"vidPolicies\":[{\"vidType\":\"Perpetual\",\"vidPolicy\":{\"validForInMinutes\":null,\"transactionsAllowed\":null,\"instancesAllowed\":1,\"autoRestoreAllowed\":true,\"restoreOnAction\":\"REVOKE\"}},{\"vidType\":\"Temporary\",\"vidPolicy\":{\"validForInMinutes\":30,\"transactionsAllowed\":1,\"instancesAllowed\":5,\"autoRestoreAllowed\":false,\"restoreOnAction\":\"REGENERATE\"}}]}",
+                Map.class)).thenReturn(vidPolicyMap);
         VidPolicy vidPolicy = new VidPolicy();
         vidPolicy.setAllowedInstances(1);
         vidPolicy.setAutoRestoreAllowed(true);
         vidPolicy.setRestoreOnAction("true");
+
+        when(mapper.convertValue("vidPolicy", VidPolicy.class)).thenReturn(vidPolicy);
+        when(env.getProperty(Mockito.anyString())).thenReturn("false");
 
         String vid = "12345";
         VidGeneratorResponseDto vidGeneratorResponseDto = new VidGeneratorResponseDto();
@@ -590,6 +612,7 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMaskedEmail(null);
         notificationResponseDTO.setMaskedPhone(null);

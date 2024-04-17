@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
 
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -32,6 +31,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 @Service
@@ -59,16 +60,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
-
-	@Autowired
-	private UinVidValidator uinVidValidator;
-
-	@Autowired
-	private IdentityUtil identityUtil;
-
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
+	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
 		logger.debug("ResidentOtpServiceImpl::generateOtp()::entry");
@@ -107,9 +99,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
-		IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
-		String idaToken= availableClaimUtility.getIDAToken(identityDTO.getUIN());
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
+		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
 			residentTransactionEntity.setRefId(utility.getIdForResidentTransaction(otpRequestDTO.getOtpChannel(),
 					identityDTO, idaToken));

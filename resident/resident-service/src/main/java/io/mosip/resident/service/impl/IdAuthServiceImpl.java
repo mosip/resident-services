@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.IdentityUtil;
-import io.mosip.resident.util.SessionUserNameUtility;
-import io.mosip.resident.validator.ValidateOtpCharLimit;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -81,6 +77,8 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -123,20 +121,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Autowired
+	private IdentityServiceImpl identityService;
+
+	@Autowired
 	private NotificationService notificationService;
 
+    @Autowired
+    RequestValidator requestValidator;
+    
 	@Autowired
-	private SessionUserNameUtility sessionUserNameUtility;
-
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Autowired
-	private IdentityUtil identityUtil;
-
-	@Autowired
-	private ValidateOtpCharLimit validateOtpCharLimit;
-
+	private Utility utility;
+	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
@@ -177,9 +172,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private String updateResidentTransactionAndSendNotification(String transactionId, String individualId,
 			String eventId, boolean authStatus) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = null;
-		IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
+		IdentityDTO identityDTO = identityService.getIdentity(individualId);
 		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, RequestType.VALIDATE_OTP,
-				availableClaimUtility.getIDAToken(identityDTO.getUIN()));
+				identityService.getIDAToken(identityDTO.getUIN()));
 		if (residentTransactionEntity != null) {
 			eventId = residentTransactionEntity.getEventId();
 			TemplateType templateType = authStatus == true ? TemplateType.SUCCESS : TemplateType.FAILURE;
@@ -204,7 +199,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 																	RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
-		validateOtpCharLimit.validateOtpCharLimit(otp);
+		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
@@ -212,7 +207,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					requestType, availableClaimUtility.getIDATokenForIndividualId(individualId));
+					requestType, identityService.getIDATokenForIndividualId(individualId));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				channels = residentTransactionEntity.getAttributeList();
@@ -276,7 +271,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? EventStatusSuccess.OTP_VERIFIED.name(): EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
+			residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}

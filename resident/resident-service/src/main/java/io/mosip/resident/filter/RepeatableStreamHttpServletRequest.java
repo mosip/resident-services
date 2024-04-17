@@ -7,10 +7,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import jakarta.servlet.ReadListener;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.springframework.util.StreamUtils;
 
@@ -60,7 +60,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see jakarta.servlet.ServletRequestWrapper#getInputStream()
+	 * @see javax.servlet.ServletRequestWrapper#getInputStream()
 	 */
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
@@ -78,7 +78,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see jakarta.servlet.ServletRequestWrapper#getReader()
+	 * @see javax.servlet.ServletRequestWrapper#getReader()
 	 */
 	@Override
 	public BufferedReader getReader() throws IOException {
@@ -150,7 +150,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see jakarta.servlet.ServletInputStream#isFinished()
+		 * @see javax.servlet.ServletInputStream#isFinished()
 		 */
 		@Override
 		public boolean isFinished() {
@@ -160,7 +160,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see jakarta.servlet.ServletInputStream#isReady()
+		 * @see javax.servlet.ServletInputStream#isReady()
 		 */
 		@Override
 		public boolean isReady() {
@@ -181,7 +181,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see jakarta.servlet.ServletInputStream#setReadListener(jakarta.servlet.
+		 * @see javax.servlet.ServletInputStream#setReadListener(javax.servlet.
 		 * ReadListener)
 		 */
 		@Override

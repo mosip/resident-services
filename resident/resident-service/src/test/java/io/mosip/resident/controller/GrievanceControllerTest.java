@@ -79,6 +79,9 @@ public class GrievanceControllerTest {
     @MockBean
     private Utility utilityBean;
 
+    @MockBean
+    private Utility utilityBean;
+
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
@@ -130,7 +133,23 @@ public class GrievanceControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        HashMap<String, String> response = new HashMap<>();
+        String ticketId = UUID.randomUUID().toString();
+        response.put("ticketId", ticketId);
+        responseWrapper.setResponse(response);
+        responseWrapper.setId("mosip.resident.grievance.ticket.request");
+        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+        Mockito.when(grievanceService.getGrievanceTicket(any())).thenReturn(responseWrapper);
+        ResponseWrapper<Object> responseWrapper1 = grievanceController.grievanceTicket(grievanceRequestDTOMainRequestDTO);
+        Assert.assertEquals("mosip.resident.grievance.ticket.request", responseWrapper1.getId());
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetCardFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateGrievanceRequestDto(any());
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         HashMap<String, String> response = new HashMap<>();
         String ticketId = UUID.randomUUID().toString();
         response.put("ticketId", ticketId);

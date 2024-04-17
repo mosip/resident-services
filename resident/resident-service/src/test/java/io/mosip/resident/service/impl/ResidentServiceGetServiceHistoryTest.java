@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.mosip.resident.util.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +48,10 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -107,24 +110,6 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private ResidentServiceRestClient residentServiceRestClient;
 
-    @Mock
-    private AvailableClaimUtility availableClaimUtility;
-
-    @Mock
-    private AvailableClaimValueUtility availableClaimValueUtility;
-
-    @Mock
-    private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
-
-    @Mock
-    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
-
-    @Mock
-    private SummaryForLangCode summaryForLangCode;
-
-    @Mock
-    private EventStatusCode eventStatusCode;
-
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -145,9 +130,6 @@ public class ResidentServiceGetServiceHistoryTest {
     private ResidentSessionEntity residentSessionEntity;
 
     private Query query;
-
-    @Mock
-    private PurposeTemplateTypeCode purposeTemplateTypeCode;
 
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
@@ -177,22 +159,22 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) any())).thenReturn(query);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
-        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
-        Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
+        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 
-        Mockito.when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("Kamesh");
+        Mockito.when(identityServiceImpl.getAvailableclaimValue(Mockito.anyString())).thenReturn("Kamesh");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         residentSessionEntity = new ResidentSessionEntity();
         residentSessionEntity.setHost("localhost");
         Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity));
-        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("1234");
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234");
 
-        Mockito.when(purposeTemplateTypeCode.getPurposeTemplateTypeCode(any(), any())).thenReturn("template-type-code");
-        Mockito.when(summaryForLangCode.getSummaryTemplateTypeCode(any(), any())).thenReturn("template-type-code");
-        Mockito.when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
-        Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
+        Mockito.when(templateUtil.getPurposeTemplateTypeCode(any(), any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getSummaryTemplateTypeCode(any(), any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "m-partner-default-auth");
     }
@@ -435,17 +417,17 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Test
     public void testGetSummaryForLangCode() throws ResidentServiceCheckedException {
-        Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Success");
-        summaryForLangCode.getSummaryForLangCode(residentTransactionEntity, "eng", "SUCCESS",
+        residentServiceImpl.getSummaryForLangCode(residentTransactionEntity, "eng", "SUCCESS",
                 RequestType.AUTHENTICATION_REQUEST);
     }
 
     @Test
     public void testGetSummaryForLangCodeFailure() throws ResidentServiceCheckedException {
-        Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Success");
-        summaryForLangCode.getSummaryForLangCode(residentTransactionEntity, "eng", "Failed",
+        residentServiceImpl.getSummaryForLangCode(residentTransactionEntity, "eng", "Failed",
                 RequestType.AUTHENTICATION_REQUEST);
     }
 
@@ -461,7 +443,6 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDate.now();
         toDate = LocalDate.now();
-        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of("test", "test1"));
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, null, null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
@@ -479,7 +460,6 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDate.now();
         toDate = LocalDate.now();
-        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of("test", "test1"));
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, null, null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), "ALL", "DESC", statusFilter, searchText, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());

@@ -9,7 +9,10 @@ import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.*;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,13 +48,13 @@ public class ProxyMasterdataController {
 	@Autowired
 	private AuditUtil auditUtil;
 
+	@Autowired
+	private Utility utility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	@Autowired
-	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
-
-	@Autowired
-	private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
+	private Utilities utilities;
 
 	/**
 	 * Get valid documents by language code.
@@ -74,7 +77,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = validDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
+			responseWrapper = utility.getValidDocumentByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			throw e;
@@ -456,7 +459,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+			responseWrapper = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 			throw e;
@@ -559,7 +562,7 @@ public class ProxyMasterdataController {
 
 	@ResponseFilter
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping("/proxy/masterdata/dynamicfields/{fieldName}")
+	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
 	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
 	public ResponseWrapper<?> getAllDynamicFieldByName(
 			@PathVariable("fieldName") String fieldName) throws ResidentServiceCheckedException {

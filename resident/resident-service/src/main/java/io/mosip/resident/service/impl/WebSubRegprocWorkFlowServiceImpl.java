@@ -13,7 +13,6 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.WebSubRegprocWorkFlowService;
-import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -37,9 +36,6 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
     @Autowired
     Utility utility;
 
-    @Autowired
-    private IdentityDataUtil identityDataUtil;
-
     @Override
     public void updateResidentStatus(WorkflowCompletedEventDTO workflowCompletedEventDTO) throws ResidentServiceCheckedException {
         logger.debug("WebSubRegprocWorkFlowServiceImpl:updateResidentStatus entry");
@@ -56,12 +52,12 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
                     utility.updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name() + " - " + ResidentConstants.FAILED,
                             false, "Packet Failed in Regproc with status code-" +
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    identityDataUtil.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
+                    utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
                 } else if (PacketStatus.getStatusCodeList(PacketStatus.SUCCESS, environment).contains(workflowCompletedEventDTO.getResultCode())) {
                     utility.updateEntity(EventStatusInProgress.IDENTITY_UPDATED.name(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
                             "Packet processed in Regproc with status code-" +
                             workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    identityDataUtil.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
+                    utility.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
                 }
             }
         }

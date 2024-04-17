@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +38,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuples;
 
 /**
@@ -70,19 +71,10 @@ public class ResidentOtpServiceTest {
 	private ObjectMapper objectMapper;
 
 	@Mock
-	private UinVidValidator uinVidValidator;
-
-	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	private ResidentTransactionEntity residentTransactionEntity;
 	private IdentityDTO identityValue;
-
-	@Mock
-	private IdentityUtil identityUtil;
-
-	@Mock
-	private AvailableClaimUtility availableClaimUtility;
 
 	@Before
 	public void setup() throws Exception {
@@ -96,9 +88,9 @@ public class ResidentOtpServiceTest {
 		identityValue.setEmail("aaa@bbb.com");
 		identityValue.setPhone("987654321");
 		identityValue.setUIN("123");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityValue);
-		when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123");
-		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123");
+		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 	}
 
 	@Test

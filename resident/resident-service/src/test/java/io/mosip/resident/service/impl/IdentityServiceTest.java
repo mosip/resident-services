@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.resident.util.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -57,6 +54,7 @@ import io.mosip.kernel.openid.bridge.model.MosipUserDto;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseDTO1;
@@ -66,6 +64,9 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
@@ -84,9 +85,6 @@ public class IdentityServiceTest {
 
 	@Mock
 	private CbeffUtil cbeffUtil;
-
-	@Mock
-	private AvailableClaimValueUtility availableClaimValueUtility;
 
 	@Mock
 	private TokenIDGenerator tokenIDGenerator;
@@ -115,9 +113,6 @@ public class IdentityServiceTest {
 	@Mock
 	private Utilities utilities;
 
-    @Mock
-	private IdentityDataUtil identityDataUtil;
-
 	@Mock
 	private ValidateTokenUtil tokenValidationHelper;
 
@@ -131,49 +126,11 @@ public class IdentityServiceTest {
 
 	private static String token;
 	private IdResponseDTO1 idResponseDTO1;
-
-	@Mock
-	private CachedIdentityDataUtil cachedIdentityDataUtil;
-
-	@Mock
-	private UserInfoUtility userInfoUtility;
-
-	@Mock
-	private UinVidValidator uinVidValidator;
-
-	@InjectMocks
-	private UinVidValidator uinVidValidatorUtil;
-
-
-	@Mock
-	private AvailableClaimUtility availableClaimUtility;
 	
-	@Mock
-	private IdentityUtil identityUtil;
-
-	@Mock
-	private MaskDataUtility maskDataUtility;
 	
-	@Mock
-	private PerpetualVidUtility perpetualVidUtility;
-
-	@InjectMocks
-    private AuthUserDetailsUtil authUserDetailsUtil;
-
-	@Mock
-	private UinValidator uinValidator;
-
-	@Mock
-	private VidValidator validator;
-
-	@InjectMocks
-	private UinForIndividualId uinForIndividualId;
-
-	@Mock
-	private PerpetualVidUtil perpetualVidUtil;
-
 	@Before
 	public void setUp() throws Exception {
+		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
 		ReflectionTestUtils.setField(identityService, "objectMapper", objectMapper);
 
 		Map identityMap = new LinkedHashMap();
@@ -227,7 +184,7 @@ public class IdentityServiceTest {
 		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 		.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName", "perpetualVID"));
 		
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(true);
 		token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJubEpTaUExM2tPUWhZQ0JxMEVKSkRlWnFTOGsybDB3MExUbmQ1WFBCZ20wIn0." +
 				"eyJleHAiOjE2NzIxMjU0NjEsImlhdCI6MTY3MjAzOTA2MSwianRpIjoiODc5YTdmYTItZWZhYy00YTQwLTkxODQtNzZiM2FhMWJiODg0IiwiaXNzIjoiaHR0c" +
@@ -257,11 +214,8 @@ public class IdentityServiceTest {
 		responseDTO1.setIdentity(identityMap);
 		idResponseDTO1.setResponse(responseDTO1);
 		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenReturn("1970/11/16");
-		when(cachedIdentityDataUtil.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
-		when(cachedIdentityDataUtil.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
-		IdentityDTO identityDto = new IdentityDTO();
-		identityDto.setUIN("8251649601");
-		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDto);
+		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
+		when(utility.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -280,12 +234,12 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		fileLoadMethod();
-		IdentityDTO result = identityUtil.getIdentity("6");
+		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityWithIOException() throws Exception {
 		getAuthUserDetailsFromAuthentication();
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
@@ -294,59 +248,61 @@ public class IdentityServiceTest {
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		fileLoadMethod();
 		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenThrow(IOException.class);
-		identityUtil.getIdentity("6");
+		identityService.getIdentity("6");
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesIf() throws Exception {
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
 		idResponseDTO1.setErrors(List.of(error));
-		when(cachedIdentityDataUtil.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
+		when(utility.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		identityUtil.getIdentity("6", false, null);
+		identityService.getIdentity("6", false, null);
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(cachedIdentityDataUtil.getCachedIdentityData(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+		when(utility.getCachedIdentityData(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
 				.thenThrow(new ApisResourceAccessException());
-		identityUtil.getIdentityAttributes("6", null);
+		identityService.getIdentityAttributes("6", null);
 	}
 
 	@Test
 	public void testGetUinForIndividualId() throws Exception{
 		String id = "123456789";
 		fileLoadMethod();
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
-		String result = uinForIndividualId.getUinForIndividualId(id);
+		String result = identityService.getUinForIndividualId(id);
+		assertEquals("123456789", result);
 	}
 
 	@Test
 	public void testGetIDATokenForIndividualId() throws Exception{
 		String id = "123456789";
 		String token = "1234";
+		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
 		fileLoadMethod();
-		String result = availableClaimUtility.getIDATokenForIndividualId(id);
+		String result = identityService.getIDATokenForIndividualId(id);
+		assertEquals(token, result);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetClaimFromUserInfoFailure(){
 		Map<String, Object> userInfo = new HashMap<>();
-		ReflectionTestUtils.invokeMethod(availableClaimValueUtility, "getClaimFromUserInfo", userInfo, "claim");
+		ReflectionTestUtils.invokeMethod(identityService, "getClaimFromUserInfo", userInfo, "claim");
 	}
 
 	@Test
 	public void testGetClaimFromUserInfoSuccess() {
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
-		String result = ReflectionTestUtils.invokeMethod(availableClaimValueUtility, "getClaimFromUserInfo", userInfo, "claim");
+		String result = ReflectionTestUtils.invokeMethod(identityService, "getClaimFromUserInfo", userInfo, "claim");
 		assertEquals("value", result);
 	}
 	
@@ -365,42 +321,44 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(false);
-		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
-
+		assertEquals("8251649601", result.getT1());
+		assertEquals(IdType.UIN, result.getT2());
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Tuple2<String, IdType> response = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
+		assertEquals("123456789", response.getT1());
+		assertEquals(IdType.UIN, response.getT2());
 	}
 
 	@Test
 	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-        when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		Optional<String> perpVid = Optional.of("8251649601");
-		when(perpetualVidUtil.getPerpatualVid(anyString())).thenReturn(perpVid);
+		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
+		assertEquals("8251649601", result.getT1());
+		assertEquals(IdType.VID, result.getT2());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIndividualIdForAidVidNotPresent() throws Exception{
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(false);
-		when(perpetualVidUtil.getPerpatualVid(anyString())).thenReturn(Optional.empty());
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
+		when(residentVidService.getPerpatualVid(anyString())).thenReturn(Optional.empty());
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
 		identityService.getIdAndTypeForIndividualId("123456789");
@@ -408,12 +366,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeUin(){
-		uinVidValidator.getIndividualIdType("2476302389");
+		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		uinVidValidator.getIndividualIdType("2476302389");
+		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -454,18 +412,17 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetClaimValueFromJwtTokenNullClaim() throws ResidentServiceCheckedException {
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
-		uinForIndividualId.getUinForIndividualId("2476302389");
+		assertEquals("2476302389",identityService.getUinForIndividualId("2476302389"));
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetMappingValueNullIoException() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-		identityUtil.getIdentity("6", false, "eng");
+		identityService.getIdentity("6", false, "eng");
 	}
 
 	@Test
@@ -475,7 +432,9 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		fileLoadMethod();
-		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test
@@ -484,55 +443,60 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceException.class)
 	public void testGetMappingValueValidPerpetualVidResidentServiceCheckedException() throws Exception {
 		fileLoadMethod();
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
-		when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
+		assertNotNull(result);
+		assertEquals("6", result.getUIN());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceException.class)
 	public void testGetMappingValueValidPerpetualVidApisResourceAccessException() throws Exception {
-		when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
 		fileLoadMethod();
-		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
+		assertNotNull(result);
+		assertEquals("6", result.getUIN());
 	}
 
 	@Test
 	public void testGetUinForIndividualIdVId() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("2476302389");
-		uinForIndividualId.getUinForIndividualId("2476302389");
+		assertEquals("8251649601",identityService.getUinForIndividualId("2476302389"));
 	}
 
 	@Test
 	public void testGetUinForIndividualIdVIdCreationException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
-		Mockito.when(identityDataUtil.getIdentityDataFromIndividualID(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		uinForIndividualId.getUinForIndividualId("2476302389");
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(utilities.getIdentityDataFromIndividualID(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		assertEquals("8251649601",identityService.getUinForIndividualId("2476302389"));
 	}
 
 	@Test
 	public void testGetUinForIndividualIdApisResourceAccessException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		assertEquals("2476302389", uinForIndividualId.getUinForIndividualId("2476302389"));
+		assertEquals("8251649601",identityService.getUinForIndividualId("2476302389"));
 	}
 
 	@Test
 	public void testGetUinForIndividualIdIOException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
-		assertEquals("2476302389", uinForIndividualId.getUinForIndividualId("2476302389"));
+		assertEquals("8251649601",identityService.getUinForIndividualId("2476302389"));
 	}
 	
 	public static void getAuthUserDetailsFromAuthentication() {
@@ -551,7 +515,7 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetAuthUserDetails() {
 		getAuthUserDetailsFromAuthentication();
-		assertNotNull(ReflectionTestUtils.invokeMethod(authUserDetailsUtil, "getAuthUserDetails"));
+		assertNotNull(ReflectionTestUtils.invokeMethod(identityService, "getAuthUserDetails"));
 	}
 
 	@Test
@@ -564,20 +528,20 @@ public class IdentityServiceTest {
 		MosipUserDto mosipUserDto = new MosipUserDto();
 		mosipUserDto.setToken(token);
 		// test the case where the principal is an AuthUserDetails object
-		assertNull(ReflectionTestUtils.invokeMethod(authUserDetailsUtil, "getAuthUserDetails"));
+		assertNull(ReflectionTestUtils.invokeMethod(identityService, "getAuthUserDetails"));
 	}
 
-	@Test
+	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdInvalidToken() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
-		availableClaimUtility.getResidentIndvidualIdFromSession();
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
-	@Test
+	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdValidToken() throws Exception {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(true, AuthErrorCode.UNAUTHORIZED);
 		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
@@ -587,10 +551,10 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		availableClaimUtility.getResidentIndvidualIdFromSession();
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
-	@Test
+	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdValidTokenVerifySignatureFalse() throws Exception {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(false, AuthErrorCode.UNAUTHORIZED);
 		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
@@ -599,39 +563,39 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		availableClaimUtility.getResidentIndvidualIdFromSession();
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
 	@Test
 	public void testGetResidentIndividualIdValidTokenSucess() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		getAuthUserDetailsFromAuthentication();
-		availableClaimUtility.getResidentIndvidualIdFromSession();
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
-	@Test(expected = Exception.class)
+	@Test
 	public void testGetResidentAuthenticationMode() throws Exception {
 		getAuthUserDetailsFromAuthentication();
 		String authTypeCode = "OTP";
-		when(identityDataUtil.getAuthTypeCodefromkey(Mockito.any())).thenReturn(authTypeCode);
-		ReflectionTestUtils.invokeMethod(identityService,
-				"getResidentAuthenticationMode");
+		when(utility.getAuthTypeCodefromkey(Mockito.any())).thenReturn(authTypeCode);
+		assertEquals(authTypeCode,ReflectionTestUtils.invokeMethod(identityService,
+				"getResidentAuthenticationMode"));
 	}
 
-	@Test(expected = Exception.class)
+	@Test
 	public void testGetResidentAuthenticationModeAuthTypeCodeNull() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(identityDataUtil.getAuthTypeCodefromkey(Mockito.any())).thenReturn(null);
+		when(utility.getAuthTypeCodefromkey(Mockito.any())).thenReturn(null);
 		ReflectionTestUtils.invokeMethod(identityService, "getResidentAuthenticationMode");
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVidPassed(){
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		uinVidValidator.getIndividualIdType("2476302389");
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
+		assertEquals(IdType.VID, identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -644,7 +608,7 @@ public class IdentityServiceTest {
 	@Test(expected = Exception.class)
 	public void testGetIndividualIdForAidFailed() throws Exception{
 		String aid = "123456789";
-		Mockito.when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.empty());
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.empty());
 		ReflectionTestUtils.setField(identityService, "useVidOnly", true);
 		fileLoadMethod();
 		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
@@ -662,24 +626,28 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
-		when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
-		IdentityDTO result = identityUtil.getIdentity("6", true, "eng");
+		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityWithApisResourceAccessException() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+//		tuple3.getT3().put("picture", "3956038419");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
+//		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
-		identityUtil.getIdentity("6", true, "eng");
+		identityService.getIdentity("6", true, "eng");
 	}
 
 	@Test
@@ -693,9 +661,9 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
-
-				identityUtil.getIdentityAttributes("4578987854", "personalized-card", List.of("Name", "photo")).get("UIN");
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		assertEquals("8251649601",
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name", "photo")).get("UIN"));
 	}
 
 	@Test
@@ -705,27 +673,27 @@ public class IdentityServiceTest {
 		getAuthUserDetailsFromAuthentication();
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		Mockito.when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(maskDataUtility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
-
-				identityUtil.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN");
+		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
+		assertEquals("8251649601",
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
 	}
 
-	@Test
+	@Test(expected = ResidentServiceException.class)
 	public void testGetIdentityAttributesClaimError() throws Exception {
 		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName", "perpetualVID", "photo", ResidentConstants.MASK_PREFIX+"UIN"));
 		getAuthUserDetailsFromAuthentication();
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		Mockito.when(perpetualVidUtil.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(maskDataUtility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
-		identityUtil.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"));
+		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
+		identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"));
 	}
 
 	@Test
@@ -737,16 +705,17 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetResidentIdaTokenFromAccessToken() throws Exception {
 		when(env.getProperty(Mockito.anyString())).thenReturn("individual_id");
+		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "4343434343");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
-		identityService.getResidentIdaTokenFromAccessToken(token);
+		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
 	}
 
-	@Test(expected = Exception.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testGetResidentIdaTokenFromAccessTokenNullIndividualId() throws Exception {
 		when(env.getProperty(Mockito.anyString())).thenReturn("individual_id");
 		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
@@ -754,7 +723,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("individual_id", null);
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);		
 		identityService.getResidentIdaTokenFromAccessToken(token);
 	}
@@ -766,7 +735,7 @@ public class IdentityServiceTest {
 		SecurityContextHolder.setContext(securityContext);
 		when(securityContext.getAuthentication()).thenReturn(authentication);
 		when(authentication.getPrincipal()).thenReturn(null);
-		assertEquals(null, availableClaimUtility.getResidentIdaToken());
+		assertEquals(null, identityService.getResidentIdaToken());
 	}
 
 }

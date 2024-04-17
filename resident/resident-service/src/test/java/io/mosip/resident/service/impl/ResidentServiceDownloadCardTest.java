@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.resident.util.*;
-import jakarta.persistence.EntityManager;
+import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +57,9 @@ import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 /**
@@ -95,12 +97,6 @@ public class ResidentServiceDownloadCardTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
-    private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
-
-    @Mock
-    private AvailableClaimValueUtility availableClaimValueUtility;
-
-    @Mock
     private ResidentUserRepository residentUserRepository;
     
     @Mock
@@ -110,16 +106,10 @@ public class ResidentServiceDownloadCardTest {
     private ProxyMasterdataService proxyMasterdataService;
 
     @Mock
-    private SessionUserNameUtility sessionUserNameUtility;
-
-    @Mock
     private TemplateManager templateManager;
     
     @Mock
 	private EntityManager entityManager;
-
-    @Mock
-    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
     
     @Mock
     private Utility utility;
@@ -127,9 +117,6 @@ public class ResidentServiceDownloadCardTest {
     private String eventId;
 
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
-
-    @Mock
-    private AvailableClaimUtility availableClaimUtility;
 
     @Before
     public void setup() throws Exception {
@@ -141,7 +128,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "partner1");
         Mockito.when(
-				templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn("file text template");
     }
 
@@ -244,7 +231,7 @@ public class ResidentServiceDownloadCardTest {
 
     @Test
     public void testGetUnreadNotifyList() throws ResidentServiceCheckedException, ApisResourceAccessException{
-        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
         ResidentTransactionEntity residentTransactionEntity1 = new ResidentTransactionEntity();
         residentTransactionEntity1.setEventId("123");
         Page<ResidentTransactionEntity> residentTransactionEntityPage =

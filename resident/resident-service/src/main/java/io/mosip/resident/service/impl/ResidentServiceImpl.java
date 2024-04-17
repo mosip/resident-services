@@ -37,15 +37,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import io.mosip.resident.dto.*;
-import io.mosip.resident.util.*;
-import io.mosip.resident.validator.ValidateNewUpdateRequest;
-import io.mosip.resident.validator.ValidateSameData;
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
+import io.mosip.resident.constant.EventStatusCanceled;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,6 +84,53 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
+import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BellNotificationDto;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.EventStatusResponseDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.MachineCreateRequestDTO;
+import io.mosip.resident.dto.MachineCreateResponseDTO;
+import io.mosip.resident.dto.MachineDto;
+import io.mosip.resident.dto.MachineSearchRequestDTO;
+import io.mosip.resident.dto.MachineSearchResponseDTO;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
+import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
+import io.mosip.resident.dto.PageDto;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusRequestDTO;
+import io.mosip.resident.dto.RegistrationStatusResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResidentUpdateResponseDTOV2;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.dto.UnreadNotificationDto;
+import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
@@ -111,7 +155,13 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
-import org.springframework.web.util.UriComponentsBuilder;
+import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.UINCardDownloadHelper;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -156,9 +206,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private IdAuthService idAuthService;
 
 	@Autowired
-	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
-
-	@Autowired
 	private NotificationService notificationService;
 
 	@Autowired
@@ -172,9 +219,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private UinCardRePrintService rePrintService;
-
-	@Autowired
-	private UinVidValidator uinVidValidator;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -191,15 +235,15 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private Utilities utilities;
 
-	@Autowired
-	private EventStatusCode eventStatusCode;
-
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
 
 	/** The json validator. */
 	@Autowired
 	private IdObjectValidator idObjectValidator;
+
+	@Autowired
+	private RequestValidator requestValidator;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -261,39 +305,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private TemplateManagerBuilder templateManagerBuilder;
-
-	@Autowired
-	private SessionUserNameUtility sessionUserNameUtility;
-
-	@Autowired
-	private AccessTokenUtility accessTokenUtility;
-
-	@Autowired
-	private AvailableClaimUtility availableClaimUtility;
-
-	@Autowired
-	private AvailableClaimValueUtility availableClaimValueUtility;
-	
-	@Autowired
-	private IdentityUtil identityUtil;
-	
-	@Autowired
-	private MaskDataUtility maskDataUtility;
-
-	@Autowired
-	private ClaimValueUtility claimValueUtility;
-
-	@Autowired
-	private ValidateNewUpdateRequest validateNewUpdateRequest;
-
-	@Autowired
-	private DescriptionForLangCode descriptionForLangCode;
-
-	@Autowired
-	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
-
-	@Autowired
-	private ValidateSameData validateSameData;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -500,7 +511,7 @@ public class ResidentServiceImpl implements ResidentService {
 			RegProcRePrintRequestDto rePrintReq = new RegProcRePrintRequestDto();
 			rePrintReq.setCardType(dto.getCardType());
 			rePrintReq.setCenterId(centerId);
-			rePrintReq.setMachineId(getMachineId());
+			rePrintReq.setMachineId(machineId);
 			rePrintReq.setId(dto.getIndividualId());
 			rePrintReq.setIdType(dto.getIndividualIdType());
 			rePrintReq.setReason("resident");
@@ -794,12 +805,11 @@ public class ResidentServiceImpl implements ResidentService {
 					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
-				validateSameData.validateSameData(idRepoJson, demographicIdentity);
-				validateNewUpdateRequest.validateNewUpdateRequest();
+				requestValidator.validateNewUpdateRequest();
 				if(Utility.isSecureSession()){
 					Set<String> identity = dto.getIdentity().keySet();
 					if(!identity.isEmpty()) {
-						validateNewUpdateRequest.validateUpdateCountLimit(identity);
+						requestValidator.validateUpdateCountLimit(identity);
 					}
 				}
 			} else {
@@ -817,11 +827,20 @@ public class ResidentServiceImpl implements ResidentService {
 				logger.debug(AuditEnum.VALIDATE_OTP_SUCCESS.getDescription(), dto.getTransactionID());
 			}
 
+			final String publicKey = getPublicKeyFromKeyManager();
+			MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix,
+					publicKey);
+			String machineId = getMachineId(machineSearchResponseDTO, publicKey);
+			if (machineId == null) {
+				machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId,
+						publicKey);
+			}
+
 			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
 			regProcReqUpdateDto.setCenterId(centerId);
-			regProcReqUpdateDto.setMachineId(getMachineId());
+			regProcReqUpdateDto.setMachineId(machineId);
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put(IDENTITY, demographicIdentity);
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
@@ -894,7 +913,7 @@ public class ResidentServiceImpl implements ResidentService {
 						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes, idRepoJson);
 				residentUpdateResponseDTOV2.setStatus(ResidentConstants.SUCCESS);
 				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
-				utility.clearIdentityMapCache(accessTokenUtility.getAccessToken());
+				utility.clearIdentityMapCache(identityServiceImpl.getAccessToken());
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
@@ -974,8 +993,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utility.isSecureSession()) {
 				if(e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode())
 				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET.getErrorCode())
-				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode())
-				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode())){
+				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode())){
 					throw new ResidentServiceException(
 							e.getErrorCode(),
 							e.getErrorText(),
@@ -1004,17 +1022,16 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 			}
 
-		} catch (JSONException e) {
-            throw new RuntimeException(e);
-        } finally {
+		}
+
+		finally {
 			if (Utility.isSecureSession() && residentTransactionEntity != null) {
 				// if the status code will come as null, it will set it as failed.
 				if (residentTransactionEntity.getStatusCode() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				}
-				if (residentTransactionEntity.getRequestSummary() == null || residentTransactionEntity.getRequestSummary().equalsIgnoreCase("failed")) {
+				if (residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setRequestSummary("failed");
-					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -1025,45 +1042,6 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug("ResidentServiceImpl::reqUinUpdate()::exit");
 		return Tuples.of(responseDto, eventId);
 	}
-
-	private String getMachineId() throws ApisResourceAccessException {
-		final String publicKey = getPublicKeyFromKeyManager();
-		MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix,
-				publicKey);
-		String machineId = getMachineIdIfExists(machineSearchResponseDTO, publicKey);
-		if (machineId == null) {
-			machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId,
-					publicKey);
-		}
-		activateMachineId(machineId);
-		return machineId;
-	}
-
-	private void activateMachineId(String machineId) throws ApisResourceAccessException {
-		try {
-			String baseUrl = env.getProperty(ApiName.MACHINESTATUSUPDATE.name());
-
-			String apiUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-					.queryParam("id", machineId)
-					.queryParam("isActive", true)
-					.toUriString();
-
-			ResponseWrapper<StatusResponseDto> response =
-					residentServiceRestClient.patchApi(apiUrl, MediaType.APPLICATION_JSON, null,
-							ResponseWrapper.class);
-
-			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-				throw new ResidentMachineServiceException(response.getErrors().get(0).getErrorCode(),
-						response.getErrors().get(0).getMessage());
-			}
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
-					residentMachinePrefix, "ResidentServiceImpl::reqUinUpdate():: activateMachineId Patch service call"
-							+ ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Could not activate machines in master data", e);
-		}
-	}
-
 
 	private void sendFailureNotification(ResidentTransactionEntity residentTransactionEntity, ResidentUpdateRequestDto dto, JSONObject idRepoJson) throws ResidentServiceCheckedException {
 		if (Utility.isSecureSession()) {
@@ -1080,9 +1058,9 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(dto.getIndividualId()));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
-		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(sessionUin));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(sessionUin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		Map<String, ?> identityMap;
 		if (dto.getIdentityJson() != null) {
@@ -1138,8 +1116,8 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdateV2():: entry");
 		ResponseDTO response = new ResponseDTO();
-		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
-		IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -1239,14 +1217,14 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
-		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		residentTransactionEntity.setLangCode(this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE));
-		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
 		return residentTransactionEntity;
 	}
 
@@ -1355,7 +1333,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return machineSearchResponseDTO;
 	}
 
-	private String getMachineIdIfExists(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
+	private String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
 		if (machineSearchResponseDTO.getResponse() != null) {
 			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
 			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
@@ -1589,7 +1567,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
 				ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
-				sessionUserNameUtility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
+				utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
 		return pdfBytes;
 	}
 
@@ -1598,7 +1576,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale,
 			List<String> statusCodeList) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
-		String idaToken = availableClaimUtility.getResidentIdaToken();
+		String idaToken = identityServiceImpl.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageIndex, pageSize, idaToken, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, locale, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
@@ -1760,7 +1738,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
-			Tuple2<String, String> statusCodes = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+			Tuple2<String, String> statusCodes = getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
 			RequestType requestType = RequestType
 					.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
@@ -1779,7 +1757,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
+							.setDescription(getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(templateUtil.getEventTypeBasedOnLangcode(requestType, langCode));
@@ -1789,6 +1767,60 @@ public class ResidentServiceImpl implements ResidentService {
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
+	}
+
+	public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
+			throws ResidentServiceCheckedException {
+		TemplateType templateType;
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
+			templateType = TemplateType.SUCCESS;
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
+			templateType = TemplateType.CANCELED;
+		}else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
+			templateType = TemplateType.REGPROC_SUCCESS;
+		} else {
+			templateType = TemplateType.FAILURE;
+		}
+		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
+	}
+
+	private String replacePlaceholderValueInTemplate(ResidentTransactionEntity residentTransactionEntity, String fileText, RequestType requestType, String langCode) {
+		return requestType.getDescriptionTemplateVariables(templateUtil, residentTransactionEntity, fileText, langCode);
+	}
+
+	public String getSummaryForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
+			throws ResidentServiceCheckedException {
+		TemplateType templateType;
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
+			templateType = TemplateType.SUCCESS;
+		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
+			templateType = TemplateType.CANCELED;
+		} else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
+			templateType = TemplateType.REGPROC_SUCCESS;
+		} else {
+			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
+		}
+		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
+	}
+
+	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
+		EventStatus status;
+		if (EventStatusSuccess.containsStatus(statusCode)) {
+			status = EventStatus.SUCCESS;
+		} else if (EventStatusFailure.containsStatus(statusCode)) {
+			status = EventStatus.FAILED;
+		} else if(EventStatusCanceled.containsStatus(statusCode)){
+			status = EventStatus.CANCELED;
+		}
+		else {
+			status = EventStatus.IN_PROGRESS;
+		}
+		String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);
+		return Tuples.of(status.name(), fileText);
 	}
 
 	@Override
@@ -1835,7 +1867,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
-				String idaToken = availableClaimUtility.getResidentIdaToken();
+				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
@@ -1859,14 +1891,14 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 			eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesConstants.SUMMARY));
 
-			String name = claimValueUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
+							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
 									eventStatusMap.get(TemplateVariablesConstants.EVENT_STATUS_ENUM), requestType));
 				}
 			} else {
@@ -1991,7 +2023,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String serviceTypeTemplateData;
 		String statusFilterTemplateData;
 		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
-		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
@@ -2016,15 +2048,15 @@ public class ResidentServiceImpl implements ResidentService {
 			toDate = LocalDate.now();
 		}
 		if(statusFilter == null || statusFilter.trim().equalsIgnoreCase(EventStatus.ALL.name())){
-			statusFilterTemplateData = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
-					.map(status -> eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
+					.map(status -> templateUtil.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
 					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
 		if(serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
-			serviceTypeTemplateData = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			serviceTypeTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
 					.map(service -> templateUtil.getServiceTypeBasedOnLangcode(ServiceType.getServiceTypeFromString(service).get(), languageCode))
@@ -2051,20 +2083,20 @@ public class ResidentServiceImpl implements ResidentService {
 		String name;
 		if (langCode != null) {
 			try {
-				Map<String, Object> identity = identityUtil
-						.getIdentityAttributes(availableClaimUtility.getResidentIndvidualIdFromSession(), null);
-				name = identityUtil.getFullName(identity, langCode);
+				Map<String, Object> identity = identityServiceImpl
+						.getIdentityAttributes(identityServiceImpl.getResidentIndvidualIdFromSession(), null);
+				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			} catch (IOException e) {
 				logger.error("Error occured in accessing identity data %s", e.getMessage());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 			}
 		} else {
-			name = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		}
-		String photo = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
-		String email = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
-		String phone = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
+		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
+		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

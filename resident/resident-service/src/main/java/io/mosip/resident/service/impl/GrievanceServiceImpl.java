@@ -5,9 +5,6 @@ import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 import java.util.HashMap;
 import java.util.UUID;
 
-import io.mosip.resident.exception.NoSuchAlgorithmException;
-import io.mosip.resident.util.AvailableClaimValueUtility;
-import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -44,14 +41,8 @@ public class GrievanceServiceImpl implements GrievanceService {
 
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
-    @Autowired
-    private AvailableClaimValueUtility availableClaimValueUtility;
-
-    @Autowired
-    private Utility utility;
-
     @Override
-    public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException, NoSuchAlgorithmException {
+    public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
     	logger.debug("GrievanceServiceImpl::getGrievanceTicket()::entry");
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
@@ -65,25 +56,22 @@ public class GrievanceServiceImpl implements GrievanceService {
             response.put(TICKET_ID, ticketId);
             responseWrapper.setResponse(response);
         } catch (ApisResourceAccessException e) {
-        	logger.error("%s - %s", ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e.getMessage());
-            throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), e.getMessage(), e);
-        } catch (NoSuchAlgorithmException | java.security.NoSuchAlgorithmException e) {
-            logger.error("%s - %s", ResidentErrorCode.NO_SUCH_ALGORITHM_EXCEPTION.getErrorMessage(), e.getMessage());
-            throw new NoSuchAlgorithmException(ResidentErrorCode.NO_SUCH_ALGORITHM_EXCEPTION.getErrorCode(), e.getMessage(), e);
+        	logger.error("%s - %s", ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorMessage(), e.getMessage());
+            throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
         logger.debug("GrievanceServiceImpl::getGrievanceTicket()::exit");
         return responseWrapper;
     }
 
-    private void insertDataInGrievanceTable(String ticketId, MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws NoSuchAlgorithmException, java.security.NoSuchAlgorithmException {
+    private void insertDataInGrievanceTable(String ticketId, MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) {
         ResidentGrievanceEntity residentGrievanceEntity = new ResidentGrievanceEntity();
         residentGrievanceEntity.setId(ticketId);
         residentGrievanceEntity.setEventId(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
         residentGrievanceEntity.setName(grievanceRequestDTOMainRequestDTO.getRequest().getName());
-        residentGrievanceEntity.setEmailId(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId()));
-        residentGrievanceEntity.setAlternateEmailId(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId()));
-        residentGrievanceEntity.setPhoneNo(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo()));
-        residentGrievanceEntity.setAlternatePhoneNo(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo()));
+        residentGrievanceEntity.setEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId());
+        residentGrievanceEntity.setAlternateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId());
+        residentGrievanceEntity.setPhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo());
+        residentGrievanceEntity.setAlternatePhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo());
         residentGrievanceEntity.setMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
         residentGrievanceEntity.setStatus(SUCCESS);
         residentGrievanceEntity.setCrBy(this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID));
@@ -95,16 +83,16 @@ public class GrievanceServiceImpl implements GrievanceService {
                                                                                     grievanceRequestDTOMainRequestDTO)
             throws ApisResourceAccessException {
         if (grievanceRequestDTOMainRequestDTO.getRequest().getName() == null) {
-            grievanceRequestDTOMainRequestDTO.getRequest().setName(availableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setName(identityService.getAvailableclaimValue(
                     this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE)));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(availableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(identityService.getAvailableclaimValue(
                     this.environment.getProperty(ResidentConstants.PHONE_FROM_PROFILE)
             ));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(availableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(identityService.getAvailableclaimValue(
                     this.environment.getProperty(ResidentConstants.EMAIL_FROM_PROFILE)));
         }
         return grievanceRequestDTOMainRequestDTO;
