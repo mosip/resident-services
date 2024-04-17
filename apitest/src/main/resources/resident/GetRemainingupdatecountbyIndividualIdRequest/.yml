@@ -1,0 +1,84 @@
+GetAcknowledgementController:
+   Resident_GetAuthorizationtoken_Valid_Smoke:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_Invalid_languageCode_Negative:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "ar$!22",
+		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_Invalid_EventId_Negative:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "44$as443!"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_Empty_languageCode_Negative:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "",
+		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_Empty_eventId_Negative:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  ""
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_Invalid_Role_Negative:
+      endPoint: /ack/download/pdf/event/{eventId}/language/{languageCode}
+      role: resident
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'

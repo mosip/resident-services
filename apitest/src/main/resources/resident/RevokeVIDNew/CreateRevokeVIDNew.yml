@@ -1,0 +1,194 @@
+RevokeVIDNew:
+   Resident_RevokeVIDNew_uin_Perp_Valid_Smoke:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+}'
+
+   Resident_RevokeVIDNew_uin_Temp_Valid_Smoke:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+}'
+
+   Resident_RevokeVIDNew_uin_OneTimeUse_Valid_Smoke:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+}'
+
+   Resident_RevokeVIDNew_StatusCode_Without_Token_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
+      role: 
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: "401"
+
+   Resident_RevokeVIDNew_Diff_Token_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+   Resident_RevokeVIDNew_Using_Vid_Valid_Smoke:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid_vid$
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+}'
+
+   Resident_RevokeVIDNew_uin_Using_Vid_Invalid_User_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-454"
+    }
+  ]
+}'
+
+   Resident_RevokeVIDNew_uin_Perp_Revoked_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-406"
+    }
+  ]
+}'
+
+   Resident_RevokeVIDNew_uin_Temp_Revoked_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-406"
+    }
+  ]
+}'
+
+   Resident_RevokeVIDNew_uin_OneTimeUse_Revoked_Neg:
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: patch
+      inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.revoke",
+        "version": "1.0",
+        "vidStatus": "Revoked"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-406"
+    }
+  ]
+}'

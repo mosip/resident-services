@@ -1,0 +1,80 @@
+GetImmediateChildrenByLocCodeAndLangCode:
+   Resident_GetImmediateChildrenByLocCodeAndLangCode_allValid_smoke:
+      endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCode
+      outputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCodeResult
+      input: '{
+      "locationCode":"MOR",
+      "langCode":"$1STLANG$"
+}'
+      output: '{
+}'
+
+   Resident_GetImmediateChildrenByLocCodeAndLangCode_Invalid_locationCode:
+      endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCode
+      outputTemplate: resident/error
+      input: '{
+      "locationCode":"abc",
+      "langCode":"$1STLANG$"
+}'
+      output: '{
+   "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetImmediateChildrenByLocCodeAndLangCode_Invalid_langCode:
+      endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCode
+      outputTemplate: resident/error
+      input: '{
+      "locationCode":"KNT",
+      "langCode":"abc"
+}'
+      output: '{
+   "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetImmediateChildrenByLocCodeAndLangCode_StatusCode_Empty_locationCode_Neg:
+      endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCode
+      outputTemplate: resident/error
+      input: '{
+      "locationCode":"",
+      "langCode":"abc"
+}'
+      output: "404"
+
+   Resident_GetImmediateChildrenByLocCodeAndLangCode_StatusCode_Empty_langCode_Neg:
+      endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetImmediateChildrenByLocCodeAndLangCode/getImmediateChildrenByLocCodeAndLangCode
+      outputTemplate: resident/error
+      input: '{
+      "locationCode":"KNT",
+      "langCode":""
+}'
+      output: "404"

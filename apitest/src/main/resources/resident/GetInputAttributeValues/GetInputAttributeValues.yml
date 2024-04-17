@@ -1,0 +1,98 @@
+GetInputAttributeValues:
+   Resident_GetInputAttributeValues1_UIN_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"update-demographics"
+}'
+      output: '{
+}'
+
+   Resident_GetInputAttributeValues2_UIN_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"share-credential"
+}'
+      output: '{
+}'
+
+   Resident_GetInputAttributeValues3_UIN_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"personalized-card"
+}'
+      output: '{
+}'
+
+   Resident_GetInputAttributeValues_UIN_Invalid_SchemaType_Neg:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/error
+      input: '{
+      	"schemaType":"#$$#$#"
+}'
+      output: '{
+	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetInputAttributeValues1_Vid_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"update-demographics"
+}'
+      output: '{
+}'
+
+   Resident_GetInputAttributeValues2_Vid_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"share-credential"
+}'
+      output: '{
+}'
+
+   Resident_GetInputAttributeValues3_Vid_all_Valid_Smoke:
+      endPoint: /resident/v1/identity/info/type/{schemaType}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
+      outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
+      input: '{
+      	"schemaType":"personalized-card"
+}'
+      output: '{
+}'

@@ -1,0 +1,50 @@
+OAuthDetailsRequest:
+   Resident_ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid:
+      endPoint: /v1/esignet/authorization/oauth-details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/OAuthDetailsRequest/OAuthDetailsRequest
+      outputTemplate: resident/OAuthDetailsRequest/OAuthDetailsRequestResult
+      input: '{
+      	"requestTime": "$TIMESTAMP$",
+      	"clientId": "$OIDCCLIENT$",
+      	"scope": "openid profile Manage-Identity-Data Manage-VID Manage-Authentication Manage-Service-Requests Manage-Credentials",
+      	"responseType": "code",
+      	"redirectUri": "$BASEURI$/resident/v1/login-redirect/$BASE64URI$",
+      	"display": "popup",
+	    "prompt": "login",
+	    "acrValues": "mosip:idp:acr:generated-code",
+	    "nonce": "973eieljzng",
+	    "state": "$RANDOMUUID$",
+	    "claimsLocales": "en",
+	    "userinfo": "$CLAIMSFROMCONFIG$"
+}'
+      output: '{
+       
+}'
+
+   Resident_ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid:
+      endPoint: /v1/esignet/authorization/oauth-details
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/OAuthDetailsRequest/OAuthDetailsRequest
+      outputTemplate: resident/OAuthDetailsRequest/OAuthDetailsRequestResult
+      input: '{
+      	"requestTime": "$TIMESTAMP$",
+      	"clientId": "$OIDCCLIENT$",
+      	"scope": "openid profile Manage-Identity-Data Manage-VID Manage-Authentication Manage-Service-Requests Manage-Credentials",
+      	"responseType": "code",
+      	"redirectUri": "$BASEURI$/resident/v1/login-redirect/$BASE64URI$",
+      	"display": "popup",
+	    "prompt": "login",
+	    "acrValues": "mosip:idp:acr:generated-code",
+	    "nonce": "973eieljzng",
+	    "state": "$RANDOMUUID$",
+	    "claimsLocales": "en",
+	    "userinfo": "$CLAIMSFROMCONFIG$"
+}'
+      output: '{
+       
+}'

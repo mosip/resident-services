@@ -1,0 +1,12 @@
+GetIdentityMapping:
+   Resident_GetIdentityMapping_all_Valid_Smoke:
+      endPoint: /resident/v1/auth-proxy/config/identity-mapping
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetIdentityMapping/getIdentityMapping
+      outputTemplate: resident/GetIdentityMapping/getIdentityMappingResult
+      input: '{
+}'
+      output: '{
+}'

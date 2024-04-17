@@ -1,0 +1,535 @@
+SendOtpToUserId:
+   Resident_SendOtpToUserId_Invalid_User_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "2023-02-13T",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$REMOVE$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Null_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "null",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionID": "$TRANSACTIONID$"
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ],
+        "status": "Email Request submitted"
+}'
+
+   Resident_SendOtpToUserId_uin_Invalid_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "gy$45",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Empty_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_SpaceVal_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": " ",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Missing_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "$REMOVE$",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Null_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "null",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ],
+        "status": "Email Request submitted"
+}'
+
+   Resident_SendOtpToUserId_uin_Invalid_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "23hfd$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Empty_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionID": ""
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_SpaceVal_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": " "
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_Missing_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/SendOtpToUserId/SendOtpToUserIdResult
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation2@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+        "status": "Email Request submitted"
+}'
+
+   Resident_SendOtpToUserId_vid_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "2023-02-13T",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$REMOVE$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Null_Requesttime_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "null",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "Invalid Input Parameter- requesttime"
+    }
+  ],
+        "status": "Email Request submitted"
+}'
+
+   Resident_SendOtpToUserId_vid_Invalid_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "gy$45",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Empty_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_SpaceVal_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": " ",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Missing_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "$REMOVE$",
+	    "transactionID": "$TRANSACTIONID$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Null_userId_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "null",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- userId"
+    }
+  ],
+        "status": "Email Request submitted"
+}'
+
+   Resident_SendOtpToUserId_vid_Invalid_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "23hfd$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Empty_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": ""
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_SpaceVal_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": " "
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_Missing_transactionID_Neg:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation@mosip.net",
+	    "transactionId": "$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionID"
+    }
+  ]
+}'
+
+   Resident_SendOtpToUserId_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/contact-details/send-otp
+      role: residentNewVid
+      restMethod: post
+      auditLogCheck: true
+      inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
+      outputTemplate: resident/SendOtpToUserId/SendOtpToUserIdResult
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "userId": "residentautomation2@mosip.net",
+	    "transactionId": "$TRANSACTIONID$"
+}'
+      output: '{
+        "status": "Email Request submitted"
+}'

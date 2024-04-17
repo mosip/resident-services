@@ -1,0 +1,608 @@
+UpdateUINNew:
+   Resident_UpdateUINNew_all_Valid_Smoke:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/UpdateUINNew/UpdateUINNewResult
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+        "status": "Success"
+}'
+
+   Resident_UpdateUINNew_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/UpdateUINNew/UpdateUINNewResult
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567789",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+        "status": "Success"
+}'
+
+   Resident_UpdateUINNew_Invalid_Language_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "duh",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Invalid_Language_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567789",
+        "consent" : "Accepted",
+        "language": "cdf2",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+        
+}'
+
+   Resident_UpdateUINNew_Invalid_User_Neg:
+      endPoint: /resident/v1/update-uin
+      role: resident
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Invalid_TransactionID_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "15sdsf#$%",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Missing_TransactionID_Pos:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "$REMOVE$",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Empty_TransactionID_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Invalid_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "shbj$%^u",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Missing_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "$REMOVE$",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Empty_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "dsg#$$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$REMOVE$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Empty_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Invalid_TransactionID_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "15sdsf#$%",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Missing_TransactionID_Pos:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "$REMOVE$",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Empty_TransactionID_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Invalid_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567789",
+        "consent" : "shbj$%^u",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Missing_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567789",
+        "consent" : "$REMOVE$",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Empty_Consent_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567789",
+        "consent" : "",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-461",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "dsg#$$",
+		"transactionID": "1234567789",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$REMOVE$",
+		"transactionID": "1234567789",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_vid_Empty_Requesttime_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNew
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "",
+		"transactionID": "1234567789",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Invalid_Identity_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "jndffk": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Vid_Invalid_Identity_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "jndffk": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Missing_Identity_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNew
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "jndffk": "$REMOVE$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'
+
+   Resident_UpdateUINNew_Vid_Missing_Identity_Neg:
+      endPoint: /resident/v1/update-uin
+      role: residentNewVid
+      restMethod: patch
+      inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+		"transactionID": "1234567889",
+        "consent" : "Accepted",
+        "language": "eng",
+		"value": "Sohan",
+        "jndffk": "$REMOVE$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$REMOVE$"
+    }
+  ]
+}'

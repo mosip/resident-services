@@ -1,0 +1,80 @@
+DownloadRegCenterDetails:
+   Resident_DownloadRegCenterDetails_all_Valid_Smoke:
+      endPoint: /resident/v1/download/registrationcenters
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
+      outputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetailsResult
+      input: '{
+		  "langcode": "$1STLANG$",
+		  "hierarchylevel": "5",
+		  "name": "10112"
+}'
+      output: '{
+		
+}'
+
+   Resident_DownloadRegCenterDetails_Invalid_Langcode_Neg:
+      endPoint: /resident/v1/download/registrationcenters
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
+      outputTemplate: resident/error
+      input: '{
+		  "langcode": "hinn",
+		  "hierarchylevel": "5",
+		  "name": "10112"
+}'
+      output: '{
+		
+}'
+
+   Resident_DownloadRegCenterDetails_Invalid_Hierarchylevel_Neg:
+      endPoint: /resident/v1/download/registrationcenters
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
+      outputTemplate: resident/error
+      input: '{
+		  "langcode": "$1STLANG$",
+		  "hierarchylevel": "sdsd#@",
+		  "name": "10112"
+}'
+      output: '{
+		
+}'
+
+   Resident_DownloadRegCenterDetails_Invalid_Name_Neg:
+      endPoint: /resident/v1/download/registrationcenters
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
+      outputTemplate: resident/error
+      input: '{
+		  "langcode": "$1STLANG$",
+		  "hierarchylevel": "5",
+		  "name": "10@##112"
+}'
+      output: '{
+		
+}'
+
+   Resident_DownloadRegCenterDetails_Invalid_All_Input_Neg:
+      endPoint: /resident/v1/download/registrationcenters
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
+      outputTemplate: resident/error
+      input: '{
+		  "langcode": "engg",
+		  "hierarchylevel": "5sd",
+		  "name": "10@##112"
+}'
+      output: '{
+		
+}'

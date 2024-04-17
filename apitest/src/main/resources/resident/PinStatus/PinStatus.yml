@@ -1,0 +1,74 @@
+PinStatus:
+   Resident_PinStatus_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/pinned/{eventId}
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/PinStatus/PinStatus
+      outputTemplate: resident/PinStatus/PinStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+      		"status": "200"
+}'
+
+   Resident_PinStatus_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/pinned/{eventId}
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/PinStatus/PinStatus
+      outputTemplate: resident/PinStatus/PinStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+      		"status": "200"
+}'
+
+   Resident_PinStatus_uin_Invalid_Input_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/PinStatus/PinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$@kk$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_PinStatus_vid_Invalid_Input_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/PinStatus/PinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$@kk$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_PinStatus_uin_StatusCode_Invalid_Token_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      role: invalid
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/PinStatus/PinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: "401"

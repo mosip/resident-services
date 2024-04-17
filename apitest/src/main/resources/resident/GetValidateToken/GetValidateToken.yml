@@ -1,0 +1,62 @@
+GetValidateToken:
+   Resident_GetValidateToken_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/GetValidateToken/getValidateTokenResult
+      input: '{
+}'
+      output: '{
+}'
+
+   Resident_GetValidateToken_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/GetValidateToken/getValidateTokenResult
+      input: '{
+}'
+      output: '{
+}'
+
+
+   Resident_GetValidateToken_Invalid_Token:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      role: invalid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetValidateToken_Empty_Token_Neg:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      role: 
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
