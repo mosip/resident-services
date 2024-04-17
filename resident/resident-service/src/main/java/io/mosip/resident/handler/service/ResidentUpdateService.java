@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -68,7 +69,7 @@ public class ResidentUpdateService {
 	RequestHandlerRequestValidator validator;
 
 	@Value("${IDSchema.Version}")
-	private String idschemaVersion;
+	private String defaultIdSchemaVersion;
 
 	@Autowired
 	private IdSchemaUtil idSchemaUtil;
@@ -103,17 +104,24 @@ public class ResidentUpdateService {
 	private static final String TYPE = "type";
 	private static final String VALUE = "value";
 
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request) throws BaseCheckedException, IOException {
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersionStr) throws BaseCheckedException, IOException {
+		return createPacket(request, defaultIdSchemaVersion, null, null);
+	}
+
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion, String sessionUin, IdResponseDTO1 idResponseDto) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
+		if(idSchemaVersion == null){
+			idSchemaVersion = defaultIdSchemaVersion;
+		}
 		byte[] packetZipBytes = null;
-		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
+		audit.setAuditRequestDto(AuditEnum.CREATE_PACKET);
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
 		if (validator.isValidCenter(request.getCenterId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
-								request.getIdValue())
-						: validator.isValidVid(request.getIdValue())) {
+								request.getIdValue(), idResponseDto)
+						: validator.isValidVid(request.getIdValue(), sessionUin)) {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 					request.getIdValue(),
@@ -152,8 +160,8 @@ public class ResidentUpdateService {
 				packetDto.setId(generateRegistrationId(request.getCenterId(), request.getMachineId()));
 				packetDto.setSource(utilities.getDefaultSource());
 				packetDto.setProcess(RegistrationType.RES_UPDATE.toString());
-				packetDto.setSchemaVersion(idschemaVersion);
-				packetDto.setSchemaJson(idSchemaUtil.getIdSchema(Double.valueOf(idschemaVersion)));
+				packetDto.setSchemaVersion(idSchemaVersion);
+				packetDto.setSchemaJson(idSchemaUtil.getIdSchema(Double.valueOf(idSchemaVersion)));
 				packetDto.setFields(idMap);
 				packetDto.setDocuments(map);
 				packetDto.setMetaInfo(getRegistrationMetaData(request.getIdValue(),
@@ -196,7 +204,7 @@ public class ResidentUpdateService {
 				if (e instanceof BaseCheckedException) {
 					throw (BaseCheckedException) e;
 				}
-				audit.setAuditRequestDto(EventEnum.UNKNOWN_EXCEPTION);
+				audit.setAuditRequestDto(AuditEnum.UNKNOWN_EXCEPTION);
 				throw new BaseCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), e);
 

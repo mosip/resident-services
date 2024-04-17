@@ -6,7 +6,7 @@
 
     <groupId>io.mosip.resident</groupId>
     <artifactId>resident-parent</artifactId>
-    <version>1.2.0.1</version>
+    <version>1.2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>resident</name>
     <description>Parent project of MOSIP Resident</description>
@@ -42,7 +42,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <layout>default</layout>
             <snapshots>
-            <enabled>true</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
         <repository>
@@ -51,7 +51,7 @@
             <layout>default</layout>
             <url>https://repo1.maven.org/maven2</url>
             <snapshots>
-            <enabled>false</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>
@@ -169,7 +169,7 @@
 
 
         <sonar.coverage.exclusions>
-            **/constant/**,**/config/**,**/httpfilter/**,**/cache/**,**/dto/**,**/entity/**,**/model/**,**/exception/**,**/repository/**,**/security/**,**/*Config.java,**/*BootApplication.java,**/*VertxApplication.java,**/cbeffutil/**,**/mock/**
+            **/constant/**,**/config/**,**/httpfilter/**,**/cache/**,**/dto/**,**/entity/**,**/model/**,**/exception/**,**/repository/**,**/security/**,**/*Config.java,**/*BootApplication.java,**/*VertxApplication.java,**/cbeffutil/**,**/mock/**,**/OrderCard*
         </sonar.coverage.exclusions>
         <sonar.cpd.exclusions>**/dto/**,**/entity/**,**/config/**</sonar.cpd.exclusions>
     </properties>
@@ -223,23 +223,23 @@
                     </execution>
                 </executions>
             </plugin>
-                <plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${maven.javadoc.version}</version>
-					<executions>
-						<execution>
-					 		<id>attach-javadocs</id>
-					  		<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-                        <doclint>none</doclint>
-                        <additionalJOption>-Xdoclint:none</additionalJOption>
-                	</configuration>
-               </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doclint>none</doclint>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -297,7 +297,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -345,14 +345,14 @@
                 </configuration>
             </plugin>
             <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.version}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -363,6 +363,7 @@
                 <sonar.inclusions>src/main/java/**,src/main/resources/**</sonar.inclusions>
                 <sonar.exclusions>${sonar.coverage.exclusions}</sonar.exclusions>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.scanner.force-deprecated-java-version>true</sonar.scanner.force-deprecated-java-version>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
