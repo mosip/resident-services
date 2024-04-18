@@ -1,0 +1,79 @@
+GetValidDocumentByLangCode:
+   Resident_GetValidDocumentByLangCode_All_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCodeResult
+      input: '{
+      "langCode": "$1STLANG$"
+}'
+      output: '{
+}'
+
+
+
+   Resident_GetValidDocumentByLangCode_Invalid_LangCode:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": "engg"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetValidDocumentByLangCode_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCodeResult
+      input: '{
+      "langCode": "$1STLANG$"
+}'
+      output: '{
+
+}'
+
+   Resident_GetValidDocumentByLangCode_StatusCode_Empty_Invalid_Neg:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": ""
+}'
+      output: "404"
+
+   Resident_GetValidDocumentByLangCode_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": "ttt"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

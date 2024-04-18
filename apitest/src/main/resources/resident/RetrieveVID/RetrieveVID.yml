@@ -1,0 +1,43 @@
+RetrieveVID:
+   Resident_RetrieveVID_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/vids
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/RetrieveVID/RetrieveVID
+      outputTemplate: resident/RetrieveVID/RetrieveVIDResult
+      input: '{
+}'
+      output: '{
+}'
+
+   Resident_RetrieveVID_Vid_all_Valid_Smoke:
+      endPoint: /resident/v1/vids
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/RetrieveVID/RetrieveVID
+      outputTemplate: resident/RetrieveVID/RetrieveVIDResult
+      input: '{
+}'
+      output: '{
+}'
+
+   Resident_RetrieveVID_Invalid_Token_Neg:
+      endPoint: /resident/v1/vids
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/RetrieveVID/RetrieveVID
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "KER-ATH-401",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'

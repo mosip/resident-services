@@ -1,0 +1,21 @@
+createSendOTP:
+   Resident_SendOTP_All_Valid_Smoke:
+      endPoint: /idauthentication/v1/otp/v4jO2rTUkDglaG7rCkWDnqIT3WpZaGEW9j3FMXwTA5xXKVaDpx/6001/34536061
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOtpForVid/createSendOTP
+      outputTemplate: resident/SendOtpForVid/createSendOTPResult
+      input: '{
+    "transactionID": "1234567190",
+    "individualId": "5329487524103783",
+    "requestTime": "$TIMESTAMP$",
+    "individualIdType": "VID",
+    "otpChannel": [
+        "EMAIL",
+        "PHONE"
+    ]
+  }'
+      output: '{
+        "maskedMobile": "XXXXXX7143",
+        "maskedEmail": "XXkXXlXXhXXuXXr@technoforte.co.in"
+    }'

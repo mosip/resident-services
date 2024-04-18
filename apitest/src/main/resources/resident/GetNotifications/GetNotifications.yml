@@ -1,0 +1,394 @@
+GetNotifications:
+   Resident_GetNotifications_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"$REMOVE$",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_vid_pageSize_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_vid_pageIndex_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_Invalid_pageIndex_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"dw",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{    
+         "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_vid_Invalid_Token_Neg:
+      endPoint: /resident/v1/notifications/{langCode}
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"$REMOVE$",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+         "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "Authentication Failed"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_vid_1_Invalid_PageNo_Pos:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"11",
+	    "pageSize":"2"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_vid_all_InValid_langcode_Neg:
+      endPoint: /resident/v1/notifications/{langCode}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "34Fg",
+		"pageIndex":"$REMOVE$",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+         "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_vid_SpaceVal_langcode_Neg:
+      endPoint: /resident/v1/notifications/{langCode}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": " ",
+		"pageIndex":"$REMOVE$",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+         "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_vid_Neg_Value_PageStart_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"-2",
+	    "pageSize":"2"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-446",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_vid_Neg_Value_pageSize_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"-2"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+        
+}'
+
+   Resident_GetNotifications_vid_StringVal_Invalid_pageSize_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"gh"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]     
+}'
+
+   Resident_GetNotifications_vid_StringVal_Invalid_pageIndex_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"fh",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+        
+}'
+   Resident_GetNotifications_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"$REMOVE$",
+	    "pageSize":"$REMOVE$"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_uin_pageSize_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_uin_pageIndex_all_Valid_Smoke:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/GetNotifications/GetNotificationsResult
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotifications_uin_1_Invalid_PageNo_Pos:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"52",
+	    "pageSize":"2"
+}'
+      output: '{        
+}'
+
+   Resident_GetNotifications_uin_all_InValid_langcode_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "34Fg",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: '{
+         "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_uin_StatusCode_empty_langcode_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: "404"
+
+   Resident_GetNotifications_uin_SpaceVal_langcode_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": " ",
+		"pageIndex":"2",
+	    "pageSize":"2"
+}'
+      output: '{
+         "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_uin_Neg_Value_PageStart_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"-2",
+	    "pageSize":"2"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-446",
+      "message": "Invalid page start value"
+    }
+  ]
+}'
+
+   Resident_GetNotifications_uin_Neg_Value_pageSize_Neg:
+      endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotifications/GetNotifications
+      outputTemplate: resident/error
+      input: '{
+		"langCode": "$1STLANG$",
+		"pageIndex":"2",
+	    "pageSize":"-2"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "Invalid page fetch value"
+    }
+  ]
+}'

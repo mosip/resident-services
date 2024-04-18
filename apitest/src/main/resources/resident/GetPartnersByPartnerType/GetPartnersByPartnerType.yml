@@ -1,0 +1,91 @@
+GetPartnersByPartnerType:
+   Resident_GetPartnersByPartnerType_uin_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
+      input: '{
+      	"partnerType": "Auth_Partner"
+}'
+      output: '{
+}'
+
+   Resident_GetPartnersByPartnerType_uin_Empty_PartnerType_Valid_Smoke:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
+      input: '{
+      	"partnerType": ""
+}'
+      output: '{
+}'
+
+   Resident_GetPartnersByPartnerType_Invalid_Token:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: residen
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/error
+      input: '{
+      	"partnerType": ""
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetPartnersByPartnerType_Empty_Token_Neg:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: 
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/error
+      input: '{
+      	"partnerType": ""
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "Authentication Failed"
+    }
+  ]
+}'
+
+   Resident_GetPartnersByPartnerType_vid_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
+      input: '{
+      	"partnerType": "Auth_Partner"
+}'
+      output: '{
+}'
+
+   Resident_GetPartnersByPartnerType_vid_Empty_PartnerType_Valid_Smoke:
+      endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
+      outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
+      input: '{
+      	"partnerType": ""
+}'
+      output: '{
+}'
