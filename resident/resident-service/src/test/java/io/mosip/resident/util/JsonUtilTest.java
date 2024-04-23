@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.mosip.resident.dto.JsonValue;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
 @PrepareForTest({})
 public class JsonUtilTest {
 	private JSONObject jsonObject;

@@ -45,7 +45,7 @@ import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
 
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

@@ -48,7 +48,7 @@ import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
 @PrepareForTest({ IOUtils.class, File.class, FileInputStream.class})
 public class ResidentUpdateServiceTest {
 

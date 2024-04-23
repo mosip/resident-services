@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.util.Utilities;

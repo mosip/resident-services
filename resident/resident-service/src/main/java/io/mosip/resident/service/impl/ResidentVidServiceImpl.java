@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;

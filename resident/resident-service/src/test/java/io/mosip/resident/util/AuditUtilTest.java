@@ -51,7 +51,7 @@ import reactor.util.function.Tuples;
  * @author Abubacker Siddik
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
 @PrepareForTest({SecurityContextHolder.class, InetAddress.class, DateUtils.class})
 public class AuditUtilTest {
 

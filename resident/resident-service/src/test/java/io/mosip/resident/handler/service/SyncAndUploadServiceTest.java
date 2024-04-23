@@ -40,7 +40,7 @@ import io.mosip.resident.util.EncryptorUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
 @PrepareForTest({ JsonUtils.class, Gson.class, DateUtils.class,
         ByteArrayResource.class, GsonBuilder.class })
 public class SyncAndUploadServiceTest {
