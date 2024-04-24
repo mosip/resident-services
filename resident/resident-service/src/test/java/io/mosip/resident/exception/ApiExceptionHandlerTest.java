@@ -10,6 +10,7 @@ import io.mosip.resident.mock.exception.CantPlaceOrderException;
 import io.mosip.resident.mock.exception.PaymentCanceledException;
 import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.struts.mock.MockHttpServletRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -342,7 +343,7 @@ public class ApiExceptionHandlerTest {
 
     @Test
     public void testHandleAccessDeniedException() throws IOException {
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
+        HttpServletRequest httpServletRequest = (HttpServletRequest) new MockHttpServletRequest("https://example.org/example",
                 "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<ResponseWrapper<ServiceError>> actualHandleAccessDeniedExceptionResult = apiExceptionHandler

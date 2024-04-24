@@ -102,7 +102,7 @@ import reactor.util.function.Tuples;
 
 @ContextConfiguration(classes = {Utility.class, ResidentServiceRestClient.class})
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({JsonUtil.class})
 public class UtilityTest {
 	@Rule

@@ -38,7 +38,7 @@ public class RestTemplateMetricsInterceptor implements ClientHttpRequestIntercep
 		try {
 			 ClientHttpResponse response = ex.execute(req, reqBody);
 			 if(req!=null && req.getURI()!=null && req.getURI().toString() != null && req.getMethod() != null) {
-				 recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE", (HttpStatus) response.getStatusCode(), response.getStatusText(), currentThread.getName());
+				 recordTimer(req.getMethod(), req.getURI().toString(), start, "NONE",  HttpStatus.valueOf(response.getStatusCode().value()), response.getStatusText(), currentThread.getName());
 			 }
 			return response;
 		} catch (Throwable e) {

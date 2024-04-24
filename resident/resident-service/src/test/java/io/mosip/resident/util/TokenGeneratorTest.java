@@ -28,7 +28,7 @@ import io.mosip.resident.exception.TokenGenerationFailedException;
 
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({ HttpClientBuilder.class, TokenHandlerUtil.class })
 public class TokenGeneratorTest {
 

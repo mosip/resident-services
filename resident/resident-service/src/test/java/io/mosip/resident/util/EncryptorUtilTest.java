@@ -38,7 +38,7 @@ import io.mosip.resident.dto.CryptomanagerRequestDto;
  * @author Abubacker Siddik
  */
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "jakarta.xml.*", "org.xml.*", "jakarta.management.*"})
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({DateUtils.class})
 public class EncryptorUtilTest {
 
