@@ -12,14 +12,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,24 +33,26 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
 /**
  * Resident proxy config controller test class.
- * 
+ *
  * @author Ritik Jain
  */
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = ResidentTestBootApplication.class)
+@AutoConfigureMockMvc
 public class ProxyConfigControllerTest {
-	
+
     @MockBean
     private ProxyIdRepoService proxyIdRepoService;
 
-	@Mock
+	@MockBean
 	private ResidentConfigServiceImpl residentConfigService;
 
-	@Mock
+	@MockBean
 	private AuditUtil auditUtil;
 
 	@MockBean
@@ -73,7 +75,7 @@ public class ProxyConfigControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
-	
+
 	@MockBean
     private ResidentServiceImpl residentService;
 
@@ -96,7 +98,7 @@ public class ProxyConfigControllerTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(proxyConfigController).build();
-//		Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
+		Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test
