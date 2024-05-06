@@ -12,8 +12,10 @@ import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.struts.mock.MockHttpServletRequest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
@@ -47,6 +49,13 @@ public class ApiExceptionHandlerTest {
 
     @MockBean
     private ObjectMapper objectMapper;
+
+    private HttpServletRequest  mockedRequest;
+
+    @Before
+    public void setup() throws Exception {
+        mockedRequest = Mockito.mock(HttpServletRequest.class);
+    }
 
     @Test
     public void testControlDataServiceException() throws IOException {
@@ -343,11 +352,11 @@ public class ApiExceptionHandlerTest {
 
     @Test
     public void testHandleAccessDeniedException() throws IOException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) new MockHttpServletRequest("https://example.org/example",
+        MockHttpServletRequest httpServletRequest =  new MockHttpServletRequest("https://example.org/example",
                 "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<ResponseWrapper<ServiceError>> actualHandleAccessDeniedExceptionResult = apiExceptionHandler
-                .handleAccessDeniedException(httpServletRequest, new AccessDeniedException("Msg"));
+                .handleAccessDeniedException(mockedRequest, new AccessDeniedException("Msg"));
         assertTrue(actualHandleAccessDeniedExceptionResult.hasBody());
         assertTrue(actualHandleAccessDeniedExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.FORBIDDEN, actualHandleAccessDeniedExceptionResult.getStatusCode());

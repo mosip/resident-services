@@ -51,7 +51,7 @@ public class ResidentServiceRestClientTest {
 
 	@Mock
 	RestTemplate residentRestTemplate;
-	
+
 	@InjectMocks
 	ResidentServiceRestClient residentServiceRestClient;
 
@@ -69,8 +69,8 @@ public class ResidentServiceRestClientTest {
 		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234")
 				.build(false).encode().toUri();
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		when(residentRestTemplate.exchange(any(URI.class), any(HttpMethod.class), any(),
-				Matchers.<Class<AutnTxnResponseDto>>any())).thenReturn(obj);
+//		when(residentRestTemplate.exchange(any(URI.class), any(HttpMethod.class), any(),
+//				Matchers.<Class<AutnTxnResponseDto>>any())).thenReturn(obj);
 
 		assertTrue(client.getApi(uri, AutnTxnResponseDto.class).toString().contains("ancd"));
 	}
@@ -275,7 +275,7 @@ public class ResidentServiceRestClientTest {
 		assertTrue(client.postApi("https://int.mosip.io/individualIdType/UIN/individualId/1234",
 				MediaType.APPLICATION_JSON, autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
 	}
-	
+
 	@Ignore
 	@Test
 	public void testpatchApi() throws Exception {
