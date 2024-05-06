@@ -562,7 +562,7 @@ public class ProxyMasterdataController {
 
 	@ResponseFilter
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
+	@GetMapping("/proxy/masterdata/dynamicfields/{fieldName}")
 	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
 	public ResponseWrapper<?> getAllDynamicFieldByName(
 			@PathVariable("fieldName") String fieldName) throws ResidentServiceCheckedException {
