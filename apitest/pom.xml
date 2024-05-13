@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.mosip.testrig.apirig.automationtests.resident</groupId>
+	<groupId>io.mosip.resident</groupId>
 	<artifactId>apitest-resident</artifactId>
 	<packaging>jar</packaging>
 	<name>apitest-resident</name>
@@ -24,7 +24,6 @@
 		<tag>HEAD</tag>
 	</scm>
 
-
 	<dependencies>
 
 		<dependency>
@@ -34,5 +33,14 @@
 		</dependency>
 		
 	</dependencies>
+
+	<developers>
+		<developer>
+			<name>Mosip</name>
+			<email>mosip.emailnotifier@gmail.com</email>
+			<organization>io.mosip</organization>
+			<organizationUrl>https://github.com/mosip/resident-services</organizationUrl>
+		</developer>
+	</developers>
 	
 </project>
