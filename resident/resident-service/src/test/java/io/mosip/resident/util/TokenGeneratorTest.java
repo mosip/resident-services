@@ -6,11 +6,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.IOException;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,7 +69,7 @@ public class TokenGeneratorTest {
     @Test
     public void getTokenTest() throws IOException {
 		String token = "Authorizationtoken";
-        org.apache.http.HttpEntity entity = new StringEntity(token, null, null);
+        HttpEntity entity = new StringEntity(token);
 		BasicHeader header = new BasicHeader("token", "Authorizationtoken;");
         BasicHeader[] headers = new BasicHeader[1];
         headers[0] = header;
@@ -84,7 +85,7 @@ public class TokenGeneratorTest {
     @Test(expected = TokenGenerationFailedException.class)
     public void tokenGenerationFailedTest() throws IOException {
         String token = "token";
-        org.apache.http.HttpEntity entity = new StringEntity(token, null, null);
+        HttpEntity entity = new StringEntity(token);
         BasicHeader[] headers = new BasicHeader[0];
 
         when(response.getEntity()).thenReturn(entity);
@@ -106,7 +107,7 @@ public class TokenGeneratorTest {
 		PowerMockito.mockStatic(TokenHandlerUtil.class);
 		PowerMockito.when(TokenHandlerUtil.class, "isValidBearerToken", "Authorizationtoken", "", "").thenReturn(true);
 		String token = "Authorizationtoken";
-		org.apache.http.HttpEntity entity = new StringEntity(token, null, null);
+		HttpEntity entity = new StringEntity(token);
 		BasicHeader header = new BasicHeader("token", "Authorizationtoken;");
 		BasicHeader[] headers = new BasicHeader[1];
 		headers[0] = header;
