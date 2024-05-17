@@ -22,46 +22,37 @@
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
 		<springdoc.version>1.5.10</springdoc.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
-		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
 		<kernel.khazana.version>1.2.1-java21-SNAPSHOT</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
 		<kernel-openid-bridge-api.version>1.2.1-java21-SNAPSHOT</kernel-openid-bridge-api.version>
 		<kernel.idobjectvalidator.version>1.2.1-java21-SNAPSHOT</kernel.idobjectvalidator.version>
-		<mockito.core.version>3.4.3</mockito.core.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>${mockito.core.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-module-junit4</artifactId>
-			<version>${powermock.beta.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito2</artifactId>
-			<version>${powermock.beta.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -92,27 +83,22 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>${postgresql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>${googlecode.json-simple.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -139,7 +125,6 @@
 		<dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-thymeleaf</artifactId>
-  <version>2.4.4</version>
 </dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -192,27 +177,22 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>${h2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>${apache.httpcomponents.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>${google.gson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-core</artifactId>
-			<version>${io.micrometer.prometheus.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
-			<version>${io.micrometer.prometheus.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -248,23 +228,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
-			<version>${spring.boot.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>4.1.72.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${fasterxml.jackson.module.jsr310.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-afterburner</artifactId>
-			<version>${fasterxml.jackson.module.afterburner.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.idrepository</groupId>
@@ -390,7 +366,6 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -400,7 +375,6 @@
 		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>
-		    <version>2.11.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.nimbusds</groupId>
@@ -415,12 +389,11 @@
 		<dependency>
 		    <groupId>io.mosip.kernel</groupId>
 		    <artifactId>kernel-pdfgenerator-itext</artifactId>
-		    <version>1.2.0.1-B1</version>
+		    <version>1.2.1-java21-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework.security</groupId>
 		    <artifactId>spring-security-test</artifactId>
-		    <version>5.3.3.RELEASE</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
@@ -434,7 +407,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.boot.version}</version>
 				<configuration>
 					<executable>true</executable>
 					<layout>ZIP</layout>
