@@ -120,7 +120,7 @@ UpdateUINNew:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-461",
+      "errorCode": "RES-SER-410",
       "message": "$REMOVE$"
     }
   ]
@@ -326,7 +326,7 @@ UpdateUINNew:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-461",
+      "errorCode": "RES-SER-410",
       "message": "$REMOVE$"
     }
   ]
