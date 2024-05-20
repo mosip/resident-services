@@ -650,21 +650,21 @@ public class UtilityTest {
 	public void test_formatWithOffsetForFileName_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
-		assertEquals("Aug_14_1993_4.54.00_PM", formatWithOffsetForFileName);
+		assertEquals("Aug_14_1993_4.54.00 PM", formatWithOffsetForFileName);
 	}
 
 	@Test
 	public void test_formatWithOffsetForFileName_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
-		assertEquals("14-Aug-1993_10.24.00_PM", formatWithOffsetForFileName);
+		assertEquals("14-Aug-1993_10.24.00 pm", formatWithOffsetForFileName);
 	}
 
 	@Test
 	public void test_formatWithOffsetForFileName_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
-		assertEquals("1993-08-14_04.54.00_PM", formatWithOffsetForFileName);
+		assertEquals("1993-08-14_04.54.00_pm", formatWithOffsetForFileName);
 	}
 
 
@@ -672,14 +672,14 @@ public class UtilityTest {
 	public void test_formatWithOffsetForUI_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
-		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
+		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
 	}
 
 	@Test
 	public void test_formatWithOffsetForUI_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(-330, "en-IN", localDateTime);
-		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
+		assertEquals("14-Aug-1993, 10:24:00 pm", formatWithOffsetForFileName);
 	}
 
 	@Test
@@ -700,7 +700,7 @@ public class UtilityTest {
 	public void test_formatWithOffsetForUI_locale_length_1() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en", localDateTime);
-		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
+		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
 	}
 
 	@Test

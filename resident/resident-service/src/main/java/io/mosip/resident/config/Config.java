@@ -42,7 +42,6 @@ import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.interceptor.RestTemplateLoggingInterceptor;
 import io.mosip.resident.interceptor.RestTemplateMetricsInterceptor;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 

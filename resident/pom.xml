@@ -117,14 +117,13 @@
                 <configuration>
                     <skipTests>false</skipTests>
                     <skip>false</skip>
-                    <!--suppress UnresolvedMavenProperty -->
                     <argLine>
-                        ${argLine}
-                        --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED
-                        --add-opens java.base/java.lang=ALL-UNNAMED
-                        --illegal-access=debug
-                        --enable-preview
-                        --add-opens java.base/java.io=ALL-UNNAMED
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                        --add-opens=java.base/java.util=ALL-UNNAMED
+                        --add-opens=java.base/java.net=ALL-UNNAMED
+                        --add-opens=java.base/java.time=ALL-UNNAMED
+                        --add-opens=java.base/java.io=ALL-UNNAMED
+                        --add-opens=java.base/java.time.format=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
