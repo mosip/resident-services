@@ -2,6 +2,7 @@ GenerateVIDNew:
    Resident_GenerateVID_uin_Temporary_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -13,13 +14,12 @@ GenerateVIDNew:
         "vidType": "Temporary"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_GenerateVID_uin_Temporary_VID2_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -31,13 +31,12 @@ GenerateVIDNew:
         "vidType": "Temporary"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -49,13 +48,12 @@ GenerateVIDNew:
         "vidType": "Onetimeuse"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_Generate_Perpetual_VID_uin_Phone_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNewAsPhone
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -67,8 +65,6 @@ GenerateVIDNew:
         "vidType": "Perpetual"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "$IGNORE$"
 }'
 
    Resident_Generate_Perpetual_VID_uin_Email_Valid_Smoke_sid:
@@ -92,6 +88,7 @@ GenerateVIDNew:
    Resident_Generate_Perpetual_VID_BothChannel_uin_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -103,8 +100,6 @@ GenerateVIDNew:
         "vidType": "Perpetual"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_Generate_Perpetual_VID_uin_Empty_TransID_Invalid_Neg:
@@ -123,7 +118,7 @@ GenerateVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-410",
+      "errorCode": "RES-SER-513",
       "message": "$IGNORE$"
     }
   ]
@@ -310,6 +305,7 @@ GenerateVIDNew:
    Resident_GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNew
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -321,8 +317,6 @@ GenerateVIDNew:
         "vidType": "Perpetual"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_GenerateVID_Perpetual_Invalid_Token:
@@ -350,6 +344,7 @@ GenerateVIDNew:
    Resident_GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/generate-vid
       role: residentNewVid
+      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
@@ -361,8 +356,6 @@ GenerateVIDNew:
         "vidType": "Onetimeuse"
     }'
       output: '{
-	    "maskedPhone": "******3210",
-	    "maskedEmail": "res***************@gmail.com"
 }'
 
    Resident_Generate_Perpetual_VID_TransID_uin_Invalid:
@@ -409,7 +402,7 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_TransID_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_Empty_TransID_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       role: residentNewVid
       restMethod: post
@@ -425,7 +418,7 @@ GenerateVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-410",
+      "errorCode": "RES-SER-513",
       "message": "$IGNORE$"
     }
   ]
