@@ -1,0 +1,72 @@
+openapi: 3.0.1
+info:
+  title: UnPinStatus API
+  description: API for handling unpinning status of an event
+  version: 1.0.0
+paths:
+  '/unpinned/{eventId}':
+    post:
+      summary: UnPinStatusController
+      description: UnPinStatusController
+      tags:
+        - UnPinStatusController
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ResponseDTO'
+        message:
+          type: string
+        status:
+          type: string
+    ResponseDTO:
+      type: object
+      properties:
+        someField:
+          type: string
+        anotherField:
+          type: string
+  securitySchemes:
+    PreAuthorize:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token used for authorizing the scope
+security:
+  - PreAuthorize: []

@@ -1,0 +1,332 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 0wzznkgjgmjj6
+info:
+  title: API to convert the List of registration centers request as a downloadable PDF
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  download/registration-centers-list:
+    post:
+      summary: download/registration-centers-list
+      operationId: post-download-pdf-registration-centers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+            text/html:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Success:
+                  value: 'Response Body: PDF bytes with application/pdf mime type, and filename as: document/featurename_eventId.pdf'
+        '400':
+          description: Bad Request
+          content:
+            text/html:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                example-1:
+                  value: {}
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                responsetime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    registrationCenters:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          centerTypeCode:
+                            type: string
+                          addressLine1:
+                            type: string
+                          addressLine2:
+                            type: string
+                          addressLine3:
+                            type: string
+                          latitude:
+                            type: string
+                          longitude:
+                            type: string
+                          locationCode:
+                            type: string
+                          holidayLocationCode:
+                            type: string
+                          contactPhone:
+                            type: string
+                          workingHours:
+                            type: string
+                          langCode:
+                            type: string
+                          numberOfKiosks:
+                            type: integer
+                          perKioskProcessTime:
+                            type: string
+                          centerStartTime:
+                            type: string
+                          centerEndTime:
+                            type: string
+                          timeZone:
+                            type: string
+                          contactPerson:
+                            type: string
+                          lunchStartTime:
+                            type: string
+                          lunchEndTime:
+                            type: string
+                          isActive:
+                            type: boolean
+                          zoneCode:
+                            type: string
+              x-examples:
+                example-1:
+                  id: mosip.resident.download.registration.centers
+                  version: '1.0'
+                  responsetime: '2022-06-14T07:54:26.731Z'
+                  request:
+                    registrationCenters:
+                      - id: '10003'
+                        name: Souk Khemiss Mograne
+                        centerTypeCode: REG
+                        addressLine1: Route N1
+                        addressLine2: Mograne
+                        addressLine3: MyCountry
+                        latitude: '34.405692'
+                        longitude: '-6.433368'
+                        locationCode: '14023'
+                        holidayLocationCode: KTA
+                        contactPhone: '734239083'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 4
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Mario Speedwagon
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: SAL
+                      - id: '10005'
+                        name: Center Mehdia
+                        centerTypeCode: REG
+                        addressLine1: Mehdia Road Amria mehdia
+                        addressLine2: Kenitra
+                        addressLine3: Maroc
+                        latitude: '34.256414'
+                        longitude: '-6.675499'
+                        locationCode: '14110'
+                        holidayLocationCode: KTA
+                        contactPhone: '887311749'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 1
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Walter Melon
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: BSN
+                      - id: '10006'
+                        name: Center Ouled Oujih
+                        centerTypeCode: REG
+                        addressLine1: Bloc 1 G1 N113
+                        addressLine2: Kenitra
+                        addressLine3: Maroc
+                        latitude: '34.262477'
+                        longitude: '-6.618605'
+                        locationCode: '14080'
+                        holidayLocationCode: KTA
+                        contactPhone: '915790305'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 5
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Barb Ackue
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: NDR
+            examples:
+              example-1:
+                value:
+                  id: string
+                  version: string
+                  responsetime: string
+                  request:
+                    registrationCenters:
+                      - id: string
+                        name: string
+                        centerTypeCode: string
+                        addressLine1: string
+                        addressLine2: string
+                        addressLine3: string
+                        latitude: string
+                        longitude: string
+                        locationCode: string
+                        holidayLocationCode: string
+                        contactPhone: string
+                        workingHours: string
+                        langCode: string
+                        numberOfKiosks: 0
+                        perKioskProcessTime: string
+                        centerStartTime: string
+                        centerEndTime: string
+                        timeZone: string
+                        contactPerson: string
+                        lunchStartTime: string
+                        lunchEndTime: string
+                        isActive: true
+                        zoneCode: string
+              example-2:
+                value:
+                  id: mosip.resident.download.registration.centers
+                  version: '1.0'
+                  responsetime: '2022-06-14T07:54:26.731Z'
+                  request:
+                    registrationCenters:
+                      - id: '10003'
+                        name: Souk Khemiss Mograne
+                        centerTypeCode: REG
+                        addressLine1: Route N1
+                        addressLine2: Mograne
+                        addressLine3: MyCountry
+                        latitude: '34.405692'
+                        longitude: '-6.433368'
+                        locationCode: '14023'
+                        holidayLocationCode: KTA
+                        contactPhone: '734239083'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 4
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Mario Speedwagon
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: SAL
+                      - id: '10005'
+                        name: Center Mehdia
+                        centerTypeCode: REG
+                        addressLine1: Mehdia Road Amria mehdia
+                        addressLine2: Kenitra
+                        addressLine3: Maroc
+                        latitude: '34.256414'
+                        longitude: '-6.675499'
+                        locationCode: '14110'
+                        holidayLocationCode: KTA
+                        contactPhone: '887311749'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 1
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Walter Melon
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: BSN
+                      - id: '10006'
+                        name: Center Ouled Oujih
+                        centerTypeCode: REG
+                        addressLine1: Bloc 1 G1 N113
+                        addressLine2: Kenitra
+                        addressLine3: Maroc
+                        latitude: '34.262477'
+                        longitude: '-6.618605'
+                        locationCode: '14080'
+                        holidayLocationCode: KTA
+                        contactPhone: '915790305'
+                        workingHours: '8:00:00'
+                        langCode: eng
+                        numberOfKiosks: 5
+                        perKioskProcessTime: '00:15:00'
+                        centerStartTime: '09:00:00'
+                        centerEndTime: '17:00:00'
+                        timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                        contactPerson: Barb Ackue
+                        lunchStartTime: '13:00:00'
+                        lunchEndTime: '14:00:00'
+                        isActive: true
+                        zoneCode: NDR
+      description: This API to convert the List of registration centers request as a downloadable PDF.
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

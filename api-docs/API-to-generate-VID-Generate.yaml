@@ -1,0 +1,219 @@
+openapi: 3.1.0
+x-stoplight:
+  id: em0n778gyax96
+info:
+  title: API to generate VID Generate
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /generate-vid:
+    post:
+      summary: /generate-vid
+      operationId: post-generate-vid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.resident.vid
+                    version: v1
+                    responsetime: '2022-06-08T15:45:02.052Z'
+                    response:
+                      vid: '3928304862'
+                      message: Notification has been sent to the provided contact detail(s)
+                      maskedPhone: '******0872'
+                      maskedEmail: man*******@gmail.com
+                    errors: []
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      vid:
+                        type: string
+                      message:
+                        type: string
+                      maskedPhone:
+                        type: string
+                      maskedEmail:
+                        type: string
+                      status:
+                        type: string
+                        x-stoplight:
+                          id: 9ou8f969ttg4r
+                  errors:
+                    type: array
+                    items:
+                      type: object
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.vid.generate
+                    version: '1.0'
+                    responsetime: '2022-06-08T15:45:02.052Z'
+                    response:
+                      vid: '3928304862'
+                      message: Notification has been sent to the provided contact detail(s)
+                      maskedPhone: '******0872'
+                      maskedEmail: man*******@gmail.com
+                      status: Success
+                    errors: []
+                Maximum limit reached:
+                  value:
+                    id: mosip.resident.vid.generate
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-405
+                        message: Maximum allowed VIDs are active. Deactivate VID to generate new one.
+                Exception while creating VID:
+                  value:
+                    id: mosip.resident.vid.generate
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-406
+                        message: Exception while creating VID
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized Access
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  id: mosip.resident.vid
+                  request:
+                    transactionID: '1234567890'
+                    vidType: Temporary
+                    channels:
+                      - PHONE
+                      - EMAIL
+                  requesttime: '2022-03-22T14:24:30.314Z'
+                  version: v1
+              required:
+                - id
+                - request
+                - requesttime
+                - version
+              properties:
+                id:
+                  type: string
+                request:
+                  type: object
+                  required:
+                    - transactionID
+                    - vidType
+                    - channels
+                  properties:
+                    transactionID:
+                      type: string
+                      description: 'Deprecated: non-empty string. This will be removed in future release.'
+                    vidType:
+                      type: string
+                    channels:
+                      type: array
+                      items:
+                        type: string
+                requesttime:
+                  type: string
+                version:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.vid.generate
+                  version: '1.0'
+                  request:
+                    transactionID: '1234567890'
+                    vidType: Temporary
+                    channels:
+                      - PHONE
+                      - EMAIL
+                  requesttime: '2022-03-22T14:24:30.314Z'
+      description: This API is to generate VID that takes the individual ID.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: locale
+          description: locale from the client system
+        - schema:
+            type: integer
+          in: header
+          name: timezoneOffset
+          description: timezone offset from the client system
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

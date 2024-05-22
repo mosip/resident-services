@@ -1,0 +1,220 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 75xp7efiem7gn
+info:
+  title: Profile-Icon
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /profile:
+    get:
+      summary: 'Get User Profile full name,  photo, last Login date & time'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      fullName:
+                        type: string
+                      lastLogin:
+                        type: string
+                      photo:
+                        type: object
+                        properties:
+                          mime:
+                            type: string
+                          data:
+                            type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: mosip.resident.profile
+                    version: v1
+                    responsetime: '2022-08-05T06:49:19.570Z'
+                    metadata: null
+                    response:
+                      fullName: My Full Name
+                      lastLogin: '2022-08-05T06:49:19.570Z'
+                      photo:
+                        mime: image/jpeg
+                        data: base64 encoded image bytes
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.profile
+                    version: v1
+                    responsetime: '2022-08-05T06:49:19.570Z'
+                    metadata: null
+                    response:
+                      fullName: My Full Name
+                      lastLogin: '2022-08-05T06:49:19.570Z'
+                      photo:
+                        mime: image/jpeg
+                        data: base64 encoded image bytes
+                    errors: null
+      operationId: get-user-details
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: 'Authorization: Access token'
+      description: 'This API is to get the full name, photo, last Login date & time of the resident who has logged in'
+    parameters: []
+  '/login​/{redirectURI}':
+    parameters:
+      - schema:
+          type: string
+        name: redirectURI
+        in: path
+        required: true
+    get:
+      summary: '/login​/{redirectURI}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-login-redirectURI
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: state
+        - schema:
+            type: string
+          in: query
+          name: state
+      description: 'Validation happens in IDP (Identity Provider) and not in the resident portal. Using this API, the resident portal will redirect to the IDP URL where the validation is performed and login happens. After the login is successful, the resident will be redirected to the resident portal’s logged-in page.'
+  '/login-redirect​/{redirectURI}':
+    parameters:
+      - schema:
+          type: string
+        name: redirectURI
+        in: path
+        required: true
+    get:
+      summary: Login Redirect
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-login-redirect-redirectURI
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: state
+        - schema:
+            type: string
+          in: query
+          name: session_state
+        - schema:
+            type: string
+          in: query
+          name: code
+      description: 'This API is used to consume the authorization code to get back the token response containing the Access token, ID token, and the seesion_state. The session_state will be validated once we have the token response. Additionally, the signature and expiry of the access token and ID token will also be validated by getting the certificates. Once the token is verified, it will redirect to the page with the cookie with the access token and ID token.'
+  /​logout​/user:
+    get:
+      summary: /​logout​/user
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-logout-user
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirecturi
+          required: true
+    parameters: []
+  '':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-Validate-Token-and-extends-session
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

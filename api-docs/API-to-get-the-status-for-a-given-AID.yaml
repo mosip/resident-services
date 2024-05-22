@@ -1,0 +1,501 @@
+openapi: 3.1.0
+x-stoplight:
+  id: uhtqyu39omreh
+info:
+  title: API to get the status for a given AID
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  'events/{event-id}?langCode={language-code}':
+    parameters:
+      - schema:
+          type: string
+        name: event-id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: language-code
+        in: path
+        required: true
+    get:
+      summary: 'events/{event-id}?langCode={language-code}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  response:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                      eventType:
+                        type: string
+                      eventStatus:
+                        type: string
+                      individualId:
+                        type: string
+                      summary:
+                        type: string
+                      timestamp:
+                        type: string
+                      info:
+                        type: object
+                        properties:
+                          purpose:
+                            type: string
+                          applicantName:
+                            type: string
+                          partnerId:
+                            type: string
+                          partnerLogo:
+                            type: string
+                          partnerName:
+                            type: string
+                          paymentStatus:
+                            type: string
+                          partnerTransactionId:
+                            type: string
+                          deliveryAddress:
+                            type: string
+                          authenticationMode:
+                            type: string
+                          vidType:
+                            type: string
+                          vid:
+                            type: string
+                          attributeList:
+                            type: string
+                          downloadCardLink:
+                            type: string
+                          orderTrackingLink:
+                            type: string
+                          trackingId:
+                            type: string
+                  requestTime:
+                    type: string
+                x-examples:
+                  example-1:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    response:
+                      eventId: the event ID
+                      eventType: SHARE_CRED_WITH_PARTNER
+                      eventStatus: failed/success/in-progress
+                      individualId: <UIN/VID/AID>
+                      summary: string
+                      timestamp: '2022-06-03T06:13:29.330Z'
+                      info:
+                        purpose: string
+                        applicantName: string
+                        partnerId: string
+                        partnerLogo: Base64encoded
+                        partnerName: string
+                        paymentStatus: string
+                        partnerTransactionId: string
+                        deliveryAddress: string
+                        authenticationMode: string
+                        vidType: string
+                        vid: string
+                        attributeList: array
+                        downloadCardLink: string
+                        orderTrackingLink: string
+                        trackingId: string
+                    requestTime: '2022-06-03T06:14:29.330Z'
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T09:59:03.119Z'
+                    response:
+                      eventId: 86c2ad43-e2a4-4952-bafc-d97ad1e5e453
+                      eventType: AUTHENTICATION_REQUEST/GENERATE_VID/REVOKE_VID/AUTH_TYPE_LOCK_UNLOCK/UPDATE_MY_UIN/DOWNLOAD_PERSONALIZED_CARD/ORDER_PHYSICAL_CARD/SHARE_CRED_WITH_PARTNER/GET_MY_ID/VERIFY_PHONE_EMAIL
+                      eventStatus: IN_PROGRESS
+                      individualId: '8736474831'
+                      summary: 'Authentication request using demograpihcs, E-Mail OTP, bio-Face Succeeded'
+                      timestamp: '2022-07-22T07:05:35.646Z'
+                      info:
+                        description: 'demo, otp-email, bio-FACE'
+                        partnerName: partnerName
+                        partnerId: string
+                        partnerLogo: Base64encoded image that can be rendered in html
+                        authenticationMode: otp
+                        vid: vid
+                        vidType: vidType
+                        downloadCardLink: downloadCardLink
+                        orderTrackingLink: orderTrackingLink
+                        paymentStatus: failed / success / in-progress
+                        partnerTransactionId: string
+                        deliveryAddress: string
+                        trackingId: trackingId
+                    errors: []
+                Authentication Request:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T09:59:03.119Z'
+                    metadata: null
+                    response:
+                      eventId: 86c2ad43-e2a4-4952-bafc-d97ad1e5e453
+                      eventType: AUTHENTICATION_REQUEST
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: AUTHENTICATION_REQUEST
+                      timestamp: '2022-07-22T07:05:35.646Z'
+                      info:
+                        purpose: 'demo, otp-email, bio-FACE'
+                        partnerName: partnerName
+                        partnerLogo: partnerLogo
+                        authenticationMode: otp
+                    errors: []
+                Manage my VID:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:03:51.903Z'
+                    metadata: null
+                    response:
+                      eventId: 1565214f-c97b-4818-bd48-801e98cce1a2
+                      eventType: REVOKE_VID
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-09-07T09:48:08.322Z'
+                      info:
+                        vid: vid
+                        purpose: null
+                        authenticationMode: otp
+                        vidType: vidType
+                    errors: []
+                Secure my ID:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:05:26.483Z'
+                    metadata: null
+                    response:
+                      eventId: 1b41734e-d888-4bd0-9d72-709c8bd9620c
+                      eventType: AUTH_TYPE_LOCK_UNLOCK
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-08-23T03:42:43.472Z'
+                      info:
+                        purpose: 'demo, otp'
+                        authenticationMode: otp
+                    errors: []
+                Update my data:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:13:41.123Z'
+                    metadata: null
+                    response:
+                      eventId: 1a631ecb-e881-46e8-b744-e26f4cea5bd0
+                      eventType: UPDATE_MY_UIN
+                      eventStatus: FAILED
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-09-06T06:03:22.373Z'
+                      info:
+                        downloadCardLink: downloadCardLink
+                        purpose: null
+                        attributeList: attributeList
+                        authenticationMode: otp
+                    errors: []
+                Download a personalized card:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:15:23.304Z'
+                    metadata: null
+                    response:
+                      eventId: 4383a19e-83f9-44d0-8d7f-3ed37b4882d4
+                      eventType: DOWNLOAD_PERSONALIZED_CARD
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-09-01T06:06:39.822Z'
+                      info:
+                        downloadCardLink: downloadCardLink
+                        purpose: 'demo, otp, otp, bio, bio, bio'
+                        attributeList: attributeList
+                        authenticationMode: otp
+                    errors: []
+                Order my physical card:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:16:26.360Z'
+                    metadata: null
+                    response:
+                      eventId: 0b0b6809-caae-445c-833c-b13eb6c0f795
+                      eventType: ORDER_PHYSICAL_CARD
+                      eventStatus: FAILED
+                      individualId: UIN
+                      summary: Ordering a physical card is in progress
+                      timestamp: '2022-08-07T08:31:49.743Z'
+                      info:
+                        purpose: 'demo, otp-email, bio-FACE'
+                        partnerName: partnerName
+                        partnerLogo: partnerLogo
+                        attributeList: attributeList
+                        downloadCardLink: downloadCardLink
+                        orderTrackingLink: orderTrackingLink
+                        authenticationMode: otp
+                        paymentStatus: paymentStatus
+                        trackingId: trackingId
+                    errors: []
+                'Share my credential with a partner ':
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:17:20.769Z'
+                    metadata: null
+                    response:
+                      eventId: d9ecb820-130a-4a67-9f30-fce5bbb536c7
+                      eventType: SHARE_CRED_WITH_PARTNER
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-09-07T14:14:55.809Z'
+                      info:
+                        purpose: null
+                        partnerName: partnerName
+                        partnerLogo: partnerLogo
+                        attributeList: attributeList
+                        orderTrackingLink: orderTrackingLink
+                        authenticationMode: otp
+                        trackingId: trackingId
+                    errors: []
+                Get my UIN:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:18:54.966Z'
+                    metadata: null
+                    response:
+                      eventId: 79c5270d-0596-4e5a-8f96-ca627c8f70dd
+                      eventType: GET_MY_ID
+                      eventStatus: IN_PROGRESS
+                      individualId: UIN
+                      summary: OTP Generated
+                      timestamp: '2022-09-07T05:47:43.352Z'
+                      info:
+                        purpose: null
+                    errors: []
+                Verify email ID/phone number:
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-08T10:19:40.014Z'
+                    metadata: null
+                    response:
+                      eventId: c04c473e-c1cf-4a21-bdfd-2f7e4ad53e05
+                      eventType: VERIFY_PHONE_EMAIL
+                      eventStatus: FAILED
+                      individualId: UIN
+                      summary: in-progress
+                      timestamp: '2022-09-07T06:08:14.154Z'
+                      info:
+                        purpose: null
+                    errors: []
+                'Error: EID not available in database':
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-459
+                        message: EID not available in database
+                'Error: Invalid Input Parameter- languageCode':
+                  value:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- languageCode
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  response:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                      eventType:
+                        type: string
+                      eventStatus:
+                        type: string
+                      individualId:
+                        type: string
+                      summary:
+                        type: string
+                      timestamp:
+                        type: string
+                      info:
+                        type: object
+                        properties:
+                          purpose:
+                            type: string
+                          applicantName:
+                            type: string
+                          partnerId:
+                            type: string
+                          partnerLogo:
+                            type: string
+                          partnerName:
+                            type: string
+                          paymentStatus:
+                            type: string
+                          partnerTransactionId:
+                            type: string
+                          deliveryAddress:
+                            type: string
+                          authenticationMode:
+                            type: string
+                          vidType:
+                            type: string
+                          vid:
+                            type: string
+                          attributeList:
+                            type: string
+                          downloadCardLink:
+                            type: string
+                          orderTrackingLink:
+                            type: string
+                          trackingId:
+                            type: string
+                  requestTime:
+                    type: string
+                x-examples:
+                  example-1:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    response:
+                      eventId: the event ID
+                      eventType: SHARE_CRED_WITH_PARTNER
+                      eventStatus: failed/success/in-progress
+                      individualId: <UIN/VID/AID>
+                      summary: string
+                      timestamp: '2022-06-03T06:13:29.330Z'
+                      info:
+                        purpose: string
+                        applicantName: string
+                        partnerId: string
+                        partnerLogo: Base64encoded
+                        partnerName: string
+                        paymentStatus: string
+                        partnerTransactionId: string
+                        deliveryAddress: string
+                        authenticationMode: string
+                        vidType: string
+                        vid: string
+                        attributeList: array
+                        downloadCardLink: string
+                        orderTrackingLink: string
+                        trackingId: string
+                    requestTime: '2022-06-03T06:14:29.330Z'
+              examples:
+                example-1:
+                  value: "{\n\t\"id\": \"mosip.resident.event.status\",\n\t\"version\": \"1.0\",\n\t\"response\": {\n\t\t\"eventId\": \"the event ID\",\n\t\t\"eventType\": \"SHARE_CRED_WITH_PARTNER\",\n\t\t\"eventStatus\": \"failed/success/in-progress\",\n\t\t\"individualId\": \"<UIN/VID/AID>\",\n\t\t\"summary\": \"string\",\n\t\t\"timestamp\": \"2022-06-03T06:13:29.330Z\",\n\t\t\"info\": {\n\t\t\t\"purpose\": \"string\",\n\t\t\t\"applicantName\": \"string\",\n\t\t\t\"partnerId\": \"string\",\n\t\t\t\"partnerLogo\": \"Base64encoded\",\n\t\t\t\"partnerName\": \"string\",\n\t\t\t\"paymentStatus\": \"string\",\n\t\t\t\"partnerTransactionId\": \"string\",\n\t\t\t\"deliveryAddress\": \"string\",\n\t\t\t\"authenticationMode\": \"string\",\n\t\t\t\"vidType\": \"string\",\n\t\t\t\"vid\": \"string\",\n\t\t\t\"attributeList\": \"array\",\n\t\t\t\"downloadCardLink\": \"string\",\n\t\t\t\"orderTrackingLink\": \"string\",\n\t\t\t\"trackingId\": \"string\"\n\t\t}\n\t},\n\t\"requestTime\": \"2022-06-03T06:14:29.330Z\"\n\n}"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: get-events-event-id-?langCode=-language-code
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: query
+          name: langCode
+          required: true
+          description: Language Code
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      description: This API is to get the Event Status for the given event-id and language-code.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,36 @@
+openapi: 3.0.1
+info:
+  title: Download Card API
+  description: API for getting AID stage status
+  version: 1.0.0
+paths:
+  '/aid-stage/{aid}':
+    get:
+      summary: getStatus
+      description: Get AID stage status
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntity'
+      tags:
+        - download-card-controller
+components:
+  schemas:
+    ResponseEntity:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+        status:
+          type: string

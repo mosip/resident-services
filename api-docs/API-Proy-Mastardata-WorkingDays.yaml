@@ -1,0 +1,161 @@
+openapi: 3.1.0
+x-stoplight:
+  id: u55e1wcz9z9x2
+info:
+  title: API-Proy-Mastardata-WorkingDays
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/proxy​/masterdata​/workingdays​/{registrationCenterID}​/{langCode}':
+    parameters:
+      - schema:
+          type: string
+        name: registrationCenterID
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: langCode
+        in: path
+        required: true
+    get:
+      summary: Get working days from masterdata for the registration center ID
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      workingdays:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            order:
+                              type: integer
+                            languageCode:
+                              type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T06:39:32.529Z'
+                    metadata: null
+                    response:
+                      workingdays:
+                        - code: '102'
+                          name: MON
+                          order: 2
+                          languageCode: eng
+                        - code: '103'
+                          name: TUE
+                          order: 3
+                          languageCode: eng
+                        - code: '104'
+                          name: WED
+                          order: 4
+                          languageCode: eng
+                        - code: '105'
+                          name: THU
+                          order: 5
+                          languageCode: eng
+                        - code: '106'
+                          name: FRI
+                          order: 6
+                          languageCode: eng
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T06:39:32.529Z'
+                    metadata: null
+                    response:
+                      workingdays:
+                        - code: '102'
+                          name: MON
+                          order: 2
+                          languageCode: eng
+                        - code: '103'
+                          name: TUE
+                          order: 3
+                          languageCode: eng
+                        - code: '104'
+                          name: WED
+                          order: 4
+                          languageCode: eng
+                        - code: '105'
+                          name: THU
+                          order: 5
+                          languageCode: eng
+                        - code: '106'
+                          name: FRI
+                          order: 6
+                          languageCode: eng
+                    errors: null
+      operationId: get-users-userId
+      description: Get working days from masterdata for the registration center ID and language code.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

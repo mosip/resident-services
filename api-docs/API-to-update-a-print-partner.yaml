@@ -1,0 +1,194 @@
+openapi: 3.1.0
+x-stoplight:
+  id: uaznm87u46ezo
+info:
+  title: API to update a print partner
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/partnermanager/partners/new/{partnerid}':
+    put:
+      summary: '/partnermanager/partners/new/{partnerid}'
+      operationId: put-partnermanager-partners-new-partnerid
+      responses:
+        '200':
+          description: OK
+        '':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      partnerId:
+                        type: string
+                      status:
+                        type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties: {}
+                x-examples:
+                  example-1:
+                    id: string
+                    version: string
+                    responsetime: '2022-09-19T15:07:42.002Z'
+                    metadata: null
+                    response:
+                      partnerId: mosip-3830
+                      status: approved
+                    errors: []
+              examples:
+                example-1:
+                  value:
+                    id: string
+                    version: string
+                    responsetime: string
+                    metadata: null
+                    response:
+                      partnerId: string
+                      status: string
+                    errors:
+                      - {}
+                example-2:
+                  value:
+                    id: string
+                    version: string
+                    responsetime: '2022-09-19T15:07:42.002Z'
+                    metadata: null
+                    response:
+                      partnerId: mosip-3830
+                      status: approved
+                    errors: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                metadata:
+                  type: object
+                  properties: {}
+                request:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    contactNumber:
+                      type: string
+                    logoUrl:
+                      type: string
+                    additionalInfo:
+                      type: object
+                      properties:
+                        test:
+                          type: string
+                        test1:
+                          type: string
+              x-examples:
+                example-1:
+                  id: string
+                  version: string
+                  requesttime: '2022-09-19T14:46:19.779Z'
+                  metadata: {}
+                  request:
+                    address: Bangalore
+                    contactNumber: '9907866554'
+                    logoUrl: 'https://logo.com'
+                    additionalInfo:
+                      test: test
+                      test1: test1
+            examples:
+              example-1:
+                value:
+                  id: string
+                  version: string
+                  requesttime: string
+                  metadata: {}
+                  request:
+                    address: string
+                    contactNumber: string
+                    logoUrl: string
+                    additionalInfo:
+                      test: string
+                      test1: string
+              example-2:
+                value:
+                  id: string
+                  version: string
+                  requesttime: '2022-09-19T14:46:19.779Z'
+                  metadata: {}
+                  request:
+                    address: Bangalore
+                    contactNumber: '9907866554'
+                    logoUrl: 'https://logo.com'
+                    additionalInfo:
+                      test: test
+                      test1: test1
+      description: This API is in PMS Services to update a print partner with type "Print_Partner".
+    parameters:
+      - schema:
+          type: string
+        name: partnerid
+        in: path
+        required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
