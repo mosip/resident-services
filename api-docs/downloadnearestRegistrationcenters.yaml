@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: Download Master Data API
+  description: API for downloading nearest registration centers
+  version: 1.0.0
+paths:
+  /download/nearestRegistrationcenters:
+    get:
+      summary: downloadNearestRegistrationcenters
+      description: Download nearest registration centers
+      parameters:
+        - name: langcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: proximitydistance
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: time-zone-offset
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: locale
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntity'
+      tags:
+        - download-master-data-controller
+components:
+  schemas:
+    ResponseEntity:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+        status:
+          type: string

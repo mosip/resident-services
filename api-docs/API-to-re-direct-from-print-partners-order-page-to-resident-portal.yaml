@@ -1,0 +1,158 @@
+openapi: 3.1.0
+x-stoplight:
+  id: vdlpmqvv75327
+info:
+  title: API to re-direct from print partner's order page to resident portal
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /resident/v1/physical-card/order-redirect/:
+    get:
+      summary: resident/v1/physical-card/order-redirect/
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: string
+                    version: v1
+                    responsetime: '2022-06-23T11:48:10.359Z'
+                    metadata: null
+                    response:
+                      eventId: string
+                    errors: null
+              examples:
+                example-1:
+                  value:
+                    id: string
+                    version: string
+                    responsetime: string
+                    metadata: null
+                    response:
+                      eventId: string
+                    errors: null
+                Success:
+                  value:
+                    id: string
+                    version: v1
+                    responsetime: '2022-06-23T11:48:10.359Z'
+                    metadata: null
+                    response:
+                      eventId: string
+                    errors: null
+        '302':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                example-1:
+                  value: redirection to acknowledgement page of Order Physical Card action in Resident-UI
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                example-1:
+                  value: Redirect to Resident’s Acknowledgement Page with below query params
+      operationId: get-resident-v1-physical-card-order-redirect
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: true
+          description: The base64 encoded URL for Resident-UI Acknowledgement page for ordering a physical card.
+        - schema:
+            type: string
+          in: query
+          name: eventId
+          required: true
+          description: the event ID to be used to track the status of whole process of order untill the card delivery.
+        - schema:
+            type: string
+          in: query
+          name: residentName
+          required: true
+          description: for display purpose in acknowledgement Page in Resident UI
+        - schema:
+            type: string
+          in: query
+          name: residentDefaultFullAddress
+          required: true
+          description: base64-url encoded full address string - for display purpose in acknowledgement Page in Resident UI
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization token
+          required: true
+      description: 'This API is a re-direct API from print partner''s order page, that will get response parameters of the payment made back to the resident portal.'
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

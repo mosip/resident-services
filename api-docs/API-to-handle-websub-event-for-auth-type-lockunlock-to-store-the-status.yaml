@@ -1,0 +1,195 @@
+openapi: 3.1.0
+x-stoplight:
+  id: gt1319oycmfd7
+info:
+  title: unlock to store the status
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /callback​/authTypeCallback:
+    post:
+      summary: Websub callback for Auth Type Lock/Unlock acknowledgement
+      operationId: post-callback-authTypeCallback
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                publisher:
+                  type: string
+                topic:
+                  type: string
+                publishedOn:
+                  type: string
+                event:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    transactionId:
+                      type: 'null'
+                    type:
+                      type: object
+                      properties:
+                        namespace:
+                          type: string
+                        name:
+                          type: string
+                    timestamp:
+                      type: string
+                    dataShareUri:
+                      type: 'null'
+                    data:
+                      type: object
+                      properties:
+                        saltedIdHash:
+                          type: 'null'
+                        authTypes:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              authType:
+                                type: string
+                              authSubType:
+                                type:
+                                  - 'null'
+                                  - string
+                              locked:
+                                type: boolean
+                              unlockForSeconds:
+                                type: 'null'
+                              requestId:
+                                type: string
+                              metadata:
+                                type: 'null'
+                        expiryTimestamp:
+                          type: 'null'
+                        tokenId:
+                          type: string
+                        eventType:
+                          type: 'null'
+                        transactionLimit:
+                          type: 'null'
+                        id_hash:
+                          type: 'null'
+              x-examples:
+                Example 1:
+                  publisher: ID_REPO
+                  topic: mpartner-default-auth/AUTH_TYPE_STATUS_UPDATE
+                  publishedOn: '2022-10-31T02:08:25.635Z'
+                  event:
+                    id: 10f5a3c4-4f03-43be-af42-0361de59d918
+                    transactionId: null
+                    type:
+                      namespace: mosip
+                      name: ida
+                    timestamp: '2022-10-31T02:08:25.635Z'
+                    dataShareUri: null
+                    data:
+                      saltedIdHash: null
+                      authTypes:
+                        - authType: bio
+                          authSubType: FACE
+                          locked: true
+                          unlockForSeconds: null
+                          requestId: fc8b0a83-ff80-4f00-aef6-40047a2b1fcc
+                          metadata: null
+                        - authType: demo
+                          authSubType: null
+                          locked: true
+                          unlockForSeconds: null
+                          requestId: 6fefd830-7ba3-493a-bb73-f0ed13b3f346
+                          metadata: null
+                      expiryTimestamp: null
+                      tokenId: '351975261705119268247340356533475289'
+                      eventType: null
+                      transactionLimit: null
+                      id_hash: null
+            examples:
+              Example 1:
+                value:
+                  publisher: ID_REPO
+                  topic: mpartner-default-auth/AUTH_TYPE_STATUS_UPDATE
+                  publishedOn: '2022-10-31T02:08:25.635Z'
+                  event:
+                    id: 10f5a3c4-4f03-43be-af42-0361de59d918
+                    transactionId: null
+                    type:
+                      namespace: mosip
+                      name: ida
+                    timestamp: '2022-10-31T02:08:25.635Z'
+                    dataShareUri: null
+                    data:
+                      saltedIdHash: null
+                      authTypes:
+                        - authType: bio
+                          authSubType: FACE
+                          locked: true
+                          unlockForSeconds: null
+                          requestId: fc8b0a83-ff80-4f00-aef6-40047a2b1fcc
+                          metadata: null
+                        - authType: demo
+                          authSubType: null
+                          locked: true
+                          unlockForSeconds: null
+                          requestId: 6fefd830-7ba3-493a-bb73-f0ed13b3f346
+                          metadata: null
+                      expiryTimestamp: null
+                      tokenId: '351975261705119268247340356533475289'
+                      eventType: null
+                      transactionLimit: null
+                      id_hash: null
+      description: This is a Websub callback for Auth Type Lock/Unlock acknowledgement from IDA. This is for Resident Service to subscribe to the websub topic and update the Auth type lock/unlock status into resident_transaction Table for the request ID (AID) as COMPLETED/FAILED. The table will have multiple entries in for each online verification Partners with different status based on the websub notification.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,164 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 61qevgt4xvbhy
+info:
+  title: API to send OTP for any IndividualID
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /individualId/otp:
+    post:
+      summary: Send OTP for an indivdiual-id
+      operationId: send-otp-individual-id
+      responses:
+        '200':
+          description: OTP Sent to user
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.identity.otp.internal
+                    version: '1.0'
+                    transactionID: '1234567890'
+                    responseTime: '2022-06-14T08:34:29.896Z'
+                    errors: null
+                    response:
+                      maskedMobile: null
+                      maskedEmail: XXnXXvXX1X@gmail.com
+                    metadata: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  transactionID:
+                    type: string
+                  responseTime:
+                    type: string
+                  errors:
+                    type: 'null'
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      maskedMobile:
+                        type: 'null'
+                      maskedEmail:
+                        type: string
+                  metadata:
+                    type: 'null'
+              examples:
+                Success:
+                  value:
+                    id: mosip.identity.otp.internal
+                    version: '1.0'
+                    transactionID: '1234567890'
+                    responseTime: '2022-06-14T08:34:29.896Z'
+                    errors: null
+                    response:
+                      maskedMobile: null
+                      maskedEmail: XXnXXvXX1X@gmail.com
+                    metadata: null
+                'Error: AID is not ready':
+                  value:
+                    id: null
+                    version: '1.0'
+                    responsetime: '2022-06-14T08:33:35.263Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-449
+                        message: AID is not ready
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                individualId:
+                  type: string
+                metadata:
+                  type: object
+                  properties: {}
+                otpChannel:
+                  type: array
+                  items:
+                    type: string
+                requestTime:
+                  type: string
+                transactionID:
+                  type: string
+                version:
+                  type: string
+              x-examples:
+                Example 1:
+                  id: mosip.identity.otp.internal
+                  individualId: '10001101230005020220125061502'
+                  metadata: {}
+                  otpChannel:
+                    - EMAIL
+                  requestTime: '2022-05-30T15:18:11.592Z'
+                  transactionID: '1234567890'
+                  version: '1.0'
+            examples:
+              Example:
+                value:
+                  id: mosip.identity.otp.internal
+                  individualId: '10001101230005020220125061502'
+                  metadata: {}
+                  otpChannel:
+                    - EMAIL
+                  requestTime: '2022-05-30T15:18:11.592Z'
+                  transactionID: '1234567890'
+                  version: '1.0'
+        description: ''
+      description: Sends OTP to an UIN/VID/AID. For validation of OTP the same transaction ID and Individual ID needs to be used.
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,198 @@
+openapi: 3.1.0
+info:
+  title: Proxy IDA Auth
+  version: '1.0'
+  summary: Proxy API for IDA Authentication
+  description: Proxy API for IDA Authentication
+servers:
+  - url: 'http://localhost:8099'
+  - url: 'https://dev.mosip.net'
+    description: ''
+paths:
+  /validate-otp:
+    post:
+      summary: Validate OTP for given UIN/VID using IDA to verify phone/email
+      operationId: post-user
+      responses:
+        '200':
+          description: OTP Authentication status success/failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    transactionID: '1234567890'
+                    version: '1.0'
+                    id: mosip.identity.auth
+                    errors:
+                      - errorCode: IDA-MLC-007
+                        errorMessage: Request could not be processed. Please try again
+                      - errorCode: IDA-MLC-009
+                        errorMessage: Invalid Input Parameter - id
+                    responseTime: '2022-04-08T13:04:33.118Z'
+                    response:
+                      authStatus: false
+                      authToken: null
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  version:
+                    type: string
+                    minLength: 1
+                  responsetime:
+                    type: string
+                    minLength: 1
+                  response:
+                    type: object
+                    required:
+                      - authStatus
+                    properties:
+                      authStatus:
+                        type: boolean
+                      transactionID:
+                        type: string
+                  errors:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?deref=bundle'
+                required:
+                  - id
+                  - version
+                  - responsetime
+                  - response
+                  - errors
+              examples:
+                Success Response:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: true
+                      transactionID: '1234567890'
+                    errors: null
+                OTP Expired:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: false
+                      transactionID: '1234567890'
+                    errors:
+                      - errorCode: RES-OTP-006
+                        message: OTP has expired
+                OTP is invalid:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: false
+                      transactionID: '1234567890'
+                    errors:
+                      - errorCode: RES-OTP-006
+                        message: OTP is invalid
+                OTP not found for the transaction ID and Individual ID:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: false
+                      transactionID: '1234567890'
+                    errors:
+                      - errorCode: RES-OTP-008
+                        message: Input transactionID does not match transactionID of OTP Request
+                SMS OTP Authentication is Locked:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: false
+                      transactionID: '1234567890'
+                    errors:
+                      - errorCode: RES-OTP-010
+                        message: Your SMS OTP authentication is locked.
+                Email OTP Authentication is Locked:
+                  value:
+                    id: mosip.resident.identity.auth
+                    version: '1.0'
+                    responsetime: '2022-04-07T14:40:42.043Z'
+                    response:
+                      authStatus: false
+                      transactionID: '1234567890'
+                    errors:
+                      - errorCode: RES-OTP-011
+                        message: Your email OTP authentication is locked.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                id:
+                  type: string
+                  minLength: 1
+                version:
+                  type: string
+                  minLength: 1
+                requesttime:
+                  type: string
+                  minLength: 1
+                request:
+                  type: object
+                  properties:
+                    transactionID:
+                      type: string
+                      minLength: 1
+                    individualId:
+                      type: string
+                      minLength: 1
+                    otp:
+                      type: string
+                      minLength: 1
+                  required:
+                    - transactionID
+                    - individualId
+                    - otp
+              required:
+                - id
+                - version
+                - requesttime
+                - request
+              x-examples:
+                example-1:
+                  id: mosip.resident.otp.auth
+                  version: v1
+                  requesttime: '2022-04-07T06:40:47.664Z'
+                  request:
+                    transactionID: '1234567890'
+                    individualId: '2352703162'
+                    otp: '111111'
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.identity.auth
+                  version: '1.0'
+                  requesttime: '2022-04-07T14:40:42.043Z'
+                  request:
+                    individualId: '538504179525'
+                    transactionID: '1234567890'
+                    otp: '528953'
+        description: ''
+      description: '  Validate OTP for given UIN/VID using IDA to verify phone or email. This will need a OTP that is requested prior to this API call with same UIN/VID and transaction ID (for either phone or email but not for both). This will make the particular channel channel as verified.'
+    parameters: []
+components:
+  schemas: {}
+  securitySchemes:
+    resident_id:
+      type: openIdConnect
+      openIdConnectUrl: /residentidp/oidc/
