@@ -4,10 +4,10 @@
 
 # Resident Services
 ## Overview
-Refer [here](https://docs.mosip.io/1.2.0/modules/resident-services).
+Refer to [Resident Portal Documentation](https://docs.mosip.io/1.2.0/modules/resident-services).
 
 ## APIs
-API documentation is available [here](https://docs.mosip.io/1.2.0/api).
+API documentation is available [here](https://mosip.stoplight.io/docs/resident).
 
 ## License
 This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
