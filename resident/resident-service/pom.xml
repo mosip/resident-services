@@ -7,16 +7,16 @@
 	<parent>
 		<groupId>io.mosip.resident</groupId>
 		<artifactId>resident-parent</artifactId>
-		<version>1.2.1.0-SNAPSHOT</version>
+		<version>1.2.1.0</version>
 	</parent>
 	<artifactId>resident-service</artifactId>
 	<name>resident-service</name>
-	<version>1.2.1.0-SNAPSHOT</version>
+	<version>1.2.1.0</version>
 	<properties>
 		<commons.packet.manager.version>1.2.0.1</commons.packet.manager.version>
 		<kernel.core.version>1.2.0.1</kernel.core.version>
 		<kernel.virusscanner.clamav.version>1.2.0.1</kernel.virusscanner.clamav.version>
-		<id-repository-core.version>1.2.1.0-SNAPSHOT</id-repository-core.version>
+		<id-repository-core.version>1.2.1.0</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1</kernel-keymanager-service.version>
 		<kernel.authcodeflowproxy.api.version>1.2.0.1</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
