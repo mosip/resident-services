@@ -16,15 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,13 +55,13 @@ import reactor.util.function.Tuples;
  * @author Kamesh Shekhar Prasad
  * This class is used to test download card api.
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class DownloadCardControllerTest {
 	
-    @MockBean
+    @Mock
     private RequestValidator validator;
 
     @Mock
@@ -74,36 +73,33 @@ public class DownloadCardControllerTest {
     @Mock
     private Utility utility;
 	
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 
-    @MockBean
-    private Utility utilityBean;
 
-
-    @MockBean
+    @Mock
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
 
     @InjectMocks
     DownloadCardController downloadCardController;
 
-    @MockBean
+    @Mock
     DownloadCardService downloadCardService;
 
-    @MockBean
+    @Mock
     IdentityServiceImpl identityService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private ResidentVidService vidService;
     
-    @MockBean
+    @Mock
     private ResidentServiceImpl residentService;
 
-    @MockBean
+    @Mock
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
@@ -125,7 +121,6 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -207,8 +202,6 @@ public class DownloadCardControllerTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt(), Mockito.anyString()))
-                .thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }
     
