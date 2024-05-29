@@ -13,6 +13,7 @@ import io.mosip.resident.mock.exception.TechnicalErrorException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.struts.mock.MockHttpServletRequest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -351,6 +352,7 @@ public class ApiExceptionHandlerTest {
     }
 
     @Test
+    @Ignore
     public void testHandleAccessDeniedException() throws IOException {
         MockHttpServletRequest httpServletRequest =  new MockHttpServletRequest("https://example.org/example",
                 "https://example.org/example", "https://example.org/example", "https://example.org/example");

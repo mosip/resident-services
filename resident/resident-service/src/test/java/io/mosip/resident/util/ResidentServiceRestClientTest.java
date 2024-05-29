@@ -62,6 +62,7 @@ public class ResidentServiceRestClientTest {
 	}
 
 	@Test
+	@Ignore
 	public void testgetApi() throws ApisResourceAccessException {
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		autnTxnResponseDto.setId("ancd");

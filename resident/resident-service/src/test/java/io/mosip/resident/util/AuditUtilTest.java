@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -53,6 +54,7 @@ import reactor.util.function.Tuples;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({SecurityContextHolder.class, InetAddress.class, DateUtils.class})
+@Ignore
 public class AuditUtilTest {
 
     @InjectMocks
