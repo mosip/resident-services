@@ -14,13 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,12 +46,12 @@ import reactor.util.function.Tuples;
  * 
  * @author Ritik Jain
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class ProxyAuditControllerTest {
 	
-    @MockBean
+    @Mock
     private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
@@ -64,32 +63,32 @@ public class ProxyAuditControllerTest {
 	@Mock
 	private Utility utility;
 	
-	@MockBean
+	@Mock
     private ResidentServiceImpl residentService;
 
-	@MockBean
+	@Mock
 	private Utility utilityBean;
 
-	@MockBean
+	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
-	@MockBean
+	@Mock
 	private AuthTransactionCallbackController authTransactionCallbackController;
 
-	@MockBean
+	@Mock
 	private DocumentController documentController;
 
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 
-	@MockBean
+	@Mock
 	private IdAuthController idAuthController;
 
-	@MockBean
+	@Mock
 	private ResidentVidService vidService;
 
-	@MockBean
+	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	private AuthenticatedAuditRequestDto authenticatedAuditRequestDto;

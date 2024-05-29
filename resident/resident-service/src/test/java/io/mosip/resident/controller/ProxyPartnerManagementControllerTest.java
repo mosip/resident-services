@@ -15,13 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -44,43 +43,43 @@ import io.mosip.resident.util.AuditUtil;
  * 
  * @author Ritik Jain
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class ProxyPartnerManagementControllerTest {
 	
-    @MockBean
+    @Mock
     private ProxyIdRepoService proxyIdRepoService;
 
-	@MockBean
+	@Mock
 	private ProxyPartnerManagementServiceImpl proxyPartnerManagementService;
 
 	@Mock
 	private AuditUtil auditUtil;
 
-	@MockBean
+	@Mock
 	private Utility utilityBean;
 
-	@MockBean
+	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@InjectMocks
 	private ProxyPartnerManagementController proxyPartnerManagementController;
 
-	@MockBean
+	@Mock
 	private DocumentService docService;
 
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 
-	@MockBean
+	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
-	@MockBean
+	@Mock
 	private ResidentVidService vidService;
 	
-	@MockBean
+	@Mock
     private ResidentServiceImpl residentService;
 
 	@Mock

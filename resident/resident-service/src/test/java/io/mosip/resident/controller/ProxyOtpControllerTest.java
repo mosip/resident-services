@@ -15,17 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -60,51 +59,51 @@ import reactor.util.function.Tuples;
  * @author Kamesh Shekhar Prasad
  * This class is used to test proxy otp controller.
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ProxyOtpControllerTest {
 	
-    @MockBean
+    @Mock
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
 	
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 
-    @MockBean
+    @Mock
     private Utility utilityBean;
 
 
-    @MockBean
+    @Mock
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
 
     @InjectMocks
     ProxyOtpController proxyOtpController;
 
-    @MockBean
+    @Mock
     ProxyOtpService proxyOtpService;
 
-    @MockBean
+    @Mock
     IdentityServiceImpl identityService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private ResidentVidService vidService;
 
-    @MockBean
+    @Mock
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
-    @MockBean
+    @Mock
     private AuditUtil auditUtil;
     
-    @MockBean
+    @Mock
     private ResidentServiceImpl residentService;
 
     @Mock
