@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,11 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,30 +45,32 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Resident identity controller test class.
- * 
+ *
  * @author Ritik Jain
  */
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
+@RunWith(SpringRunner.class)
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class IdentityControllerTest {
-	
-    @Mock
-    private ProxyIdRepoService proxyIdRepoService;
+
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
 	private IdentityController identityController;
 
-	@Mock
+	@MockBean
 	private IdentityServiceImpl idServiceImpl;
 
-	@Mock
+	@MockBean
 	private ResidentVidService vidService;
 
 	@Mock
@@ -71,27 +79,30 @@ public class IdentityControllerTest {
 	@Mock
 	private RequestValidator validator;
 
-	@Mock
+	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
-	@Mock
+	@MockBean
 	private DocumentController documentController;
 
-	@Mock
+	@MockBean
 	private IdAuthController idAuthController;
 
-	@Mock
+	@MockBean
 	private ObjectStoreHelper objectStore;
 
-	@Mock
+	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Autowired
 	private MockMvc mockMvc;
-	
-	@Mock
-    private ResidentServiceImpl residentService;
+
+	@MockBean
+	private ResidentServiceImpl residentService;
+
+	@MockBean
+	private Utility utilityBean;
 
 	private ResponseWrapper responseWrapper;
 
@@ -118,6 +129,7 @@ public class IdentityControllerTest {
 
 	@Test
 	public void testGetInputAttributeValues() throws Exception {
+		Mockito.when(idServiceImpl.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
 		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info/type/schemaType")).andExpect(status().isOk());
 	}
 

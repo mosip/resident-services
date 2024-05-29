@@ -10,6 +10,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,12 +18,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -43,23 +48,27 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to test download master data controller api.
  */
-@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
+@RunWith(SpringRunner.class)
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class DownloadMasterdataControllerTest {
-	
-    @Mock
+
+    @MockBean
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
 
     @MockBean
@@ -69,7 +78,7 @@ public class DownloadMasterdataControllerTest {
     @InjectMocks
     DownLoadMasterDataController downLoadMasterDataController;
 
-    @Mock
+    @MockBean
     DownLoadMasterDataService downLoadMasterDataService;
 
     @MockBean
@@ -86,7 +95,7 @@ public class DownloadMasterdataControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 
@@ -118,7 +127,7 @@ public class DownloadMasterdataControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-//        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("fileName");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("fileName");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -127,15 +136,15 @@ public class DownloadMasterdataControllerTest {
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
-               andExpect(status().isOk());
+                andExpect(status().isOk());
     }
 
     @Test(expected = Exception.class)
     public void testDownloadRegistrationCentersByHierarchyLevelInvalidInputException() throws Exception {
         doThrow(new InvalidInputException()).
                 when(validator).validateLanguageCode(any());
-//        Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
-//                Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
+                Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
                 andExpect(status().isOk());
     }
@@ -153,8 +162,8 @@ public class DownloadMasterdataControllerTest {
     public void testDownloadNearestRegistrationCentersFailed() throws Exception {
         doThrow(new InvalidInputException()).
                 when(validator).validateLanguageCode(any());
-//        Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
-//                Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
+                Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
                         ("/download/nearestRegistrationcenters?langcode=eng&longitude=1&latitude=1&proximitydistance=1")).
                 andExpect(status().isOk());
@@ -173,8 +182,8 @@ public class DownloadMasterdataControllerTest {
     public void testDownloadSupportingDocsByLanguageFailed() throws Exception {
         doThrow(new InvalidInputException()).
                 when(validator).validateLanguageCode(any());
-//        Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
-//                thenReturn( new ByteArrayInputStream(pdfbytes));
+        Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
+                thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
                         ("/download/supporting-documents?langcode=eng")).
                 andExpect(status().isOk());
