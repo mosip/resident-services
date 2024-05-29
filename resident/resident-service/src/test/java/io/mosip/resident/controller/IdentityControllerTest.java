@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +17,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,21 +48,21 @@ import io.mosip.resident.validator.RequestValidator;
  * 
  * @author Ritik Jain
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class IdentityControllerTest {
 	
-    @MockBean
+    @Mock
     private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
 	private IdentityController identityController;
 
-	@MockBean
+	@Mock
 	private IdentityServiceImpl idServiceImpl;
 
-	@MockBean
+	@Mock
 	private ResidentVidService vidService;
 
 	@Mock
@@ -73,30 +71,27 @@ public class IdentityControllerTest {
 	@Mock
 	private RequestValidator validator;
 
-	@MockBean
+	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
-	@MockBean
+	@Mock
 	private DocumentController documentController;
 
-	@MockBean
+	@Mock
 	private IdAuthController idAuthController;
 
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 
-	@MockBean
+	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Autowired
 	private MockMvc mockMvc;
 	
-	@MockBean
+	@Mock
     private ResidentServiceImpl residentService;
-
-	@MockBean
-	private Utility utilityBean;
 
 	private ResponseWrapper responseWrapper;
 
@@ -123,7 +118,6 @@ public class IdentityControllerTest {
 
 	@Test
 	public void testGetInputAttributeValues() throws Exception {
-		Mockito.when(idServiceImpl.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
 		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info/type/schemaType")).andExpect(status().isOk());
 	}
 

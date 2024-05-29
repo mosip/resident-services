@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Map;
 
-import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,13 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -47,25 +45,25 @@ import reactor.util.function.Tuples;
  * 
  * @author Ritik Jain
  */
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class IdAuthControllerTest {
 	
-    @MockBean
+    @Mock
     private ProxyIdRepoService proxyIdRepoService;
 
-	@MockBean
+	@Mock
 	private IdAuthServiceImpl idAuthService;
 
 	@Mock
 	private AuditUtil auditUtil;
 
-	@MockBean
+	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 	
-	@MockBean
+	@Mock
 	private ResidentVidService vidService;
 
 	@InjectMocks
@@ -74,17 +72,14 @@ public class IdAuthControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	@MockBean
+	@Mock
 	private DocumentService docService;
 	
-	@MockBean
+	@Mock
 	private ObjectStoreHelper objectStore;
 	
-	@MockBean
+	@Mock
     private ResidentServiceImpl residentService;
-
-	@MockBean
-	private Utility utilityBean;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 
