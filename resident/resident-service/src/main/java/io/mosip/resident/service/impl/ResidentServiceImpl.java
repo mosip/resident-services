@@ -303,6 +303,12 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private TemplateManagerBuilder templateManagerBuilder;
 
+	@Autowired
+	private SessionUserNameUtility sessionUserNameUtility;
+
+	@Autowired
+	private GetAccessTokenUtility getAccessTokenUtility;
+
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
 		templateManager = templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH)
@@ -910,7 +916,7 @@ public class ResidentServiceImpl implements ResidentService {
 						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes, idRepoJson);
 				residentUpdateResponseDTOV2.setStatus(ResidentConstants.SUCCESS);
 				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
-				utility.clearIdentityMapCache(identityServiceImpl.getAccessToken());
+				utility.clearIdentityMapCache(getAccessTokenUtility.getAccessToken());
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
@@ -1564,7 +1570,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
 				ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
-				identityDataUtil.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
+				sessionUserNameUtility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
 		return pdfBytes;
 	}
 

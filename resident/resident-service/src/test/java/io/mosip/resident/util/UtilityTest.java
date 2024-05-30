@@ -202,6 +202,9 @@ public class UtilityTest {
 	@Mock
 	private CachedIdentityDataUtil cachedIdentityUtilData;
 
+	@Mock
+	private SessionUserNameUtility sessionUserNameUtility;
+
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -703,7 +706,7 @@ public class UtilityTest {
 	public void testGetSessionUserName() throws ApisResourceAccessException {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
 		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		identityDataUtil.getSessionUserName();
+		sessionUserNameUtility.getSessionUserName();
 	}
 
 	@Test

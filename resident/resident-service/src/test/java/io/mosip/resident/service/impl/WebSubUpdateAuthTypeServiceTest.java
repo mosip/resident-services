@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.IdentityDataUtil;
+import io.mosip.resident.util.SessionUserNameUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -53,6 +55,9 @@ public class WebSubUpdateAuthTypeServiceTest {
 	@Mock
 	private IdentityDataUtil identityDataUtil;
 
+	@Mock
+	private SessionUserNameUtility sessionUserNameUtility;
+
 	private NotificationResponseDTO notificationResponseDTO;
 
 	private String partnerId;
@@ -80,7 +85,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 		when(residentTransactionRepository.findByRequestTrnId("12345")).thenReturn(List.of(residentTransactionEntity));
 
 		// Mock utility response
-		when(identityDataUtil.getSessionUserName()).thenReturn("testUser");
+		when(sessionUserNameUtility.getSessionUserName()).thenReturn("testUser");
 
 		// Invoke the method
 		webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
@@ -129,7 +134,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 		when(residentTransactionRepository.findByRequestTrnId("12345")).thenReturn(List.of(residentTransactionEntity));
 
 		// Mock utility response
-		when(identityDataUtil.getSessionUserName()).thenReturn("testUser");
+		when(sessionUserNameUtility.getSessionUserName()).thenReturn("testUser");
 
 		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 		// Invoke the method

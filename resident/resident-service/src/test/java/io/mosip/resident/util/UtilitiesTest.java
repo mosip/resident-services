@@ -104,6 +104,9 @@ public class UtilitiesTest {
     @Mock
     private GetAcrMappingUtil getAcrMappingUtil;
 
+    @Mock
+    private GetAccessTokenUtility getAccessTokenUtility;
+
     JSONObject identity;
 
     JSONObject identityVID;
@@ -532,7 +535,7 @@ public class UtilitiesTest {
     @Test(expected = Exception.class)
     public void testGetIdentityDataFromIndividualIDNullIdeResponseDto()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
@@ -551,7 +554,7 @@ public class UtilitiesTest {
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(null);
         thrown.expect(IdRepoAppException.class);
         identityDataUtil.getIdentityDataFromIndividualID("42");
-        verify(identityService).getAccessToken();
+        verify(getAccessTokenUtility).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
         cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
@@ -560,7 +563,7 @@ public class UtilitiesTest {
     @Test(expected = IdRepoAppException.class)
     public void testGetIdentityDataFromIndividualIDIdRepoAppException()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
@@ -580,7 +583,7 @@ public class UtilitiesTest {
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
         thrown.expect(IdRepoAppException.class);
         identityDataUtil.getIdentityDataFromIndividualID("42");
-        verify(identityService).getAccessToken();
+        verify(getAccessTokenUtility).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
         cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
@@ -589,7 +592,7 @@ public class UtilitiesTest {
     @Test
     public void testGetIdentityDataFromIndividual()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
         JSONObject identity = new JSONObject();
         identity.put(ResidentConstants.ID_SCHEMA_VERSION, "0.1");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn(identity.toJSONString());
@@ -619,7 +622,7 @@ public class UtilitiesTest {
         when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
         assertEquals("schema", identityDataUtil.getIdentityDataFromIndividualID("42").getT2());
-        verify(identityService).getAccessToken();
+        verify(getAccessTokenUtility).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
         cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());

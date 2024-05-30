@@ -17,12 +17,10 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -43,9 +41,6 @@ public class IdentityDataUtil {
     private final Logger logger = LoggerConfiguration.logConfig(IdentityDataUtil.class);
 
     @Autowired
-    private IdentityServiceImpl identityService;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -55,9 +50,6 @@ public class IdentityDataUtil {
     private GetAcrMappingUtil getAcrMappingUtil;
 
     @Autowired
-    private Environment environment;
-
-    @Autowired
     private ProxyPartnerManagementService proxyPartnerManagementService;
 
     @Autowired
@@ -65,6 +57,9 @@ public class IdentityDataUtil {
 
     @Autowired
     private CachedIdentityDataUtil cachedIdentityDataUtil;
+
+    @Autowired
+    private GetAccessTokenUtility getAccessToken;
 
     public void sendNotification(String eventId, String individualId, TemplateType templateType) {
         try {
@@ -82,19 +77,6 @@ public class IdentityDataUtil {
     @Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
     public  ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
         return proxyMasterdataService.getValidDocumentByLangCode(langCode);
-    }
-
-    public String getSessionUserName() {
-        String name = null;
-        try {
-            name = identityService.getAvailableclaimValue(this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
-            if (name == null || name.trim().isEmpty()) {
-                name = ResidentConstants.UNKNOWN;
-            }
-        } catch (ApisResourceAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return name;
     }
 
     @Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
@@ -118,7 +100,7 @@ public class IdentityDataUtil {
             pathSegments.add(uin);
             IdResponseDTO1 idResponseDto;
 
-            idResponseDto = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(uin, identityService.getAccessToken(), IdResponseDTO1.class);
+            idResponseDto = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(uin, getAccessToken.getAccessToken(), IdResponseDTO1.class);
             if (idResponseDto == null) {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
                         "Utilities::retrieveIdrepoJson()::exit idResponseDto is null");

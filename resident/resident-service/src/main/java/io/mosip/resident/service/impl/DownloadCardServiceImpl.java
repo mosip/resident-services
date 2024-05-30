@@ -117,6 +117,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
+	@Autowired
+	private SessionUserNameUtility sessionUserNameUtility;
+
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
@@ -199,7 +202,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
-		residentTransactionEntity.setUpdBy(identityDataUtil.getSessionUserName());
+		residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
 

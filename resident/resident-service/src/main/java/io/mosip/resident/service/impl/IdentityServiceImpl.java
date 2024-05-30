@@ -17,9 +17,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.CachedIdentityDataUtil;
-import io.mosip.resident.util.IdentityDataUtil;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -27,7 +25,6 @@ import reactor.util.function.Tuples;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -92,6 +89,9 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ResidentVidService residentVidService;
 
+	@Autowired
+	private AuthUserDetailsUtil authUserDetailsUtil;
+
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
 
@@ -102,6 +102,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private CachedIdentityDataUtil cachedIdentityDataUtil;
+
+	@Autowired
+	private GetAccessTokenUtility getAccessTokenUtility;
 
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
@@ -163,7 +166,7 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			IdResponseDTO1 idResponseDTO1;
 			if(Utility.isSecureSession()){
-				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(id, getAccessToken(), IdResponseDTO1.class);
+				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(id, getAccessTokenUtility.getAccessToken(), IdResponseDTO1.class);
 			} else {
 				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getIdentityData(id, IdResponseDTO1.class);
 			}
@@ -257,34 +260,18 @@ public class IdentityServiceImpl implements IdentityService {
 		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
 
-	public AuthUserDetails getAuthUserDetails() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(principal instanceof AuthUserDetails) {
-			return (AuthUserDetails) principal;
-		}
-		return null;
-	}
-
 	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
 	
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
-		String accessToken = getAccessToken();
+		String accessToken = getAccessTokenUtility.getAccessToken();
 		if (!Objects.equals(accessToken, "")) {
 			return getClaimsFromToken(claims, accessToken);
 		}
 		return Map.of();
 	}
 
-	public String getAccessToken(){
-		AuthUserDetails authUserDetails = getAuthUserDetails();
-		if(authUserDetails != null){
-			return authUserDetails.getToken();
-		}
-		return "";
-	}
-	
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
 		Map<String, Object> userInfo = utility.getUserInfo(token);
 		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
@@ -375,7 +362,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getClaimFromIdToken(String claim) {
-		AuthUserDetails authUserDetails= getAuthUserDetails();
+		AuthUserDetails authUserDetails= authUserDetailsUtil.getAuthUserDetails();
 		String idToken = authUserDetails.getIdToken();
 		return getClaimValueFromJwtToken(idToken, claim);
 	}

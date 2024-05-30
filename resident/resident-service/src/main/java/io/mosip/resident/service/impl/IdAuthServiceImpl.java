@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.util.IdentityDataUtil;
+import io.mosip.resident.util.SessionUserNameUtility;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -130,7 +130,7 @@ public class IdAuthServiceImpl implements IdAuthService {
     RequestValidator requestValidator;
 
 	@Autowired
-	private IdentityDataUtil identityDataUtil;
+	private SessionUserNameUtility sessionUserNameUtility;
 	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
@@ -271,7 +271,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? EventStatusSuccess.OTP_VERIFIED.name(): EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setUpdBy(identityDataUtil.getSessionUserName());
+			residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
 			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}

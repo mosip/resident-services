@@ -216,6 +216,9 @@ public class Utility {
 	@Autowired
 	private IdentityDataUtil identityDataUtil;
 
+	@Autowired
+	private SessionUserNameUtility sessionUserNameUtility;
+
 	@PostConstruct
 	private void loadRegProcessorIdentityJson() {
 		regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
@@ -483,7 +486,7 @@ public class Utility {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy(identityDataUtil.getSessionUserName());
+		residentTransactionEntity.setCrBy(sessionUserNameUtility.getSessionUserName());
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
 		if (ServiceType.ASYNC.getRequestTypes().contains(requestType)) {
