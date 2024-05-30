@@ -15,14 +15,9 @@ import io.mosip.kernel.dataaccess.hibernate.config.HibernateDaoConfig;
 import io.mosip.kernel.dataaccess.hibernate.repository.impl.HibernateRepositoryImpl;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.interceptor.ResidentEntityInterceptor;
-import io.mosip.resident.repository.OtpTransactionRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.repository.ResidentUserRepository;
 
 @Configuration
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-		ResidentTransactionRepository.class, ResidentUserRepository.class,
-		OtpTransactionRepository.class }, basePackages = "io.mosip.resident.repository.*", repositoryBaseClass = HibernateRepositoryImpl.class)
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackages = "io.mosip.resident.repository.*", repositoryBaseClass = HibernateRepositoryImpl.class)
 @EntityScan(basePackageClasses = { ResidentTransactionEntity.class })
 public class ResidentDataSourceConfig extends HibernateDaoConfig {
 

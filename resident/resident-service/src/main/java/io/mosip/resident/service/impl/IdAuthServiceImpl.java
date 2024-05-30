@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.IdentityDataUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -77,7 +78,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -128,9 +128,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 
     @Autowired
     RequestValidator requestValidator;
-    
+
 	@Autowired
-	private Utility utility;
+	private IdentityDataUtil identityDataUtil;
 	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
@@ -271,7 +271,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? EventStatusSuccess.OTP_VERIFIED.name(): EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+			residentTransactionEntity.setUpdBy(identityDataUtil.getSessionUserName());
 			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}

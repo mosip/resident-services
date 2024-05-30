@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.IdentityDataUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +50,9 @@ public class WebSubUpdateAuthTypeServiceTest {
 	@Mock
 	private Utility utility;
 
+	@Mock
+	private IdentityDataUtil identityDataUtil;
+
 	private NotificationResponseDTO notificationResponseDTO;
 
 	private String partnerId;
@@ -76,7 +80,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 		when(residentTransactionRepository.findByRequestTrnId("12345")).thenReturn(List.of(residentTransactionEntity));
 
 		// Mock utility response
-		when(utility.getSessionUserName()).thenReturn("testUser");
+		when(identityDataUtil.getSessionUserName()).thenReturn("testUser");
 
 		// Invoke the method
 		webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
@@ -125,7 +129,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 		when(residentTransactionRepository.findByRequestTrnId("12345")).thenReturn(List.of(residentTransactionEntity));
 
 		// Mock utility response
-		when(utility.getSessionUserName()).thenReturn("testUser");
+		when(identityDataUtil.getSessionUserName()).thenReturn("testUser");
 
 		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 		// Invoke the method

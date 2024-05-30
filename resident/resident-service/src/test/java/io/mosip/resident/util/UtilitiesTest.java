@@ -86,6 +86,9 @@ public class UtilitiesTest {
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
 
+    @Mock
+    IdentityDataUtil identityDataUtil;
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -98,11 +101,17 @@ public class UtilitiesTest {
     @Mock
     private Utility utility;
 
+    @Mock
+    private GetAcrMappingUtil getAcrMappingUtil;
+
     JSONObject identity;
 
     JSONObject identityVID;
 
     private Map<String, Object> amrAcrJson;
+
+    @Mock
+    private CachedIdentityDataUtil cachedIdentityDataUtil;
 
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
@@ -330,7 +339,7 @@ public class UtilitiesTest {
     public void testGetAmrAcrMapping() throws ResidentServiceCheckedException, IOException {
     	Mockito.when(residentRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(amrAcrJson.toString());
     	Mockito.when(objMapper.readValue(amrAcrJson.toString().getBytes(UTF_8), Map.class)).thenReturn(amrAcrJson);
-        utilities.getAmrAcrMapping();
+        getAcrMappingUtil.getAmrAcrMapping();
     }
 
     @Test
@@ -346,7 +355,7 @@ public class UtilitiesTest {
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
         assertSame(responseWrapper,
-                utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
+                identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
         verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
                 (String) org.mockito.Mockito.any(), anyBoolean());
     }
@@ -356,7 +365,7 @@ public class UtilitiesTest {
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
         thrown.expect(IdRepoAppException.class);
-        utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
         verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
                 (String) org.mockito.Mockito.any(), anyBoolean());
     }
@@ -538,13 +547,13 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(null);
         thrown.expect(IdRepoAppException.class);
-        utilities.getIdentityDataFromIndividualID("42");
+        identityDataUtil.getIdentityDataFromIndividualID("42");
         verify(identityService).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
-        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
     }
 
@@ -567,13 +576,13 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
         thrown.expect(IdRepoAppException.class);
-        utilities.getIdentityDataFromIndividualID("42");
+        identityDataUtil.getIdentityDataFromIndividualID("42");
         verify(identityService).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
-        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
     }
 
@@ -607,12 +616,12 @@ public class UtilitiesTest {
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
-        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
-        assertEquals("schema", utilities.getIdentityDataFromIndividualID("42").getT2());
+        assertEquals("schema", identityDataUtil.getIdentityDataFromIndividualID("42").getT2());
         verify(identityService).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
-        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+        cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
     }
 

@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import io.mosip.resident.util.*;
 import jakarta.annotation.PostConstruct;
 
 import io.mosip.resident.constant.EventStatusCanceled;
@@ -155,13 +156,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.UINCardDownloadHelper;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -234,6 +228,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilities utilities;
+
+	@Autowired
+	private IdentityDataUtil identityDataUtil;
 
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -1567,7 +1564,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
 				ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
-				utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
+				identityDataUtil.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
 		return pdfBytes;
 	}
 

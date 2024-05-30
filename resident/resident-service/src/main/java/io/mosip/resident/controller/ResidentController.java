@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.mosip.resident.util.*;
 import jakarta.validation.Valid;
 
 import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.util.Utilities;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +84,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -121,7 +117,7 @@ public class ResidentController {
 	private Environment environment;
 
 	@Autowired
-	private Utilities utilities;
+	private IdentityDataUtil identityDataUtil;
 
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
@@ -458,7 +454,7 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+			Tuple3<JSONObject, String, IdResponseDTO1> identityData = identityDataUtil.
 					getIdentityDataFromIndividualID(individualId);
 			JSONObject idRepoJson = identityData.getT1();
 			String schemaJson = identityData.getT2();

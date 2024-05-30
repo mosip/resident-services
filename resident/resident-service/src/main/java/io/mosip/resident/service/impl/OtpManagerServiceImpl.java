@@ -29,8 +29,8 @@ import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +91,7 @@ public class OtpManagerServiceImpl implements OtpManager {
     @Autowired
     private RequestValidator requestValidator;
     @Autowired
-    private Utilities utilities;
+    private IdentityDataUtil identityDataUtil;
 
 
     @Override
@@ -218,7 +218,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
-        Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+        Tuple3<JSONObject, String, IdResponseDTO1> identityData = identityDataUtil.
                 getIdentityDataFromIndividualID(individualId);
         JSONObject idRepoJson = identityData.getT1();
         String schemaJson = identityData.getT2();

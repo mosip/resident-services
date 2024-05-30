@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -58,10 +58,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -115,6 +111,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
+
+	@Autowired
+	private IdentityDataUtil identityDataUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
@@ -200,7 +199,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
-		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+		residentTransactionEntity.setUpdBy(identityDataUtil.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
 

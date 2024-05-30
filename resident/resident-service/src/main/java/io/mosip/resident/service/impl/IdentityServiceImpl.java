@@ -17,7 +17,8 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.CachedIdentityDataUtil;
+import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
@@ -93,12 +94,15 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
-	
+
 	@Autowired
-    private Utilities  utilities;
+	private IdentityDataUtil identityDataUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
-	
+
+	@Autowired
+	private CachedIdentityDataUtil cachedIdentityDataUtil;
+
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
 		return getIdentity(id, false, null);
@@ -159,9 +163,9 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			IdResponseDTO1 idResponseDTO1;
 			if(Utility.isSecureSession()){
-				idResponseDTO1 = (IdResponseDTO1)utility.getCachedIdentityData(id, getAccessToken(), IdResponseDTO1.class);
+				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(id, getAccessToken(), IdResponseDTO1.class);
 			} else {
-				idResponseDTO1 = (IdResponseDTO1)utility.getIdentityData(id, IdResponseDTO1.class);
+				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getIdentityData(id, IdResponseDTO1.class);
 			}
 			if(idResponseDTO1.getErrors() != null && idResponseDTO1.getErrors().size() > 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -362,7 +366,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
 		String authenticationMode = getClaimFromIdToken(
 				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
-		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		String authTypeCode = identityDataUtil.getAuthTypeCodefromkey(authenticationMode);
 		if(authTypeCode == null) {
 			logger.warn("Mapping is missing for %s in AMR to ACR mapping file", authenticationMode);
 			return authenticationMode;

@@ -14,6 +14,7 @@ import java.util.Map;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.util.IdentityDataUtil;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,7 +119,8 @@ public class OTPManagerServiceImplTest {
     private ResidentService residentService;
 
     @Mock
-    private Utilities utilities;
+    private IdentityDataUtil identityDataUtil;
+
     private IdentityDTO identityDTO;
 
     @Before
@@ -154,7 +156,7 @@ public class OTPManagerServiceImplTest {
         jsonObject.put("UIN", "1234567898");
         String schemaJson = "schema";
         Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
-        Mockito.when(utilities.
+        Mockito.when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 
     }

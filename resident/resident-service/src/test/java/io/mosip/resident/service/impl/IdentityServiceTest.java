@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -54,7 +55,6 @@ import io.mosip.kernel.openid.bridge.model.MosipUserDto;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseDTO1;
@@ -64,9 +64,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
@@ -113,6 +110,9 @@ public class IdentityServiceTest {
 	@Mock
 	private Utilities utilities;
 
+    @Mock
+	private IdentityDataUtil identityDataUtil;
+
 	@Mock
 	private ValidateTokenUtil tokenValidationHelper;
 
@@ -126,8 +126,11 @@ public class IdentityServiceTest {
 
 	private static String token;
 	private IdResponseDTO1 idResponseDTO1;
-	
-	
+
+	@Mock
+	private CachedIdentityDataUtil cachedIdentityDataUtil;
+
+
 	@Before
 	public void setUp() throws Exception {
 		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
@@ -214,8 +217,8 @@ public class IdentityServiceTest {
 		responseDTO1.setIdentity(identityMap);
 		idResponseDTO1.setResponse(responseDTO1);
 		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenReturn("1970/11/16");
-		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
-		when(utility.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
+		when(cachedIdentityDataUtil.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
+		when(cachedIdentityDataUtil.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -257,7 +260,7 @@ public class IdentityServiceTest {
 		error.setErrorCode("101");
 		error.setMessage("errors");
 		idResponseDTO1.setErrors(List.of(error));
-		when(utility.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
+		when(cachedIdentityDataUtil.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
 
@@ -268,7 +271,7 @@ public class IdentityServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(utility.getCachedIdentityData(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+		when(cachedIdentityDataUtil.getCachedIdentityData(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
 				.thenThrow(new ApisResourceAccessException());
 		identityService.getIdentityAttributes("6", null);
 	}
@@ -481,7 +484,7 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetUinForIndividualIdVIdCreationException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(utilities.getIdentityDataFromIndividualID(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		Mockito.when(identityDataUtil.getIdentityDataFromIndividualID(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		assertEquals("8251649601",identityService.getUinForIndividualId("2476302389"));
 	}
 
@@ -579,7 +582,7 @@ public class IdentityServiceTest {
 	public void testGetResidentAuthenticationMode() throws Exception {
 		getAuthUserDetailsFromAuthentication();
 		String authTypeCode = "OTP";
-		when(utility.getAuthTypeCodefromkey(Mockito.any())).thenReturn(authTypeCode);
+		when(identityDataUtil.getAuthTypeCodefromkey(Mockito.any())).thenReturn(authTypeCode);
 		assertEquals(authTypeCode,ReflectionTestUtils.invokeMethod(identityService,
 				"getResidentAuthenticationMode"));
 	}
@@ -587,7 +590,7 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetResidentAuthenticationModeAuthTypeCodeNull() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(utility.getAuthTypeCodefromkey(Mockito.any())).thenReturn(null);
+		when(identityDataUtil.getAuthTypeCodefromkey(Mockito.any())).thenReturn(null);
 		ReflectionTestUtils.invokeMethod(identityService, "getResidentAuthenticationMode");
 	}
 

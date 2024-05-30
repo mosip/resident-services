@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,10 +103,6 @@ import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -166,7 +163,7 @@ public class ResidentControllerTest {
 	private Environment environment;
 
 	@Mock
-	private Utilities utilities;
+	private IdentityDataUtil identityDataUtil;
 
 	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -475,7 +472,7 @@ public class ResidentControllerTest {
 		responseDTO1.setIdentity(jsonObject);
 		idResponseDTO1.setResponse(responseDTO1);
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, idResponseDTO1);
-		when(utilities.
+		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
@@ -499,7 +496,7 @@ public class ResidentControllerTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
-		when(utilities.
+		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);
@@ -520,7 +517,7 @@ public class ResidentControllerTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
-		when(utilities.
+		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);

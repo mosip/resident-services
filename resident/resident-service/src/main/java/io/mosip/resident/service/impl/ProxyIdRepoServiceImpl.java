@@ -24,6 +24,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
@@ -82,6 +83,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	@Autowired
 	private ResidentServiceImpl residentService;
+
+	@Autowired
+	private IdentityDataUtil identityDataUtil;
 
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
@@ -195,7 +199,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					utility.updateEntity(EventStatusCanceled.CANCELED.name(), RequestType.UPDATE_MY_UIN.name()
 									+ " - " + EventStatusCanceled.CANCELED.name(),
 							false, "Draft Discarded successfully", residentTransactionEntity.get());
-					utility.sendNotification(residentTransactionEntity.get().getEventId(),
+					identityDataUtil.sendNotification(residentTransactionEntity.get().getEventId(),
 							individualId, TemplateType.REGPROC_FAILED);
 				}
 			}

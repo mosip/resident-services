@@ -137,6 +137,9 @@ public class UtilityTest {
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Mock
+	private IdentityDataUtil identityDataUtil;
+
 	@InjectMocks
 	private Utility utility;
 
@@ -182,6 +185,10 @@ public class UtilityTest {
 	private static String token;
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
+
+	@Mock
+	private GetAcrMappingUtil getAcrMappingUtil;
+
 	private String idaToken;
 
 	private static final String AUTHORIZATION = "Authorization";
@@ -191,6 +198,9 @@ public class UtilityTest {
 
 	private static Map mappingJson;
 	private static final String MAPPING_NAME = "name";
+
+	@Mock
+	private CachedIdentityDataUtil cachedIdentityUtilData;
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -693,7 +703,7 @@ public class UtilityTest {
 	public void testGetSessionUserName() throws ApisResourceAccessException {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
 		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		utility.getSessionUserName();
+		identityDataUtil.getSessionUserName();
 	}
 
 	@Test
@@ -990,7 +1000,7 @@ public class UtilityTest {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		when(proxyMasterdataService.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
 
-		ResponseWrapper<?> result = utility.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> result = identityDataUtil.getValidDocumentByLangCode(langCode);
 
 		assertEquals(responseWrapper, result);
 	}
@@ -1005,7 +1015,7 @@ public class UtilityTest {
 				Optional.of(partnerType), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = utility.getPartnersByPartnerType(partnerType, apiUrl);
+		ResponseWrapper<?> result = identityDataUtil.getPartnersByPartnerType(partnerType, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
@@ -1019,7 +1029,7 @@ public class UtilityTest {
 				Optional.empty(), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = utility.getPartnersByPartnerType(null, apiUrl);
+		ResponseWrapper<?> result = identityDataUtil.getPartnersByPartnerType(null, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
@@ -1035,9 +1045,9 @@ public class UtilityTest {
 
 		Map<String, String> amrAcrMapping = new HashMap<>();
 		amrAcrMapping.put("reqCode", "authCode");
-		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+		when(getAcrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
 
-		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+		String result = identityDataUtil.getAuthTypeCodefromkey(reqTypeCode);
 
 		assertEquals("authCode", result);
 	}
@@ -1047,9 +1057,9 @@ public class UtilityTest {
 		String reqTypeCode = "nonExistentCode";
 
 		Map<String, String> amrAcrMapping = new HashMap<>();
-		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+		when(getAcrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
 
-		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+		String result = identityDataUtil.getAuthTypeCodefromkey(reqTypeCode);
 
 		assertEquals(null, result); // Assuming null is returned when not found
 	}
@@ -1063,7 +1073,7 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(createDynamicFieldResponse());
-		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(
 				fieldName, "en", true))
 				.thenReturn(responseWrapper);
 
@@ -1241,7 +1251,7 @@ public class UtilityTest {
 
 	@Test(expected = Exception.class)
 	public void testGetCachedIdentityData() throws ApisResourceAccessException {
-		utility.getCachedIdentityData("1232", token, ResponseWrapper.class);
+		cachedIdentityUtilData.getCachedIdentityData("1232", token, ResponseWrapper.class);
 	}
 
 	@Test
@@ -1357,7 +1367,7 @@ public class UtilityTest {
 
 		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
 		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
-		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(
 				fieldName, "en", true))
 				.thenThrow(new ResidentServiceCheckedException());
 
