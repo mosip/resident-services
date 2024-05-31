@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -60,16 +59,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Autowired
-	Environment env;
-
-	@Autowired
-	Utility utility;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
-
-	@Autowired
-	private Utilities utilities;
 
 	@Mock
 	private ProxyMasterdataServiceImpl identityDataUtil;

@@ -1,5 +1,8 @@
 package io.mosip.resident;
 
+import io.mosip.kernel.idvalidator.rid.impl.RidValidatorImpl;
+import io.mosip.kernel.idvalidator.uin.impl.UinValidatorImpl;
+import io.mosip.kernel.idvalidator.vid.impl.VidValidatorImpl;
 import io.mosip.kernel.pdfgenerator.itext.impl.PDFGeneratorImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,7 +31,7 @@ import io.mosip.preregistration.application.service.util.TransliterationServiceU
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import({TokenIDGenerator.class, ValidateTokenUtil.class, CbeffImpl.class, TransliterationService.class, TransliterationServiceUtil.class
-, PDFGeneratorImpl.class})
+, PDFGeneratorImpl.class, UinValidatorImpl.class, VidValidatorImpl.class, RidValidatorImpl.class})
 public class ResidentBootApplication {
 
 	public static void main(String[] args) {

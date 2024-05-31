@@ -130,6 +130,9 @@ public class IdentityServiceTest {
 	@Mock
 	private CachedIdentityDataUtil cachedIdentityDataUtil;
 
+	@Mock
+	private UserInfoUtility userInfoUtility;
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -573,7 +576,7 @@ public class IdentityServiceTest {
 	public void testGetResidentIndividualIdValidTokenSucess() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		getAuthUserDetailsFromAuthentication();
 		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
@@ -629,7 +632,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6", true, "eng");
@@ -647,7 +650,7 @@ public class IdentityServiceTest {
 //		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		identityService.getIdentity("6", true, "eng");
@@ -695,7 +698,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
 		identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"));
 	}
 
@@ -713,7 +716,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("individual_id", "4343434343");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
 		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
 	}
@@ -726,7 +729,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("individual_id", null);
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
+		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);		
 		identityService.getResidentIdaTokenFromAccessToken(token);
 	}

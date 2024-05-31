@@ -56,6 +56,9 @@ public class ProxyMasterdataController {
 	@Autowired
 	private IdentityDataUtil identityDataUtil;
 
+	@Autowired
+	private ProxyMasterdataController proxyMasterDataServiceUtility;
+
 	/**
 	 * Get valid documents by language code.
 	 * 
@@ -459,7 +462,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+			responseWrapper = proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 			throw e;

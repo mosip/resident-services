@@ -89,6 +89,9 @@ public class AuditUtilTest {
 
     private String auditUrl = "https://qa.mosip.net/v1/auditmanager/audits";
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     @Before
     public void setUp() throws Exception {
         ReflectionTestUtils.setField(auditUtil, "auditUrl", auditUrl);
@@ -106,7 +109,7 @@ public class AuditUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
-        when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn("user1");
+        when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("user1");
         when(environment.getProperty(Mockito.anyString())).thenReturn("user1");
     }
 
@@ -167,14 +170,14 @@ public class AuditUtilTest {
     @Test(expected = RuntimeException.class)
     public void testSetAuditRequestDtoWithApisResourceAccessException() throws Exception {
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
-    	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
+    	when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
     	auditUtil.setAuditRequestDto(auditEvent);
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
-    	when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn(null);
+    	when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn(null);
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
         auditUtil.setAuditRequestDto(auditEvent);
     }

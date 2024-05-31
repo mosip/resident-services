@@ -120,6 +120,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Autowired
 	private SessionUserNameUtility sessionUserNameUtility;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
@@ -374,7 +377,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
-					identityService.getAvailableclaimValue(environment.getProperty(ResidentConstants.IMAGE)));
+					availableClaimUtility.getAvailableClaimValue(environment.getProperty(ResidentConstants.IMAGE)));
 			credentialReqestDto.setAdditionalData(additionalAttributes);
 			requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
 			requestDto.setRequest(credentialReqestDto);

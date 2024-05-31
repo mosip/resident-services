@@ -31,13 +31,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -105,6 +103,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private GetAccessTokenUtility getAccessTokenUtility;
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
@@ -204,7 +205,7 @@ public class IdentityServiceImpl implements IdentityService {
 							String photo;
 							try {
 								if (Utility.isSecureSession()) {
-									photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
+									photo = availableClaimUtility.getAvailableClaimValue(env.getProperty(IMAGE));
 								} else {
 									photo = null;
 								}
@@ -260,50 +261,12 @@ public class IdentityServiceImpl implements IdentityService {
 		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
 
-	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
-		return getClaims(Set.of(claims));
-	}
-	
-	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
-		String accessToken = getAccessTokenUtility.getAccessToken();
-		if (!Objects.equals(accessToken, "")) {
-			return getClaimsFromToken(claims, accessToken);
-		}
-		return Map.of();
-	}
-
-	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
-		Map<String, Object> userInfo = utility.getUserInfo(token);
-		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
-				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-	}
-
-	private String getClaimFromUserInfo(Map<String, Object> userInfo, String claim) {
-		Object claimValue = userInfo.get(claim);
-		if(claimValue == null) {
-			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
-		}
-		return String.valueOf(claimValue);
-	}
-
 	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
 	public String getClaimValue(String claim) throws ApisResourceAccessException {
-		return getClaims(claim).get(claim);
-	}
-	public String getAvailableclaimValue(String claim) throws ApisResourceAccessException {
-		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::entry");
-		String claimValue;
-		try {
-			claimValue = getClaims(claim).get(claim);
-		} catch (ResidentServiceException e) {
-			logger.error(e.getMessage());
-			claimValue = null;
-		}
-		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::exit");
-		return claimValue;
+		return availableClaimUtility.getClaims(claim).get(claim);
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -312,7 +275,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
-		Map<String, ?> claims = getClaimsFromToken(Set.of(claimName), accessToken);
+		Map<String, ?> claims = availableClaimUtility.getClaimsFromToken(Set.of(claimName), accessToken);
 		String individualId = (String) claims.get(claimName);
 		return getIDATokenForIndividualId(individualId);
 	}

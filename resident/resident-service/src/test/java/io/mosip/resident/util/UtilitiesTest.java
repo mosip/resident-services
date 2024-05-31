@@ -116,6 +116,9 @@ public class UtilitiesTest {
     @Mock
     private CachedIdentityDataUtil cachedIdentityDataUtil;
 
+    @Mock
+    private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -358,7 +361,7 @@ public class UtilitiesTest {
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
         assertSame(responseWrapper,
-                identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
+                proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
         verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
                 (String) org.mockito.Mockito.any(), anyBoolean());
     }
@@ -368,7 +371,7 @@ public class UtilitiesTest {
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
         thrown.expect(IdRepoAppException.class);
-        identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
         verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
                 (String) org.mockito.Mockito.any(), anyBoolean());
     }

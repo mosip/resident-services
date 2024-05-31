@@ -12,10 +12,7 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.IdentityDataUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -106,6 +103,9 @@ public class ProxyMasterDataControllerTest {
 
     @Mock
     private IdentityDataUtil identityDataUtil;
+
+    @Mock
+    private ProxyMasterdataController proxyMasterDataServiceUtility;
 
     @Before
     public void setUp() throws Exception {
@@ -309,14 +309,14 @@ public class ProxyMasterDataControllerTest {
 
     @Test
     public void testGetGenderTypesByLangCode() throws Exception {
-        Mockito.when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+        Mockito.when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
         mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
                 .andExpect(status().isOk());
     }
 
     @Test(expected = Exception.class)
     public void testGetGenderTypesByLangCodeWithResidentServiceCheckedException() throws Exception {
-        Mockito.when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenThrow(ResidentServiceCheckedException.class);
         mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
                 .andExpect(status().isOk());
     }

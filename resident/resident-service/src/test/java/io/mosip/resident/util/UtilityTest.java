@@ -205,6 +205,15 @@ public class UtilityTest {
 	@Mock
 	private SessionUserNameUtility sessionUserNameUtility;
 
+	@Mock
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private UserInfoUtility userInfoUtility;
+
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -705,7 +714,7 @@ public class UtilityTest {
 	@Test(expected = RuntimeException.class)
 	public void testGetSessionUserName() throws ApisResourceAccessException {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
-		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		Mockito.when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		sessionUserNameUtility.getSessionUserName();
 	}
 
@@ -1076,7 +1085,7 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(createDynamicFieldResponse());
-		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(
 				fieldName, "en", true))
 				.thenReturn(responseWrapper);
 
@@ -1131,7 +1140,7 @@ public class UtilityTest {
 		when(residentServiceRestClient.getApi(uriComponent.toUri(), String.class, headers))
 				.thenReturn(RESPONSE_JSON);
 
-		Map<String, Object> actualResponseMap = utility.getUserInfo(TOKEN);
+		Map<String, Object> actualResponseMap = userInfoUtility.getUserInfo(TOKEN);
 
 		assertEquals(expectedResponseMap, actualResponseMap);
 	}
@@ -1370,7 +1379,7 @@ public class UtilityTest {
 
 		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
 		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
-		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(
 				fieldName, "en", true))
 				.thenThrow(new ResidentServiceCheckedException());
 

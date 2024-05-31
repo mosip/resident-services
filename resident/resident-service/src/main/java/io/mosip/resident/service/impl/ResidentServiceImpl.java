@@ -309,6 +309,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private GetAccessTokenUtility getAccessTokenUtility;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
 		templateManager = templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH)
@@ -2095,11 +2098,11 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 			}
 		} else {
-			name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			name = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		}
-		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
-		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
-		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
+		String photo = availableClaimUtility.getAvailableClaimValue(env.getProperty(IMAGE));
+		String email = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

@@ -73,7 +73,10 @@ public class AuditUtil {
 	private String hostIpAddress = null;
 
 	private String hostName = null;
-	
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -107,7 +110,7 @@ public class AuditUtil {
 			if(Utility.isSecureSession()) {
 				String name = null;
 				try {
-					name = identityService.getAvailableclaimValue(
+					name = availableClaimUtility.getAvailableClaimValue(
 							this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 				} catch (ApisResourceAccessException e) {
 					throw new RuntimeException(e);

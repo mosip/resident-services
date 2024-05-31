@@ -11,10 +11,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.IdentityDataUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,6 +74,9 @@ public class ProxyMasterDataServiceTest {
 
 	@Mock
 	private IdentityDataUtil identityDataUtil;
+
+	@Mock
+	private ProxyMasterdataServiceImpl proxyMasterDataServiceUtility;
 
 	@Before
 	public void setup() {
@@ -677,7 +677,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("123", "eng");
 	}
 
@@ -693,7 +693,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		assertEquals("FLE", proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("female", "eng").getResponse().getGenderCode());
 	}
