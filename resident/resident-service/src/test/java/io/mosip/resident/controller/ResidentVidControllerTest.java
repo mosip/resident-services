@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,12 +79,15 @@ public class ResidentVidControllerTest {
 	@Mock
 	private RequestValidator requestValidator;
 
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	@Before
 	public void setup() throws ApisResourceAccessException {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(residentVidController).build();
 		MockitoAnnotations.initMocks(this);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(null);
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(null);
 	}
 
 	@Test
@@ -437,7 +441,7 @@ public class ResidentVidControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void vidRevokingV2SuccessTest() throws Exception {
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("12345678");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
 		VidRevokeResponseDTO dto = new VidRevokeResponseDTO();
 		dto.setMessage("Successful");
 
@@ -458,7 +462,7 @@ public class ResidentVidControllerTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	@WithUserDetails("reg-admin")
 	public void testRevokeVidV2() throws Exception {
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234567432456");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567432456");
 		VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
 		vidRevokeRequestDTOV2.setTransactionID("1234567890");
 		vidRevokeRequestDTOV2.setVidStatus("revoked");
@@ -471,7 +475,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testRetrieveVids() throws Exception {
 		ResponseWrapper<List<Map<String, ?>>> responseWrapper = new ResponseWrapper<>();
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("12345678");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
 		Mockito.when(residentVidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		residentVidController.retrieveVids(0, "En-us");
@@ -480,7 +484,7 @@ public class ResidentVidControllerTest {
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testRetrieveVidsWithException() throws Exception {
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("12345678");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
 		Mockito.when(residentVidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.nullable(String.class)))
 				.thenThrow(new ApisResourceAccessException());
 		residentVidController.retrieveVids(0, "En-us");
@@ -489,7 +493,7 @@ public class ResidentVidControllerTest {
 	@Test
 	@WithUserDetails("resident")
 	public void testGenerateVidV2() throws Exception {
-		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("12345678");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
 		VidResponseDto dto = new VidResponseDto();
 		dto.setVid("12345");
 		dto.setMessage("Successful");

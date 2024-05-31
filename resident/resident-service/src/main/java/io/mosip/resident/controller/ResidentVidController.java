@@ -24,6 +24,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.AuditEnum;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -260,7 +261,7 @@ public class ResidentVidController {
 	}
 	
 	private String getResidentIndividualId() throws ApisResourceAccessException {
-		return identityServiceImpl.getResidentIndvidualIdFromSession();
+		return availableClaimUtility.getResidentIndvidualIdFromSession();
 	}
 	
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )

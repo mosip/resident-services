@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -221,7 +222,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		additionalAttributes.put(TemplateVariablesConstants.PARTNER_ID, dto.getIssuer());
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {

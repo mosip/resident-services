@@ -166,6 +166,9 @@ public class ResidentControllerTest {
 	private IdentityDataUtil identityDataUtil;
 
 	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Mock
@@ -233,7 +236,7 @@ public class ResidentControllerTest {
 		authStatusRequestToJson = gson.toJson(authTypeStatusRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 		when(environment.getProperty(anyString())).thenReturn("property");
 		schemaJson = "schema";
 	}
@@ -477,7 +480,7 @@ public class ResidentControllerTest {
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, idResponseDTO1);
 		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
@@ -501,7 +504,7 @@ public class ResidentControllerTest {
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
 		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);
 	}
 
@@ -522,7 +525,7 @@ public class ResidentControllerTest {
 		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
 		when(identityDataUtil.
                 getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		residentController.updateUinDemographics(requestDTO);
 	}
 
@@ -530,7 +533,7 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testAuthLockStatus() throws Exception {
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
 		assertEquals(responseWrapper, resultRequestWrapper);
@@ -544,7 +547,7 @@ public class ResidentControllerTest {
 				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
 		responseWrapper.setResponsetime(null);
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException("error", "error"));
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();

@@ -1122,7 +1122,7 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdateV2():: entry");
 		ResponseDTO response = new ResponseDTO();
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
@@ -1897,7 +1897,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 			eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesConstants.SUMMARY));
 
-			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			String name = availableClaimUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
 
@@ -2090,7 +2090,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if (langCode != null) {
 			try {
 				Map<String, Object> identity = identityServiceImpl
-						.getIdentityAttributes(identityServiceImpl.getResidentIndvidualIdFromSession(), null);
+						.getIdentityAttributes(AvailableClaimUtility.getResidentIndvidualIdFromSession(), null);
 				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			} catch (IOException e) {
 				logger.error("Error occured in accessing identity data %s", e.getMessage());

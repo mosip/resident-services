@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.util.*;
 import jakarta.annotation.PostConstruct;
 
 import io.mosip.resident.exception.IndividualIdNotFoundException;
@@ -78,10 +79,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -173,6 +170,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Autowired
 	private Utilities utilities;
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
@@ -381,7 +381,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto, String uin) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.GENERATE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
+		residentTransactionEntity.setIndividualId(availableClaimUtility.getResidentIndvidualIdFromSession());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
@@ -693,7 +693,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskData(vid));
-		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
+		residentTransactionEntity.setIndividualId(availableClaimUtility.getResidentIndvidualIdFromSession());
 		try {
 			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, uin));
 		} catch (Exception exception){

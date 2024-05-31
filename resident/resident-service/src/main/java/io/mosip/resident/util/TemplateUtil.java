@@ -355,7 +355,7 @@ public class TemplateUtil {
     }
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		return identityServiceImpl.getIndividualIdType(individualId).name();
 	}
 

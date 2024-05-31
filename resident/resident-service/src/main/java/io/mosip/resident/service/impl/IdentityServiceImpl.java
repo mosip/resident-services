@@ -51,7 +51,6 @@ import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String INDIVIDUAL_ID = "individual_id";
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
 	private static final String DATE_OF_BIRTH = "dob";
@@ -135,7 +134,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 
 			if(fetchFace) {
-				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValue(env.getProperty(IMAGE)));
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), availableClaimUtility.getClaimValue(env.getProperty(IMAGE)));
 				identity.remove("individualBiometrics");
 			}
 
@@ -260,16 +259,8 @@ public class IdentityServiceImpl implements IdentityService {
 		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
 
-	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
-		return  getClaimValue(INDIVIDUAL_ID);
-	}
-
-	public String getClaimValue(String claim) throws ApisResourceAccessException {
-		return availableClaimUtility.getClaims(claim).get(claim);
-	}
-
-	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		return getIDATokenForIndividualId(getResidentIndvidualIdFromSession());
+    public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		return getIDATokenForIndividualId(availableClaimUtility.getResidentIndvidualIdFromSession());
 	}
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {

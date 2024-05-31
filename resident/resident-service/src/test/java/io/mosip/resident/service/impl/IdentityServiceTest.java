@@ -136,6 +136,8 @@ public class IdentityServiceTest {
 	@Mock
 	private UinVidValidator uinVidValidator;
 
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Before
 	public void setUp() throws Exception {
@@ -547,7 +549,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
+		assertEquals("3956038419", availableClaimUtility.getResidentIndvidualIdFromSession());
 	}
 
 	@Test(expected = Exception.class)
@@ -560,7 +562,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
+		assertEquals("3956038419", availableClaimUtility.getResidentIndvidualIdFromSession());
 	}
 
 	@Test(expected = Exception.class)
@@ -572,7 +574,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
+		assertEquals("3956038419", availableClaimUtility.getResidentIndvidualIdFromSession());
 	}
 
 	@Test
@@ -581,7 +583,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("individual_id", "3956038419");
 		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
+		assertEquals("3956038419", availableClaimUtility.getResidentIndvidualIdFromSession());
 	}
 
 	@Test

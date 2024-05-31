@@ -29,6 +29,7 @@ import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -93,13 +94,16 @@ public class OtpManagerServiceImpl implements OtpManager {
     @Autowired
     private IdentityDataUtil identityDataUtil;
 
+    @Autowired
+    private AvailableClaimUtility availableClaimUtility;
+
 
     @Override
     public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language, IdentityDTO identityDTO) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
         logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
-        notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
+        notificationRequestDto.setId(availableClaimUtility.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
@@ -213,7 +217,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
         ResidentDemographicUpdateRequestDTO residentDemographicUpdateRequestDTO = new ResidentDemographicUpdateRequestDTO();
 
-        String individualId= identityService.getResidentIndvidualIdFromSession();
+        String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);

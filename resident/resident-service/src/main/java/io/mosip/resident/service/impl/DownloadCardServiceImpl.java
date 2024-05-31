@@ -222,7 +222,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		Tuple2<List<String>, Map<String, Object>> identityAttribute = null;
 		try {
-			individualId = identityService.getResidentIndvidualIdFromSession();
+			individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 			Map<String, Object> identityAttributes = getIdentityData(individualId);
 			residentTransactionEntity = createResidentTransactionEntity(individualId,
 					downloadPersonalizedCardMainRequestDTO.getRequest(), (String) identityAttributes.get(IdType.UIN.name()));
@@ -345,7 +345,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String uinForVid = "";
 		IdentityDTO identityDTO = null;
 		try {
-			identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
+			identityDTO = identityService.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
 			if(identityDTO!=null) {
 				uinForVid = utilities.getUinByVid(vid);
 				String uinForIndividualId = identityDTO.getUIN();

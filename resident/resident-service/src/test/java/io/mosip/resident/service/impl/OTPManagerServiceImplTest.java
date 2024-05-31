@@ -14,7 +14,7 @@ import java.util.Map;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.util.IdentityDataUtil;
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,9 +51,6 @@ import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -121,6 +118,9 @@ public class OTPManagerServiceImplTest {
     @Mock
     private IdentityDataUtil identityDataUtil;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     private IdentityDTO identityDTO;
 
     @Before
@@ -137,7 +137,7 @@ public class OTPManagerServiceImplTest {
         otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("2123456");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("2123456");
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(0);
         ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
         responseMap1.setResponse(responseMap);

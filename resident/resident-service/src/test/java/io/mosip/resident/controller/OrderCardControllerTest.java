@@ -15,6 +15,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,6 +113,9 @@ public class OrderCardControllerTest {
 
     String reqJson;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     @Before
     public void setUp() throws Exception {
         responseWrapper = new ResponseWrapper<>();
@@ -126,7 +130,7 @@ public class OrderCardControllerTest {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(orderCardController).build();
         Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234Id");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234Id");
     }
 
     @Test

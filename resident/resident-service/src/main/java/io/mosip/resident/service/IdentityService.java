@@ -53,8 +53,7 @@ public interface IdentityService {
 	 * @throws IOException
 	 */
 	Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException;
-			
-	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException;
+
 
 	Map<String, Object> getIdentityAttributes(String id, String schemaType,
 			List<String> additionalAttributes) throws ResidentServiceCheckedException;

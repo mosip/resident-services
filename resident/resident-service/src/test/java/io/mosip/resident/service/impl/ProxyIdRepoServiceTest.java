@@ -13,6 +13,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.UinVidValidator;
 import io.mosip.resident.util.Utility;
@@ -77,6 +78,9 @@ public class ProxyIdRepoServiceTest {
 	@Mock
 	private UinVidValidator uinVidValidator;
 
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId()
@@ -84,7 +88,7 @@ public class ProxyIdRepoServiceTest {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> response1 = service.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
@@ -98,7 +102,7 @@ public class ProxyIdRepoServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRemainingUpdateCountByIndividualIdException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		service.getRemainingUpdateCountByIndividualId(List.of());
@@ -112,7 +116,7 @@ public class ProxyIdRepoServiceTest {
 		error.setErrorCode("IDR-IDC-007");
 		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		service.getRemainingUpdateCountByIndividualId(null);
@@ -126,7 +130,7 @@ public class ProxyIdRepoServiceTest {
 		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
@@ -139,7 +143,7 @@ public class ProxyIdRepoServiceTest {
 		ServiceError error = new ServiceError();
 		error.setErrorCode("");
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
@@ -152,7 +156,7 @@ public class ProxyIdRepoServiceTest {
 		ServiceError error = new ServiceError();
 		error.setErrorCode(null);
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
@@ -164,7 +168,7 @@ public class ProxyIdRepoServiceTest {
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setResponse(draftResponseDto);
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
@@ -178,7 +182,7 @@ public class ProxyIdRepoServiceTest {
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-002", "No Record found")));
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
@@ -192,7 +196,7 @@ public class ProxyIdRepoServiceTest {
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-003", "No Record found")));
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
@@ -202,7 +206,7 @@ public class ProxyIdRepoServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetPendingDraftsFailureApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenThrow(new ApisResourceAccessException());
@@ -229,7 +233,7 @@ public class ProxyIdRepoServiceTest {
 		residentTransactionEntity1.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity1.setEventId("1234");
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
 		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);

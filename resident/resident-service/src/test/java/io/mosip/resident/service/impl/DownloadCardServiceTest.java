@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,6 +100,9 @@ public class DownloadCardServiceTest {
 	@Mock
 	private ResidentVidService vidService;
 
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	private MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO;
 
 	private String result;
@@ -142,7 +146,7 @@ public class DownloadCardServiceTest {
 		Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ISSUER)).thenReturn("credentialType");
 		Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)).thenReturn("true");
 		Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY)).thenReturn("true");
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
 				Mockito.any())).thenReturn(Tuples.of(true, residentTransactionEntity));
 		identityMap = new IdentityDTO();
@@ -240,7 +244,7 @@ public class DownloadCardServiceTest {
 
 	@Test
 	public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException, IOException {
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
 		Map<String, Object> name = new HashMap<>();
 		name.put("language", "eng");
 		name.put("value", "kamesh");
@@ -264,7 +268,7 @@ public class DownloadCardServiceTest {
 
 	@Test
 	public void testGetVidCardEventIdWithNameNull() throws BaseCheckedException, IOException {
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setDateOfBirth("1892-08-09");
 		identityDTO.setUIN("8251649601");

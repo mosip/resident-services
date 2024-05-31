@@ -92,6 +92,7 @@ public class AuditUtilTest {
     @Mock
     private AvailableClaimUtility availableClaimUtility;
 
+
     @Before
     public void setUp() throws Exception {
         ReflectionTestUtils.setField(auditUtil, "auditUrl", auditUrl);
@@ -131,7 +132,7 @@ public class AuditUtilTest {
         when(restTemplate.exchange(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class), Mockito.any(Object.class))).thenReturn(response);
         when(objectMapper.readValue(Mockito.anyString(), Mockito.any(TypeReference.class))).thenReturn(responseWrapper);
 		String individualId = "9054257143";
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN);
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
 		
@@ -178,7 +179,7 @@ public class AuditUtilTest {
     public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
     	when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn(null);
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
         auditUtil.setAuditRequestDto(auditEvent);
     }
 
@@ -191,7 +192,7 @@ public class AuditUtilTest {
 	@Test
 	public void testGetRefIdandType() throws ApisResourceAccessException, NoSuchAlgorithmException {
 		String individualId = "9054257143";
-		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
+		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(IdType.UIN);
 		Mockito.when(utility.getRefIdHash(individualId)).thenReturn("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308");
 		Tuple2<String, String> refIdandType = auditUtil.getRefIdHashAndType();

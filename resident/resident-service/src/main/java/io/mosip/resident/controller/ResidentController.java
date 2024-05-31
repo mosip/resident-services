@@ -448,7 +448,7 @@ public class ResidentController {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		Tuple2<Object, String> tupleResponse = null;
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
@@ -487,7 +487,7 @@ public class ResidentController {
 	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		logger.debug("ResidentController::getAuthLockStatus()::entry");
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		try {
 			responseWrapper = residentService.getAuthLockStatus(individualId);
 			audit.setAuditRequestDto(AuditEnum.REQ_AUTH_LOCK_STATUS_SUCCESS);

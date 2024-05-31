@@ -24,10 +24,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.IdentityDataUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UinVidValidator;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +93,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::entry");
-			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
+			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put("individualId", individualId);
 			
@@ -132,7 +129,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
-			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
+			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
 			if(!uinVidValidator.validateUin(individualId)){
 				individualId = identityServiceImpl.getUinForIndividualId(individualId);
 			}

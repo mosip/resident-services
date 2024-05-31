@@ -78,6 +78,9 @@ public class TemplateUtilTest {
     @Mock
     private ProxyMasterdataService proxyMasterdataService;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -109,7 +112,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setAttributeList("YYYY-MM-DD HH:MM:SS");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(eventId);
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(eventId);
         Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
@@ -403,7 +406,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));

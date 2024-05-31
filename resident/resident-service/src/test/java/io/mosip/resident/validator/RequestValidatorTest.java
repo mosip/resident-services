@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.UinVidValidator;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
@@ -156,6 +157,9 @@ public class RequestValidatorTest {
 
     @Mock
     private UinVidValidator uinVidValidator;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
 
     @Before
     public void setup() {
@@ -1895,7 +1899,7 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8809393939");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
@@ -2736,7 +2740,7 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8878787878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
@@ -2758,7 +2762,7 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
@@ -2781,7 +2785,7 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
         ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
@@ -2866,7 +2870,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2Failed() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2895,7 +2899,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2Passed() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2927,7 +2931,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2PassedWithLanguageCode() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2965,7 +2969,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2InvalidTransactionId() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -3004,7 +3008,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateUpdateRequestV2FailedWithLanguageCode() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");
@@ -3048,7 +3052,7 @@ public class RequestValidatorTest {
     @Test(expected = RuntimeException.class)
     public void testValidateUpdateRequestV2FailedWithRunTimeException() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");

@@ -188,7 +188,7 @@ public class AuditUtil {
 	public Tuple2<String, String> getRefIdHashAndType() {
 		try {
 			if (Utility.isSecureSession()) {
-				String individualId = identityService.getResidentIndvidualIdFromSession();
+				String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 				if (individualId != null && !individualId.isEmpty()) {
 					return getRefIdHashAndTypeFromIndividualId(individualId);
 				}

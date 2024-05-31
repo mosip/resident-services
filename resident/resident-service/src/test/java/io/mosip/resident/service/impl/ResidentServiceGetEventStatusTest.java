@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.UinVidValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +68,9 @@ public class ResidentServiceGetEventStatusTest {
     @Mock
     private Environment environment;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     private String eventId;
     private String langCode;
     private ResponseWrapper<EventStatusResponseDTO> responseWrapper;
@@ -105,7 +109,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put(TemplateVariablesConstants.PURPOSE, "authentication");
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS_ENUM, EventStatus.SUCCESS.name());
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123456789");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");

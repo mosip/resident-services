@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,7 +118,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
-		individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();

@@ -26,6 +26,16 @@ public class AvailableClaimUtility {
     @Autowired
     private UserInfoUtility userInfoUtility;
 
+    private static final String INDIVIDUAL_ID = "individual_id";
+
+    public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
+        return  getClaimValue(INDIVIDUAL_ID);
+    }
+
+    public String getClaimValue(String claim) throws ApisResourceAccessException {
+		return getClaims(claim).get(claim);
+	}
+
     public String getAvailableClaimValue(String claim) throws ApisResourceAccessException {
         logger.debug("IdentityServiceImpl::getAvailableClaimValue()::entry");
         String claimValue;
