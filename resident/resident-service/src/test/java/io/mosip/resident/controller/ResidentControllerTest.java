@@ -192,6 +192,9 @@ public class ResidentControllerTest {
 	private MockMvc mockMvc;
 	private String schemaJson;
 
+	@Mock
+	private UinVidValidator uinVidValidator;
+
 	@Before
 	public void setUp() throws ApisResourceAccessException, IOException {
 		MockitoAnnotations.initMocks(this);
@@ -483,7 +486,7 @@ public class ResidentControllerTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testUpdateUinDemographicsIdTypeUINException() throws Exception {
-		Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
 		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
 		request.setTransactionID("12345");
@@ -504,7 +507,7 @@ public class ResidentControllerTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testUpdateUinDemographicsIdTypeVIDException() throws Exception {
-		Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
 		Mockito.doThrow(InvalidInputException.class).when(validator).validateUpdateRequest(Mockito.any(), Mockito.anyBoolean(), Mockito.anyString());
 		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
 		request.setTransactionID("12345");

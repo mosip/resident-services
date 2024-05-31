@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.UinVidValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +75,9 @@ public class ResidentServiceGetEventStatusTest {
     private RequestType requestType;
     Map<String, String> templateVariables;
 
+    @Mock
+    private UinVidValidator uinVidValidator;
+
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         eventId = "123456789";
@@ -118,14 +122,14 @@ public class ResidentServiceGetEventStatusTest {
 
     @Test
     public void getEventStatusTestVid() throws ResidentServiceCheckedException {
-        Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test
     public void getEventStatusTestUIN() throws ResidentServiceCheckedException {
-        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }

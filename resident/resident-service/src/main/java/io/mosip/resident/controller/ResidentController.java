@@ -145,6 +145,9 @@ public class ResidentController {
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
+	@Autowired
+	private UinVidValidator uinVidValidator;
+
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
 	@Operation(summary = "getRidStatus", description = "getRidStatus", tags = { "resident-controller" })
@@ -543,9 +546,9 @@ public class ResidentController {
 	 * @return The method is returning the type of ID.
 	 */
 	private String getIdType(String id) {
-		if (validator.validateUin(id))
+		if (uinVidValidator.validateUin(id))
 			return IdType.UIN.name();
-		if (validator.validateVid(id))
+		if (uinVidValidator.validateVid(id))
 			return IdType.VID.name();
 		return IdType.RID.name();
 	}

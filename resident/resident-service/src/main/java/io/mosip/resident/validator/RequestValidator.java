@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
-import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
@@ -67,6 +65,7 @@ import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.UinVidValidator;
 import io.mosip.resident.util.Utility;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,12 +107,6 @@ public class RequestValidator {
 	private static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 	@Autowired
-	private UinValidator<String> uinValidator;
-
-	@Autowired
-	private VidValidator<String> vidValidator;
-
-	@Autowired
 	private RidValidator<String> ridValidator;
 
 	@Autowired
@@ -151,6 +144,9 @@ public class RequestValidator {
 	private String authLockId;
 
 	private String uinUpdateId;
+
+	@Autowired
+	private UinVidValidator uinVidValidator;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -652,22 +648,6 @@ public class RequestValidator {
 		}
 	}
 
-	public boolean validateVid(String individualId) {
-		try {
-			return vidValidator.validateId(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
-	}
-
-	public boolean validateUin(String individualId) {
-		try {
-			return uinValidator.validateId(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
-	}
-
 	public boolean validateRid(String individualId) {
 		try {
 			return ridValidator.validateId(individualId);
@@ -1061,7 +1041,7 @@ public class RequestValidator {
 	}
 
 	private boolean validateUinOrVid(String individualId) {
-		return this.validateUin(individualId) || this.validateVid(individualId);
+		return uinVidValidator.validateUin(individualId) || uinVidValidator.validateVid(individualId);
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
@@ -1422,7 +1402,7 @@ public class RequestValidator {
 	}
 
 	public void validateDownloadCardVid(String vid) {
-		if (!validateVid(vid)) {
+		if (!uinVidValidator.validateVid(vid)) {
 			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, IdType.VID.name()));
 			throw new InvalidInputException(IdType.VID.name());
 		}

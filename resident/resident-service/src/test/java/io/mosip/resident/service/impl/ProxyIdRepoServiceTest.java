@@ -14,6 +14,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.UinVidValidator;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Test;
@@ -72,6 +73,9 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private ResidentServiceImpl residentService;
+
+	@Mock
+	private UinVidValidator uinVidValidator;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -175,7 +179,7 @@ public class ProxyIdRepoServiceTest {
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-002", "No Record found")));
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -189,7 +193,7 @@ public class ProxyIdRepoServiceTest {
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-003", "No Record found")));
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -199,7 +203,7 @@ public class ProxyIdRepoServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetPendingDraftsFailureApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenThrow(new ApisResourceAccessException());
 		service.getPendingDrafts("eng");

@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.UinVidValidator;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -152,6 +153,9 @@ public class RequestValidatorTest {
 
     private Object schema;
     private String schemaJson;
+
+    @Mock
+    private UinVidValidator uinVidValidator;
 
     @Before
     public void setup() {
@@ -2067,14 +2071,14 @@ public class RequestValidatorTest {
     public void testValidateUin() {
         Mockito.when(uinValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_UIN.getErrorCode(),
                 ResidentErrorCode.INVALID_UIN.getErrorMessage()));
-        assertEquals(false, requestValidator.validateUin("123"));
+        assertEquals(false, uinVidValidator.validateUin("123"));
     }
 
     @Test
     public void testValidateVid() {
         Mockito.when(vidValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_VID.getErrorCode(),
                 ResidentErrorCode.INVALID_VID.getErrorMessage()));
-        assertEquals(false, requestValidator.validateVid("123"));
+        assertEquals(false, uinVidValidator.validateVid("123"));
     }
 
     @Test(expected = InvalidInputException.class)

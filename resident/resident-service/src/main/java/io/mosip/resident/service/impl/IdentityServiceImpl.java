@@ -18,7 +18,6 @@ import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.*;
-import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -77,9 +76,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
 	private Environment env;
-
-	@Autowired
-	private RequestValidator requestValidator;
 	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
@@ -106,6 +102,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private UinVidValidator uinVidValidator;
 
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
@@ -360,9 +359,9 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public IdType getIndividualIdType(String individualId){
-		if(requestValidator.validateUin(individualId)){
+		if(uinVidValidator.validateUin(individualId)){
 			return IdType.UIN;
-		} else if(requestValidator.validateVid(individualId)){
+		} else if(uinVidValidator.validateVid(individualId)){
 			return IdType.VID;
 		} else {
 			return IdType.AID;

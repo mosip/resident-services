@@ -26,6 +26,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.UinVidValidator;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -87,6 +88,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private IdentityDataUtil identityDataUtil;
 
+	@Autowired
+	private UinVidValidator uinVidValidator;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
@@ -129,7 +133,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
 			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
-			if(!requestValidator.validateUin(individualId)){
+			if(!uinVidValidator.validateUin(individualId)){
 				individualId = identityServiceImpl.getUinForIndividualId(individualId);
 			}
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
