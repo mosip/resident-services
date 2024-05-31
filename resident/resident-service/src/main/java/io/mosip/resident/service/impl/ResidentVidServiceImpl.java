@@ -146,6 +146,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private Environment env;
 
 	@Autowired
+	private UinVidValidator uinVidValidator;
+
+	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
@@ -308,7 +311,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private void validateVidFromSession(String individualId, String vidType, String uin) {
 		try {
-			IdType idType = identityServiceImpl.getIndividualIdType(individualId);
+			IdType idType = uinVidValidator.getIndividualIdType(individualId);
 			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
 					uin);
 			/**

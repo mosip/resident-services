@@ -21,7 +21,6 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.AvailableClaimUtility;
@@ -34,7 +33,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,13 +75,7 @@ public class ResidentVidController {
 	private AuditUtil auditUtil;
 
 	@Autowired
-	private IdentityServiceImpl identityServiceImpl;
-	
-	@Value("${resident.vid.policy.id}")
-	private String vidPolicyId;
-	
-	@Value("${resident.vid.version}")
-	private String version;
+	private AvailableClaimUtility availableClaimUtility;
 	
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping(path = "/vid/policy")

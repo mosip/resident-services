@@ -124,6 +124,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Autowired
     private ProxyPartnerManagementService proxyPartnerManagementService;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	private SecureRandom random;
 	
 	@Value("${mosip.resident.request.credential.credentialType}")

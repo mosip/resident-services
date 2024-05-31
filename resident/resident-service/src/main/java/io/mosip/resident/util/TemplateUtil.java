@@ -63,6 +63,9 @@ public class TemplateUtil {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Autowired
+	private UinVidValidator uinVidValidator;
+
+	@Autowired
 	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Autowired
@@ -87,6 +90,9 @@ public class TemplateUtil {
 	private String templateTimePattern;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(TemplateUtil.class);
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
 
 	/**
 	 * Gets the ack template variables for authentication request.
@@ -356,7 +362,7 @@ public class TemplateUtil {
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
 		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
-		return identityServiceImpl.getIndividualIdType(individualId).name();
+		return uinVidValidator.getIndividualIdType(individualId).name();
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,

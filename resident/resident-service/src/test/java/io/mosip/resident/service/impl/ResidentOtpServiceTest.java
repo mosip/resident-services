@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.UinVidValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,6 +72,9 @@ public class ResidentOtpServiceTest {
 	private ObjectMapper objectMapper;
 
 	@Mock
+	private UinVidValidator uinVidValidator;
+
+	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	private ResidentTransactionEntity residentTransactionEntity;
@@ -90,7 +94,7 @@ public class ResidentOtpServiceTest {
 		identityValue.setUIN("123");
 		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
 		when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123");
-		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 	}
 
 	@Test

@@ -123,6 +123,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
+	@Autowired
+	private UinVidValidator uinVidValidator;
+
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
@@ -204,7 +207,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId).name());
+		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
@@ -460,7 +463,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private String getRidForIndividualId(String individualId) {
-		IdType idType = identityService.getIndividualIdType(individualId);
+		IdType idType = uinVidValidator.getIndividualIdType(individualId);
 		if (idType.equals(IdType.AID)) {
 			return individualId;
 		} else {

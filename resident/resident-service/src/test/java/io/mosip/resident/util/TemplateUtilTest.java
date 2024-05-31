@@ -81,6 +81,9 @@ public class TemplateUtilTest {
     @Mock
     private AvailableClaimUtility availableClaimUtility;
 
+    @Mock
+    private UinVidValidator uinVidValidator;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -113,7 +116,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(eventId);
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(PROPERTY);

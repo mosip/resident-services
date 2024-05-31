@@ -240,7 +240,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
-		if(getIndividualIdType(idvid).equals(IdType.UIN)){
+		if(uinVidValidator.getIndividualIdType(idvid).equals(IdType.UIN)){
 			return idvid;
 		}
 		return getIdentity(idvid).getUIN();
@@ -281,7 +281,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public Tuple2<String, IdType> getIdAndTypeForIndividualId(String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		String id;
-		IdType idType = getIndividualIdType(individualId);
+		IdType idType = uinVidValidator.getIndividualIdType(individualId);
 		if(idType.equals(IdType.AID)) {
 			IdentityDTO identity = getIdentity(individualId);
 			String uin = identity.getUIN();
@@ -349,13 +349,4 @@ public class IdentityServiceImpl implements IdentityService {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public IdType getIndividualIdType(String individualId){
-		if(uinVidValidator.validateUin(individualId)){
-			return IdType.UIN;
-		} else if(uinVidValidator.validateVid(individualId)){
-			return IdType.VID;
-		} else {
-			return IdType.AID;
-		}
-	}
 }

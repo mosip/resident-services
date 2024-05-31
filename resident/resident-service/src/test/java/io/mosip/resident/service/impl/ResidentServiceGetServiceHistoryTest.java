@@ -159,7 +159,7 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) any())).thenReturn(query);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
-        Mockito.when(AvailableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 

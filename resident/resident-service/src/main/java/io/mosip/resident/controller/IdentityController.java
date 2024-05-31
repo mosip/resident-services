@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,6 +55,9 @@ public class IdentityController {
 	
 	@Autowired
 	private RequestValidator validator;
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
 	
 	@Value("${resident.identity.info.id}")
 	private String residentIdentityInfoId;
@@ -98,7 +102,7 @@ public class IdentityController {
 	}
 
 	private String getIdFromUser() throws ApisResourceAccessException {
-		return idServiceImpl.getResidentIndvidualIdFromSession();
+		return availableClaimUtility.getResidentIndvidualIdFromSession();
 	}
 	
 

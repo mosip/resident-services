@@ -148,6 +148,9 @@ public class ResidentController {
 	@Autowired
 	private UinVidValidator uinVidValidator;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
 	@Operation(summary = "getRidStatus", description = "getRidStatus", tags = { "resident-controller" })

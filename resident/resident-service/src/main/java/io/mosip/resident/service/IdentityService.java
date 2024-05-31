@@ -62,9 +62,6 @@ public interface IdentityService {
 
 	String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
-
-	IdType getIndividualIdType(String individualId);
-
 	String createSessionId();
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException;

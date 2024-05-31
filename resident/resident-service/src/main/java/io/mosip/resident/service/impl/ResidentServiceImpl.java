@@ -215,6 +215,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private UinCardRePrintService rePrintService;
 
 	@Autowired
+	private UinVidValidator uinVidValidator;
+
+	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
@@ -1230,7 +1233,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		residentTransactionEntity.setLangCode(this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE));
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
+		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
 		return residentTransactionEntity;
 	}
 
@@ -2090,7 +2093,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if (langCode != null) {
 			try {
 				Map<String, Object> identity = identityServiceImpl
-						.getIdentityAttributes(AvailableClaimUtility.getResidentIndvidualIdFromSession(), null);
+						.getIdentityAttributes(availableClaimUtility.getResidentIndvidualIdFromSession(), null);
 				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			} catch (IOException e) {
 				logger.error("Error occured in accessing identity data %s", e.getMessage());

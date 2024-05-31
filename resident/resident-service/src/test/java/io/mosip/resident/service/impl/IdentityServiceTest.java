@@ -377,12 +377,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeUin(){
-		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN, uinVidValidator.getIndividualIdType("2476302389"));
 	}
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		assertEquals(IdType.UIN, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN, uinVidValidator.getIndividualIdType("2476302389"));
 	}
 
 	@Test
@@ -606,7 +606,7 @@ public class IdentityServiceTest {
 	public void testGetIndividualIdTypeVidPassed(){
 		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		assertEquals(IdType.VID, identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.VID, uinVidValidator.getIndividualIdType("2476302389"));
 	}
 
 	@Test

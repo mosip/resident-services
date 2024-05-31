@@ -36,7 +36,6 @@ import io.mosip.resident.dto.AuditResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ValidationException;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -56,7 +55,7 @@ public class AuditUtil {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private IdentityServiceImpl identityService;
+	private UinVidValidator uinVidValidator;
 
 	@Autowired
 	private Environment environment;
@@ -203,7 +202,7 @@ public class AuditUtil {
 
 	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
 		String refIdHash = utility.getRefIdHash(individualId);
-		String idType = identityService.getIndividualIdType(individualId).name();
+		String idType = uinVidValidator.getIndividualIdType(individualId).name();
 		return Tuples.of(refIdHash, idType);
 	}
 

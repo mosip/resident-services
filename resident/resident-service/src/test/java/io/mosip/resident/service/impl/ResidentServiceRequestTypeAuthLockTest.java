@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.UinVidValidator;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,6 +101,12 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	@Mock
 	private Environment environment;
 
+	@Mock
+	private UinVidValidator uinVidValidator;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
 
@@ -119,7 +126,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
 		individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
-		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");

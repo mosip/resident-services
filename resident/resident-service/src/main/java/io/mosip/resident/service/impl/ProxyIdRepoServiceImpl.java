@@ -88,6 +88,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private UinVidValidator uinVidValidator;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {

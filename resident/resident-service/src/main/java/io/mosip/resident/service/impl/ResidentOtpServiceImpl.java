@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.UinVidValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -60,6 +61,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private UinVidValidator uinVidValidator;
 	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
@@ -99,7 +103,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId).name());
+		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){

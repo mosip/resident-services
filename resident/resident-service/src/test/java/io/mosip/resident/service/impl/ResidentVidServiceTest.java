@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.*;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
@@ -67,9 +67,6 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -105,6 +102,9 @@ public class ResidentVidServiceTest {
 
     @Mock
     private Utilities utilities;
+
+    @Mock
+    private UinVidValidator uinVidValidator;
 
     @InjectMocks
     private ResidentVidServiceImpl residentVidService;
@@ -425,7 +425,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -526,7 +526,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -580,7 +580,7 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
+        Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.VID);
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);

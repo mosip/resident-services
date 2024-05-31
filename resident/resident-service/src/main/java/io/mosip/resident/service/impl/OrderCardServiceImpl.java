@@ -81,6 +81,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 	@Autowired
 	Environment env;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardServiceImpl.class);
 
 	@SuppressWarnings("unlikely-arg-type")
