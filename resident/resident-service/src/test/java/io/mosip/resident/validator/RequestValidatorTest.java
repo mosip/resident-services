@@ -356,6 +356,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -373,6 +374,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccessForUnlock() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -737,6 +739,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateEuinRequestSuccess() throws Exception {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
         euinRequestDTO.setIndividualIdType(IdType.VID.name());
         euinRequestDTO.setIndividualId("1234567");
@@ -970,6 +973,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequest() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
@@ -986,6 +990,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
@@ -1042,6 +1047,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testReprintSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
@@ -1140,6 +1146,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthHistoryRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
         authRequestDTO.setIndividualId("1234567");
         authRequestDTO.setOtp("1245");
@@ -1197,6 +1204,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthUnlockRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
         authUnLockRequestDto.setTransactionID("12345");
         authUnLockRequestDto.setIndividualId("12345");
@@ -1522,6 +1530,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateChannelVerificationStatusSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         String channel = "PHONE";
         requestValidator.validateChannelVerificationStatus(channel, "12345678");
     }
@@ -1703,6 +1712,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateDownloadCardVid() throws Exception {
+        Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "reprintId", "mosip.resident.print");
         requestValidator.validateDownloadCardVid("12345");
     }
@@ -2047,6 +2057,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateVidCreateV2RequestSuccess() {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
         ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
         ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
@@ -2650,6 +2661,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateReqCredentialRequestSuccess() {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
         ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
         residentCredentialRequestDto.setIndividualId("1232323232");

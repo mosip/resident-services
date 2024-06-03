@@ -11,6 +11,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -53,6 +54,7 @@ public class IdentityUtil {
 	private static final String PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
+	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired

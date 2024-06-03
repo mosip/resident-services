@@ -137,7 +137,7 @@ public class UtilityTest {
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Mock
+	@InjectMocks
 	private IdentityDataUtil identityDataUtil;
 
 	@InjectMocks
@@ -169,6 +169,9 @@ public class UtilityTest {
 
 	@Mock
 	private Utilities utilities;
+
+	@InjectMocks
+	private UserInfoUtility userInfoUtility;
 
 	@Mock
 	private ProxyMasterdataService proxyMasterdataService;
@@ -210,9 +213,6 @@ public class UtilityTest {
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
-
-	@Mock
-	private UserInfoUtility userInfoUtility;
 
 	@Mock
 	private MaskDataUtility maskDataUtility;
@@ -876,7 +876,7 @@ public class UtilityTest {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(true, authErrorCode);
 		Mockito.when(tokenValidationHelper
 				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(utility, "decodeAndDecryptUserInfo", token);
+		ReflectionTestUtils.invokeMethod(userInfoUtility, "decodeAndDecryptUserInfo", token);
 	}
 
 	@Test
@@ -887,7 +887,7 @@ public class UtilityTest {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(true, authErrorCode);
 		Mockito.when(tokenValidationHelper
 				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(utility, "decodeAndDecryptUserInfo", token);
+		ReflectionTestUtils.invokeMethod(userInfoUtility, "decodeAndDecryptUserInfo", token);
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -898,7 +898,7 @@ public class UtilityTest {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(false, authErrorCode);
 		Mockito.when(tokenValidationHelper
 				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(utility, "decodeAndDecryptUserInfo", token);
+		ReflectionTestUtils.invokeMethod(userInfoUtility, "decodeAndDecryptUserInfo", token);
 	}
 
 	@Test(expected = Exception.class)
@@ -919,7 +919,7 @@ public class UtilityTest {
 	public void testDecryptPayload() {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
 		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
-		assertEquals("payload", ReflectionTestUtils.invokeMethod(utility, "decryptPayload", "payload"));
+		assertEquals("payload", ReflectionTestUtils.invokeMethod(userInfoUtility, "decryptPayload", "payload"));
 	}
 
 	private Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> loadUserInfoMethod() throws Exception {
@@ -1135,7 +1135,7 @@ public class UtilityTest {
 
 		Map<String, Object> expectedResponseMap = Map.of("user_id", 123, "username", "sampleUser");
 		String usefInfoEndpointUrl = "http://localhost";
-		ReflectionTestUtils.setField(utility, "usefInfoEndpointUrl", usefInfoEndpointUrl);
+		ReflectionTestUtils.setField(userInfoUtility, "usefInfoEndpointUrl", usefInfoEndpointUrl);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
 		UriComponents uriComponent = builder.build(false).encode();
