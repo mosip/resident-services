@@ -5,14 +5,10 @@ import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -85,28 +81,11 @@ import reactor.util.function.Tuples;
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
-	private static final String AUTH_TYPE_CODE_SUFFIX = "-AUTH";
-
-	private static final String GENRATED_ON_TIMESTAMP = "genratedOnTimestamp";
-	
-	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
-
-	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
-
-	private static final String TRANSACTION_LIMIT = "transactionLimit";
-
-	private static final String MASKED_VID = "maskedVid";
-
-	private static final String HASH_ATTRIBUTES = "hashAttributes";
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentVidServiceImpl.class);
 
 	private static final String VID_ALREADY_EXISTS_ERROR_CODE = "IDR-VID-003";
-	
-	private static final String VID = "vid";
-	private static final String VID_TYPE = "vidType";
 
-	@Value("${resident.vid.id}")
+    @Value("${resident.vid.id}")
 	private String id;
 	
 	@Value("${resident.vid.id.generate}")
@@ -132,9 +111,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Value("${mosip.resident.vid-policy-url}")
 	private String vidPolicyUrl;
-	
-	@Value("${resident.vid.get.id}")
-	private String residentVidGetId;
 	
 	@Value("${mosip.resident.create.vid.version}")
 	private String residentCreateVidVersion;
@@ -168,9 +144,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private String vidPolicy;
 
-	@Value("${perpatual.vid-type:PERPETUAL}")
-	private String perpatualVidType;
-
 	@Autowired
 	private Utilities utilities;
 
@@ -182,6 +155,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Autowired
 	private IdentityUtil identityUtil;
+
+	@Autowired
+	private PerpetualVidUtility perpetualVidUtility;
 
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
@@ -377,7 +353,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
+		ResponseWrapper<List<Map<String,?>>> vids = perpetualVidUtility.retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
 		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
 		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
 				.collect(Collectors.toList());
@@ -714,7 +690,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private String getVidTypeFromVid(String vid, String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
+		ResponseWrapper<List<Map<String,?>>> vids = perpetualVidUtility.retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
 		return vids.getResponse().stream()
 				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
 				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))
@@ -789,106 +765,5 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		return vidPolicy;
 	}
-	
-	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		IdentityDTO identityDTO = identityUtil.getIdentity(residentIndividualId);
-		return retrieveVids(timeZoneOffset, locale, identityDTO.getUIN());
-	}
 
-	@Override
-	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, String uin)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		return retrieveVidsfromUin(uin, timeZoneOffset, locale);
-	}
-
-	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper response;
-		try {
-			response = (ResponseWrapper) residentServiceRestClient.getApi(
-					env.getProperty(ApiName.RETRIEVE_VIDS.name()) + uin, ResponseWrapper.class);
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					uin, ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
-							+ e.getMessage() + ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Unable to retrieve VID : " + e.getMessage());
-		}
-		
-		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
-				.map(map -> {
-					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
-					getMaskedVid(lhm);
-					getRefIdHash(lhm);
-					normalizeTime(EXPIRY_TIMESTAMP, lhm, timeZoneOffset, locale);
-					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset, locale);
-					return lhm;
-				})
-				.filter(map1 -> map1.get(TRANSACTIONS_LEFT_COUNT) == null || (int) map1.get(TRANSACTIONS_LEFT_COUNT) > 0)
-				.collect(Collectors.toList());
-		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
-		res.setId(residentVidGetId);
-		res.setVersion(newVersion);
-		res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
-		res.setResponse(filteredList);
-		return res;
-		
-	}
-	
-	private void normalizeTime(String attributeName, LinkedHashMap<String, Object> lhm, int timeZoneOffset, String locale) {
-		Object timeObject = lhm.get(attributeName);
-		if(timeObject instanceof String) {
-			String timeStr = String.valueOf(timeObject);
-			LocalDateTime localDateTime = mapper.convertValue(timeStr, LocalDateTime.class);
-			//For the big expiry time, assume no expiry time, so set to null
-			if(localDateTime.getYear() >= 9999) {
-				lhm.put(attributeName, null);
-			} else {
-				lhm.put(attributeName, utility.formatWithOffsetForUI(timeZoneOffset, locale, localDateTime)) ;
-			}
-		}
-	}
-
-	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
-		String maskedvid = maskDataUtility.convertToMaskData(map.get(VID).toString());
-		map.put(MASKED_VID, maskedvid);
-		return map;
-	}
-
-	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
-		try {
-			if(map.get(TRANSACTION_LIMIT) != null) {
-				String hashrefid = utility.getRefIdHash(map.get(VID).toString());
-				int countdb = residentTransactionRepository.findByRefIdAndAuthTypeCodeLike(hashrefid, AUTH_TYPE_CODE_SUFFIX);
-				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
-				int leftcount = limitCount - countdb;
-			    if(leftcount < 0) {
-			    	map.put(TRANSACTIONS_LEFT_COUNT, 0);
-			    } else {
-			    	map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
-			    }
-			} else  {
-				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));
-			}
-			map.remove(HASH_ATTRIBUTES);
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("NoSuchAlgorithmException", ExceptionUtils.getStackTrace(e));
-			logger.error("In getRefIdHash method of ResidentVidServiceImpl class", e.getMessage());
-		}
-		return map;
-	}	
-	
-	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin, ResidentConstants.UTC_TIMEZONE_OFFSET, null);
-		List<Map<String, ?>> vids = vidResp.getResponse();
-		if(vids != null && !vids.isEmpty()) {
-			return vids.stream()
-				.filter(map -> map.containsKey(VID_TYPE) && 
-							perpatualVidType.equalsIgnoreCase(String.valueOf(map.get(VID_TYPE))))
-				.map(map -> String.valueOf( map.get(VID)))
-				.findAny();
-		}
-		return Optional.empty();
-	}
-	
 }

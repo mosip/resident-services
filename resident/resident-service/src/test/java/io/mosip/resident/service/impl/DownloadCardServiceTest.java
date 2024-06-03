@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.controller.ResidentVidController;
 import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,6 +118,9 @@ public class DownloadCardServiceTest {
 
 	@Mock
 	private IdentityUtil identityUtil;
+
+	@Mock
+	private PerpetualVidUtility perptualVidUtility;
 
 	@Before
 	public void setup() throws Exception {
@@ -308,7 +312,7 @@ public class DownloadCardServiceTest {
 		identityDTO.setUIN("8251649601");
 		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("8251649601");
-		Mockito.when(vidService.retrieveVids(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
+		Mockito.when(perptualVidUtility.retrieveVids(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new ApisResourceAccessException());
 		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
 	}

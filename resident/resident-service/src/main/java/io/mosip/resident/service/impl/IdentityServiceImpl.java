@@ -11,7 +11,6 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.*;
@@ -75,6 +74,9 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private IdentityUtil identityUtil;
 
+	@Autowired
+	private PerpetualVidUtility perpetualVidUtility;
+
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
 		Map<String, ?> claims = availableClaimUtility.getClaimsFromToken(Set.of(claimName), accessToken);
@@ -98,7 +100,7 @@ public class IdentityServiceImpl implements IdentityService {
 			IdentityDTO identity = identityUtil.getIdentity(individualId);
 			String uin = identity.getUIN();
 			if(useVidOnly) {
-				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
+				Optional<String> perpVid = perpetualVidUtility.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
 					id = perpVid.get();
 					idType = IdType.VID;

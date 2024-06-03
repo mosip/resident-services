@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.PerpetualVidUtility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,6 +82,9 @@ public class ResidentVidControllerTest {
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private PerpetualVidUtility perpetualVidUtility;
 
 	@Before
 	public void setup() throws ApisResourceAccessException {
@@ -476,7 +480,7 @@ public class ResidentVidControllerTest {
 	public void testRetrieveVids() throws Exception {
 		ResponseWrapper<List<Map<String, ?>>> responseWrapper = new ResponseWrapper<>();
 		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
-		Mockito.when(residentVidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
+		Mockito.when(perpetualVidUtility.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		residentVidController.retrieveVids(0, "En-us");
 	}
@@ -485,7 +489,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testRetrieveVidsWithException() throws Exception {
 		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("12345678");
-		Mockito.when(residentVidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.nullable(String.class)))
+		Mockito.when(perpetualVidUtility.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.nullable(String.class)))
 				.thenThrow(new ApisResourceAccessException());
 		residentVidController.retrieveVids(0, "En-us");
 	}

@@ -11,7 +11,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.ResidentVidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -54,9 +53,6 @@ public class IdentityUtil {
 	private static final String PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
-	private ResidentVidService residentVidService;
-
-	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired
@@ -64,6 +60,9 @@ public class IdentityUtil {
 
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
+
+	@Autowired
+	private PerpetualVidUtility perpetualVidUtility;
 
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
 		return getIdentityAttributes(id, schemaType, List.of(
@@ -100,7 +99,7 @@ public class IdentityUtil {
 								&& !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
-								perpVid = residentVidService.getPerpatualVid((String) identity.get(IdType.UIN.name()));
+								perpVid = perpetualVidUtility.getPerpatualVid((String) identity.get(IdType.UIN.name()));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

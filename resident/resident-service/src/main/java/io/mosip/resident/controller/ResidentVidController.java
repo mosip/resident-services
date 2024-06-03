@@ -24,6 +24,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.AuditEnum;
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.PerpetualVidUtility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -76,7 +77,10 @@ public class ResidentVidController {
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
-	
+
+	@Autowired
+	private PerpetualVidUtility perpetualVidUtility;
+
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping(path = "/vid/policy")
 	@Operation(summary = "Retrieve VID policy", description = "Retrieve VID policy", tags = { "Resident Service" })
@@ -273,7 +277,7 @@ public class ResidentVidController {
 		ResponseWrapper<List<Map<String, ?>>> retrieveVids = new ResponseWrapper<>();
 		String residentIndividualId = getResidentIndividualId();
 		try {
-			retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset, locale);
+			retrieveVids = perpetualVidUtility.retrieveVids(residentIndividualId, timeZoneOffset, locale);
 		} catch (ResidentServiceException | ApisResourceAccessException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_VIDS_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.GET_VIDS_ID));

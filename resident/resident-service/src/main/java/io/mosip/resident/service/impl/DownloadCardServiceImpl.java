@@ -132,6 +132,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Autowired
 	private IdentityUtil identityUtil;
 
+	@Autowired
+	private PerpetualVidUtility perpetualVidUtility;
+
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
@@ -527,7 +530,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			name = identityDTO.getFullName();
 		}
 		if (uin != null) {
-			vidResponse = vidService.retrieveVids(timeZoneOffset, locale, uin);
+			vidResponse = perpetualVidUtility.retrieveVids(timeZoneOffset, locale, uin);
 		}
 		if (vidResponse != null) {
 			List<Map<String, ?>> vidList = vidResponse.getResponse();

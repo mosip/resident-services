@@ -144,6 +144,9 @@ public class IdentityServiceTest {
 
 	@Mock
 	private MaskDataUtility maskDataUtility;
+	
+	@Mock
+	private PerpetualVidUtility perpetualVidUtility;
 
 	@Before
 	public void setUp() throws Exception {
@@ -359,7 +362,7 @@ public class IdentityServiceTest {
 		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(false);
 		Optional<String> perpVid = Optional.of("8251649601");
-		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
+		when(perpetualVidUtility.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
 		Tuple2<String, IdType> result = ReflectionTestUtils.invokeMethod(identityService, "getIdAndTypeForIndividualId", "123456789");
@@ -375,7 +378,7 @@ public class IdentityServiceTest {
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(false);
-		when(residentVidService.getPerpatualVid(anyString())).thenReturn(Optional.empty());
+		when(perpetualVidUtility.getPerpatualVid(anyString())).thenReturn(Optional.empty());
 		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		fileLoadMethod();
 		identityService.getIdAndTypeForIndividualId("123456789");
@@ -460,7 +463,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
@@ -472,7 +475,7 @@ public class IdentityServiceTest {
 	public void testGetMappingValueValidPerpetualVidResidentServiceCheckedException() throws Exception {
 		fileLoadMethod();
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
 		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("6", result.getUIN());
@@ -480,7 +483,7 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMappingValueValidPerpetualVidApisResourceAccessException() throws Exception {
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
 		fileLoadMethod();
 		IdentityDTO result = identityUtil.getIdentity("6", false, "eng");
@@ -625,7 +628,7 @@ public class IdentityServiceTest {
 	@Test(expected = Exception.class)
 	public void testGetIndividualIdForAidFailed() throws Exception{
 		String aid = "123456789";
-		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.empty());
+		Mockito.when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.empty());
 		ReflectionTestUtils.setField(identityService, "useVidOnly", true);
 		fileLoadMethod();
 		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
@@ -644,7 +647,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		IdentityDTO result = identityUtil.getIdentity("6", true, "eng");
 		assertNotNull(result);
@@ -662,7 +665,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(userInfoUtility.getUserInfo(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		identityUtil.getIdentity("6", true, "eng");
 	}
@@ -678,7 +681,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		Mockito.when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		assertEquals("8251649601",
 				identityUtil.getIdentityAttributes("4578987854", "personalized-card", List.of("Name", "photo")).get("UIN"));
 	}
@@ -690,7 +693,7 @@ public class IdentityServiceTest {
 		getAuthUserDetailsFromAuthentication();
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		Mockito.when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(maskDataUtility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
@@ -705,7 +708,7 @@ public class IdentityServiceTest {
 		getAuthUserDetailsFromAuthentication();
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		Mockito.when(perpetualVidUtility.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(maskDataUtility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
