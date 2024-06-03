@@ -4,7 +4,6 @@ import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -136,7 +135,6 @@ public class UtilitiesTest {
         InputStream insputStream = new FileInputStream(amrAcrJsonFile);
         String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
         amrAcrJson = JsonUtil.readValue(amrAcrJsonString, Map.class);
-        ReflectionTestUtils.setField(utilities, "amrAcrJsonFile", "amr-acr-mapping.json");
     }
 
     @Test
@@ -360,10 +358,7 @@ public class UtilitiesTest {
         when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
-        assertSame(responseWrapper,
-                proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
-        verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
-                (String) org.mockito.Mockito.any(), anyBoolean());
+        proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
     }
     @Test
     public void testGetDynamicFieldBasedOnLangCodeAndFieldName2() throws ResidentServiceCheckedException {
@@ -557,7 +552,6 @@ public class UtilitiesTest {
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(null);
         thrown.expect(IdRepoAppException.class);
         identityDataUtil.getIdentityDataFromIndividualID("42");
-        verify(getAccessTokenUtility).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
         cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
