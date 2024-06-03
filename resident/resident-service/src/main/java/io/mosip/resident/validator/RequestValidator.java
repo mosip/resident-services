@@ -63,10 +63,7 @@ import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.UinVidValidator;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,9 +113,6 @@ public class RequestValidator {
 	private Environment environment;
 
 	@Autowired
-	private IdentityServiceImpl identityService;
-
-	@Autowired
 	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
@@ -147,6 +141,9 @@ public class RequestValidator {
 
 	@Autowired
 	private UinVidValidator uinVidValidator;
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -1526,7 +1523,7 @@ public class RequestValidator {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if(residentTransactionEntity.isPresent()){
 			String tokenId = residentTransactionEntity.get().getTokenId();
-			String sessionToken = identityService.getResidentIdaToken();
+			String sessionToken = availableClaimUtility.getResidentIdaToken();
 			if(!tokenId.equals(sessionToken)){
 				throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());

@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +57,12 @@ public class VerificationServiceTest {
 
 	private IdentityDTO identityValue;
 
+	@Mock
+	private IdentityUtil identityUtil;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	@Before
 	public void setup() throws Exception {
 		when(utility.getIdForResidentTransaction(anyList(), any(), anyString())).thenReturn("hash ref id");
@@ -62,8 +70,8 @@ public class VerificationServiceTest {
 		identityValue.setEmail("aaa@bbb.com");
 		identityValue.setPhone("987654321");
 		identityValue.setUIN("123");
-		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityValue);
-		when(identityService.getIDAToken(Mockito.anyString())).thenReturn("123");
+		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123");
 	}
 
 	@Test

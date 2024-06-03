@@ -1,12 +1,15 @@
 package io.mosip.resident.util;
 
+import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.AbstractMap;
@@ -26,7 +29,34 @@ public class AvailableClaimUtility {
     @Autowired
     private UserInfoUtility userInfoUtility;
 
+
+    @Autowired
+    private TokenIDGenerator tokenIDGenerator;
+
+    @Value("${ida.online-verification-partner-id}")
+    private String onlineVerificationPartnerId;
+
     private static final String INDIVIDUAL_ID = "individual_id";
+
+    @Autowired
+    private UinVidValidator uinVidValidator;
+
+    public String getIDAToken(String uin) {
+        return getIDAToken(uin, onlineVerificationPartnerId);
+    }
+
+    public String getIDAToken(String uin, String olvPartnerId) {
+		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
+	}
+
+
+    public  String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException {
+        return getIDAToken(uinVidValidator.getUinForIndividualId(idvid));
+    }
+
+    public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		return getIDATokenForIndividualId(getResidentIndvidualIdFromSession());
+	}
 
     public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
         return  getClaimValue(INDIVIDUAL_ID);

@@ -646,7 +646,7 @@ public class ResidentControllerTest {
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testBellClickdttimesWithException() throws Exception {
-		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+		when(availableClaimUtility.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
 		residentController.bellClickdttimes();
 	}
 
@@ -663,7 +663,7 @@ public class ResidentControllerTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testNotificationCountException() throws Exception {
 		ReflectionTestUtils.setField(residentController, "serviceEventId", "id");
-		Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234567890");
+		Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("1234567890");
 		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
 		residentController.notificationCount();
 	}
@@ -687,7 +687,7 @@ public class ResidentControllerTest {
 	@Test(expected = Exception.class)
 	@WithUserDetails("reg-admin")
 	public void testGetNotificationsListWithException() throws Exception {
-		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+		when(availableClaimUtility.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
 		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
 	}
 

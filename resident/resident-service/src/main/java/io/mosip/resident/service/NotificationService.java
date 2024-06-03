@@ -20,13 +20,7 @@ import io.mosip.resident.dto.SMSRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -112,6 +106,12 @@ public class NotificationService {
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
 	
+	@Autowired
+	private MaskDataUtility maskDataUtility;
+
+	@Autowired
+	private IdentityUtil identityUtil;
+
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
 		return sendNotification(dto, null, null, null, identity);
@@ -123,7 +123,7 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityService.getIdentity(dto.getId()) : identity;
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityUtil.getIdentity(dto.getId()) : identity;
 		Map mapperIdentity = getMapperIdentity();
 
 		Set<String> templateLangauges;
@@ -184,19 +184,19 @@ public class NotificationService {
 		if (smsStatus && emailStatus) {
 			notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
 			if(email != null && phone != null) {
-				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
-				notificationResponse.setMaskedEmail(utility.maskEmail(email));
+				notificationResponse.setMaskedPhone(maskDataUtility.maskPhone(phone));
+				notificationResponse.setMaskedEmail(maskDataUtility.maskEmail(email));
 			}
 			notificationResponse.setStatus(SUCCESS);
 		} else if (smsStatus) {	
 			notificationResponse.setMessage(SMS_SUCCESS);
 			if(phone != null) {
-				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+				notificationResponse.setMaskedPhone(maskDataUtility.maskPhone(phone));
 			} 
 		} else if (emailStatus) {
 			notificationResponse.setMessage(EMAIL_SUCCESS);
 			if(email != null) {
-				notificationResponse.setMaskedEmail(utility.maskEmail(email));
+				notificationResponse.setMaskedEmail(maskDataUtility.maskEmail(email));
 			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);

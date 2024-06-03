@@ -214,6 +214,12 @@ public class UtilityTest {
 	@Mock
 	private UserInfoUtility userInfoUtility;
 
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private IdentityUtil identityUtil;
+
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -404,7 +410,7 @@ public class UtilityTest {
 
     @Test(expected = Exception.class)
     public void testMaskEmail() {
-		utility.maskEmail("jane.doe@example.org");
+		maskDataUtility.maskEmail("jane.doe@example.org");
     }
 
 	@Test
@@ -543,8 +549,8 @@ public class UtilityTest {
 		identityDTO.setUIN("2186705746");
 		identityDTO.setEmail("kameshprasad1338@gmail.com");
 		identityDTO.setPhone("8809989898");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("EMAIL"), identityDTO, idaToken));
 	}
@@ -555,8 +561,8 @@ public class UtilityTest {
 		identityDTO.setUIN("2186705746");
 		identityDTO.setEmail("kameshprasad1338@gmail.com");
 		identityDTO.setPhone("8809989898");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PHONE"), identityDTO, idaToken));
 	}
@@ -567,8 +573,8 @@ public class UtilityTest {
 		identityDTO.setUIN("2186705746");
 		identityDTO.setEmail("kameshprasad1338@gmail.com");
 		identityDTO.setPhone("8809989898");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PHONE", "EMAIL"), identityDTO, idaToken));
 	}
@@ -579,8 +585,8 @@ public class UtilityTest {
 		identityDTO.setUIN("2186705746");
 		identityDTO.setEmail("kameshprasad1338@gmail.com");
 		identityDTO.setPhone("8809989898");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PH"), identityDTO, idaToken));
 	}

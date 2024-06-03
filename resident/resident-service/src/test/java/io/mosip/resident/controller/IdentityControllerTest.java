@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 
 import io.mosip.idrepository.core.util.EnvUtil;
+import io.mosip.resident.util.IdentityUtil;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,6 +109,9 @@ public class IdentityControllerTest {
 
 	private Map identityMap;
 
+	@Mock
+	private IdentityUtil identityUtil;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -129,7 +133,7 @@ public class IdentityControllerTest {
 
 	@Test
 	public void testGetInputAttributeValues() throws Exception {
-		Mockito.when(idServiceImpl.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
+		Mockito.when(identityUtil.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
 		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info/type/schemaType")).andExpect(status().isOk());
 	}
 

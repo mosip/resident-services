@@ -314,6 +314,12 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
+	
+	@Autowired
+	private IdentityUtil identityUtil;
+	
+	@Autowired
+	private MaskDataUtility maskDataUtility;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -1067,9 +1073,9 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(dto.getIndividualId()));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(sessionUin));
+		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(sessionUin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		Map<String, ?> identityMap;
 		if (dto.getIdentityJson() != null) {
@@ -1126,7 +1132,7 @@ public class ResidentServiceImpl implements ResidentService {
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdateV2():: entry");
 		ResponseDTO response = new ResponseDTO();
 		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
-		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
+		IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -1226,9 +1232,9 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
@@ -1585,7 +1591,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale,
 			List<String> statusCodeList) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
-		String idaToken = identityServiceImpl.getResidentIdaToken();
+		String idaToken = availableClaimUtility.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageIndex, pageSize, idaToken, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, locale, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
@@ -1876,7 +1882,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
-				String idaToken = identityServiceImpl.getResidentIdaToken();
+				String idaToken = availableClaimUtility.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
@@ -2092,7 +2098,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String name;
 		if (langCode != null) {
 			try {
-				Map<String, Object> identity = identityServiceImpl
+				Map<String, Object> identity = identityUtil
 						.getIdentityAttributes(availableClaimUtility.getResidentIndvidualIdFromSession(), null);
 				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
 			} catch (IOException e) {

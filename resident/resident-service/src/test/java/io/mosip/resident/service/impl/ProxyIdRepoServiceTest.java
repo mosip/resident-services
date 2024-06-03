@@ -169,7 +169,7 @@ public class ProxyIdRepoServiceTest {
 		responseWrapper.setResponse(draftResponseDto);
 
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(uinVidValidator.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -234,7 +234,7 @@ public class ProxyIdRepoServiceTest {
 		residentTransactionEntity1.setEventId("1234");
 
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(uinVidValidator.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -242,7 +242,7 @@ public class ProxyIdRepoServiceTest {
 		when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeAndStatusCode(Mockito.anyString()
 		, Mockito.anyString(), Mockito.anyString())).thenReturn(List.of(residentTransactionEntity, residentTransactionEntity1));
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
+		when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
 		when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
 				"eng"));
 		assertEquals("123", service.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());

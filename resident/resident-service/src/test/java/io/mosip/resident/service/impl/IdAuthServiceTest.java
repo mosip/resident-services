@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.IdentityUtil;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,11 +110,14 @@ public class IdAuthServiceTest {
     @Mock
     private Utility utility;
 
+    @Mock
+    private IdentityUtil identityUtil;
+
     @Before
     public void setup() throws ResidentServiceCheckedException {
         IdentityDTO identityDTO1 = new IdentityDTO();
         identityDTO1.setUIN("234");
-        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO1);
+        Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO1);
     }
 
     @Test

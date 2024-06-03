@@ -91,6 +91,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
+	@Autowired
+	private MaskDataUtility maskDataUtility;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
@@ -134,7 +137,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
 			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
 			if(!uinVidValidator.validateUin(individualId)){
-				individualId = identityServiceImpl.getUinForIndividualId(individualId);
+				individualId = uinVidValidator.getUinForIndividualId(individualId);
 			}
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put(IdType.UIN.name(), individualId);
@@ -231,7 +234,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 		}
 		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
-				findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+				findByTokenIdAndRequestTypeCodeAndStatusCode(availableClaimUtility.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
 						EventStatusInProgress.NEW.name());
 		if(!residentTransactionEntityList.isEmpty()){
 			for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
@@ -285,9 +288,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 			eventId = utility.createEventId();
 			residentTransactionEntity.setEventId(eventId);
-			residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+			residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 			residentTransactionEntity.setIndividualId(individualId);
-			residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+			residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
 			residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 			if(attributes!=null){
 				String attributeList = String.join(SEMI_COLON, attributes);

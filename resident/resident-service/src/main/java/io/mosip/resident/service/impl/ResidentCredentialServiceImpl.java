@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,9 +71,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -137,7 +134,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Value("${mosip.resident.request.credential.encryption.key:null}")
 	private String encryptionKey;
-	
+
+	@Autowired
+	private MaskDataUtility maskDataUtility;
+
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
 			throws ResidentServiceCheckedException {
@@ -293,9 +293,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			String individualId, String purpose, List<SharableAttributesDTO> sharableAttributes) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		if (purpose != null) {
 			residentTransactionEntity.setPurpose(purpose);

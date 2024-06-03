@@ -602,7 +602,7 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<UnreadNotificationDto> count = new ResponseWrapper<>();
 		logger.debug("ResidentController::notificationCount()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
+		String individualId = availableClaimUtility.getResidentIdaToken();
 		try {
 			count = residentService.getnotificationCount(individualId);
 		} catch (ResidentServiceCheckedException e) {
@@ -632,7 +632,7 @@ public class ResidentController {
 		String idaToken = null;
 		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
 		try {
-			idaToken = identityServiceImpl.getResidentIdaToken();
+			idaToken = availableClaimUtility.getResidentIdaToken();
 			response = residentService.getbellClickdttimes(idaToken);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			audit.setAuditRequestDto(AuditEnum.GET_NOTIF_CLICK_FAILURE);
@@ -654,7 +654,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::bellupdateClickdttimes()::entry");
-		String idaToken = identityServiceImpl.getResidentIdaToken();
+		String idaToken = availableClaimUtility.getResidentIdaToken();
 		int response = residentService.updatebellClickdttimes(idaToken);
 		logger.debug("ResidentController::bellupdateClickdttimes()::exit");
 		return response;
@@ -681,7 +681,7 @@ public class ResidentController {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = new ResponseWrapper<>();
 		try {
 			validator.validateLanguageCode(langCode);
-			id = identityServiceImpl.getResidentIdaToken();
+			id = availableClaimUtility.getResidentIdaToken();
 			notificationDtoList = residentService.getNotificationList(pageIndex, pageSize, id, langCode,
 					timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
@@ -753,7 +753,7 @@ public class ResidentController {
 		ResponseWrapper<UserInfoDto> userInfoDto = new ResponseWrapper<>();
 		try {
 			validator.validateProfileApiRequest(languageCode);
-			String idaToken = identityServiceImpl.getResidentIdaToken();
+			String idaToken = availableClaimUtility.getResidentIdaToken();
 			userInfoDto = residentService.getUserinfo(idaToken, languageCode, timeZoneOffset, locale);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(AuditEnum.GET_PROFILE_FAILURE);

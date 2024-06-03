@@ -4,6 +4,7 @@ import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,16 @@ public class UinVidValidator {
 
     @Autowired
     private VidValidator<String> vidValidator;
+
+    @Autowired
+    private IdentityUtil identityUtil;
+
+    public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
+        if(getIndividualIdType(idvid).equals(IdType.UIN)){
+            return idvid;
+        }
+        return identityUtil.getIdentity(idvid).getUIN();
+    }
 
     public IdType getIndividualIdType(String individualId){
         if(validateUin(individualId)){

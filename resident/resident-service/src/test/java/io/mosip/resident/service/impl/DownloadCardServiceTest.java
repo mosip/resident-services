@@ -115,6 +115,9 @@ public class DownloadCardServiceTest {
 	@Mock
 	private UinVidValidator uinVidValidator;
 
+	@Mock
+	private IdentityUtil identityUtil;
+
 	@Before
 	public void setup() throws Exception {
 		downloadCardRequestDTOMainRequestDTO = new MainRequestDTO<>();
@@ -157,7 +160,7 @@ public class DownloadCardServiceTest {
 
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setUIN("123456789");
-		Mockito.when(identityService.getIdentity("1234567890")).thenReturn(identityDTO);
+		Mockito.when(identityUtil.getIdentity("1234567890")).thenReturn(identityDTO);
 	}
 
 	@Test
@@ -217,7 +220,7 @@ public class DownloadCardServiceTest {
 		name.put("language", "eng");
 		name.put("value", "kamesh");
 		identityMap.put("firstName", List.of(name));
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityMap);
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityMap);
 		Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
 		Mockito.when(utility.getPassword(Mockito.anyList())).thenReturn("kame1970");
 		Tuple2<byte[], String> actualResult = downloadCardService
@@ -237,7 +240,7 @@ public class DownloadCardServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testDownloadPersonalizedCardResidentServiceCheckedException()
 			throws ResidentServiceCheckedException, IOException {
-		Mockito.when(identityService.getIdentity(Mockito.anyString()))
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString()))
 				.thenThrow(new ResidentServiceCheckedException());
 		downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
 	}
@@ -252,7 +255,7 @@ public class DownloadCardServiceTest {
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setDateOfBirth("1892-08-09");
 		identityDTO.setUIN("8251649601");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("8251649601");
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
@@ -272,7 +275,7 @@ public class DownloadCardServiceTest {
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setDateOfBirth("1892-08-09");
 		identityDTO.setUIN("8251649601");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("8251649601");
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
@@ -303,7 +306,7 @@ public class DownloadCardServiceTest {
 	public void testGetVidCardEventIdWithApisResourceAccessException() throws BaseCheckedException, IOException {
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setUIN("8251649601");
-		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("8251649601");
 		Mockito.when(vidService.retrieveVids(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new ApisResourceAccessException());

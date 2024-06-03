@@ -9,6 +9,7 @@ import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -76,6 +77,9 @@ public class ProxyOtpController {
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
+	@Autowired
+	private IdentityUtil identityUtil;
+
 	/**
 	 * This Post api use to send otp to the user by email or sms
 	 *
@@ -99,7 +103,7 @@ public class ProxyOtpController {
 		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
 		String userid = userOtpRequest.getRequest().getUserId();
 		try {
-			IdentityDTO identityDTO = identityService.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
+			IdentityDTO identityDTO = identityUtil.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
 			requestValidator.validateProxySendOtpRequest(userOtpRequest, identityDTO);
 			responseEntity = proxyOtpService.sendOtp(userOtpRequest, identityDTO);
 		}

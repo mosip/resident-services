@@ -126,6 +126,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	@Autowired
 	private UinVidValidator uinVidValidator;
 
+	@Autowired
+	private MaskDataUtility maskDataUtility;
+
+	@Autowired
+	private IdentityUtil identityUtil;
+
 	@Override
 	public Tuple2<byte[], String> getDownloadCardPDF(
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
@@ -139,7 +145,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		IdentityDTO identityDTO = null;
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			identityDTO = identityService.getIdentity(individualId);
+			identityDTO = identityUtil.getIdentity(individualId);
 			Tuple2<String, IdType> individualIdAndType = identityService.getIdAndTypeForIndividualId(individualId);
 			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, individualIdAndType.getT1(),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
@@ -205,7 +211,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
@@ -283,7 +289,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private Map<String, Object> getIdentityData(String individualId) {
 		Map<String, Object> identityAttributes = null;
 		try {
-			identityAttributes = (Map<String, Object>) identityService.getIdentity(individualId);
+			identityAttributes = (Map<String, Object>) identityUtil.getIdentity(individualId);
 		} catch (ResidentServiceCheckedException e) {
 			logger.error("Unable to get attributes- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
@@ -299,9 +305,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = utility.createEventId();
 		residentTransactionEntity.setEventId(eventId);
 		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
 					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
@@ -348,7 +354,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String uinForVid = "";
 		IdentityDTO identityDTO = null;
 		try {
-			identityDTO = identityService.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
+			identityDTO = identityUtil.getIdentity(availableClaimUtility.getResidentIndvidualIdFromSession());
 			if(identityDTO!=null) {
 				uinForVid = utilities.getUinByVid(vid);
 				String uinForIndividualId = identityDTO.getUIN();
@@ -497,9 +503,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(uin));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(uin));
 		residentTransactionEntity.setIndividualId(uin);
-		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+		residentTransactionEntity.setTokenId(availableClaimUtility.getIDAToken(uin));
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());

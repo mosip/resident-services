@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import jakarta.persistence.EntityManager;
 
 import org.junit.Before;
@@ -117,6 +118,9 @@ public class ResidentServiceDownloadCardTest {
     private String eventId;
 
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
 
     @Before
     public void setup() throws Exception {
@@ -231,7 +235,7 @@ public class ResidentServiceDownloadCardTest {
 
     @Test
     public void testGetUnreadNotifyList() throws ResidentServiceCheckedException, ApisResourceAccessException{
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
+        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
         ResidentTransactionEntity residentTransactionEntity1 = new ResidentTransactionEntity();
         residentTransactionEntity1.setEventId("123");
         Page<ResidentTransactionEntity> residentTransactionEntityPage =

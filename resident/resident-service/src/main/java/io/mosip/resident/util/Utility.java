@@ -159,15 +159,6 @@ public class Utility {
 	@Qualifier("varres")
 	private VariableResolverFactory functionFactory;
 
-	@Value("${resident.email.mask.function}")
-	private String emailMaskFunction;
-
-	@Value("${resident.phone.mask.function}")
-	private String phoneMaskFunction;
-
-	@Value("${resident.data.mask.function}")
-	private String maskingFunction;
-
 	@Value("${resident.ui.track-service-request-url}")
 	private String trackServiceUrl;
 
@@ -424,29 +415,6 @@ public class Utility {
 			logger.error(e.getMessage());
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
 		}
-	}
-
-
-	public String maskData(Object object, String maskingFunctionName) {
-		Map context = new HashMap();
-		context.put(VALUE, String.valueOf(object));
-		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
-		myVarFactory.setNextFactory(functionFactory);
-		Serializable serializable = MVEL.compileExpression(maskingFunctionName + "(value);");
-		String formattedObject = MVEL.executeExpression(serializable, context, myVarFactory, String.class);
-		return formattedObject;
-	}
-
-	public String maskEmail(String email) {
-		return maskData(email, emailMaskFunction);
-	}
-
-	public String maskPhone(String phone) {
-		return maskData(phone, phoneMaskFunction);
-	}
-
-	public String convertToMaskData(String maskData) {
-		return maskData(maskData, maskingFunction);
 	}
 
 	public String getPassword(List<String> attributeValues) {

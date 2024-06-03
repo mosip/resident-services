@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import io.mosip.resident.util.SessionUserNameUtility;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -131,7 +133,13 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Autowired
 	private SessionUserNameUtility sessionUserNameUtility;
-	
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private IdentityUtil identityUtil;
+
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
@@ -172,9 +180,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private String updateResidentTransactionAndSendNotification(String transactionId, String individualId,
 			String eventId, boolean authStatus) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = null;
-		IdentityDTO identityDTO = identityService.getIdentity(individualId);
+		IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
 		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, RequestType.VALIDATE_OTP,
-				identityService.getIDAToken(identityDTO.getUIN()));
+				availableClaimUtility.getIDAToken(identityDTO.getUIN()));
 		if (residentTransactionEntity != null) {
 			eventId = residentTransactionEntity.getEventId();
 			TemplateType templateType = authStatus == true ? TemplateType.SUCCESS : TemplateType.FAILURE;
@@ -207,7 +215,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					requestType, identityService.getIDATokenForIndividualId(individualId));
+					requestType, availableClaimUtility.getIDATokenForIndividualId(individualId));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				channels = residentTransactionEntity.getAttributeList();

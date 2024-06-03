@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,7 +65,10 @@ public class IdentityController {
 
 	@Value("${resident.identity.info.version}")
 	private String residentIdentityInfoVersion;
-	
+
+	@Autowired
+	private IdentityUtil identityUtil;
+
 	@ResponseFilter
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PreAuthorize("@scopeValidator.hasAllScopes("
@@ -90,7 +94,7 @@ public class IdentityController {
 		}
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		String id = getIdFromUser();
-		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, schemaType, List.of());
+		Map<String, ?> propertiesResponse = identityUtil.getIdentityAttributes(id, schemaType, List.of());
 		propertiesResponse.remove(IDENTITY);
 		auditUtil.setAuditRequestDto(AuditEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
