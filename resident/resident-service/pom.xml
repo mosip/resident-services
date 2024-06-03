@@ -32,7 +32,11 @@
             <artifactId>mockito-core</artifactId>
             <version>3.11.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.mosip.kernel</groupId>
+            <artifactId>kernel-transliteration-icu4j</artifactId>
+            <version>${kernel.core.version}</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -354,11 +358,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.mosip.kernel</groupId>
-            <artifactId>kernel-idobjectvalidator</artifactId>
-            <version>${kernel.idobjectvalidator.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
