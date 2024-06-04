@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.*;
 import jakarta.persistence.EntityManager;
 
 import org.junit.Before;
@@ -58,9 +58,6 @@ import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 /**
@@ -105,6 +102,9 @@ public class ResidentServiceDownloadCardTest {
 
     @Mock
     private ProxyMasterdataService proxyMasterdataService;
+
+    @Mock
+    private SessionUserNameUtility sessionUserNameUtility;
 
     @Mock
     private TemplateManager templateManager;

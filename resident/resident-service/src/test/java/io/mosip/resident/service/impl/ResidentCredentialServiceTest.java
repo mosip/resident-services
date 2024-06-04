@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.MaskDataUtility;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +104,9 @@ public class ResidentCredentialServiceTest {
 
 	@Mock
 	private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;

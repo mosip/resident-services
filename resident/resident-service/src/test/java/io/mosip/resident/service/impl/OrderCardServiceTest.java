@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.MaskDataUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +80,9 @@ public class OrderCardServiceTest {
 
 	@Mock
 	Environment env;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
 
 	private ResponseWrapper responseWrapper;
 

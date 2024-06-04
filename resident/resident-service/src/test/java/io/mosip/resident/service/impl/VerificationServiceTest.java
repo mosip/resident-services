@@ -8,8 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.IdentityUtil;
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +26,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 
@@ -62,6 +60,9 @@ public class VerificationServiceTest {
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
 
 	@Before
 	public void setup() throws Exception {

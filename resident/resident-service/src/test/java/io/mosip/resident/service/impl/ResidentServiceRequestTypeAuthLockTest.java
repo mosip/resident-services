@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.UinVidValidator;
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +48,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.UINCardDownloadHelper;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 
@@ -106,6 +103,12 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private IdentityUtil identityUtil;
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
