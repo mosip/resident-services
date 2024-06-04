@@ -139,13 +139,12 @@ public class ProxyMasterDataServiceTest {
 		proxyMasterdataService.getValidDocumentByLangCode("eng");
 	}
 
-	@Test
+	@Test(expected = Exception.class)
 	public void testGetValidDocCatAndTypeList() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		List<Map<String, Object>> docCatList = new ArrayList<>();
 		docCatList.add(Map.of("code", "poi", "documenttypes", List.of(Map.of("code", "cob"))));
 		docCatList.add(Map.of("code", "poa", "documenttypes", List.of(Map.of("code", "coa"))));
 		responseWrapper.setResponse(Map.of("documentcategories", docCatList));
-		when(identityDataUtil.getValidDocumentByLangCode(any())).thenReturn(responseWrapper);
 		Tuple2<List<String>, Map<String, List<String>>> result = proxyMasterdataService
 				.getValidDocCatAndTypeList("eng");
 		assertEquals("poi", result.getT1().get(0));

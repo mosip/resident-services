@@ -9,6 +9,8 @@ import java.security.PublicKey;
 import javax.crypto.SecretKey;
 
 import io.mosip.idrepository.core.util.EnvUtil;
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -116,6 +118,12 @@ public class ProxyOtpControllerTest {
 
     @Mock
     private Environment environment;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
+    @Mock
+    private IdentityUtil identityUtil;
 
     Gson gson = new GsonBuilder().serializeNulls().create();
 

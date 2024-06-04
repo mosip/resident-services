@@ -101,6 +101,12 @@ public class DownloadCardServiceTest {
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
 
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private SessionUserNameUtility sessionUserNameUtility;
+
 	private MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO;
 
 	private String result;

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.crypto.SecretKey;
 
 import io.mosip.idrepository.core.util.EnvUtil;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.IdentityUtil;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
@@ -111,6 +112,9 @@ public class IdentityControllerTest {
 
 	@Mock
 	private IdentityUtil identityUtil;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Before
 	public void setUp() throws Exception {

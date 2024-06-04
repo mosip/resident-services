@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.IdentityUtil;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -112,6 +113,9 @@ public class IdAuthServiceTest {
 
     @Mock
     private IdentityUtil identityUtil;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
 
     @Before
     public void setup() throws ResidentServiceCheckedException {
