@@ -144,7 +144,7 @@ RevokeVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-406"
+      "errorCode": "RES-SER-474"
     }
   ]
 }'
@@ -166,7 +166,7 @@ RevokeVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-406"
+      "errorCode": "RES-SER-474"
     }
   ]
 }'
@@ -188,7 +188,7 @@ RevokeVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-406"
+      "errorCode": "RES-SER-474"
     }
   ]
 }'
