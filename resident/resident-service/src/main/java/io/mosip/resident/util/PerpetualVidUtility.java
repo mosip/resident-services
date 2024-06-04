@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class PerpetualVidUtility {
 
     @Autowired
-    private static Environment env;
+    private Environment env;
 
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;

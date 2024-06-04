@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
@@ -79,9 +79,6 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 @RunWith(SpringRunner.class)
@@ -138,6 +135,15 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	RequestValidator requestValidator;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private GetAccessTokenUtility getAccessTokenUtility;
 
 	ResidentUpdateRequestDto dto;
 
