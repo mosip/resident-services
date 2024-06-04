@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
@@ -25,16 +27,23 @@ import io.mosip.preregistration.application.service.TransliterationService;
 import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication(scanBasePackages = { 
-		"io.mosip.resident.*", 
+@SpringBootApplication
+@ComponentScan(basePackages = { "io.mosip.resident.*",
 		"io.mosip.kernel.core.*",
-		"io.mosip.kernel.crypto.jce.*", 
-		"io.mosip.commons.packet.*", 
+		"io.mosip.kernel.crypto.jce.*",
+		"io.mosip.commons.packet.*",
 		"io.mosip.kernel.keygenerator.bouncycastle.*",
-		"${mosip.auth.adapter.impl.basepackage}", 
-		"io.mosip.kernel.virusscanner.*", 
+		"${mosip.auth.adapter.impl.basepackage}",
+		"io.mosip.kernel.virusscanner.*",
 		"io.mosip.commons.khazana.*",
-		"io.mosip.idrepository.core.util.*"})
+		"io.mosip.idrepository.core.util.*" },
+		excludeFilters = {
+				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.kernel.lkeymanager.repository.*"),
+				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.idrepository.core.repository.*"),
+				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.preregistration.application.repository.*"),
+				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.analytics.event.anonymous.repository.*")
+		}
+)
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @Import({TokenIDGenerator.class, ValidateTokenUtil.class, CbeffImpl.class, TransliterationService.class, TransliterationServiceUtil.class
