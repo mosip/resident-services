@@ -13,10 +13,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UinVidValidator;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,6 +77,9 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private UinForIndividualId uinForIndividualId;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -169,7 +169,7 @@ public class ProxyIdRepoServiceTest {
 		responseWrapper.setResponse(draftResponseDto);
 
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(uinVidValidator.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(uinForIndividualId.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -234,7 +234,7 @@ public class ProxyIdRepoServiceTest {
 		residentTransactionEntity1.setEventId("1234");
 
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(uinVidValidator.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(uinForIndividualId.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);

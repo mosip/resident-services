@@ -41,6 +41,9 @@ public class AvailableClaimUtility {
     @Autowired
     private UinVidValidator uinVidValidator;
 
+    @Autowired
+    private UinForIndividualId uinForIndividualId;
+
     public String getIDAToken(String uin) {
         return getIDAToken(uin, onlineVerificationPartnerId);
     }
@@ -51,7 +54,7 @@ public class AvailableClaimUtility {
 
 
     public  String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException {
-        return getIDAToken(uinVidValidator.getUinForIndividualId(idvid));
+        return getIDAToken(uinForIndividualId.getUinForIndividualId(idvid));
     }
 
     public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {

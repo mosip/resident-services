@@ -115,7 +115,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <skipTests>false</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                     <skip>false</skip>
                     <argLine>
                         --add-opens=java.base/java.lang=ALL-UNNAMED

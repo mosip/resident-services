@@ -141,6 +141,9 @@ public class ResidentVidServiceTest {
     @Mock
     private Environment environment;
 
+    @Mock
+    private UinForIndividualId uinForIndividualId;
+
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
 
@@ -291,7 +294,7 @@ public class ResidentVidServiceTest {
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-        when(uinVidValidator.getUinForIndividualId(vid)).thenReturn("1234567890");
+        when(uinForIndividualId.getUinForIndividualId(vid)).thenReturn("1234567890");
 
 		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "1234567890");
 

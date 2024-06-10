@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
@@ -36,13 +35,7 @@ import org.springframework.web.client.RestTemplate;
 		"${mosip.auth.adapter.impl.basepackage}",
 		"io.mosip.kernel.virusscanner.*",
 		"io.mosip.commons.khazana.*",
-		"io.mosip.idrepository.core.util.*" },
-		excludeFilters = {
-				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.kernel.lkeymanager.repository.*"),
-				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.idrepository.core.repository.*"),
-				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.preregistration.application.repository.*"),
-				@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "io.mosip.analytics.event.anonymous.repository.*")
-		}
+		"io.mosip.idrepository.core.util.*" }
 )
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class })

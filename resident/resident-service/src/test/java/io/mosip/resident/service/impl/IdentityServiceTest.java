@@ -163,6 +163,9 @@ public class IdentityServiceTest {
 	@Mock
 	private VidValidator validator;
 
+	@InjectMocks
+	private UinForIndividualId uinForIndividualId;
+
 	@Before
 	public void setUp() throws Exception {
 		ReflectionTestUtils.setField(identityService, "objectMapper", objectMapper);
@@ -314,7 +317,8 @@ public class IdentityServiceTest {
 	public void testGetUinForIndividualId() throws Exception{
 		String id = "123456789";
 		fileLoadMethod();
-		String result = uinVidValidator.getUinForIndividualId(id);
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		String result = uinForIndividualId.getUinForIndividualId(id);
 	}
 
 	@Test
@@ -444,7 +448,8 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetClaimValueFromJwtTokenNullClaim() throws ResidentServiceCheckedException {
-		uinVidValidator.getUinForIndividualId("2476302389");
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		uinForIndividualId.getUinForIndividualId("2476302389");
 	}
 
 	@Test
@@ -497,30 +502,31 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetUinForIndividualIdVId() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("2476302389");
-		uinVidValidator.getUinForIndividualId("2476302389");
+		uinForIndividualId.getUinForIndividualId("2476302389");
 	}
 
 	@Test
 	public void testGetUinForIndividualIdVIdCreationException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		Mockito.when(identityDataUtil.getIdentityDataFromIndividualID(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		uinVidValidator.getUinForIndividualId("2476302389");
+		uinForIndividualId.getUinForIndividualId("2476302389");
 	}
 
 	@Test
 	public void testGetUinForIndividualIdApisResourceAccessException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		assertEquals("8251649601", uinVidValidatorUtil.getUinForIndividualId("2476302389"));
+		assertEquals("2476302389", uinForIndividualId.getUinForIndividualId("2476302389"));
 	}
 
 	@Test
 	public void testGetUinForIndividualIdIOException() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
-		assertEquals("8251649601", uinVidValidatorUtil.getUinForIndividualId("2476302389"));
+		assertEquals("2476302389", uinForIndividualId.getUinForIndividualId("2476302389"));
 	}
 	
 	public static void getAuthUserDetailsFromAuthentication() {

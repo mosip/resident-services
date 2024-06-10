@@ -159,6 +159,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	@Autowired
 	private PerpetualVidUtility perpetualVidUtility;
 
+	@Autowired
+	private UinForIndividualId uinForIndividualId;
+
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
 			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException {
@@ -496,7 +499,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		} else {
 			String uinForVid;
 			try {
-				uinForVid = uinVidValidator.getUinForIndividualId(vid);
+				uinForVid = uinForIndividualId.getUinForIndividualId(vid);
 			}catch (Exception exception){
 				logger.error(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode()+exception);
 				throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),

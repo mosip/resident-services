@@ -94,6 +94,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private MaskDataUtility maskDataUtility;
 
+	@Autowired
+	private UinForIndividualId uinForIndividualId;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
@@ -137,7 +140,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
 			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
 			if(!uinVidValidator.validateUin(individualId)){
-				individualId = uinVidValidator.getUinForIndividualId(individualId);
+				individualId = uinForIndividualId.getUinForIndividualId(individualId);
 			}
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put(IdType.UIN.name(), individualId);
