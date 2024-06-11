@@ -39,9 +39,6 @@ public class AvailableClaimUtility {
     private static final String INDIVIDUAL_ID = "individual_id";
 
     @Autowired
-    private UinVidValidator uinVidValidator;
-
-    @Autowired
     private UinForIndividualId uinForIndividualId;
 
     public String getIDAToken(String uin) {

@@ -9,6 +9,7 @@ import java.util.Optional;
 import io.mosip.resident.util.IdentityDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -35,12 +36,10 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Autowired
-	private Utility utility;
-
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
 
 	@Autowired
+	@Lazy
 	private IdentityDataUtil identityDataUtil;
 
 	@Override

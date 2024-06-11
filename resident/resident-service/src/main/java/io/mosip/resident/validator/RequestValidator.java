@@ -60,13 +60,13 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -119,9 +119,11 @@ public class RequestValidator {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
+	@Lazy
 	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Autowired
+	@Lazy
 	private ProxyIdRepoService idRepoService;
 
 	@Autowired
@@ -143,6 +145,7 @@ public class RequestValidator {
 	private UinVidValidator uinVidValidator;
 
 	@Autowired
+	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Value("${resident.updateuin.id}")

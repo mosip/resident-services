@@ -27,6 +27,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -81,16 +82,15 @@ public class NotificationService {
 	private Utilities utilities;
 
 	@Autowired
+	@Lazy
 	private RequestValidator requestValidator;
 	
 	@Autowired
 	private AuditUtil audit;
 	
 	@Autowired
+	@Lazy
 	private TemplateUtil templateUtil;
-
-	@Autowired
-	private IdentityService identityService;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";

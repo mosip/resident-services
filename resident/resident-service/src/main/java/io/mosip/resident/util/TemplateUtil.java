@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -60,18 +60,17 @@ public class TemplateUtil {
 	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 
 	@Autowired
-	private IdentityServiceImpl identityServiceImpl;
-
-	@Autowired
 	private UinVidValidator uinVidValidator;
 
 	@Autowired
+	@Lazy
 	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Autowired
 	private Utility utility;
 
 	@Autowired
+	@Lazy
 	private ResidentServiceImpl residentService;
 
 	@Autowired

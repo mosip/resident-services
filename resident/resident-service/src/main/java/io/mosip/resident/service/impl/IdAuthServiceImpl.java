@@ -123,9 +123,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Autowired
-	private IdentityServiceImpl identityService;
-
-	@Autowired
 	private NotificationService notificationService;
 
     @Autowired

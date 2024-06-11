@@ -44,6 +44,7 @@ import io.mosip.resident.constant.EventStatusCanceled;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -224,6 +225,7 @@ public class ResidentServiceImpl implements ResidentService {
 	Environment env;
 
 	@Autowired
+	@Lazy
 	private TemplateUtil templateUtil;
 
 	@Autowired

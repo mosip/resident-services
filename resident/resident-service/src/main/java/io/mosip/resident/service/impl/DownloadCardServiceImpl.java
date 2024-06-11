@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,6 @@ import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.ResidentVidService;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -89,6 +89,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
+	@Lazy
 	private IdAuthService idAuthService;
 
 	@Autowired
@@ -98,6 +99,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private IdentityServiceImpl identityService;
 
 	@Autowired
+	@Lazy
 	private NotificationService notificationService;
 
 	@Autowired
@@ -107,13 +109,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
-	private ResidentVidService vidService;
-
-	@Autowired
 	private ResidentCredentialService residentCredentialService;
-
-	@Autowired
-	private IdentityDataUtil identityDataUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 

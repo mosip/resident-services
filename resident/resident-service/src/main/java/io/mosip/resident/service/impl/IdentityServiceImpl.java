@@ -12,8 +12,8 @@ import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.*;
+import org.springframework.context.annotation.Lazy;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -37,6 +37,7 @@ import java.util.Set;
 public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
+	@Lazy
 	private Utility utility;
 
 	@Autowired
@@ -46,35 +47,30 @@ public class IdentityServiceImpl implements IdentityService {
 	private Environment env;
 
 	@Autowired
-	private ResidentVidService residentVidService;
-
-	@Autowired
 	private AuthUserDetailsUtil authUserDetailsUtil;
 
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
 
 	@Autowired
+	@Lazy
 	private IdentityDataUtil identityDataUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 
-	@Autowired
-	private CachedIdentityDataUtil cachedIdentityDataUtil;
-
-	@Autowired
-	private GetAccessTokenUtility getAccessTokenUtility;
-
-	@Autowired
+    @Autowired
+	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired
 	private UinVidValidator uinVidValidator;
 
 	@Autowired
+	@Lazy
 	private IdentityUtil identityUtil;
 
 	@Autowired
+	@Lazy
 	private PerpetualVidUtility perpetualVidUtility;
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {

@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ public class SessionUserNameUtility {
     private Environment environment;
 
     @Autowired
+    @Lazy
     private AvailableClaimUtility availableClaimUtility;
 
     public String getSessionUserName() {

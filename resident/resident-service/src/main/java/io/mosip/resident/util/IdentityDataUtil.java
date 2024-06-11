@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -50,9 +51,11 @@ public class IdentityDataUtil {
     private GetAcrMappingUtil getAcrMappingUtil;
 
     @Autowired
+    @Lazy
     private ProxyPartnerManagementService proxyPartnerManagementService;
 
     @Autowired
+    @Lazy
     private NotificationService notificationService;
 
     @Autowired
