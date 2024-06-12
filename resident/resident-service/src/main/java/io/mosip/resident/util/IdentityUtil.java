@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentConstants.IDENTITY;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class IdentityUtil {
 

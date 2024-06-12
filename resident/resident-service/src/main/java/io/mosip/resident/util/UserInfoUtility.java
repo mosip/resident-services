@@ -35,6 +35,10 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class UserInfoUtility {
 

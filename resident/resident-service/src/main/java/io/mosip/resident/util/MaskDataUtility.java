@@ -14,6 +14,10 @@ import java.util.Map;
 
 import static io.mosip.resident.constant.ResidentConstants.VALUE;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class MaskDataUtility {
 

@@ -4,6 +4,10 @@ import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class AuthUserDetailsUtil {
 
