@@ -6,11 +6,12 @@ import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -36,7 +37,6 @@ import io.mosip.resident.dto.AuditResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ValidationException;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -56,7 +56,7 @@ public class AuditUtil {
 	private ObjectMapper objectMapper;
 
 	@Autowired
-	private IdentityServiceImpl identityService;
+	private UinVidValidator uinVidValidator;
 
 	@Autowired
 	private Environment environment;
@@ -73,7 +73,11 @@ public class AuditUtil {
 	private String hostIpAddress = null;
 
 	private String hostName = null;
-	
+
+	@Autowired
+	@Lazy
+	private AvailableClaimUtility availableClaimUtility;
+
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -107,7 +111,7 @@ public class AuditUtil {
 			if(Utility.isSecureSession()) {
 				String name = null;
 				try {
-					name = identityService.getAvailableclaimValue(
+					name = availableClaimUtility.getAvailableClaimValue(
 							this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 				} catch (ApisResourceAccessException e) {
 					throw new RuntimeException(e);
@@ -185,7 +189,7 @@ public class AuditUtil {
 	public Tuple2<String, String> getRefIdHashAndType() {
 		try {
 			if (Utility.isSecureSession()) {
-				String individualId = identityService.getResidentIndvidualIdFromSession();
+				String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 				if (individualId != null && !individualId.isEmpty()) {
 					return getRefIdHashAndTypeFromIndividualId(individualId);
 				}
@@ -200,7 +204,7 @@ public class AuditUtil {
 
 	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
 		String refIdHash = utility.getRefIdHash(individualId);
-		String idType = identityService.getIndividualIdType(individualId).name();
+		String idType = uinVidValidator.getIndividualIdType(individualId).name();
 		return Tuples.of(refIdHash, idType);
 	}
 

@@ -5,6 +5,7 @@ import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 import java.util.HashMap;
 import java.util.UUID;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class GrievanceServiceImpl implements GrievanceService {
     private ResidentGrievanceRepository residentGrievanceRepository;
 
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
+
+    @Autowired
+    private AvailableClaimUtility availableClaimUtility;
 
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
@@ -83,16 +87,16 @@ public class GrievanceServiceImpl implements GrievanceService {
                                                                                     grievanceRequestDTOMainRequestDTO)
             throws ApisResourceAccessException {
         if (grievanceRequestDTOMainRequestDTO.getRequest().getName() == null) {
-            grievanceRequestDTOMainRequestDTO.getRequest().setName(identityService.getAvailableclaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setName(availableClaimUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE)));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(identityService.getAvailableclaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(availableClaimUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.PHONE_FROM_PROFILE)
             ));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(identityService.getAvailableclaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(availableClaimUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.EMAIL_FROM_PROFILE)));
         }
         return grievanceRequestDTOMainRequestDTO;

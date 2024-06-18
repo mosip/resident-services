@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.IdentityDataUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -34,15 +36,16 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Autowired
-	private Utility utility;
+    private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
+	@Autowired
+	@Lazy
+	private IdentityDataUtil identityDataUtil;
 
 	@Override
 	public ResponseWrapper<?> getPartnersByPartnerType(String partnerType)
 			throws ResidentServiceCheckedException {
-		return utility.getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
+		return identityDataUtil.getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	public Map<String, ?> getPartnerDetailFromPartnerIdAndPartnerType(String partnerId, String partnerType) {
 		ResponseWrapper<?> response = null;
 		try {
-			response = utility.getPartnersByPartnerType(partnerType, ApiName.PARTNER_DETAILS_NEW_URL);
+			response = identityDataUtil.getPartnersByPartnerType(partnerType, ApiName.PARTNER_DETAILS_NEW_URL);
 		} catch (ResidentServiceCheckedException e) {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

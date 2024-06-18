@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @WebMvcTest
 @TestPropertySource(locations="classpath:application.properties")
+@Import(RestTemplateMetricsInterceptorTest.AdditionalConfig.class)
 public class RestTemplateMetricsInterceptorTest {
 
     @Autowired
@@ -68,7 +71,7 @@ public class RestTemplateMetricsInterceptorTest {
         HttpRequest request = mock(HttpRequest.class);
         when(request.getURI()).thenReturn(URI.create("https://example.com"));
         when(request.getMethod()).thenReturn(HttpMethod.GET);
-
+        when(response.getStatusCode()).thenReturn(HttpStatus.OK);
 
         Assert.assertNotNull(interceptor.intercept(request, new byte[]{}, execution));
 

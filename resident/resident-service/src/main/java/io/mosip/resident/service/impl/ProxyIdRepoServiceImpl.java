@@ -24,8 +24,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,12 +82,27 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	@Autowired
 	private ResidentServiceImpl residentService;
 
+	@Autowired
+	private IdentityDataUtil identityDataUtil;
+
+	@Autowired
+	private UinVidValidator uinVidValidator;
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private MaskDataUtility maskDataUtility;
+
+	@Autowired
+	private UinForIndividualId uinForIndividualId;
+
 	@Override
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::entry");
-			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
+			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put("individualId", individualId);
 			
@@ -124,9 +138,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException {
 		try {
 			logger.debug("ProxyIdRepoServiceImpl::getPendingDrafts()::entry");
-			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
-			if(!requestValidator.validateUin(individualId)){
-				individualId = identityServiceImpl.getUinForIndividualId(individualId);
+			String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
+			if(!uinVidValidator.validateUin(individualId)){
+				individualId = uinForIndividualId.getUinForIndividualId(individualId);
 			}
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put(IdType.UIN.name(), individualId);
@@ -195,7 +209,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 					utility.updateEntity(EventStatusCanceled.CANCELED.name(), RequestType.UPDATE_MY_UIN.name()
 									+ " - " + EventStatusCanceled.CANCELED.name(),
 							false, "Draft Discarded successfully", residentTransactionEntity.get());
-					utility.sendNotification(residentTransactionEntity.get().getEventId(),
+					identityDataUtil.sendNotification(residentTransactionEntity.get().getEventId(),
 							individualId, TemplateType.REGPROC_FAILED);
 				}
 			}
@@ -223,7 +237,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			}
 		}
 		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionRepository.
-				findByTokenIdAndRequestTypeCodeAndStatusCode(identityServiceImpl.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
+				findByTokenIdAndRequestTypeCodeAndStatusCode(availableClaimUtility.getResidentIdaToken(), RequestType.UPDATE_MY_UIN.name(),
 						EventStatusInProgress.NEW.name());
 		if(!residentTransactionEntityList.isEmpty()){
 			for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList){
@@ -277,9 +291,9 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 			eventId = utility.createEventId();
 			residentTransactionEntity.setEventId(eventId);
-			residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+			residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 			residentTransactionEntity.setIndividualId(individualId);
-			residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+			residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
 			residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 			if(attributes!=null){
 				String attributeList = String.join(SEMI_COLON, attributes);

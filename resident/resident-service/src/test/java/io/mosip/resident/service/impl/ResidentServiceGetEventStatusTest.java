@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.UinVidValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,6 +68,9 @@ public class ResidentServiceGetEventStatusTest {
     @Mock
     private Environment environment;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     private String eventId;
     private String langCode;
     private ResponseWrapper<EventStatusResponseDTO> responseWrapper;
@@ -73,6 +78,9 @@ public class ResidentServiceGetEventStatusTest {
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
     private RequestType requestType;
     Map<String, String> templateVariables;
+
+    @Mock
+    private UinVidValidator uinVidValidator;
 
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
@@ -101,8 +109,8 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put(TemplateVariablesConstants.PURPOSE, "authentication");
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS_ENUM, EventStatus.SUCCESS.name());
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123456789");
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123456789");
+        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
@@ -118,14 +126,14 @@ public class ResidentServiceGetEventStatusTest {
 
     @Test
     public void getEventStatusTestVid() throws ResidentServiceCheckedException {
-        Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test
     public void getEventStatusTestUIN() throws ResidentServiceCheckedException {
-        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
@@ -156,13 +164,13 @@ public class ResidentServiceGetEventStatusTest {
     
     @Test(expected = ResidentServiceCheckedException.class)
     public void getEventStatusNestedIfTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-    	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("abcd");
+    	Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("abcd");
         residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
     }
     
     @Test(expected = ResidentServiceCheckedException.class)
     public void getEventStatusThrowsExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-    	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+    	Mockito.when(availableClaimUtility.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
         residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
     }
     

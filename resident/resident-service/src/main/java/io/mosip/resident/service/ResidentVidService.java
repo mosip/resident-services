@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public interface ResidentVidService {
@@ -25,21 +22,11 @@ public interface ResidentVidService {
 
 	public String getVidPolicy() throws ResidentServiceCheckedException;
 
-	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
-
-	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
-
-	public Tuple2<ResponseWrapper<VidResponseDto>, String> generateVidV2(BaseVidRequestDto requestDto,
+    public Tuple2<ResponseWrapper<VidResponseDto>, String> generateVidV2(BaseVidRequestDto requestDto,
 			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException;
 
 	public Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> revokeVidV2(BaseVidRevokeRequestDTO requestDto,
 			String vid, String indivudalId)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException;
-	
-	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale)
-			throws ResidentServiceCheckedException, ApisResourceAccessException;
-
-	ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, String uin)
-			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

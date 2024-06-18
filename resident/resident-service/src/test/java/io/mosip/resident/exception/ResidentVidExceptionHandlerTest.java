@@ -3,9 +3,11 @@ package io.mosip.resident.exception;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.ResponseWrapper;
-import org.apache.struts.mock.MockHttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
@@ -39,14 +41,20 @@ public class ResidentVidExceptionHandlerTest {
     @Autowired
     private ResidentVidExceptionHandler residentVidExceptionHandler;
 
+    private HttpServletRequest  mockedRequest;
+
+    @Before
+    public void setup() throws Exception {
+        mockedRequest = Mockito.mock(HttpServletRequest.class);
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example");
+    }
+
     @Test
     public void testResidentCheckedException2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualResidentCheckedExceptionResult = residentVidExceptionHandler
-                .residentCheckedException(httpServletRequest,
+                .residentCheckedException(mockedRequest,
                         new ResidentServiceCheckedException(ResidentErrorCode.NO_RID_FOUND_EXCEPTION));
         assertTrue(actualResidentCheckedExceptionResult.hasBody());
         assertTrue(actualResidentCheckedExceptionResult.getHeaders().isEmpty());
@@ -66,11 +74,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentCheckedException3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualResidentCheckedExceptionResult = residentVidExceptionHandler
-                .residentCheckedException(httpServletRequest,
+                .residentCheckedException(mockedRequest,
                         new ResidentServiceCheckedException(ResidentErrorCode.NO_RID_FOUND_EXCEPTION));
         assertTrue(actualResidentCheckedExceptionResult.hasBody());
         assertTrue(actualResidentCheckedExceptionResult.getHeaders().isEmpty());
@@ -90,14 +96,12 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentCheckedException5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResidentServiceCheckedException residentServiceCheckedException = new ResidentServiceCheckedException(
                 ResidentErrorCode.NO_RID_FOUND_EXCEPTION);
         residentServiceCheckedException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualResidentCheckedExceptionResult = residentVidExceptionHandler
-                .residentCheckedException(httpServletRequest, residentServiceCheckedException);
+                .residentCheckedException(mockedRequest, residentServiceCheckedException);
         assertTrue(actualResidentCheckedExceptionResult.hasBody());
         assertTrue(actualResidentCheckedExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualResidentCheckedExceptionResult.getStatusCode());
@@ -120,8 +124,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentCheckedException6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResidentServiceCheckedException residentServiceCheckedException = mock(ResidentServiceCheckedException.class);
         when(residentServiceCheckedException.getErrorCode()).thenReturn("An error occurred");
@@ -130,7 +132,7 @@ public class ResidentVidExceptionHandlerTest {
         when(residentServiceCheckedException.getCodes()).thenReturn(stringList);
         when(residentServiceCheckedException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualResidentCheckedExceptionResult = residentVidExceptionHandler
-                .residentCheckedException(httpServletRequest, residentServiceCheckedException);
+                .residentCheckedException(mockedRequest, residentServiceCheckedException);
         assertTrue(actualResidentCheckedExceptionResult.hasBody());
         assertTrue(actualResidentCheckedExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualResidentCheckedExceptionResult.getStatusCode());
@@ -149,11 +151,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentServiceException2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualResidentServiceExceptionResult = residentVidExceptionHandler
-                .residentServiceException(httpServletRequest,
+                .residentServiceException(mockedRequest,
                         new ResidentServiceException(ResidentErrorCode.NO_RID_FOUND_EXCEPTION));
         assertTrue(actualResidentServiceExceptionResult.hasBody());
         assertTrue(actualResidentServiceExceptionResult.getHeaders().isEmpty());
@@ -173,11 +173,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentServiceException3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualResidentServiceExceptionResult = residentVidExceptionHandler
-                .residentServiceException(httpServletRequest,
+                .residentServiceException(mockedRequest,
                         new ResidentServiceException(ResidentErrorCode.NO_RID_FOUND_EXCEPTION));
         assertTrue(actualResidentServiceExceptionResult.hasBody());
         assertTrue(actualResidentServiceExceptionResult.getHeaders().isEmpty());
@@ -198,14 +196,12 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentServiceException5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResidentServiceException residentServiceException = new ResidentServiceException(
                 ResidentErrorCode.NO_RID_FOUND_EXCEPTION);
         residentServiceException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualResidentServiceExceptionResult = residentVidExceptionHandler
-                .residentServiceException(httpServletRequest, residentServiceException);
+                .residentServiceException(mockedRequest, residentServiceException);
         assertTrue(actualResidentServiceExceptionResult.hasBody());
         assertTrue(actualResidentServiceExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualResidentServiceExceptionResult.getStatusCode());
@@ -228,8 +224,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testResidentServiceException6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResidentServiceException residentServiceException = mock(ResidentServiceException.class);
         when(residentServiceException.getErrorCode()).thenReturn("An error occurred");
@@ -238,7 +232,7 @@ public class ResidentVidExceptionHandlerTest {
         when(residentServiceException.getCodes()).thenReturn(stringList);
         when(residentServiceException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualResidentServiceExceptionResult = residentVidExceptionHandler
-                .residentServiceException(httpServletRequest, residentServiceException);
+                .residentServiceException(mockedRequest, residentServiceException);
         assertTrue(actualResidentServiceExceptionResult.hasBody());
         assertTrue(actualResidentServiceExceptionResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualResidentServiceExceptionResult.getStatusCode());
@@ -257,11 +251,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidAlreadyPresent2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualVidAlreadyPresentResult = residentVidExceptionHandler.vidAlreadyPresent(
-                httpServletRequest, new VidAlreadyPresentException("An error occurred", "An error occurred"));
+                mockedRequest, new VidAlreadyPresentException("An error occurred", "An error occurred"));
         assertTrue(actualVidAlreadyPresentResult.hasBody());
         assertTrue(actualVidAlreadyPresentResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidAlreadyPresentResult.getStatusCode());
@@ -280,11 +272,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidAlreadyPresent3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualVidAlreadyPresentResult = residentVidExceptionHandler.vidAlreadyPresent(
-                httpServletRequest, new VidAlreadyPresentException("An error occurred", "An error occurred"));
+                mockedRequest, new VidAlreadyPresentException("An error occurred", "An error occurred"));
         assertTrue(actualVidAlreadyPresentResult.hasBody());
         assertTrue(actualVidAlreadyPresentResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidAlreadyPresentResult.getStatusCode());
@@ -302,14 +292,12 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidAlreadyPresent5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidAlreadyPresentException vidAlreadyPresentException = new VidAlreadyPresentException("An error occurred",
                 "An error occurred");
         vidAlreadyPresentException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualVidAlreadyPresentResult = residentVidExceptionHandler
-                .vidAlreadyPresent(httpServletRequest, vidAlreadyPresentException);
+                .vidAlreadyPresent(mockedRequest, vidAlreadyPresentException);
         assertTrue(actualVidAlreadyPresentResult.hasBody());
         assertTrue(actualVidAlreadyPresentResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidAlreadyPresentResult.getStatusCode());
@@ -331,8 +319,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidAlreadyPresent6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidAlreadyPresentException vidAlreadyPresentException = mock(VidAlreadyPresentException.class);
         when(vidAlreadyPresentException.getErrorCode()).thenReturn("An error occurred");
@@ -341,7 +327,7 @@ public class ResidentVidExceptionHandlerTest {
         when(vidAlreadyPresentException.getCodes()).thenReturn(stringList);
         when(vidAlreadyPresentException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualVidAlreadyPresentResult = residentVidExceptionHandler
-                .vidAlreadyPresent(httpServletRequest, vidAlreadyPresentException);
+                .vidAlreadyPresent(mockedRequest, vidAlreadyPresentException);
         assertTrue(actualVidAlreadyPresentResult.hasBody());
         assertTrue(actualVidAlreadyPresentResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidAlreadyPresentResult.getStatusCode());
@@ -360,11 +346,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidCreationFailed2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualVidCreationFailedResult = residentVidExceptionHandler
-                .vidCreationFailed(httpServletRequest, new VidCreationException());
+                .vidCreationFailed(mockedRequest, new VidCreationException());
         assertTrue(actualVidCreationFailedResult.hasBody());
         assertTrue(actualVidCreationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidCreationFailedResult.getStatusCode());
@@ -383,11 +367,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidCreationFailed3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualVidCreationFailedResult = residentVidExceptionHandler
-                .vidCreationFailed(httpServletRequest, new VidCreationException());
+                .vidCreationFailed(mockedRequest, new VidCreationException());
         assertTrue(actualVidCreationFailedResult.hasBody());
         assertTrue(actualVidCreationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidCreationFailedResult.getStatusCode());
@@ -406,13 +388,11 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidCreationFailed5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidCreationException vidCreationException = new VidCreationException();
         vidCreationException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualVidCreationFailedResult = residentVidExceptionHandler
-                .vidCreationFailed(httpServletRequest, vidCreationException);
+                .vidCreationFailed(mockedRequest, vidCreationException);
         assertTrue(actualVidCreationFailedResult.hasBody());
         assertTrue(actualVidCreationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidCreationFailedResult.getStatusCode());
@@ -434,8 +414,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidCreationFailed6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidCreationException vidCreationException = mock(VidCreationException.class);
         when(vidCreationException.getErrorCode()).thenReturn("An error occurred");
@@ -444,7 +422,7 @@ public class ResidentVidExceptionHandlerTest {
         when(vidCreationException.getCodes()).thenReturn(stringList);
         when(vidCreationException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualVidCreationFailedResult = residentVidExceptionHandler
-                .vidCreationFailed(httpServletRequest, vidCreationException);
+                .vidCreationFailed(mockedRequest, vidCreationException);
         assertTrue(actualVidCreationFailedResult.hasBody());
         assertTrue(actualVidCreationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidCreationFailedResult.getStatusCode());
@@ -463,11 +441,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testApiNotAccessible2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualApiNotAccessibleResult = residentVidExceptionHandler
-                .apiNotAccessible(httpServletRequest, new ApisResourceAccessException("An error occurred"));
+                .apiNotAccessible(mockedRequest, new ApisResourceAccessException("An error occurred"));
         assertTrue(actualApiNotAccessibleResult.hasBody());
         assertTrue(actualApiNotAccessibleResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualApiNotAccessibleResult.getStatusCode());
@@ -486,11 +462,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testApiNotAccessible3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualApiNotAccessibleResult = residentVidExceptionHandler
-                .apiNotAccessible(httpServletRequest, new ApisResourceAccessException("An error occurred"));
+                .apiNotAccessible(mockedRequest, new ApisResourceAccessException("An error occurred"));
         assertTrue(actualApiNotAccessibleResult.hasBody());
         assertTrue(actualApiNotAccessibleResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualApiNotAccessibleResult.getStatusCode());
@@ -509,8 +483,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testApiNotAccessible5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ApisResourceAccessException apisResourceAccessException = mock(ApisResourceAccessException.class);
         when(apisResourceAccessException.getErrorCode()).thenReturn("An error occurred");
@@ -519,7 +491,7 @@ public class ResidentVidExceptionHandlerTest {
         when(apisResourceAccessException.getCodes()).thenReturn(stringList);
         when(apisResourceAccessException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualApiNotAccessibleResult = residentVidExceptionHandler
-                .apiNotAccessible(httpServletRequest, apisResourceAccessException);
+                .apiNotAccessible(mockedRequest, apisResourceAccessException);
         assertTrue(actualApiNotAccessibleResult.hasBody());
         assertTrue(actualApiNotAccessibleResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualApiNotAccessibleResult.getStatusCode());
@@ -538,11 +510,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testOtpValidationFailed2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualOtpValidationFailedResult = residentVidExceptionHandler
-                .otpValidationFailed(httpServletRequest, new OtpValidationFailedException());
+                .otpValidationFailed(mockedRequest, new OtpValidationFailedException());
         assertTrue(actualOtpValidationFailedResult.hasBody());
         assertTrue(actualOtpValidationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualOtpValidationFailedResult.getStatusCode());
@@ -561,11 +531,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testOtpValidationFailed3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualOtpValidationFailedResult = residentVidExceptionHandler
-                .otpValidationFailed(httpServletRequest, new OtpValidationFailedException());
+                .otpValidationFailed(mockedRequest, new OtpValidationFailedException());
         assertTrue(actualOtpValidationFailedResult.hasBody());
         assertTrue(actualOtpValidationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualOtpValidationFailedResult.getStatusCode());
@@ -584,8 +552,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testOtpValidationFailed5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         OtpValidationFailedException otpValidationFailedException = mock(OtpValidationFailedException.class);
         when(otpValidationFailedException.getErrorCode()).thenReturn("An error occurred");
@@ -594,7 +560,7 @@ public class ResidentVidExceptionHandlerTest {
         when(otpValidationFailedException.getCodes()).thenReturn(stringList);
         when(otpValidationFailedException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualOtpValidationFailedResult = residentVidExceptionHandler
-                .otpValidationFailed(httpServletRequest, otpValidationFailedException);
+                .otpValidationFailed(mockedRequest, otpValidationFailedException);
         assertTrue(actualOtpValidationFailedResult.hasBody());
         assertTrue(actualOtpValidationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualOtpValidationFailedResult.getStatusCode());
@@ -613,10 +579,8 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testInvalidInput2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
-        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(httpServletRequest,
+        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(mockedRequest,
                 new InvalidInputException());
         assertTrue(actualInvalidInputResult.hasBody());
         assertTrue(actualInvalidInputResult.getHeaders().isEmpty());
@@ -636,10 +600,8 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testInvalidInput3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
-        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(httpServletRequest,
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
+        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(mockedRequest,
                 new InvalidInputException());
         assertTrue(actualInvalidInputResult.hasBody());
         assertTrue(actualInvalidInputResult.getHeaders().isEmpty());
@@ -659,12 +621,10 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testInvalidInput5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         InvalidInputException invalidInputException = new InvalidInputException();
         invalidInputException.addInfo("An error occurred", "An error occurred");
-        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(httpServletRequest,
+        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(mockedRequest,
                 invalidInputException);
         assertTrue(actualInvalidInputResult.hasBody());
         assertTrue(actualInvalidInputResult.getHeaders().isEmpty());
@@ -687,8 +647,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testInvalidInput6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         InvalidInputException invalidInputException = mock(InvalidInputException.class);
         when(invalidInputException.getErrorCode()).thenReturn("An error occurred");
@@ -696,7 +654,7 @@ public class ResidentVidExceptionHandlerTest {
         ArrayList<String> stringList = new ArrayList<>();
         when(invalidInputException.getCodes()).thenReturn(stringList);
         when(invalidInputException.getErrorTexts()).thenReturn(new ArrayList<>());
-        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(httpServletRequest,
+        ResponseEntity<Object> actualInvalidInputResult = residentVidExceptionHandler.invalidInput(mockedRequest,
                 invalidInputException);
         assertTrue(actualInvalidInputResult.hasBody());
         assertTrue(actualInvalidInputResult.getHeaders().isEmpty());
@@ -716,11 +674,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidRevocationFailed2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualVidRevocationFailedResult = residentVidExceptionHandler
-                .vidRevocationFailed(httpServletRequest, new VidRevocationException());
+                .vidRevocationFailed(mockedRequest, new VidRevocationException());
         assertTrue(actualVidRevocationFailedResult.hasBody());
         assertTrue(actualVidRevocationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidRevocationFailedResult.getStatusCode());
@@ -739,12 +695,11 @@ public class ResidentVidExceptionHandlerTest {
 
     @Test
     public void testVidRevocationFailed3() {
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualVidRevocationFailedResult = residentVidExceptionHandler
-                .vidRevocationFailed(httpServletRequest, new VidRevocationException());
+                .vidRevocationFailed(mockedRequest, new VidRevocationException());
         assertTrue(actualVidRevocationFailedResult.hasBody());
         assertTrue(actualVidRevocationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidRevocationFailedResult.getStatusCode());
@@ -764,13 +719,11 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidRevocationFailed5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidRevocationException vidRevocationException = new VidRevocationException();
         vidRevocationException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualVidRevocationFailedResult = residentVidExceptionHandler
-                .vidRevocationFailed(httpServletRequest, vidRevocationException);
+                .vidRevocationFailed(mockedRequest, vidRevocationException);
         assertTrue(actualVidRevocationFailedResult.hasBody());
         assertTrue(actualVidRevocationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidRevocationFailedResult.getStatusCode());
@@ -793,8 +746,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testVidRevocationFailed6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         VidRevocationException vidRevocationException = mock(VidRevocationException.class);
         when(vidRevocationException.getErrorCode()).thenReturn("An error occurred");
@@ -803,7 +754,7 @@ public class ResidentVidExceptionHandlerTest {
         when(vidRevocationException.getCodes()).thenReturn(stringList);
         when(vidRevocationException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualVidRevocationFailedResult = residentVidExceptionHandler
-                .vidRevocationFailed(httpServletRequest, vidRevocationException);
+                .vidRevocationFailed(mockedRequest, vidRevocationException);
         assertTrue(actualVidRevocationFailedResult.hasBody());
         assertTrue(actualVidRevocationFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualVidRevocationFailedResult.getStatusCode());
@@ -822,11 +773,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testIdRepoAppExceptionFailed2() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         ResponseEntity<Object> actualIdRepoAppExceptionFailedResult = residentVidExceptionHandler
-                .idRepoAppExceptionFailed(httpServletRequest,
+                .idRepoAppExceptionFailed(mockedRequest,
                         new IdRepoAppException("An error occurred", "An error occurred"));
         assertTrue(actualIdRepoAppExceptionFailedResult.hasBody());
         assertTrue(actualIdRepoAppExceptionFailedResult.getHeaders().isEmpty());
@@ -847,11 +796,9 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testIdRepoAppExceptionFailed3() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("/vid/", "https://example.org/example",
-                "https://example.org/example", "https://example.org/example");
-
+        when(mockedRequest.getRequestURI()).thenReturn("https://example.org/example/vid/");
         ResponseEntity<Object> actualIdRepoAppExceptionFailedResult = residentVidExceptionHandler
-                .idRepoAppExceptionFailed(httpServletRequest,
+                .idRepoAppExceptionFailed(mockedRequest,
                         new IdRepoAppException("An error occurred", "An error occurred"));
         assertTrue(actualIdRepoAppExceptionFailedResult.hasBody());
         assertTrue(actualIdRepoAppExceptionFailedResult.getHeaders().isEmpty());
@@ -872,13 +819,11 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testIdRepoAppExceptionFailed5() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         IdRepoAppException idRepoAppException = new IdRepoAppException("An error occurred", "An error occurred");
         idRepoAppException.addInfo("An error occurred", "An error occurred");
         ResponseEntity<Object> actualIdRepoAppExceptionFailedResult = residentVidExceptionHandler
-                .idRepoAppExceptionFailed(httpServletRequest, idRepoAppException);
+                .idRepoAppExceptionFailed(mockedRequest, idRepoAppException);
         assertTrue(actualIdRepoAppExceptionFailedResult.hasBody());
         assertTrue(actualIdRepoAppExceptionFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualIdRepoAppExceptionFailedResult.getStatusCode());
@@ -898,8 +843,6 @@ public class ResidentVidExceptionHandlerTest {
     @Test
     public void testIdRepoAppExceptionFailed6() {
         when(environment.getProperty((String) any())).thenReturn("Property");
-        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest("https://example.org/example",
-                "https://example.org/example", "https://example.org/example", "https://example.org/example");
 
         IdRepoAppException idRepoAppException = mock(IdRepoAppException.class);
         when(idRepoAppException.getErrorCode()).thenReturn("An error occurred");
@@ -908,7 +851,7 @@ public class ResidentVidExceptionHandlerTest {
         when(idRepoAppException.getCodes()).thenReturn(stringList);
         when(idRepoAppException.getErrorTexts()).thenReturn(new ArrayList<>());
         ResponseEntity<Object> actualIdRepoAppExceptionFailedResult = residentVidExceptionHandler
-                .idRepoAppExceptionFailed(httpServletRequest, idRepoAppException);
+                .idRepoAppExceptionFailed(mockedRequest, idRepoAppException);
         assertTrue(actualIdRepoAppExceptionFailedResult.hasBody());
         assertTrue(actualIdRepoAppExceptionFailedResult.getHeaders().isEmpty());
         assertEquals(HttpStatus.OK, actualIdRepoAppExceptionFailedResult.getStatusCode());

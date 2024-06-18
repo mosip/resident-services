@@ -2,7 +2,7 @@ package io.mosip.resident.dto;
 
 import java.io.Serializable;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

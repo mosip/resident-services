@@ -6,6 +6,7 @@ import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 import java.net.URI;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,9 @@ public class OrderCardController {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardController.class);
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	/**
 	 * Send a physical card.
 	 * 
@@ -110,7 +114,7 @@ public class OrderCardController {
 			@RequestParam(name = "redirectUri") String redirectUri )
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::getphysicalCardOrder()::entry");
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		String redirectURL = orderCardService.getRedirectUrl(partnerId,individualId);
 		logger.debug("OrderCardController::getphysicalCardOrder()::exit");
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectURL)).build();
@@ -134,7 +138,7 @@ public class OrderCardController {
 			@RequestParam(name = "error_message",required = false) String errorMessage)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::entry");
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		String response = orderCardService.physicalCardOrder(redirectUrl, paymentTransactionId, eventId,
 				residentFullAddress,individualId,errorCode,errorMessage);
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::exit");

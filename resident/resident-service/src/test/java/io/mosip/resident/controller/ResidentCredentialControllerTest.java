@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,11 +19,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -54,16 +57,17 @@ import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 import reactor.util.function.Tuples;
 
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.properties")
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class ResidentCredentialControllerTest {
 	
     @MockBean
