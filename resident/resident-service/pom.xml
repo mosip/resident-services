@@ -25,6 +25,7 @@
         <pre-registration-application-service.version>1.2.1-java21-SNAPSHOT</pre-registration-application-service.version>
         <kernel-openid-bridge-api.version>1.2.1-java21-SNAPSHOT</kernel-openid-bridge-api.version>
         <kernel.idobjectvalidator.version>1.2.1-java21-SNAPSHOT</kernel.idobjectvalidator.version>
+        <spring.boot.version>3.2.3</spring.boot.version>
     </properties>
     <dependencies>
         <dependency>
@@ -399,6 +400,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
                 <configuration>
                     <executable>true</executable>
                     <layout>ZIP</layout>
@@ -434,6 +436,7 @@
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
+                        <version>${spring.boot.version}</version>
                         <configuration>
                             <executable>true</executable>
                             <layout>ZIP</layout>
