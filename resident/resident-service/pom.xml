@@ -24,6 +24,7 @@
         <kernel.khazana.version>1.2.1-java21-SNAPSHOT</kernel.khazana.version>
         <pre-registration-application-service.version>1.2.1-java21-SNAPSHOT</pre-registration-application-service.version>
         <kernel-openid-bridge-api.version>1.2.1-java21-SNAPSHOT</kernel-openid-bridge-api.version>
+        <maven.jacoco.version>0.8.11</maven.jacoco.version>
         <kernel.idobjectvalidator.version>1.2.1-java21-SNAPSHOT</kernel.idobjectvalidator.version>
     </properties>
     <dependencies>
@@ -514,6 +515,25 @@
                             <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
                             <!-- <format>json</format> -->
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
