@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.context.annotation.Lazy;
 
 import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
@@ -62,6 +63,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@Autowired
+	@Lazy
 	private ProxyMasterdataServiceImpl identityDataUtil;
 
 
