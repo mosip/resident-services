@@ -61,7 +61,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
-	@Mock
+	@Autowired
 	private ProxyMasterdataServiceImpl identityDataUtil;
 
 
