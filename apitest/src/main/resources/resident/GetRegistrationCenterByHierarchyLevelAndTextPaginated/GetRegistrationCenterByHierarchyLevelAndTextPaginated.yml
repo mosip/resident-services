@@ -2,8 +2,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       description: Get Registartion centres when all details are given in input parameters
-      role: resident 
-	  checkErrorsOnlyInResponse: true
+      role: resident
+      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
       outputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginatedResult
