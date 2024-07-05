@@ -1,9 +1,9 @@
 GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-      description: Get Registartion centres when all details are given in input parameters  
-			checkErrorsOnlyInResponse: true
+      description: Get Registartion centres when all details are given in input parameters
+      role: resident 
+	  checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
       outputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginatedResult
@@ -21,8 +21,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid langcode is given in input parameters
+      description: Get Registartion centres when invalid langcode is given in input parameters
+      role: resident	  
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -47,8 +47,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_HierarchyLevel:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid hierarchylevel is given in input parameters
+      description: Get Registartion centres when invalid hierarchylevel is given in input parameters
+      role: resident	  
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -73,8 +73,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Name:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid name is given in input parameters
+      description: Get Registartion centres when invalid name is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -99,8 +99,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_PageNumber:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid pagenumber is given in input parameters
+      description: Get Registartion centres when invalid pagenumber is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -125,8 +125,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_PageSize:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid pagesize is given in input parameters
+      description: Get Registartion centres when invalid pagesize is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -151,8 +151,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_SortBy_Value:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid sortby is given in input parameters
+      description: Get Registartion centres when invalid sortby is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -177,8 +177,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_OrderBy_Value:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid orderby is given in input parameters
+      description: Get Registartion centres when invalid orderby is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -203,8 +203,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_HierarchyLevel:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid/Random hierarchylevel is given in input parameters
+      description: Get Registartion centres when invalid/Random hierarchylevel is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -229,8 +229,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_PageNumber:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid/Random pagenumber is given in input parameters
+      description: Get Registartion centres when invalid/Random pagenumber is given in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -255,8 +255,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_PageSize:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when invalid/random pagesize is given in input parameters
+      description: Get Registartion centres when invalid/random pagesize is given in input parameters
+      role: resident		
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -281,8 +281,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_LangCode_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when no value entered in langcode input parameters
+      description: Get Registartion centres when no value entered in langcode input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -300,8 +300,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_HierarchyLevel_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when no value entered in hierarchylevel input parameters
+      description: Get Registartion centres when no value entered in hierarchylevel input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -319,8 +319,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_Name_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when no value entered in name input parameters
+      description: Get Registartion centres when no value entered in name input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -338,8 +338,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_0_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 0 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 0 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -358,8 +358,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_1_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 1 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 1 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -378,8 +378,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_2_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 2 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 2 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -398,8 +398,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_3_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 3 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 3 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -418,8 +418,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_4_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 4 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 4 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
@@ -438,8 +438,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
 
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_5_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
-      role: resident
-			description: Get Registartion centres when hierarchylevel value is given as 5 in input parameters
+      description: Get Registartion centres when hierarchylevel value is given as 5 in input parameters
+      role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginated
