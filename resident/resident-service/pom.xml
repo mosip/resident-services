@@ -13,13 +13,13 @@
     <name>resident-service</name>
     <version>1.2.1-java21-SNAPSHOT</version>
     <properties>
-        <commons.packet.manager.version>1.2.1-SNAPSHOT</commons.packet.manager.version>
+        <commons.packet.manager.version>1.2.1-java21-SNAPSHOT</commons.packet.manager.version>
         <kernel.core.version>1.2.1-java21-SNAPSHOT</kernel.core.version>
         <kernel.virusscanner.clamav.version>1.2.1-java21-SNAPSHOT</kernel.virusscanner.clamav.version>
         <id-repository-core.version>1.2.1-java21-SNAPSHOT</id-repository-core.version>
         <kernel-keymanager-service.version>1.2.1-java21-SNAPSHOT</kernel-keymanager-service.version>
         <kernel.authcodeflowproxy.api.version>1.2.1-java21-SNAPSHOT</kernel.authcodeflowproxy.api.version>
-        <kernel.parent.version>1.2.0</kernel.parent.version>
+        <kernel.parent.version>1.2.1-java21-SNAPSHOT</kernel.parent.version>
         <kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
         <kernel.khazana.version>1.2.1-java21-SNAPSHOT</kernel.khazana.version>
         <pre-registration-application-service.version>1.2.1-java21-SNAPSHOT</pre-registration-application-service.version>
