@@ -7,25 +7,25 @@
     <parent>
         <groupId>io.mosip.resident</groupId>
         <artifactId>resident-parent</artifactId>
-        <version>1.2.1-java21-SNAPSHOT</version>
+        <version>1.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>resident-service</artifactId>
     <name>resident-service</name>
-    <version>1.2.1-java21-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <properties>
-        <commons.packet.manager.version>1.2.1-java21-SNAPSHOT</commons.packet.manager.version>
-        <kernel.core.version>1.2.1-java21-SNAPSHOT</kernel.core.version>
-        <kernel.virusscanner.clamav.version>1.2.1-java21-SNAPSHOT</kernel.virusscanner.clamav.version>
-        <id-repository-core.version>1.2.1-java21-SNAPSHOT</id-repository-core.version>
-        <kernel-keymanager-service.version>1.2.1-java21-SNAPSHOT</kernel-keymanager-service.version>
-        <kernel.authcodeflowproxy.api.version>1.2.1-java21-SNAPSHOT</kernel.authcodeflowproxy.api.version>
-        <kernel.parent.version>1.2.1-java21-SNAPSHOT</kernel.parent.version>
+        <commons.packet.manager.version>1.2.1-SNAPSHOT</commons.packet.manager.version>
+        <kernel.core.version>1.2.1-SNAPSHOT</kernel.core.version>
+        <kernel.virusscanner.clamav.version>1.2.1-SNAPSHOT</kernel.virusscanner.clamav.version>
+        <id-repository-core.version>1.2.1-SNAPSHOT</id-repository-core.version>
+        <kernel-keymanager-service.version>1.2.1-SNAPSHOT</kernel-keymanager-service.version>
+        <kernel.authcodeflowproxy.api.version>1.2.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
+        <kernel.parent.version>1.2.1-SNAPSHOT</kernel.parent.version>
         <kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
-        <kernel.khazana.version>1.2.1-java21-SNAPSHOT</kernel.khazana.version>
-        <pre-registration-application-service.version>1.2.1-java21-SNAPSHOT</pre-registration-application-service.version>
-        <kernel-openid-bridge-api.version>1.2.1-java21-SNAPSHOT</kernel-openid-bridge-api.version>
+        <kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
+        <pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
+        <kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
         <maven.jacoco.version>0.8.11</maven.jacoco.version>
-        <kernel.idobjectvalidator.version>1.2.1-java21-SNAPSHOT</kernel.idobjectvalidator.version>
+        <kernel.idobjectvalidator.version>1.2.1-SNAPSHOT</kernel.idobjectvalidator.version>
     </properties>
     <dependencies>
         <dependency>
@@ -377,7 +377,7 @@
         <dependency>
             <groupId>io.mosip.kernel</groupId>
             <artifactId>kernel-pdfgenerator-itext</artifactId>
-            <version>1.2.1-java21-SNAPSHOT</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
