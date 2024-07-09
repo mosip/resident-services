@@ -55,7 +55,7 @@ import io.mosip.resident.util.ObjectWithMetadata;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApiExceptionHandler {
 
-	private static final CharSequence NO_STATIC_RESOURCE = "No Static resource";
+	private static final CharSequence NO_STATIC_RESOURCE = "No static resource";
 
 	@Autowired
 	private ObjectMapper objectMapper;
