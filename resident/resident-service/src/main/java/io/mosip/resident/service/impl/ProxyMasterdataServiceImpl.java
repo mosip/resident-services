@@ -1,6 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import com.hazelcast.cache.impl.CacheEntry;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -16,14 +15,11 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -31,19 +27,15 @@ import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.context.annotation.Lazy;
 
 import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
@@ -68,16 +60,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
-	@Autowired
-	Environment env;
-
-	@Autowired
-	Utility utility;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@Autowired
-	private Utilities utilities;
+	@Lazy
+	private ProxyMasterdataServiceImpl identityDataUtil;
 
 
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
@@ -115,7 +102,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
-		ResponseWrapper<?> responseWrapper = utility.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> responseWrapper = identityDataUtil.getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
 
@@ -673,7 +660,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
-		ResponseWrapper<?> res = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
+		ResponseWrapper<?> res = identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
 		Map response = (Map) res.getResponse();
 		ArrayList<Map> responseValues = (ArrayList<Map>) response.get(VALUES);
 		String genderCode = responseValues.stream()

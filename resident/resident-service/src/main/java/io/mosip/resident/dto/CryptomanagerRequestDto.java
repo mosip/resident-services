@@ -8,7 +8,7 @@ package io.mosip.resident.dto;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import io.mosip.resident.util.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,10 +49,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -110,6 +107,9 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private ResidentServiceRestClient residentServiceRestClient;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -159,17 +159,17 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) any())).thenReturn(query);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
-        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
-        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+        Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 
-        Mockito.when(identityServiceImpl.getAvailableclaimValue(Mockito.anyString())).thenReturn("Kamesh");
+        Mockito.when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("Kamesh");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         residentSessionEntity = new ResidentSessionEntity();
         residentSessionEntity.setHost("localhost");
         Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity));
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234");
+        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("1234");
 
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(any(), any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(any(), any())).thenReturn("template-type-code");

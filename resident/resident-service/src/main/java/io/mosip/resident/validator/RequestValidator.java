@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
-import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
@@ -62,20 +60,18 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditEnum;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -108,12 +104,6 @@ public class RequestValidator {
 	private static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 	@Autowired
-	private UinValidator<String> uinValidator;
-
-	@Autowired
-	private VidValidator<String> vidValidator;
-
-	@Autowired
 	private RidValidator<String> ridValidator;
 
 	@Autowired
@@ -123,18 +113,17 @@ public class RequestValidator {
 	private Environment environment;
 
 	@Autowired
-	private IdentityServiceImpl identityService;
-
-	@Autowired
 	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
+	@Lazy
 	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Autowired
+	@Lazy
 	private ProxyIdRepoService idRepoService;
 
 	@Autowired
@@ -151,6 +140,13 @@ public class RequestValidator {
 	private String authLockId;
 
 	private String uinUpdateId;
+
+	@Autowired
+	private UinVidValidator uinVidValidator;
+
+	@Autowired
+	@Lazy
+	private AvailableClaimUtility availableClaimUtility;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -652,22 +648,6 @@ public class RequestValidator {
 		}
 	}
 
-	public boolean validateVid(String individualId) {
-		try {
-			return vidValidator.validateId(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
-	}
-
-	public boolean validateUin(String individualId) {
-		try {
-			return uinValidator.validateId(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
-	}
-
 	public boolean validateRid(String individualId) {
 		try {
 			return ridValidator.validateId(individualId);
@@ -1061,7 +1041,7 @@ public class RequestValidator {
 	}
 
 	private boolean validateUinOrVid(String individualId) {
-		return this.validateUin(individualId) || this.validateVid(individualId);
+		return uinVidValidator.validateUin(individualId) || uinVidValidator.validateVid(individualId);
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
@@ -1422,7 +1402,7 @@ public class RequestValidator {
 	}
 
 	public void validateDownloadCardVid(String vid) {
-		if (!validateVid(vid)) {
+		if (!uinVidValidator.validateVid(vid)) {
 			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, IdType.VID.name()));
 			throw new InvalidInputException(IdType.VID.name());
 		}
@@ -1546,7 +1526,7 @@ public class RequestValidator {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if(residentTransactionEntity.isPresent()){
 			String tokenId = residentTransactionEntity.get().getTokenId();
-			String sessionToken = identityService.getResidentIdaToken();
+			String sessionToken = availableClaimUtility.getResidentIdaToken();
 			if(!tokenId.equals(sessionToken)){
 				throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());

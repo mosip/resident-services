@@ -29,8 +29,9 @@ import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityDataUtil;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,10 @@ public class OtpManagerServiceImpl implements OtpManager {
     @Autowired
     private RequestValidator requestValidator;
     @Autowired
-    private Utilities utilities;
+    private IdentityDataUtil identityDataUtil;
+
+    @Autowired
+    private AvailableClaimUtility availableClaimUtility;
 
 
     @Override
@@ -99,7 +103,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
-        notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
+        notificationRequestDto.setId(availableClaimUtility.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
@@ -213,12 +217,12 @@ public class OtpManagerServiceImpl implements OtpManager {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
         ResidentDemographicUpdateRequestDTO residentDemographicUpdateRequestDTO = new ResidentDemographicUpdateRequestDTO();
 
-        String individualId= identityService.getResidentIndvidualIdFromSession();
+        String individualId= availableClaimUtility.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
-        Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+        Tuple3<JSONObject, String, IdResponseDTO1> identityData = identityDataUtil.
                 getIdentityDataFromIndividualID(individualId);
         JSONObject idRepoJson = identityData.getT1();
         String schemaJson = identityData.getT2();

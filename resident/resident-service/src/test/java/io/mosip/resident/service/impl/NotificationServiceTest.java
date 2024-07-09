@@ -17,11 +17,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -85,6 +81,12 @@ public class NotificationServiceTest {
 
 	@Mock
 	private RequestValidator requestValidator;
+
+	@Mock
+	private IdentityUtil identityUtil;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
 
 	@Mock
 	private IdentityService identityService;
