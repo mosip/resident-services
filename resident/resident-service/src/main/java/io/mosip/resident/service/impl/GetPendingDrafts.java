@@ -14,7 +14,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +56,6 @@ public class GetPendingDrafts {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
-	private ResidentServiceImpl residentService;
-
-	@Autowired
 	private Utility utility;
 
 	@Autowired
@@ -67,6 +63,12 @@ public class GetPendingDrafts {
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+
+	@Autowired
+	private GetEventStatusCode getEventStatusCode;
+
+	@Autowired
+	private GetDescriptionForLangCode getDescriptionForLangCode;
 
 	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException {
 		try {
@@ -162,8 +164,8 @@ public class GetPendingDrafts {
 		if(langCode == null){
 			return "";
 		}
-		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
-		return residentService.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
+		Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+		return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
 				RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()));
 	}
 

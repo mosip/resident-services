@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.service.impl.GetEventStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -93,6 +94,9 @@ public class TemplateUtil {
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
+	@Autowired
+	private GetEventStatusCode getEventStatusCode;
+
 	/**
 	 * Gets the ack template variables for authentication request.
 	 *
@@ -107,7 +111,7 @@ public class TemplateUtil {
 	    public Map<String, String> getCommonTemplateVariables(ResidentTransactionEntity residentTransactionEntity, RequestType requestType, String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = new HashMap<>();
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
-		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
+		Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		String eventTypeBasedOnLangcode = getEventTypeBasedOnLangcode(requestType, languageCode);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, eventTypeBasedOnLangcode);
@@ -234,7 +238,7 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
+		String statusCode = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
 				.getT1();
 		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode);
 	}

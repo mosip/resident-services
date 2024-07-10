@@ -235,7 +235,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private Utilities utilities;
 
 	@Autowired
-	private IdentityDataUtil identityDataUtil;
+	private GetEventStatusCode getEventStatusCode;
 
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -305,6 +305,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private TemplateManagerBuilder templateManagerBuilder;
 
+    @Autowired
+    private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
+
 	@Autowired
 	private SessionUserNameUtility sessionUserNameUtility;
 
@@ -328,6 +331,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ValidateNewUpdateRequest validateNewUpdateRequest;
+
+	@Autowired
+	private GetDescriptionForLangCode getDescriptionForLangCode;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -1761,7 +1767,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
-			Tuple2<String, String> statusCodes = getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+			Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
 			RequestType requestType = RequestType
 					.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
@@ -1780,7 +1786,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
+							.setDescription(getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(templateUtil.getEventTypeBasedOnLangcode(requestType, langCode));
@@ -1790,27 +1796,6 @@ public class ResidentServiceImpl implements ResidentService {
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
-	}
-
-	public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
-			throws ResidentServiceCheckedException {
-		TemplateType templateType;
-		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
-			templateType = TemplateType.SUCCESS;
-		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
-			templateType = TemplateType.CANCELED;
-		}else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
-			templateType = TemplateType.REGPROC_SUCCESS;
-		} else {
-			templateType = TemplateType.FAILURE;
-		}
-		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
-	}
-
-	private String replacePlaceholderValueInTemplate(ResidentTransactionEntity residentTransactionEntity, String fileText, RequestType requestType, String langCode) {
-		return requestType.getDescriptionTemplateVariables(templateUtil, residentTransactionEntity, fileText, langCode);
 	}
 
 	public String getSummaryForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
@@ -1823,27 +1808,11 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
 			templateType = TemplateType.REGPROC_SUCCESS;
 		} else {
-			return getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
+			return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
 		}
 		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
 		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-		return replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
-	}
-
-	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
-		EventStatus status;
-		if (EventStatusSuccess.containsStatus(statusCode)) {
-			status = EventStatus.SUCCESS;
-		} else if (EventStatusFailure.containsStatus(statusCode)) {
-			status = EventStatus.FAILED;
-		} else if(EventStatusCanceled.containsStatus(statusCode)){
-			status = EventStatus.CANCELED;
-		}
-		else {
-			status = EventStatus.IN_PROGRESS;
-		}
-		String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);
-		return Tuples.of(status.name(), fileText);
+		return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
 	}
 
 	@Override
@@ -1921,7 +1890,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
+							getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
 									eventStatusMap.get(TemplateVariablesConstants.EVENT_STATUS_ENUM), requestType));
 				}
 			} else {

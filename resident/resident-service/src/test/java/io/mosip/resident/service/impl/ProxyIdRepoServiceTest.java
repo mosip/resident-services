@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
@@ -86,6 +87,9 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private GetPendingDrafts getPendingDrafts;
+
+	@Mock
+	private GetEventStatusCode getEventStatusCode;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -249,7 +253,7 @@ public class ProxyIdRepoServiceTest {
 		, Mockito.anyString(), Mockito.anyString())).thenReturn(List.of(residentTransactionEntity, residentTransactionEntity1));
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
 		when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
-		when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
+		when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
 				"eng"));
 		assertEquals("123", getPendingDrafts.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
 	}
