@@ -54,6 +54,9 @@ import io.mosip.resident.util.ObjectWithMetadata;
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApiExceptionHandler {
+
+	private static final CharSequence NO_STATIC_RESOURCE = "No static resource";
+
 	@Autowired
 	private ObjectMapper objectMapper;
 
@@ -280,6 +283,9 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(exception);
 		logStackTrace(exception);
+		if(error.getMessage().contains(NO_STATIC_RESOURCE)){
+			return createResponseEntity(errorResponse, exception, HttpStatus.NOT_FOUND);
+		}
 		return createResponseEntity(errorResponse, exception, HttpStatus.OK);
 	}
 

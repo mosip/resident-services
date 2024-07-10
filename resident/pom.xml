@@ -73,6 +73,7 @@
         <!-- maven -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <maven.jacoco.version>0.8.11</maven.jacoco.version>
         <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
 
         <sonar.coverage.exclusions>
@@ -140,7 +141,7 @@
                         <id>report</id>
                         <phase>prepare-package</phase>
                         <goals>
-                            <goal>report</goal>
+                            <goal>report-aggregate</goal>
                         </goals>
                     </execution>
                 </executions>
