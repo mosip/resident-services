@@ -159,6 +159,9 @@ public class UtilityTest {
 	private PDFGenerator pdfGenerator;
 
 	@Mock
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
+	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Mock
@@ -723,7 +726,7 @@ public class UtilityTest {
 	@Test
 	public void testGetSessionUserName() throws ApisResourceAccessException {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
-		Mockito.when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		Mockito.when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		sessionUserNameUtility.getSessionUserName();
 	}
 

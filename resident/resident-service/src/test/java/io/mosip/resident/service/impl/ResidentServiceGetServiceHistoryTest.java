@@ -110,6 +110,9 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private AvailableClaimUtility availableClaimUtility;
 
+    @Mock
+    private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -163,7 +166,7 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(availableClaimUtility.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 
-        Mockito.when(availableClaimUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("Kamesh");
+        Mockito.when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("Kamesh");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         residentSessionEntity = new ResidentSessionEntity();
         residentSessionEntity.setHost("localhost");

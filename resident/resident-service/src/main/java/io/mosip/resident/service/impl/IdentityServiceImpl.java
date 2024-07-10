@@ -73,9 +73,12 @@ public class IdentityServiceImpl implements IdentityService {
 	@Lazy
 	private PerpetualVidUtility perpetualVidUtility;
 
+	@Autowired
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
-		Map<String, ?> claims = availableClaimUtility.getClaimsFromToken(Set.of(claimName), accessToken);
+		Map<String, ?> claims = getAvailableClaimValueUtility.getClaimsFromToken(Set.of(claimName), accessToken);
 		String individualId = (String) claims.get(claimName);
 		return availableClaimUtility.getIDATokenForIndividualId(individualId);
 	}

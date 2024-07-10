@@ -316,12 +316,18 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
 	
 	@Autowired
 	private IdentityUtil identityUtil;
 	
 	@Autowired
 	private MaskDataUtility maskDataUtility;
+
+	@Autowired
+	private GetClaimValueUtility getClaimValueUtility;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -1908,7 +1914,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 			eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesConstants.SUMMARY));
 
-			String name = availableClaimUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			String name = getClaimValueUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
 
@@ -2109,11 +2115,11 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 			}
 		} else {
-			name = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			name = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		}
-		String photo = availableClaimUtility.getAvailableClaimValue(env.getProperty(IMAGE));
-		String email = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
-		String phone = availableClaimUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
+		String photo = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
+		String email = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

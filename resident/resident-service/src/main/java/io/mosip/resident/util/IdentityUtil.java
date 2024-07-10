@@ -58,8 +58,7 @@ public class IdentityUtil {
 	private static final String PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
-	@Lazy
-	private AvailableClaimUtility availableClaimUtility;
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
 
 	@Autowired
 	private Utility utility;
@@ -70,6 +69,9 @@ public class IdentityUtil {
 	@Autowired
 	@Lazy
 	private PerpetualVidUtility perpetualVidUtility;
+
+	@Autowired
+	private GetClaimValueUtility getClaimValueUtility;
 
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
 		return getIdentityAttributes(id, schemaType, List.of(
@@ -122,7 +124,7 @@ public class IdentityUtil {
 							String photo;
 							try {
 								if (Utility.isSecureSession()) {
-									photo = availableClaimUtility.getAvailableClaimValue(env.getProperty(IMAGE));
+									photo = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
 								} else {
 									photo = null;
 								}
@@ -183,7 +185,7 @@ public class IdentityUtil {
 			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 
 			if(fetchFace) {
-				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), availableClaimUtility.getClaimValue(env.getProperty(IMAGE)));
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValueUtility.getClaimValue(env.getProperty(IMAGE)));
 				identity.remove("individualBiometrics");
 			}
 

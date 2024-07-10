@@ -67,6 +67,9 @@ public class AuditUtil {
 	@Autowired
 	private AsyncUtil asyncUtil;
 
+	@Autowired
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
 	/** The Constant UNKNOWN_HOST. */
 	private static final String UNKNOWN_HOST = "Unknown Host";
 
@@ -111,7 +114,7 @@ public class AuditUtil {
 			if(Utility.isSecureSession()) {
 				String name = null;
 				try {
-					name = availableClaimUtility.getAvailableClaimValue(
+					name = getAvailableClaimValueUtility.getAvailableClaimValue(
 							this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 				} catch (ApisResourceAccessException e) {
 					throw new RuntimeException(e);
