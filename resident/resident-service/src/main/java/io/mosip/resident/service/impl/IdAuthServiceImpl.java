@@ -26,6 +26,7 @@ import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.IdentityUtil;
 import io.mosip.resident.util.SessionUserNameUtility;
+import io.mosip.resident.validator.ValidateOtpCharLimit;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -80,7 +81,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -125,9 +125,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Autowired
 	private NotificationService notificationService;
 
-    @Autowired
-    RequestValidator requestValidator;
-
 	@Autowired
 	private SessionUserNameUtility sessionUserNameUtility;
 
@@ -136,6 +133,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Autowired
 	private IdentityUtil identityUtil;
+
+	@Autowired
+	private ValidateOtpCharLimit validateOtpCharLimit;
 
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
@@ -204,7 +204,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 																	RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
-		requestValidator.validateOtpCharLimit(otp);
+		validateOtpCharLimit.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;

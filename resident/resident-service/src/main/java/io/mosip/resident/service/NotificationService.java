@@ -21,13 +21,12 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.util.*;
-import io.mosip.resident.validator.RequestValidator;
+import io.mosip.resident.validator.EmailPhoneValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -60,6 +59,7 @@ public class NotificationService {
 	private static final String PHONE_CHANNEL = "phone";
 	private static final String IDENTITY = "identity";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
+
 	@Autowired
 	private TemplateManager templateManager;
 
@@ -80,16 +80,11 @@ public class NotificationService {
 	
 	@Autowired
 	private Utilities utilities;
-
-	@Autowired
-	@Lazy
-	private RequestValidator requestValidator;
 	
 	@Autowired
 	private AuditUtil audit;
 	
 	@Autowired
-	@Lazy
 	private TemplateUtil templateUtil;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
@@ -111,6 +106,9 @@ public class NotificationService {
 
 	@Autowired
 	private IdentityUtil identityUtil;
+	
+	@Autowired
+	private EmailPhoneValidator emailPhoneValidator;
 
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
@@ -292,7 +290,7 @@ public class NotificationService {
 			phone =  (String) mailingAttributes.get(TemplateVariablesConstants.PHONE);
 		}
 
-		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
+		if (nullValueCheck(phone) || !(emailPhoneValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
 			return false;
@@ -398,7 +396,7 @@ public class NotificationService {
 		if(newEmail!=null){
 			otp=(String) mailingAttributes.get(TemplateVariablesConstants.OTP);
 		}
-		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
+		if (nullValueCheck(email) || !(emailPhoneValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
 			return false;

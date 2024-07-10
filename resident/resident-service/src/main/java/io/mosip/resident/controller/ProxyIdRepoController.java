@@ -11,6 +11,8 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.GetPendingDrafts;
+import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,6 +66,12 @@ public class ProxyIdRepoController {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+
+	@Autowired
+	private GetPendingDrafts getPendingDrafts;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
 
 	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
@@ -80,7 +88,7 @@ public class ProxyIdRepoController {
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::entry");
 		try {
-			ResponseWrapper<?> responseWrapper = proxySerivce
+			ResponseWrapper<?> responseWrapper = getRemainingUpdateCountByIndividualId
 					.getRemainingUpdateCountByIndividualId(filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::exit");
@@ -107,7 +115,7 @@ public class ProxyIdRepoController {
 	public ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> getPendingDrafts(@PathVariable String langCode) {
 		logger.debug("ProxyIdRepoController::getPendingDrafts()::entry");
 		try {
-			ResponseWrapper<DraftResidentResponseDto> responseWrapper = proxySerivce
+			ResponseWrapper<DraftResidentResponseDto> responseWrapper = getPendingDrafts
 					.getPendingDrafts(langCode);
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
 			requestValidator.validateLanguageCode(langCode);

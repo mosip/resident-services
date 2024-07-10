@@ -18,6 +18,7 @@ import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.*;
+import io.mosip.resident.validator.EmailPhoneValidator;
 import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -89,6 +90,9 @@ public class NotificationServiceTest {
 	private MaskDataUtility maskDataUtility;
 
 	@Mock
+	private EmailPhoneValidator emailPhoneValidator;
+
+	@Mock
 	private IdentityService identityService;
 	private Map<String, Object> mailingAttributes;
 	private NotificationRequestDto reqDto;
@@ -115,8 +119,8 @@ public class NotificationServiceTest {
 		Mockito.when(utilities.getPhoneAttribute()).thenReturn("phoneNumber");
 		Mockito.when(utilities.getEmailAttribute()).thenReturn("email");
 		Mockito.when(env.getProperty(ApiName.EMAILNOTIFIER.name())).thenReturn("https://int.mosip.io/template/email");
-		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
-		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+		Mockito.when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		Mockito.when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		additionalAttributes.put(IdType.RID.name(), "10008200070004420191203104356");
 		Mockito.lenient().when(utility.getMappingJsonObject()).thenReturn(Mockito.mock(JSONObject.class));
@@ -168,14 +172,14 @@ public class NotificationServiceTest {
 
 	@Test
 	public void smsFailedAndEmailSuccessTest() throws ResidentServiceCheckedException {
-		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(false);
+		Mockito.when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(false);
 		NotificationResponseDTO response = notificationService.sendNotification(reqDto, null);
 		assertEquals(EMAIL_SUCCESS, response.getMessage());
 	}
 
 	@Test
 	public void emailFailedAndSMSSuccessTest() throws ResidentServiceCheckedException {
-		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+		Mockito.when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
 		NotificationResponseDTO response = notificationService.sendNotification(reqDto, null);
 		assertEquals(SMS_SUCCESS, response.getMessage());
 	}

@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.*;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -106,6 +108,9 @@ public class RequestValidatorTest {
     private UinValidator<String> uinValidator;
 
     @Mock
+    private EmailPhoneValidator emailPhoneValidator;
+
+    @Mock
     private VidValidator<String> vidValidator;
 
     @Mock
@@ -144,6 +149,9 @@ public class RequestValidatorTest {
     @Mock
     private ProxyIdRepoService idRepoService;
 
+    @Mock
+    private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+
     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     @InjectMocks
@@ -160,6 +168,9 @@ public class RequestValidatorTest {
 
     @Mock
     private IdentityUtil identityUtil;
+
+    @Mock
+    private ValidateOtpCharLimit validateOtpCharLimit;
 
     @Before
     public void setup() {
@@ -1641,14 +1652,14 @@ public class RequestValidatorTest {
     public void testPhoneValidator() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         String phone = "1234567890";
-        requestValidator.phoneValidator(phone);
+        emailPhoneValidator.phoneValidator(phone);
     }
 
     @Test
     public void testEmailValidator() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
         String email = "abc@gmail.com";
-        requestValidator.emailValidator(email);
+        emailPhoneValidator.emailValidator(email);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2787,7 +2798,7 @@ public class RequestValidatorTest {
         otpRequestDTOV2.setUserId("kam@g.com");
         userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2, 2));
         userIdOtpRequest.setRequest(otpRequestDTOV2);
-        when(idRepoService.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
+        when(getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
@@ -2828,12 +2839,12 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateOtpCharLimit() {
-        requestValidator.validateOtpCharLimit("111111");
+        validateOtpCharLimit.validateOtpCharLimit("111111");
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testValidateOtpCharLimitFailed() {
-        requestValidator.validateOtpCharLimit("11111111");
+        validateOtpCharLimit.validateOtpCharLimit("11111111");
     }
 
     @Test(expected = InvalidInputException.class)

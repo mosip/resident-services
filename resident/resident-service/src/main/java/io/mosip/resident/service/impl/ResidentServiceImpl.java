@@ -38,10 +38,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.mosip.resident.util.*;
+import io.mosip.resident.validator.ValidateNewUpdateRequest;
 import jakarta.annotation.PostConstruct;
 
 import io.mosip.resident.constant.EventStatusCanceled;
-import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
@@ -244,9 +244,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private IdObjectValidator idObjectValidator;
 
-	@Autowired
-	private RequestValidator requestValidator;
-
 	@Value("${resident.center.id}")
 	private String centerId;
 
@@ -328,6 +325,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private GetClaimValueUtility getClaimValueUtility;
+
+	@Autowired
+	private ValidateNewUpdateRequest validateNewUpdateRequest;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -828,11 +828,11 @@ public class ResidentServiceImpl implements ResidentService {
 					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
-				requestValidator.validateNewUpdateRequest();
+				validateNewUpdateRequest.validateNewUpdateRequest();
 				if(Utility.isSecureSession()){
 					Set<String> identity = dto.getIdentity().keySet();
 					if(!identity.isEmpty()) {
-						requestValidator.validateUpdateCountLimit(identity);
+						validateNewUpdateRequest.validateUpdateCountLimit(identity);
 					}
 				}
 			} else {
