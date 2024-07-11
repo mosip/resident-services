@@ -113,6 +113,9 @@ public class NotificationService {
 	@Autowired
 	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
 
+	@Autowired
+	private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
 		return sendNotification(dto, null, null, null, identity);
@@ -303,10 +306,10 @@ public class NotificationService {
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
 				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
-					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, getSmsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				} else{
-					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, getSmsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP)), mailingAttributes));
 				}
 

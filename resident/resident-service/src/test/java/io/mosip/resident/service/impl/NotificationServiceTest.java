@@ -106,6 +106,9 @@ public class NotificationServiceTest {
 	private static final String SMS_SUCCESS = "Notification has been sent to the provided contact phone number";
 	private static final String EMAIL_SUCCESS = "Notification has been sent to the provided email ";
 
+	@Mock
+	private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+
 	@Before
 	public void setUp() throws Exception {
 		Mockito.when(utility.getDataCapturedLanguages(Mockito.nullable(Map.class), Mockito.nullable(Map.class)))
@@ -136,7 +139,7 @@ public class NotificationServiceTest {
 		notificationRequestDtoV2.setEventId("1122334455667788");
 		notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
 		notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
-		Mockito.when(templateUtil.getSmsTemplateTypeCode(Mockito.any(), Mockito.any()))
+		Mockito.when(getSmsTemplateTypeCode.getSmsTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("sms-template-type-code");
 		Mockito.when(templateUtil.getEmailSubjectTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("email-subject-template-type-code");

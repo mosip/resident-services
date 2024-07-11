@@ -3,8 +3,8 @@ package io.mosip.resident.service.impl;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.util.GetPurposeTemplateTypeCode;
 import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
-import io.mosip.resident.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 public class GetDescriptionForLangCode {
 
     @Autowired
-    private TemplateUtil templateUtil;
-
-    @Autowired
     private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
 
     @Autowired
     private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+    @Autowired
+    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode;
 
     public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
             throws ResidentServiceCheckedException {
@@ -32,7 +32,7 @@ public class GetDescriptionForLangCode {
         } else {
             templateType = TemplateType.FAILURE;
         }
-        String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
+        String templateTypeCode = getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(requestType, templateType);
         String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
         return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
     }

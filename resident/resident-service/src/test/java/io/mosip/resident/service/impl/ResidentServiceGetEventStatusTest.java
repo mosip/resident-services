@@ -85,6 +85,12 @@ public class ResidentServiceGetEventStatusTest {
     @Mock
     private UinVidValidator uinVidValidator;
 
+    @Mock
+    private GetSummaryForLangCode getSummaryForLangCode;
+
+    @Mock
+    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode;
+
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         eventId = "123456789";
@@ -114,8 +120,8 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123456789");
         Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("123456789");
-        Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
-        Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(getSummaryForLangCode.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
         Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");

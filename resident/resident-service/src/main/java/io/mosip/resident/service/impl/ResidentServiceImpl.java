@@ -41,7 +41,6 @@ import io.mosip.resident.util.*;
 import io.mosip.resident.validator.ValidateNewUpdateRequest;
 import jakarta.annotation.PostConstruct;
 
-import io.mosip.resident.constant.EventStatusCanceled;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
@@ -1802,23 +1801,6 @@ public class ResidentServiceImpl implements ResidentService {
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
-	}
-
-	public String getSummaryForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
-			throws ResidentServiceCheckedException {
-		TemplateType templateType;
-		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
-			templateType = TemplateType.SUCCESS;
-		} else if (statusCode.equalsIgnoreCase(EventStatusCanceled.CANCELED.name())) {
-			templateType = TemplateType.CANCELED;
-		} else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
-			templateType = TemplateType.REGPROC_SUCCESS;
-		} else {
-			return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
-		}
-		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-		return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
 	}
 
 	@Override

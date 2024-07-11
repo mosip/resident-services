@@ -87,6 +87,15 @@ public class TemplateUtilTest {
     @Mock
     private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
 
+    @Mock
+    private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+
+    @Mock
+    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode;
+
+    @Mock
+    private GetSummaryForLangCode getSummaryForLangCode;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -354,19 +363,19 @@ public class TemplateUtilTest {
     @Test
     public void getSmsTemplateTypeCodeTest() {
         assertEquals(PROPERTY,
-                templateUtil.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                getSmsTemplateTypeCode.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getPurposeTemplateTypeCodeTest() {
         assertEquals(PROPERTY,
-                templateUtil.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSummaryTemplateTypeCodeTest() {
         assertEquals(PROPERTY,
-                templateUtil.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                getSummaryForLangCode.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
@@ -535,7 +544,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getSummaryFromResidentTransactionEntityLangCodeTest() throws ResidentServiceCheckedException {
-        Mockito.when(residentService.getSummaryForLangCode(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+        Mockito.when(getSummaryForLangCode.getSummaryForLangCode(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenThrow(new ResidentServiceCheckedException());
         assertEquals("AUTHENTICATION_REQUEST",templateUtil.getSummaryFromResidentTransactionEntityLangCode(
                 residentTransactionEntity, "eng", "SUCCESS",

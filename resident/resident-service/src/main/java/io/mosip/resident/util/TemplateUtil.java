@@ -34,7 +34,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -66,9 +65,6 @@ public class TemplateUtil {
 	private Utility utility;
 
 	@Autowired
-	private ResidentServiceImpl residentService;
-
-	@Autowired
 	Environment env;
 
 	@Autowired
@@ -93,6 +89,9 @@ public class TemplateUtil {
 
 	@Autowired
 	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+	@Autowired
+	private GetSummaryForLangCode getSummaryForLangCode;
 
 	/**
 	 * Gets the ack template variables for authentication request.
@@ -445,7 +444,7 @@ public class TemplateUtil {
 	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
 			String languageCode, String statusCode, RequestType requestType) {
 		try {
-			return residentService.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
+			return getSummaryForLangCode.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
 					requestType);
 		} catch (ResidentServiceCheckedException e) {
 			return requestType.name();
@@ -602,22 +601,7 @@ public class TemplateUtil {
 		return getEventStatusBasedOnLangCode.getTemplateTypeCode(emailContentTemplateCodeProperty);
 	}
 
-	public String getSmsTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String smsTemplateCodeProperty = requestType.getSmsTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(smsTemplateCodeProperty);
-	}
-
-	public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(purposeTemplateCodeProperty);
-	}
-
-	public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(summaryTemplateCodeProperty);
-	}
-
-	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
+    private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
 		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
 		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
