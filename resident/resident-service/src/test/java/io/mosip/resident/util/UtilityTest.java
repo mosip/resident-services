@@ -196,6 +196,9 @@ public class UtilityTest {
 	@Mock
 	private GetAcrMappingUtil getAcrMappingUtil;
 
+	@Mock
+	private GetPartnersByPartnerType getPartnersByPartnerType;
+
 	private String idaToken;
 
 	private static final String AUTHORIZATION = "Authorization";
@@ -229,6 +232,9 @@ public class UtilityTest {
 
 	@Mock
 	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
+
+	@Mock
+	private GetPartnersByPartnerTypeCache getPartnersByPartnerTypeCache;
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -1041,11 +1047,11 @@ public class UtilityTest {
 		ApiName apiUrl = ApiName.PARTNER_API_URL;
 
 		ResponseWrapper expectedResponse = new ResponseWrapper<>();
-		when(proxyPartnerManagementService.getPartnersByPartnerType(
+		when(getPartnersByPartnerType.getPartnersByPartnerType(
 				Optional.of(partnerType), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = identityDataUtil.getPartnersByPartnerType(partnerType, apiUrl);
+		ResponseWrapper<?> result = getPartnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
@@ -1055,11 +1061,11 @@ public class UtilityTest {
 		ApiName apiUrl = ApiName.PARTNER_API_URL;
 
 		ResponseWrapper expectedResponse = new ResponseWrapper<>();
-		when(proxyPartnerManagementService.getPartnersByPartnerType(
+		when(getPartnersByPartnerType.getPartnersByPartnerType(
 				Optional.empty(), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = identityDataUtil.getPartnersByPartnerType(null, apiUrl);
+		ResponseWrapper<?> result = getPartnersByPartnerTypeCache.getPartnersByPartnerType(null, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
