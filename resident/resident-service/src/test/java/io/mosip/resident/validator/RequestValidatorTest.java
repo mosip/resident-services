@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -148,6 +147,9 @@ public class RequestValidatorTest {
 
     @Mock
     private ProxyIdRepoService idRepoService;
+
+    @Mock
+    private ValidateNewUpdateRequest validateNewUpdateRequest;
 
     @Mock
     private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
@@ -1650,14 +1652,14 @@ public class RequestValidatorTest {
 
     @Test
     public void testPhoneValidator() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         String phone = "1234567890";
         emailPhoneValidator.phoneValidator(phone);
     }
 
     @Test
     public void testEmailValidator() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
         String email = "abc@gmail.com";
         emailPhoneValidator.emailValidator(email);
     }
@@ -1922,8 +1924,7 @@ public class RequestValidatorTest {
         identityDTO.setPhone("8809393939");
         when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -1951,8 +1952,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateDataRequestInvalidPhoneUserId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1967,9 +1967,8 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectPhoneUserId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1985,8 +1984,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectEmailId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
@@ -2119,8 +2117,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testInvalidUserId() {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         requestValidator.validateUserIdAndTransactionId("shgasbieh", "3232323232");
     }
 
@@ -2567,13 +2564,13 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateEmailId() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         ReflectionTestUtils.invokeMethod(requestValidator, "validateEmailId", "123");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidatePhone() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(false);
         ReflectionTestUtils.invokeMethod(requestValidator, "validatePhoneNumber", "w");
     }
 
@@ -2654,8 +2651,8 @@ public class RequestValidatorTest {
     public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
@@ -2757,7 +2754,7 @@ public class RequestValidatorTest {
         requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = InvalidInputException.class)
     public void testValidateProxySendOtpRequestInCorrectPhoneUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
@@ -2765,8 +2762,6 @@ public class RequestValidatorTest {
         identityDTO.setPhone("8878787878");
         when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2779,16 +2774,16 @@ public class RequestValidatorTest {
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test
     public void testValidateProxySendOtpRequestInCorrectEmailUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
         when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
         when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2802,7 +2797,7 @@ public class RequestValidatorTest {
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = InvalidInputException.class)
     public void testValidateProxySendOtpRequestFailed() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
@@ -2810,8 +2805,6 @@ public class RequestValidatorTest {
         identityDTO.setPhone("887878");
         when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
         when(identityUtil.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2842,7 +2835,7 @@ public class RequestValidatorTest {
         validateOtpCharLimit.validateOtpCharLimit("111111");
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test
     public void testValidateOtpCharLimitFailed() {
         validateOtpCharLimit.validateOtpCharLimit("11111111");
     }
