@@ -56,6 +56,9 @@ public class ProxyMasterDataServiceTest {
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Mock
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
 	@InjectMocks
 	private ProxyMasterdataService proxyMasterdataService = new ProxyMasterdataServiceImpl();
 
@@ -72,16 +75,13 @@ public class ProxyMasterDataServiceTest {
 	@Mock
 	private Utilities utilities;
 
-	@Mock
+	@InjectMocks
 	private GetDynamicFieldBasedOnLangCodeAndFieldName getDynamicFieldBasedOnLangCodeAndFieldName;
 
 	@Mock
 	private IdentityDataUtil identityDataUtil;
 
-	@Mock
-	private ProxyMasterdataServiceImpl proxyMasterDataServiceUtility;
-
-	@Mock
+	@InjectMocks
 	private GetValidDocumentByLangCode getValidDocumentByLangCode;
 
 	@Before
@@ -682,7 +682,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("123", "eng");
 	}
 
@@ -698,7 +698,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		assertEquals("FLE", proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("female", "eng").getResponse().getGenderCode());
 	}

@@ -230,10 +230,10 @@ public class UtilityTest {
 	@Mock
 	private GetValidDocumentByLangCode getValidDocumentByLangCode;
 
-	@Mock
+	@InjectMocks
 	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
 
-	@Mock
+	@InjectMocks
 	private GetPartnersByPartnerTypeCache getPartnersByPartnerTypeCache;
 
 	@Before
