@@ -118,6 +118,9 @@ public class UtilitiesTest {
     @Mock
     private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
+    @Mock
+    private GetDynamicFieldBasedOnLangCodeAndFieldName getDynamicFieldBasedOnLangCodeAndFieldName;
+
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -355,14 +358,14 @@ public class UtilitiesTest {
         responseWrapper.setResponse("Response");
         responseWrapper.setResponsetime(LocalDateTime.of(1, 1, 1, 1, 1));
         responseWrapper.setVersion("https://example.org/example");
-        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+        when((ResponseWrapper<Object>) getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
         proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
     }
     @Test
     public void testGetDynamicFieldBasedOnLangCodeAndFieldName2() throws ResidentServiceCheckedException {
-        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+        when((ResponseWrapper<Object>) getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
         proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);

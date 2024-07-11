@@ -577,35 +577,6 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
-		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("langcode", langCode);
-		pathsegments.put("fieldName", fieldName);
-		List<String> queryParamName = new ArrayList<String>();
-		queryParamName.add("withValue");
-
-		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(withValue);
-		try {
-			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
-					queryParamValue, ResponseWrapper.class);
-			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				logger.error(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
-						responseWrapper.getErrors().get(0).getMessage());
-			}
-		} catch (ApisResourceAccessException e) {
-			logger.error("Error occured in accessing dynamic data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
-		return responseWrapper;
-	}
-	
-	@Override
 	@Cacheable(value = "getDocumentTypesByDocumentCategoryAndLangCode", key = "{#documentcategorycode, #langCode}")
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
