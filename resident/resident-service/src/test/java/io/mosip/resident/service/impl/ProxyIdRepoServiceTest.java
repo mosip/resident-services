@@ -83,9 +83,12 @@ public class ProxyIdRepoServiceTest {
 	private UinForIndividualId uinForIndividualId;
 
 	@Mock
+	private GetDescriptionForLangCode getDescriptionForLangCode;
+
+	@InjectMocks
 	private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
 
-	@Mock
+	@InjectMocks
 	private GetPendingDrafts getPendingDrafts;
 
 	@Mock
