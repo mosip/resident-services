@@ -21,15 +21,6 @@ import reactor.util.function.Tuple2;
 @Service
 public interface ProxyMasterdataService {
 
-	/**
-	 * Get valid documents by language code.
-	 * 
-	 * @param langCode
-	 * @return ResponseWrapper object
-	 * @throws ResidentServiceCheckedException
-	 */
-	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
-
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException;
 

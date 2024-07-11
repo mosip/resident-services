@@ -78,6 +78,9 @@ public class ProxyMasterDataServiceTest {
 	@Mock
 	private ProxyMasterdataServiceImpl proxyMasterDataServiceUtility;
 
+	@Mock
+	private GetValidDocumentByLangCode getValidDocumentByLangCode;
+
 	@Before
 	public void setup() {
 		responseWrapper = new ResponseWrapper<>();
@@ -100,7 +103,7 @@ public class ProxyMasterDataServiceTest {
 	@Test
 	public void testGetValidDocumentByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -117,7 +120,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(errorList);
 
-		proxyMasterdataService.getValidDocumentByLangCode("eng");
+		getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
 	@Test
@@ -127,7 +130,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(null);
 
-		ResponseWrapper<?> result = proxyMasterdataService.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -136,7 +139,7 @@ public class ProxyMasterDataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) (ApiName) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getValidDocumentByLangCode("eng");
+		getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
 	@Test(expected = Exception.class)

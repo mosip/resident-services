@@ -48,10 +48,10 @@ public class ProxyMasterdataController {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	@Autowired
-	private IdentityDataUtil identityDataUtil;
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
 	@Autowired
-	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
 
 	/**
 	 * Get valid documents by language code.
@@ -74,7 +74,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = identityDataUtil.getValidDocumentByLangCode(langCode);
+			responseWrapper = getValidDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			throw e;

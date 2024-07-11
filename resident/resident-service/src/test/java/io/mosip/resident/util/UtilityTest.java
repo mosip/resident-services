@@ -224,6 +224,12 @@ public class UtilityTest {
 	@Mock
 	private IdentityUtil identityUtil;
 
+	@Mock
+	private GetValidDocumentByLangCode getValidDocumentByLangCode;
+
+	@Mock
+	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
+
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -1022,9 +1028,9 @@ public class UtilityTest {
 		String langCode = "en";
 
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
-		when(proxyMasterdataService.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
+		when(getValidDocumentByLangCode.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
 
-		ResponseWrapper<?> result = identityDataUtil.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> result = getValidDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 
 		assertEquals(responseWrapper, result);
 	}

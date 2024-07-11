@@ -74,11 +74,6 @@ public class IdentityDataUtil {
         }
     }
 
-    @Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
-    public  ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-        return proxyMasterdataService.getValidDocumentByLangCode(langCode);
-    }
-
     @Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
     public ResponseWrapper<?> getPartnersByPartnerType(String partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
         return proxyPartnerManagementService.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
