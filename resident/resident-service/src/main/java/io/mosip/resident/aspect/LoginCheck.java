@@ -21,7 +21,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -59,7 +58,6 @@ public class LoginCheck {
 	private ResidentSessionRepository residentSessionRepository;
 	
 	@Autowired
-	@Lazy
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
