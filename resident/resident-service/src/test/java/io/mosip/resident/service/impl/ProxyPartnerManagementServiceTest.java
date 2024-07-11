@@ -59,7 +59,7 @@ public class ProxyPartnerManagementServiceTest {
 
 	private ResponseWrapper responseWrapper;
 
-	@Mock
+	@InjectMocks
 	private GetPartnersByPartnerType getPartnersByPartnerType;
 
 	@Mock
