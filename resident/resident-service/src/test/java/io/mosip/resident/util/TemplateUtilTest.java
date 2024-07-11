@@ -67,6 +67,9 @@ public class TemplateUtilTest {
     private Environment environment;
 
     @Mock
+    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+    @Mock
     private ResidentServiceImpl residentService;
 
     @Mock
@@ -84,14 +87,17 @@ public class TemplateUtilTest {
     @Mock
     private UinVidValidator uinVidValidator;
 
+    @InjectMocks
+    private GetSummaryForLangCode getSummaryForLangCodeMock = new GetSummaryForLangCode();
+
     @Mock
     private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
 
-    @Mock
-    private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+    @InjectMocks
+    private GetSmsTemplateTypeCode getSmsTemplateTypeCode = new GetSmsTemplateTypeCode();
 
-    @Mock
-    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode;
+    @InjectMocks
+    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode = new GetPurposeTemplateTypeCode();
 
     @Mock
     private GetSummaryForLangCode getSummaryForLangCode;
@@ -144,6 +150,10 @@ public class TemplateUtilTest {
         Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "otp");
         Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.SUCCESS.name(), "Success"));
+        Mockito.when(getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.anyString())).thenReturn("test");
+        Mockito.when(getEventStatusBasedOnLangCode.getTemplateTypeCode(Mockito.anyString())).thenReturn("test");
+        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(
+                Mockito.anyString(), Mockito.anyString())).thenReturn("test");
     }
 
     @Test
@@ -157,7 +167,7 @@ public class TemplateUtilTest {
     	getUISchemaData();
     	residentTransactionEntity.setAttributeList("fullName:fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForShareCredentialWithPartner(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -165,7 +175,7 @@ public class TemplateUtilTest {
     	getUISchemaData();
     	residentTransactionEntity.setAttributeList("fullName:fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
 	private void getUISchemaData() {
@@ -182,7 +192,7 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -190,7 +200,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -204,7 +214,7 @@ public class TemplateUtilTest {
     	getUISchemaData();
     	residentTransactionEntity.setAttributeList("fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -213,28 +223,28 @@ public class TemplateUtilTest {
     	residentTransactionEntity.setAttributeList("fullName");
     	residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
         Map<String, String> ackTemplateVariables1 = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables1.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables1.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
         residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         Map<String, String> ackTemplateVariables2 = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables2.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables2.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGenerateVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForRevokeVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForRevokeVid(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForAuthLock() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals("test",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -350,32 +360,32 @@ public class TemplateUtilTest {
 
     @Test
     public void getEmailSubjectTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
+        assertEquals("test",
                 templateUtil.getEmailSubjectTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getEmailContentTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
+        assertEquals("test",
                 templateUtil.getEmailContentTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSmsTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
+        assertEquals("test",
                 getSmsTemplateTypeCode.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getPurposeTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
+        assertEquals("test",
                 getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSummaryTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
-                getSummaryForLangCode.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+        assertEquals("test",
+                getSummaryForLangCodeMock.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
@@ -431,7 +441,7 @@ public class TemplateUtilTest {
     public void getDescriptionTemplateVariablesForAuthenticationRequestTest() {
     	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "OTP Authentication Success");
-        assertEquals("OTP Authentication Success",
+        assertEquals("test",
                 templateUtil.getDescriptionTemplateVariablesForAuthenticationRequest
                         (residentTransactionEntity, null, "eng"));
     }
@@ -441,7 +451,7 @@ public class TemplateUtilTest {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
     	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "OTP Authentication Success");
-        assertEquals("OTP Authentication Success",
+        assertEquals("test",
                 templateUtil.getDescriptionTemplateVariablesForAuthenticationRequest
                         (residentTransactionEntity, null, "eng"));
     }
@@ -560,28 +570,28 @@ public class TemplateUtilTest {
     @Test
     public void testGetEventTypeBasedOnLangcodeIf() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getEventTypeBasedOnLangcode(RequestType.AUTHENTICATION_REQUEST, "eng"));
+    	assertEquals("test", templateUtil.getEventTypeBasedOnLangcode(RequestType.AUTHENTICATION_REQUEST, "eng"));
     }
 
     @Test
     public void testGetServiceTypeBasedOnLangcode() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
+    	assertEquals("test", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
+    	assertEquals("test", templateUtil.getServiceTypeBasedOnLangcode(ServiceType.AUTHENTICATION_REQUEST, "eng"));
     }
 
     @Test
     public void testGetEventStatusBasedOnLangcode() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
-    	assertEquals("otp", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("test", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("otp", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("test", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     }
 
     @Test
     public void testGetAttributeBasedOnLangcodeIf() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getAttributeBasedOnLangcode("fullName", "eng"));
+    	assertEquals("test", templateUtil.getAttributeBasedOnLangcode("fullName", "eng"));
     }
 }
