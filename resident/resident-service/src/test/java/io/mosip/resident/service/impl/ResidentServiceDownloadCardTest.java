@@ -111,6 +111,9 @@ public class ResidentServiceDownloadCardTest {
     
     @Mock
 	private EntityManager entityManager;
+
+    @Mock
+    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
     
     @Mock
     private Utility utility;
@@ -132,7 +135,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "partner1");
         Mockito.when(
-				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn("file text template");
     }
 

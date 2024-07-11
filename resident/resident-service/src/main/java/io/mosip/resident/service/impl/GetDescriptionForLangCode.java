@@ -3,9 +3,12 @@ package io.mosip.resident.service.impl;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
 import io.mosip.resident.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GetDescriptionForLangCode {
 
     @Autowired
@@ -13,6 +16,9 @@ public class GetDescriptionForLangCode {
 
     @Autowired
     private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
+
+    @Autowired
+    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
 
     public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
             throws ResidentServiceCheckedException {
@@ -27,7 +33,7 @@ public class GetDescriptionForLangCode {
             templateType = TemplateType.FAILURE;
         }
         String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
-        String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+        String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
         return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
     }
 }

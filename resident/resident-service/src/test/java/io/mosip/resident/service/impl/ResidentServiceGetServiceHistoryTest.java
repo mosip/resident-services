@@ -113,6 +113,12 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
 
+    @Mock
+    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+
+    @Mock
+    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -176,8 +182,8 @@ public class ResidentServiceGetServiceHistoryTest {
 
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(any(), any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(any(), any())).thenReturn("template-type-code");
-        Mockito.when(templateUtil.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
-        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
+        Mockito.when(getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
+        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "m-partner-default-auth");
     }
@@ -420,7 +426,7 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Test
     public void testGetSummaryForLangCode() throws ResidentServiceCheckedException {
-        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Success");
         residentServiceImpl.getSummaryForLangCode(residentTransactionEntity, "eng", "SUCCESS",
                 RequestType.AUTHENTICATION_REQUEST);
@@ -428,7 +434,7 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Test
     public void testGetSummaryForLangCodeFailure() throws ResidentServiceCheckedException {
-        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("Success");
         residentServiceImpl.getSummaryForLangCode(residentTransactionEntity, "eng", "Failed",
                 RequestType.AUTHENTICATION_REQUEST);

@@ -84,6 +84,9 @@ public class TemplateUtilTest {
     @Mock
     private UinVidValidator uinVidValidator;
 
+    @Mock
+    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -562,9 +565,9 @@ public class TemplateUtilTest {
     @Test
     public void testGetEventStatusBasedOnLangcode() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("otp", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("otp", templateUtil.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("otp", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     }
 
     @Test

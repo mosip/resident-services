@@ -531,7 +531,7 @@ public class ProxyMasterDataServiceTest {
 	}
 
 	@Test
-	public void testGetTemplateValueFromTemplateTypeCodeAndLangCode()
+	public void testgetTemplateValueFromTemplateTypeCodeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
 		String result = proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode("eng",

@@ -110,6 +110,9 @@ public class NotificationService {
 	@Autowired
 	private EmailPhoneValidator emailPhoneValidator;
 
+	@Autowired
+	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
 		return sendNotification(dto, null, null, null, identity);
@@ -254,7 +257,7 @@ public class NotificationService {
 	private String getTemplate(String langCode, String templateTypeCode) {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templateTypeCode,
 				"NotificationService::getTemplate()::entry");
-		return templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)

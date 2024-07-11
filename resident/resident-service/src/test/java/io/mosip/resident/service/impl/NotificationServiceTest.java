@@ -93,6 +93,9 @@ public class NotificationServiceTest {
 	private EmailPhoneValidator emailPhoneValidator;
 
 	@Mock
+	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+	@Mock
 	private IdentityService identityService;
 	private Map<String, Object> mailingAttributes;
 	private NotificationRequestDto reqDto;
@@ -140,7 +143,7 @@ public class NotificationServiceTest {
 		Mockito.when(templateUtil.getEmailContentTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("email-content-template-type-code");
 
-		Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).
+		Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).
 				thenReturn("Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.<br>");
 
 		String primaryTemplatetext = "Hi Test,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is 10008200070004420191203104356.<br>";

@@ -201,6 +201,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private IdAuthService idAuthService;
 
 	@Autowired
+	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+	@Autowired
 	private NotificationService notificationService;
 
 	@Autowired
@@ -334,6 +337,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private GetDescriptionForLangCode getDescriptionForLangCode;
+
+	@Autowired
+	private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -1811,7 +1817,7 @@ public class ResidentServiceImpl implements ResidentService {
 			return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
 		}
 		String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
 	}
 
@@ -2015,7 +2021,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String serviceTypeTemplateData;
 		String statusFilterTemplateData;
 		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
@@ -2040,15 +2046,15 @@ public class ResidentServiceImpl implements ResidentService {
 			toDate = LocalDate.now();
 		}
 		if(statusFilter == null || statusFilter.trim().equalsIgnoreCase(EventStatus.ALL.name())){
-			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			statusFilterTemplateData = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
-					.map(status -> templateUtil.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
+					.map(status -> getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
 					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
 		if(serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
-			serviceTypeTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			serviceTypeTemplateData = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
 					.map(service -> templateUtil.getServiceTypeBasedOnLangcode(ServiceType.getServiceTypeFromString(service).get(), languageCode))

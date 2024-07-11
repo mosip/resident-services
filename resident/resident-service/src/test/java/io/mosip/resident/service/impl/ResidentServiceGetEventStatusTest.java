@@ -5,8 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.resident.util.AvailableClaimUtility;
-import io.mosip.resident.util.UinVidValidator;
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -70,6 +67,12 @@ public class ResidentServiceGetEventStatusTest {
 
     @Mock
     private AvailableClaimUtility availableClaimUtility;
+
+    @Mock
+    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+
+    @Mock
+    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
 
     private String eventId;
     private String langCode;
@@ -113,8 +116,8 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
-        Mockito.when(templateUtil.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
-        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
+        Mockito.when(getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.any())).thenReturn("SUCCESS");
+        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 

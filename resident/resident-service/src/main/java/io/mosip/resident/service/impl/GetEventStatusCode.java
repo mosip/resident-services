@@ -4,7 +4,7 @@ import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusCanceled;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.GetEventStatusBasedOnLangCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
@@ -14,7 +14,7 @@ import reactor.util.function.Tuples;
 public class GetEventStatusCode {
 
     @Autowired
-    private  TemplateUtil templateUtil;
+    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
 
     public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
         EventStatus status;
@@ -28,7 +28,7 @@ public class GetEventStatusCode {
         else {
             status = EventStatus.IN_PROGRESS;
         }
-        String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);
+        String fileText = getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(status, langCode);
         return Tuples.of(status.name(), fileText);
     }
 }
