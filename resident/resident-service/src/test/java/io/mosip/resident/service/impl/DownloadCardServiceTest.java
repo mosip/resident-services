@@ -72,6 +72,9 @@ public class DownloadCardServiceTest {
 	private IdAuthService idAuthService;
 
 	@Mock
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
+	@Mock
 	private Utilities utilities;
 
 	@Mock

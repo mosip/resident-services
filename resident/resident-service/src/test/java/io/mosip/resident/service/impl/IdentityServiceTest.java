@@ -86,6 +86,9 @@ public class IdentityServiceTest {
 	private CbeffUtil cbeffUtil;
 
 	@Mock
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
+	@Mock
 	private TokenIDGenerator tokenIDGenerator;
 
 	@Mock
@@ -336,14 +339,14 @@ public class IdentityServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testGetClaimFromUserInfoFailure(){
 		Map<String, Object> userInfo = new HashMap<>();
-		ReflectionTestUtils.invokeMethod(availableClaimUtility, "getClaimFromUserInfo", userInfo, "claim");
+		ReflectionTestUtils.invokeMethod(getAvailableClaimValueUtility, "getClaimFromUserInfo", userInfo, "claim");
 	}
 
 	@Test
 	public void testGetClaimFromUserInfoSuccess() {
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
-		String result = ReflectionTestUtils.invokeMethod(availableClaimUtility, "getClaimFromUserInfo", userInfo, "claim");
+		String result = ReflectionTestUtils.invokeMethod(getAvailableClaimValueUtility, "getClaimFromUserInfo", userInfo, "claim");
 		assertEquals("value", result);
 	}
 	
