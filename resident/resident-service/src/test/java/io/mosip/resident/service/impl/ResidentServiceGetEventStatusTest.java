@@ -69,6 +69,12 @@ public class ResidentServiceGetEventStatusTest {
     private AvailableClaimUtility availableClaimUtility;
 
     @Mock
+    private GetClaimValueUtility getClaimValueUtility;
+
+    @Mock
+    private GetDescriptionForLangCode getDescriptionForLangCode;
+
+    @Mock
     private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
 
     @Mock

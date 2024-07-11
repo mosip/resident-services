@@ -122,6 +122,9 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private GetSummaryForLangCode getSummaryForLangCode;
 
+    @Mock
+    private GetEventStatusCode getEventStatusCode;
+
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -458,6 +461,7 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDate.now();
         toDate = LocalDate.now();
+        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of("test", "test1"));
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, null, null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
@@ -475,6 +479,7 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDate.now();
         toDate = LocalDate.now();
+        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of("test", "test1"));
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, null, null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), "ALL", "DESC", statusFilter, searchText, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());

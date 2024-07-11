@@ -95,6 +95,12 @@ public class ResidentServiceDownloadCardTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
+    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+
+    @Mock
+    private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+
+    @Mock
     private ResidentUserRepository residentUserRepository;
     
     @Mock
