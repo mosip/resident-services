@@ -105,7 +105,7 @@ public class ProxyMasterDataControllerTest {
     private IdentityDataUtil identityDataUtil;
 
     @Mock
-    private ProxyMasterdataController proxyMasterDataServiceUtility;
+    private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
     @Mock
     private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
