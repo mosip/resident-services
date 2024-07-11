@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -89,7 +88,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
-	@Lazy
 	private IdAuthService idAuthService;
 
 	@Autowired
@@ -99,7 +97,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private IdentityServiceImpl identityService;
 
 	@Autowired
-	@Lazy
 	private NotificationService notificationService;
 
 	@Autowired

@@ -43,7 +43,6 @@ import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -227,7 +226,6 @@ public class ResidentServiceImpl implements ResidentService {
 	Environment env;
 
 	@Autowired
-	@Lazy
 	private TemplateUtil templateUtil;
 
 	@Autowired
@@ -306,9 +304,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private TemplateManagerBuilder templateManagerBuilder;
-
-    @Autowired
-    private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
 
 	@Autowired
 	private SessionUserNameUtility sessionUserNameUtility;

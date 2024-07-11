@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,20 +45,13 @@ public class ProxyMasterdataController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	@Autowired
-	private Utility utility;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
-
-	@Autowired
-	private Utilities utilities;
 
 	@Autowired
 	private IdentityDataUtil identityDataUtil;
 
 	@Autowired
-	@Lazy
-	private ProxyMasterdataController proxyMasterDataServiceUtility;
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
 	/**
 	 * Get valid documents by language code.
