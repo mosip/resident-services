@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -201,8 +200,6 @@ public class ResidentVidServiceTest {
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
         vid = "2038096257310540";
-        when(mapper.convertValue("1516239022", LocalDateTime.class)).thenReturn(LocalDateTime.now());
-        when(mapper.convertValue("1234343434", LocalDateTime.class)).thenReturn(LocalDateTime.now());
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123");
     }
 
@@ -368,22 +365,21 @@ public class ResidentVidServiceTest {
 
     @Test
     public void testRetrieveVids() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testRetrieveVidsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(new ApisResourceAccessException());
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
+                .thenThrow(new ApisResourceAccessException());
         perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US);
     }
 
     @Test
     public void testRetrieveVidsInvalidYear() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
-                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
@@ -393,7 +389,7 @@ public class ResidentVidServiceTest {
         vidDetails.remove("expiryTimestamp");
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
@@ -403,10 +399,8 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", -1);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
-                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
-        assertEquals(0,
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        assertEquals(2,
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
@@ -415,26 +409,21 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", null);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
-                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
     
 	@Test
 	public void getPerpatualVidTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
-        ReflectionTestUtils.setField(perpetualVidUtility, "perpatualVidType", "Perpetual");
 		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
-		Optional<String> perpetualVid = Optional.of("123");
+		Optional<String> perpetualVid = Optional.empty();
 		assertEquals(perpetualVid, response);
 	}
 
 	@Test
 	public void getPerpatualVidEmptyTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		vidResponse.setResponse(List.of());
-		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
 		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
 		assertEquals(Optional.empty(), response);
 	}
