@@ -12,7 +12,6 @@ import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -43,7 +42,6 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
-    @Lazy
     private TemplateUtil templateUtil;
 
     @Autowired

@@ -13,7 +13,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -67,11 +66,10 @@ public class IdentityUtil {
 	private String dateFormat;
 
 	@Autowired
-	@Lazy
-	private PerpetualVidUtility perpetualVidUtility;
+	private GetClaimValueUtility getClaimValueUtility;
 
 	@Autowired
-	private GetClaimValueUtility getClaimValueUtility;
+	private GetPerpetualVidUtil getPerpetualVidUtil;
 
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
 		return getIdentityAttributes(id, schemaType, List.of(
@@ -108,7 +106,7 @@ public class IdentityUtil {
 								&& !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
-								perpVid = perpetualVidUtility.getPerpatualVid((String) identity.get(IdType.UIN.name()));
+								perpVid = getPerpetualVidUtil.getPerpatualVid((String) identity.get(IdType.UIN.name()));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

@@ -144,6 +144,9 @@ public class ResidentVidServiceTest {
     @Mock
     private UinForIndividualId uinForIndividualId;
 
+    @Mock
+    private GetPerpetualVidUtil getPerpetualVidUtil;
+
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
 
@@ -423,7 +426,7 @@ public class ResidentVidServiceTest {
 	public void getPerpatualVidTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         ReflectionTestUtils.setField(perpetualVidUtility, "perpatualVidType", "Perpetual");
-		Optional<String> response = perpetualVidUtility.getPerpatualVid("9054257141");
+		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
 		Optional<String> perpetualVid = Optional.of("123");
 		assertEquals(perpetualVid, response);
 	}
@@ -432,7 +435,7 @@ public class ResidentVidServiceTest {
 	public void getPerpatualVidEmptyTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		vidResponse.setResponse(List.of());
 		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
-		Optional<String> response = perpetualVidUtility.getPerpatualVid("9054257141");
+		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
 		assertEquals(Optional.empty(), response);
 	}
 

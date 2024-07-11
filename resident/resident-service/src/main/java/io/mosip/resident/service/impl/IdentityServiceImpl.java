@@ -65,10 +65,10 @@ public class IdentityServiceImpl implements IdentityService {
 	private IdentityUtil identityUtil;
 
 	@Autowired
-	private PerpetualVidUtility perpetualVidUtility;
+	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
 
 	@Autowired
-	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+	private GetPerpetualVidUtil getPerpetualVidUtil;
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
@@ -93,7 +93,7 @@ public class IdentityServiceImpl implements IdentityService {
 			IdentityDTO identity = identityUtil.getIdentity(individualId);
 			String uin = identity.getUIN();
 			if(useVidOnly) {
-				Optional<String> perpVid = perpetualVidUtility.getPerpatualVid(uin);
+				Optional<String> perpVid = getPerpetualVidUtil.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
 					id = perpVid.get();
 					idType = IdType.VID;
