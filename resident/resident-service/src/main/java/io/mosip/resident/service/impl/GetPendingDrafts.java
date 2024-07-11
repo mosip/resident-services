@@ -27,6 +27,10 @@ import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.ResidentConstants.UPDATED;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class GetPendingDrafts {
 

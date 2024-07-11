@@ -23,6 +23,10 @@ import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class GetRemainingUpdateCountByIndividualId {
 

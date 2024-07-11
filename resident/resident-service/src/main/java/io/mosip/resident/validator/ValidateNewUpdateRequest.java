@@ -10,7 +10,6 @@ import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.GetPendingDrafts;
 import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.Utility;
@@ -21,6 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+/**
+ * @author Kamesh Shekhar Prasad
+ */
 
 @Component
 public class ValidateNewUpdateRequest {

@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class GetPartnersByPartnerType {
 

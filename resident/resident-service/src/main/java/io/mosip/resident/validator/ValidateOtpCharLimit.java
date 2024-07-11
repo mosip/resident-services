@@ -5,6 +5,10 @@ import io.mosip.resident.exception.ResidentServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class ValidateOtpCharLimit {
 

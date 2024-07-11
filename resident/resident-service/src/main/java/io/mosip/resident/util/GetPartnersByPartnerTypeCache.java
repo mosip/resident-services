@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class GetPartnersByPartnerTypeCache {
 

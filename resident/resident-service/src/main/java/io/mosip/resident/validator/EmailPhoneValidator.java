@@ -3,6 +3,10 @@ package io.mosip.resident.validator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class EmailPhoneValidator {
 

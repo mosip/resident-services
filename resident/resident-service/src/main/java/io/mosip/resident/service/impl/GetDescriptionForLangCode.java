@@ -8,6 +8,10 @@ import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
 public class GetDescriptionForLangCode {
 
