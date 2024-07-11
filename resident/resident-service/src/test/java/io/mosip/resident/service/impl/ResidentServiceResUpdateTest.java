@@ -22,6 +22,7 @@ import java.util.UUID;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
+import io.mosip.resident.validator.ValidateNewUpdateRequest;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -135,6 +136,9 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	RequestValidator requestValidator;
+
+	@Mock
+	ValidateNewUpdateRequest validateNewUpdateRequest;
 
 	@Mock
 	private MaskDataUtility maskDataUtility;
