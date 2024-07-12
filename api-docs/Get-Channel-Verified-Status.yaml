@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: Get Channel Verified Status
+  version: '1.0'
+  summary: Get the status of mobile/email verified status for a UIN/VID
+  description: Get Channel Verified Status
+servers:
+  - url: 'http://localhost:3000'
+  - url: 'https://dev.mosip.net'
+    description: ''
+paths:
+  /channel/verification-status:
+    parameters: []
+    get:
+      summary: Get Channel Verified Status
+      tags: []
+      responses:
+        '200':
+          description: Channel Verified
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.resident.channel.verification.status
+                    version: v1
+                    responsetime: '2022-04-26T15:17:42.083Z'
+                    metadata: null
+                    response:
+                      verificationStatus: true
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      verificationStatus:
+                        type: boolean
+                  errors:
+                    type:
+                      - string
+                      - array
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?mid=5336'
+              examples:
+                Verified Success:
+                  value:
+                    id: mosip.resident.channel.verification.status
+                    version: '1.0'
+                    responsetime: '2022-04-26T15:17:42.083Z'
+                    metadata: null
+                    response:
+                      verificationStatus: true
+                Not Verified:
+                  value:
+                    id: mosip.resident.channel.verification.status
+                    version: '1.0'
+                    responsetime: '2022-04-26T15:17:42.083Z'
+                    metadata: null
+                    response:
+                      verificationStatus: false
+                Invalid OTP channel:
+                  value:
+                    id: mosip.resident.channel.verification.status
+                    version: '1.0'
+                    responsetime: '2022-04-26T15:17:42.083Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-438
+                        message: Invalid OTP Channel
+                Invalid individual-Id:
+                  value:
+                    id: mosip.resident.channel.verification.status
+                    version: '1.0'
+                    responsetime: '2022-04-26T15:17:42.083Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- individualId
+        '404':
+          description: User Not Found
+      operationId: get-channel-verification-status
+      description: Check if the mobile/email is verified for UIN/VID
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: individualId
+          description: UIN / VID
+        - schema:
+            type: string
+          in: query
+          name: channel
+          description: MOBILE/EMAIL
+components:
+  schemas: {}

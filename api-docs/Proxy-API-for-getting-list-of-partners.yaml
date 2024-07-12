@@ -1,0 +1,170 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 06z24tsbkt8fr
+info:
+  title: Proxy API for getting list of partners
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /auth-proxy​/partners:
+    get:
+      summary: /auth-proxy​/partners
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      partners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            partnerID:
+                              type: string
+                            status:
+                              type: string
+                            organizationName:
+                              type: string
+                            contactNumber:
+                              type: string
+                            emailId:
+                              type: string
+                            address:
+                              type: string
+                            partnerType:
+                              type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: mosip.partnermanagement.partners.retrieve
+                    version: '1.0'
+                    responsetime: '2022-06-14T07:11:48.575Z'
+                    metadata: null
+                    response:
+                      partners:
+                        - partnerID: mpartner-default-resident
+                          status: active
+                          organizationName: IITB
+                          contactNumber: '9232121212'
+                          emailId: resident@mosip.io
+                          address: mpartner-default-resident
+                          partnerType: Credential_Partner
+                        - partnerID: mpartner-default-print
+                          status: active
+                          organizationName: IIITB
+                          contactNumber: '9232121212'
+                          emailId: print@mosip.io
+                          address: mpartner-default-print
+                          partnerType: Credential_Partner
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.partnermanagement.partners.retrieve
+                    version: '1.0'
+                    responsetime: '2022-06-14T07:11:48.575Z'
+                    metadata: null
+                    response:
+                      partners:
+                        - partnerID: mpartner-default-resident
+                          status: active
+                          organizationName: IITB
+                          contactNumber: '9232121212'
+                          emailId: resident@mosip.io
+                          address: mpartner-default-resident
+                          partnerType: Credential_Partner
+                        - partnerID: mpartner-default-print
+                          status: active
+                          organizationName: IIITB
+                          contactNumber: '9232121212'
+                          emailId: print@mosip.io
+                          address: mpartner-default-print
+                          partnerType: Credential_Partner
+                    errors: null
+      operationId: get-proxy-partners
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: partnerType
+          description: 'Partner Type such as Auth_Partner/Print_Partner '
+          required: true
+      description: This API is to get the list of partners from PMS
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

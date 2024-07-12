@@ -1,0 +1,80 @@
+openapi: 3.0.1
+info:
+  title: Proxy Masterdata API
+  description: API for getting the latest ID schema
+  version: 1.0.0
+paths:
+  /proxy/masterdata/idschema/latest:
+    get:
+      summary: getLatestIdSchema
+      description: getLatestIdSchema
+      tags:
+        - proxy-masterdata-controller
+      parameters:
+        - name: schemaVersion
+          in: query
+          required: false
+          schema:
+            type: number
+            format: double
+            default: 0
+          description: schema version
+        - name: domain
+          in: query
+          required: false
+          schema:
+            type: string
+          description: domain of the ui spec
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: type of the ui spec. Supported comma separated values
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        message:
+          type: string
+        status:
+          type: string

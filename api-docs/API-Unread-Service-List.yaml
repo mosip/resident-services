@@ -1,0 +1,387 @@
+openapi: 3.1.0
+x-stoplight:
+  id: nc3d0q3srjmca
+info:
+  title: API-Unread Service List
+  version: '1.0'
+  summary: Unread Service Request List
+  description: This API is to get any updates to the service requests that has not been read in a paginated way.
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/notifications/{langCode}':
+    parameters:
+      - schema:
+          type: string
+        name: langCode
+        in: path
+        required: true
+    get:
+      summary: Get Notifications
+      tags: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/xml:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.service.history.unread
+                    version: '1.0'
+                    responsetime: '2023-01-27T18:19:09.028Z'
+                    metadata: null
+                    response:
+                      pageNo: 0
+                      pageSize: 10
+                      totalItems: 116
+                      totalPages: 12
+                      data:
+                        - eventId: '1022051156200436'
+                          description: An attempt was made to update data
+                          eventStatus: In Progress
+                          timeStamp: '2023-01-27 10:11:42'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: true
+                          serialNumber: 0
+                        - eventId: '6007545701099143'
+                          description: Vid Card downloaded successfully.
+                          eventStatus: Success
+                          timeStamp: '2023-01-24 15:02:16'
+                          serviceType: SERVICE_REQUEST
+                          pinnedStatus: false
+                          readStatus: true
+                          serialNumber: 0
+                        - eventId: '4857207074484418'
+                          description: Vid Card downloaded successfully.
+                          eventStatus: Success
+                          timeStamp: '2023-01-24 15:01:57'
+                          serviceType: SERVICE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '7382955333952740'
+                          description: An attempt was made to update data
+                          eventStatus: In Progress
+                          timeStamp: '2023-01-24 13:48:02'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '4993230417695230'
+                          description: 'Data was updated (E.g.:  (name and gender were updated)'
+                          eventStatus: Success
+                          timeStamp: '2023-01-24 13:48:01'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '2334349224132719'
+                          description: An attempt was made to update data
+                          eventStatus: Failed
+                          timeStamp: '2023-01-24 13:47:10'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '3149007627754680'
+                          description: An attempt was made to update data
+                          eventStatus: Failed
+                          timeStamp: '2023-01-24 13:47:10'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '2427899281884083'
+                          description: An attempt was made to update data
+                          eventStatus: Failed
+                          timeStamp: '2023-01-24 13:47:10'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '1339203766621281'
+                          description: An attempt was made to update data
+                          eventStatus: Failed
+                          timeStamp: '2023-01-24 13:47:09'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                        - eventId: '8395187272263133'
+                          description: An attempt was made to update data
+                          eventStatus: Failed
+                          timeStamp: '2023-01-24 13:45:56'
+                          serviceType: DATA_UPDATE_REQUEST
+                          pinnedStatus: false
+                          readStatus: false
+                          serialNumber: 0
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      pageNo:
+                        type: integer
+                      pageSize:
+                        type: integer
+                      totalItems:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      data:
+                        type:
+                          - array
+                          - 'null'
+                        items: {}
+                  errors:
+                    type: 'null'
+              examples:
+                Success:
+                  value: |-
+                    {
+                        "id": "mosip.resident.service.history.unread",
+                        "version": "1.0",
+                        "responsetime": "2023-01-27T18:19:09.028Z",
+                        "metadata": null,
+                        "response": {
+                            "pageNo": 0,
+                            "pageSize": 10,
+                            "totalItems": 116,
+                            "totalPages": 12,
+                            "data": [
+                                {
+                                    "eventId": "1022051156200436",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "In Progress",
+                                    "timeStamp": "2023-01-27 10:11:42",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": true,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "6007545701099143",
+                                    "description": "Vid Card downloaded successfully.",
+                                    "eventStatus": "Success",
+                                    "timeStamp": "2023-01-24 15:02:16",
+                                    "serviceType": "SERVICE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": true,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "4857207074484418",
+                                    "description": "Vid Card downloaded successfully.",
+                                    "eventStatus": "Success",
+                                    "timeStamp": "2023-01-24 15:01:57",
+                                    "serviceType": "SERVICE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "7382955333952740",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "In Progress",
+                                    "timeStamp": "2023-01-24 13:48:02",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "4993230417695230",
+                                    "description": "Data was updated (E.g.:  (name and gender were updated)",
+                                    "eventStatus": "Success",
+                                    "timeStamp": "2023-01-24 13:48:01",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "2334349224132719",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "Failed",
+                                    "timeStamp": "2023-01-24 13:47:10",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "3149007627754680",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "Failed",
+                                    "timeStamp": "2023-01-24 13:47:10",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "2427899281884083",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "Failed",
+                                    "timeStamp": "2023-01-24 13:47:10",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "1339203766621281",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "Failed",
+                                    "timeStamp": "2023-01-24 13:47:09",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                },
+                                {
+                                    "eventId": "8395187272263133",
+                                    "description": "An attempt was made to update data",
+                                    "eventStatus": "Failed",
+                                    "timeStamp": "2023-01-24 13:45:56",
+                                    "serviceType": "DATA_UPDATE_REQUEST",
+                                    "pinnedStatus": false,
+                                    "readStatus": false,
+                                    "serialNumber": 0
+                                }
+                            ]
+                        },
+                        "errors": null
+                    }
+                'Error: Invalid Language Code':
+                  value: |-
+                    {
+                      "id": "mosip.service.history.get",
+                      "version": "1.0",
+                      "responsetime": "2022-07-22T15:27:10.605Z",
+                      "response": null,
+                      "errors": {
+                        "errorCode": "RES-SER-410",
+                        "message": "Invalid Input Parameter - lang code"
+                      }
+                    }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: unread-service-list
+      description: This API is to get notifictions to the asyncrhonous service requests in a paginated way.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: langCode
+          description: The 3 letter language code
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

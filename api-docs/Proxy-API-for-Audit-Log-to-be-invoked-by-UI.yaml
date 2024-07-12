@@ -1,0 +1,278 @@
+openapi: 3.1.0
+x-stoplight:
+  id: f8i3uksn754oc
+info:
+  title: Proxy API for Audit Log to be invoked by UI
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /auth-proxy/audit/log:
+    get:
+      summary: /auth-proxy/audit/log
+      tags: []
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      operationId: get-auth-proxy-audit-log
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization token
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: Id token is used to verify which user has logged in.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auditEventId:
+                  type: string
+                auditEventName:
+                  type: string
+                auditEventType:
+                  type: string
+                actionTimeStamp:
+                  type: string
+                hostName:
+                  type: string
+                hostIp:
+                  type: string
+                applicationId:
+                  type: string
+                applicationName:
+                  type: string
+                sessionUserId:
+                  type: string
+                sessionUserName:
+                  type: string
+                id:
+                  type: string
+                idType:
+                  type: string
+                createdBy:
+                  type: string
+                moduleName:
+                  type: string
+                moduleId:
+                  type: string
+                description:
+                  type: string
+              x-examples:
+                example-1:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: '2022-06-09T06:53:09.389Z'
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: Residence service
+                  moduleId: RES-SER
+                  description: string
+            examples:
+              example-1:
+                value:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: string
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: string
+                  moduleId: string
+                  description: string
+              example-2:
+                value:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: '2022-06-09T06:53:09.389Z'
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: Residence service
+                  moduleId: RES-SER
+                  description: string
+      description: This API is for the resident UI to log audits against any action performed by the resident.
+  /proxy/audit/log:
+    get:
+      summary: /proxy/audit/log
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-auth-proxy-audit-log
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auditEventId:
+                  type: string
+                auditEventName:
+                  type: string
+                auditEventType:
+                  type: string
+                actionTimeStamp:
+                  type: string
+                hostName:
+                  type: string
+                hostIp:
+                  type: string
+                applicationId:
+                  type: string
+                applicationName:
+                  type: string
+                sessionUserId:
+                  type: string
+                sessionUserName:
+                  type: string
+                id:
+                  type: string
+                idType:
+                  type: string
+                createdBy:
+                  type: string
+                moduleName:
+                  type: string
+                moduleId:
+                  type: string
+                description:
+                  type: string
+              x-examples:
+                example-1:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: '2022-06-09T06:53:09.389Z'
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: Residence service
+                  moduleId: RES-SER
+                  description: string
+            examples:
+              example-1:
+                value:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: string
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: string
+                  moduleId: string
+                  description: string
+              example-2:
+                value:
+                  auditEventId: string
+                  auditEventName: string
+                  auditEventType: string
+                  actionTimeStamp: '2022-06-09T06:53:09.389Z'
+                  hostName: string
+                  hostIp: string
+                  applicationId: string
+                  applicationName: string
+                  sessionUserId: string
+                  sessionUserName: string
+                  id: string
+                  idType: string
+                  createdBy: string
+                  moduleName: Residence service
+                  moduleId: RES-SER
+                  description: string
+      description: This API is for the resident UI to log audits against any action performed by the resident.
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

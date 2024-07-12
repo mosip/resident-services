@@ -1,0 +1,78 @@
+openapi: 3.0.1
+info:
+  title: Resident OTP API
+  description: API for requesting OTP
+  version: 1.0.0
+paths:
+  /req/otp:
+    post:
+      summary: reqOtp
+      description: Request OTP
+      tags:
+        - resident-otp-controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpRequestDTO'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtpResponseDTO'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    OtpRequestDTO:
+      type: object
+    OtpResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        version:
+          type: string
+        transactionID:
+          type: string
+        responseTime:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthError'
+        response:
+          $ref: '#/components/schemas/MaskedResponseDTO'
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    AuthError:
+      type: object
+    MaskedResponseDTO:
+      type: object

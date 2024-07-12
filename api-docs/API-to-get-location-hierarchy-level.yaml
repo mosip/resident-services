@@ -1,0 +1,160 @@
+openapi: 3.1.0
+x-stoplight:
+  id: e8zrr3oxo1145
+info:
+  title: API to get location hierarchy level
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/proxy​/masterdata​/locationHierarchyLevels​/{langcode}':
+    parameters:
+      - schema:
+          type: string
+        name: langcode
+        in: path
+        required: true
+    get:
+      summary: 'proxy​/masterdata​/locationHierarchyLevels​/{langcode}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      locationHierarchyLevels:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            hierarchyLevel:
+                              type: integer
+                            hierarchyLevelName:
+                              type: string
+                            langCode:
+                              type: string
+                            isActive:
+                              type: boolean
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T07:39:47.213Z'
+                    metadata: null
+                    response:
+                      locationHierarchyLevels:
+                        - hierarchyLevel: 0
+                          hierarchyLevelName: Country
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 1
+                          hierarchyLevelName: Region
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 2
+                          hierarchyLevelName: Province
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 3
+                          hierarchyLevelName: City
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 4
+                          hierarchyLevelName: Zone
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 5
+                          hierarchyLevelName: Postal Code
+                          langCode: eng
+                          isActive: true
+                        - hierarchyLevel: 6
+                          hierarchyLevelName: sub-zone
+                          langCode: eng
+                          isActive: true
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: string
+                    metadata: null
+                    response:
+                      locationHierarchyLevels:
+                        - hierarchyLevel: 0
+                          hierarchyLevelName: string
+                          langCode: string
+                          isActive: true
+                    errors: null
+      operationId: get-proxy-masterdata-locationHierarchyLevels-langcode
+      description: This API is to get the hierarchy level of location.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: langcode
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

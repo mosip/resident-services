@@ -1,0 +1,250 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 6rt0saqx9c3vn
+info:
+  title: 'API to get latitude, longitude and proximity distance'
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/​proxy​/masterdata​/getcoordinatespecificregistrationcenters​/{langcode}​/{longitude}​/{latitude}​/{proximitydistance}':
+    parameters:
+      - schema:
+          type: string
+        name: langcode
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: longitude
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: latitude
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: proximitydistance
+        in: path
+        required: true
+    get:
+      summary: '​/proxy​/masterdata​/getcoordinatespecificregistrationcenters​/{langcode}​/{longitude}​/{latitude}​/{proximitydistance}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      registrationCenters:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            centerTypeCode:
+                              type: string
+                            addressLine1:
+                              type: string
+                            addressLine2:
+                              type: string
+                            addressLine3:
+                              type: string
+                            latitude:
+                              type: string
+                            longitude:
+                              type: string
+                            locationCode:
+                              type: string
+                            holidayLocationCode:
+                              type: string
+                            contactPhone:
+                              type: string
+                            workingHours:
+                              type: string
+                            langCode:
+                              type: string
+                            numberOfKiosks:
+                              type: integer
+                            perKioskProcessTime:
+                              type: string
+                            centerStartTime:
+                              type: string
+                            centerEndTime:
+                              type: string
+                            timeZone:
+                              type: string
+                            contactPerson:
+                              type: string
+                            lunchStartTime:
+                              type: string
+                            lunchEndTime:
+                              type: string
+                            isActive:
+                              type: boolean
+                            zoneCode:
+                              type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T07:47:32.036Z'
+                    metadata: null
+                    response:
+                      registrationCenters:
+                        - id: '10004'
+                          name: Center Assam
+                          centerTypeCode: REG
+                          addressLine1: 7 Km Tangier Road
+                          addressLine2: Kenitra
+                          addressLine3: MyCountry
+                          latitude: '34.287879'
+                          longitude: '-6.516428'
+                          locationCode: '14000'
+                          holidayLocationCode: KTA
+                          contactPhone: '937997757'
+                          workingHours: '8:00:00'
+                          langCode: eng
+                          numberOfKiosks: 2
+                          perKioskProcessTime: '00:15:00'
+                          centerStartTime: '09:00:00'
+                          centerEndTime: '17:00:00'
+                          timeZone: '(GTM+01:00) CENTRAL EUROPEAN TIME'
+                          contactPerson: Paige Turner
+                          lunchStartTime: '13:00:00'
+                          lunchEndTime: '14:00:00'
+                          isActive: true
+                          zoneCode: RBT
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: string
+                    metadata: null
+                    response:
+                      registrationCenters:
+                        - id: string
+                          name: string
+                          centerTypeCode: string
+                          addressLine1: string
+                          addressLine2: string
+                          addressLine3: string
+                          latitude: string
+                          longitude: string
+                          locationCode: string
+                          holidayLocationCode: string
+                          contactPhone: string
+                          workingHours: string
+                          langCode: string
+                          numberOfKiosks: 0
+                          perKioskProcessTime: string
+                          centerStartTime: string
+                          centerEndTime: string
+                          timeZone: string
+                          contactPerson: string
+                          lunchStartTime: string
+                          lunchEndTime: string
+                          isActive: true
+                          zoneCode: string
+                    errors: null
+      operationId: get-proxy-masterdata-getcoordinatespecificregistrationcenters-langcode-longitude-latitude-proximitydistance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+        - schema:
+            type: string
+          in: header
+          name: langcode
+        - schema:
+            type: number
+          in: header
+          name: longitude
+        - schema:
+            type: number
+          in: header
+          name: latitude
+        - schema:
+            type: string
+          in: header
+          name: proximitydistance
+      description: 'This API is to get the longitude, latitude and proximity distance.'
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
