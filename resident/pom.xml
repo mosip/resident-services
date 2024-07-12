@@ -73,7 +73,6 @@
         <!-- maven -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <maven.jacoco.version>0.8.11</maven.jacoco.version>
         <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
 
         <sonar.coverage.exclusions>
@@ -127,24 +126,6 @@
                         --add-opens=java.base/java.time.format=ALL-UNNAMED
                     </argLine>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report-aggregate</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
                 <plugin>
 					<groupId>org.apache.maven.plugins</groupId>
