@@ -13,7 +13,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.*;
-import org.springframework.context.annotation.Lazy;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -37,7 +36,6 @@ import java.util.Set;
 public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
-	@Lazy
 	private Utility utility;
 
 	@Autowired
@@ -53,29 +51,28 @@ public class IdentityServiceImpl implements IdentityService {
 	private boolean useVidOnly;
 
 	@Autowired
-	@Lazy
 	private IdentityDataUtil identityDataUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 
     @Autowired
-	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired
 	private UinVidValidator uinVidValidator;
 
 	@Autowired
-	@Lazy
 	private IdentityUtil identityUtil;
 
 	@Autowired
-	@Lazy
-	private PerpetualVidUtility perpetualVidUtility;
+	private AvailableClaimValueUtility availableClaimValueUtility;
+
+	@Autowired
+	private PerpetualVidUtil perpetualVidUtil;
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
-		Map<String, ?> claims = availableClaimUtility.getClaimsFromToken(Set.of(claimName), accessToken);
+		Map<String, ?> claims = availableClaimValueUtility.getClaimsFromToken(Set.of(claimName), accessToken);
 		String individualId = (String) claims.get(claimName);
 		return availableClaimUtility.getIDATokenForIndividualId(individualId);
 	}
@@ -96,7 +93,7 @@ public class IdentityServiceImpl implements IdentityService {
 			IdentityDTO identity = identityUtil.getIdentity(individualId);
 			String uin = identity.getUIN();
 			if(useVidOnly) {
-				Optional<String> perpVid = perpetualVidUtility.getPerpatualVid(uin);
+				Optional<String> perpVid = perpetualVidUtil.getPerpatualVid(uin);
 				if(perpVid.isPresent()) {
 					id = perpVid.get();
 					idType = IdType.VID;

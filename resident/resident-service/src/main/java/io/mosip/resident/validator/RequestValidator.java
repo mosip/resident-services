@@ -1,7 +1,5 @@
 package io.mosip.resident.validator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -19,7 +17,6 @@ import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.constant.UISchemaTypes;
 import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AttributeListDto;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
@@ -29,8 +26,6 @@ import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
-import io.mosip.resident.dto.DraftResidentResponseDto;
-import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
@@ -47,7 +42,6 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.dto.SortType;
-import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -58,7 +52,6 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -66,7 +59,6 @@ import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -84,7 +76,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -119,15 +110,7 @@ public class RequestValidator {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
-	@Lazy
 	private ProxyPartnerManagementService proxyPartnerManagementService;
-
-	@Autowired
-	@Lazy
-	private ProxyIdRepoService idRepoService;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	private String euinId;
 
@@ -145,8 +128,13 @@ public class RequestValidator {
 	private UinVidValidator uinVidValidator;
 
 	@Autowired
-	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private EmailPhoneValidator emailPhoneValidator;
+
+	@Autowired
+	private ValidateNewUpdateRequest validateNewUpdateRequest;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -196,12 +184,6 @@ public class RequestValidator {
 	public void setAuthUnlockId(String authUnLockId) {
 		this.authUnLockId = authUnLockId;
 	}
-
-	@Value("${mosip.id.validation.identity.phone}")
-	private String phoneRegex;
-
-	@Value("${mosip.id.validation.identity.email}")
-	private String emailRegex;
 
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusID;
@@ -626,14 +608,6 @@ public class RequestValidator {
 		}
 	}
 
-	public boolean phoneValidator(String phone) {
-		return phone.matches(phoneRegex);
-	}
-
-	public boolean emailValidator(String email) {
-		return email.matches(emailRegex);
-	}
-	
 	public void emailCharsValidator(String email) {
 		if (email.length() > emailCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
@@ -873,46 +847,6 @@ public class RequestValidator {
 				audit.setAuditRequestDto(
 						AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
-			}
-		}
-	}
-
-	public void validateNewUpdateRequest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if(Utility.isSecureSession()){
-			validatePendingDraft();
-		}
-	}
-
-	public void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
-		Set<String> attributesHavingLimitExceeded = new HashSet<>();
-		if(!identity.isEmpty()) {
-			ResponseWrapper<?> responseWrapper =  idRepoService.getRemainingUpdateCountByIndividualId(List.of());
-			AttributeListDto attributeListDto = objectMapper.convertValue(responseWrapper.getResponse(), AttributeListDto.class);
-
-			attributesHavingLimitExceeded = attributeListDto.getAttributes().stream()
-					.filter(updateCountDto -> identity.contains(updateCountDto.getAttributeName())
-							&& updateCountDto.getNoOfUpdatesLeft() == ResidentConstants.ZERO)
-					.map(UpdateCountDto::getAttributeName)
-					.collect(Collectors.toSet());
-
-		}
-		if (!attributesHavingLimitExceeded.isEmpty()) {
-			String exceededAttributes = String.join(ResidentConstants.COMMA, attributesHavingLimitExceeded);
-			throw new ResidentServiceCheckedException(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode(),
-					String.format(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorMessage(), exceededAttributes));
-		}
-	}
-
-	private void validatePendingDraft() throws ResidentServiceCheckedException {
-		ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= idRepoService.getPendingDrafts(null);
-		if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
-			List<DraftUinResidentResponseDto> draftResidentResponseDto = getPendingDraftResponseDto.getResponse().getDrafts();
-			for(DraftUinResidentResponseDto uinResidentResponseDto : draftResidentResponseDto){
-				if(uinResidentResponseDto.isCancellable()){
-					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET);
-				} else {
-					throw new ResidentServiceCheckedException(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST);
-				}
 			}
 		}
 	}
@@ -1181,15 +1115,8 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
 		}
 	}
-	
-	public void validateOtpCharLimit(String otp) {
-		if (otp.length() > otpLength) {
-			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
-					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),otpLength,otp));
-		}
-	}
 
-	public void validateEventIdLanguageCode(String eventId, String languageCode) {
+    public void validateEventIdLanguageCode(String eventId, String languageCode) {
 		validateEventId(eventId);
 		validateLanguageCode(languageCode);
 	}
@@ -1229,10 +1156,10 @@ public class RequestValidator {
 			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "userId", "userId is null"));
 			throw new InvalidInputException("userId");
 		}
-		if (phoneValidator(userId)) {
+		if (emailPhoneValidator.phoneValidator(userId)) {
 			list.add(mobileChannel);
 			return list;
-		} else if (emailValidator(userId)) {
+		} else if (emailPhoneValidator.emailValidator(userId)) {
 			list.add(emailChannel);
 			return list;
 		}
@@ -1262,13 +1189,13 @@ public class RequestValidator {
 		List<String> identity = validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
 		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
 		if(!identity.isEmpty() && identity.get(ResidentConstants.ZERO)!=null){
-			validateUpdateCountLimit(new HashSet<>(identity));
+			validateNewUpdateRequest.validateUpdateCountLimit(new HashSet<>(identity));
 		}
-		validateNewUpdateRequest();
+		validateNewUpdateRequest.validateNewUpdateRequest();
 	}
 
 	private void validateSameUserId(String userId, IdentityDTO identityDTO) {
-		if(phoneValidator(userId)){
+		if(emailPhoneValidator.phoneValidator(userId)){
 			String phone = identityDTO.getPhone();
 			if(phone!=null && phone.equalsIgnoreCase(userId)) {
 				throw new ResidentServiceException(ResidentErrorCode.SAME_PHONE_ERROR,
@@ -1507,7 +1434,7 @@ public class RequestValidator {
 	private void validatePhoneNumber(String phoneNo) {
 		if (phoneNo != null) {
 			phoneCharsValidator(phoneNo);
-			if (!phoneValidator(phoneNo)) {
+			if (!emailPhoneValidator.phoneValidator(phoneNo)) {
 				throw new InvalidInputException(PHONE_CHANNEL);
 			}
 		}
@@ -1516,7 +1443,7 @@ public class RequestValidator {
 	private void validateEmailId(String emailId) {
 		if (emailId != null) {
 			emailCharsValidator(emailId);
-			if (!emailValidator(emailId)) {
+			if (!emailPhoneValidator.emailValidator(emailId)) {
 				throw new InvalidInputException(EMAIL_CHANNEL, EMAIL_CHANNEL + ResidentConstants.MUST_NOT_BE_EMPTY);
 			}
 		}

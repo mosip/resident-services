@@ -22,7 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  **/
 
 @Component
-public class GetAcrMappingUtil {
+public class AcrMappingUtil {
 
 
     @Autowired

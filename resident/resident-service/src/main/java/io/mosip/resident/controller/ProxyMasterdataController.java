@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,20 +45,13 @@ public class ProxyMasterdataController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	@Autowired
-	private Utility utility;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	@Autowired
-	private Utilities utilities;
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
 	@Autowired
-	private IdentityDataUtil identityDataUtil;
-
-	@Autowired
-	@Lazy
-	private ProxyMasterdataController proxyMasterDataServiceUtility;
+	private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
 
 	/**
 	 * Get valid documents by language code.
@@ -82,7 +74,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = identityDataUtil.getValidDocumentByLangCode(langCode);
+			responseWrapper = validDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(AuditEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			throw e;

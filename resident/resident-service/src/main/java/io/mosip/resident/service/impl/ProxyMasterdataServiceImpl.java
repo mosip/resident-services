@@ -16,7 +16,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.*;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,7 +34,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.context.annotation.Lazy;
 
 import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
@@ -63,8 +61,10 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@Autowired
-	@Lazy
-	private ProxyMasterdataServiceImpl identityDataUtil;
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
+	@Autowired
+	private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
 
 
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
@@ -73,36 +73,12 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		cache.clear();
 	}
 
-	@Override
-	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::entry");
-		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("langCode", langCode);
-		try {
-			responseWrapper = residentServiceRestClient.getApi(ApiName.VALID_DOCUMENT_BY_LANGCODE_URL, pathsegments,
-					ResponseWrapper.class);
-
-			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				logger.error(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
-						responseWrapper.getErrors().get(0).getMessage());
-			}
-		} catch (ApisResourceAccessException e) {
-			logger.error("Error occured in accessing valid documents %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::exit");
-		return responseWrapper;
-	}
-
-	@Override
+    @Override
 	@Cacheable(value = "valid-doc-cat-and-type-list", key = "#langCode")
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
-		ResponseWrapper<?> responseWrapper = identityDataUtil.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> responseWrapper = validDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
 
@@ -601,35 +577,6 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
-		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("langcode", langCode);
-		pathsegments.put("fieldName", fieldName);
-		List<String> queryParamName = new ArrayList<String>();
-		queryParamName.add("withValue");
-
-		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(withValue);
-		try {
-			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
-					queryParamValue, ResponseWrapper.class);
-			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				logger.error(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
-						responseWrapper.getErrors().get(0).getMessage());
-			}
-		} catch (ApisResourceAccessException e) {
-			logger.error("Error occured in accessing dynamic data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
-		return responseWrapper;
-	}
-	
-	@Override
 	@Cacheable(value = "getDocumentTypesByDocumentCategoryAndLangCode", key = "{#documentcategorycode, #langCode}")
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
@@ -660,7 +607,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
-		ResponseWrapper<?> res = identityDataUtil.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
+		ResponseWrapper<?> res = proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
 		Map response = (Map) res.getResponse();
 		ArrayList<Map> responseValues = (ArrayList<Map>) response.get(VALUES);
 		String genderCode = responseValues.stream()

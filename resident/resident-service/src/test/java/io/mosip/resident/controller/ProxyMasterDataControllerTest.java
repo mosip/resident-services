@@ -105,7 +105,10 @@ public class ProxyMasterDataControllerTest {
     private IdentityDataUtil identityDataUtil;
 
     @Mock
-    private ProxyMasterdataController proxyMasterDataServiceUtility;
+    private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
+    @Mock
+    private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
 
     @Before
     public void setUp() throws Exception {
@@ -119,7 +122,7 @@ public class ProxyMasterDataControllerTest {
 
     @Test
     public void testGetValidDocumentByLangCode() throws Exception {
-        Mockito.when(identityDataUtil.getValidDocumentByLangCode(Mockito.anyString()))
+        Mockito.when(validDocumentByLangCodeCache.getValidDocumentByLangCode(Mockito.anyString()))
                 .thenReturn(responseWrapper);
         mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
                 .andExpect(status().isOk());
@@ -127,7 +130,7 @@ public class ProxyMasterDataControllerTest {
 
     @Test(expected = Exception.class)
     public void testGetValidDocumentByLangCodeWithResidentServiceCheckedException() throws Exception {
-        Mockito.when(identityDataUtil.getValidDocumentByLangCode(Mockito.anyString()))
+        Mockito.when(validDocumentByLangCodeCache.getValidDocumentByLangCode(Mockito.anyString()))
                 .thenThrow(ResidentServiceCheckedException.class);
         mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
                 .andExpect(status().isOk());
