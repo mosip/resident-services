@@ -6,7 +6,6 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.IdResponseDTO1;
@@ -16,12 +15,9 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.service.ProxyPartnerManagementService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
@@ -30,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  @author Kamesh Shekhar Prasad
@@ -48,21 +43,16 @@ public class IdentityDataUtil {
     private ProxyMasterdataService proxyMasterdataService;
 
     @Autowired
-    private GetAcrMappingUtil getAcrMappingUtil;
+    private AcrMappingUtil acrMappingUtil;
 
     @Autowired
-    @Lazy
-    private ProxyPartnerManagementService proxyPartnerManagementService;
-
-    @Autowired
-    @Lazy
     private NotificationService notificationService;
 
     @Autowired
     private CachedIdentityDataUtil cachedIdentityDataUtil;
 
     @Autowired
-    private GetAccessTokenUtility getAccessToken;
+    private AccessTokenUtility getAccessToken;
 
     public void sendNotification(String eventId, String individualId, TemplateType templateType) {
         try {
@@ -75,16 +65,6 @@ public class IdentityDataUtil {
         }catch (ResidentServiceCheckedException exception){
             logger.error("Error while sending notification:- "+ exception);
         }
-    }
-
-    @Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
-    public  ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-        return proxyMasterdataService.getValidDocumentByLangCode(langCode);
-    }
-
-    @Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
-    public ResponseWrapper<?> getPartnersByPartnerType(String partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
-        return proxyPartnerManagementService.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
     }
 
     public Tuple3<JSONObject, String, IdResponseDTO1> getIdentityDataFromIndividualID(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
@@ -148,7 +128,7 @@ public class IdentityDataUtil {
     }
 
     public String getAuthTypeCodefromkey(String reqTypeCode) throws ResidentServiceCheckedException {
-        Map<String, String> map = getAcrMappingUtil.getAmrAcrMapping();
+        Map<String, String> map = acrMappingUtil.getAmrAcrMapping();
         return map.get(reqTypeCode);
     }
 

@@ -101,10 +101,10 @@ public class UtilitiesTest {
     private Utility utility;
 
     @Mock
-    private GetAcrMappingUtil getAcrMappingUtil;
+    private AcrMappingUtil acrMappingUtil;
 
     @Mock
-    private GetAccessTokenUtility getAccessTokenUtility;
+    private AccessTokenUtility accessTokenUtility;
 
     JSONObject identity;
 
@@ -117,6 +117,9 @@ public class UtilitiesTest {
 
     @Mock
     private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
+    @Mock
+    private DynamicFieldBasedOnLangCodeAndFieldName dynamicFieldBasedOnLangCodeAndFieldName;
 
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
@@ -343,7 +346,7 @@ public class UtilitiesTest {
     public void testGetAmrAcrMapping() throws ResidentServiceCheckedException, IOException {
     	Mockito.when(residentRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(amrAcrJson.toString());
     	Mockito.when(objMapper.readValue(amrAcrJson.toString().getBytes(UTF_8), Map.class)).thenReturn(amrAcrJson);
-        getAcrMappingUtil.getAmrAcrMapping();
+        acrMappingUtil.getAmrAcrMapping();
     }
 
     @Test
@@ -355,14 +358,14 @@ public class UtilitiesTest {
         responseWrapper.setResponse("Response");
         responseWrapper.setResponsetime(LocalDateTime.of(1, 1, 1, 1, 1));
         responseWrapper.setVersion("https://example.org/example");
-        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+        when((ResponseWrapper<Object>) dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenReturn(responseWrapper);
         proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
     }
     @Test
     public void testGetDynamicFieldBasedOnLangCodeAndFieldName2() throws ResidentServiceCheckedException {
-        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+        when((ResponseWrapper<Object>) dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(
                 (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
                 .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
         proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
@@ -530,7 +533,7 @@ public class UtilitiesTest {
     @Test
     public void testGetIdentityDataFromIndividualIDNullIdeResponseDto()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
+        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
@@ -555,7 +558,7 @@ public class UtilitiesTest {
     @Test
     public void testGetIdentityDataFromIndividualIDIdRepoAppException()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
+        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
@@ -581,7 +584,7 @@ public class UtilitiesTest {
     @Test(expected = Exception.class)
     public void testGetIdentityDataFromIndividual()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(getAccessTokenUtility.getAccessToken()).thenReturn("ABC123");
+        when(accessTokenUtility.getAccessToken()).thenReturn("ABC123");
         JSONObject identity = new JSONObject();
         identity.put(ResidentConstants.ID_SCHEMA_VERSION, "0.1");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn(identity.toJSONString());
@@ -611,7 +614,7 @@ public class UtilitiesTest {
         when(cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
         assertEquals("schema", identityDataUtil.getIdentityDataFromIndividualID("42").getT2());
-        verify(getAccessTokenUtility).getAccessToken();
+        verify(accessTokenUtility).getAccessToken();
         verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
         cachedIdentityDataUtil.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());

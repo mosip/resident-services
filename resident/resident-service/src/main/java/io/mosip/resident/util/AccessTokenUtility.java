@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetAccessTokenUtility {
+public class AccessTokenUtility {
 
     @Autowired
     AuthUserDetailsUtil authUserDetailsUtil;

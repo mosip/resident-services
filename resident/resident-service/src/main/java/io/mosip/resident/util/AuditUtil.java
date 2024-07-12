@@ -11,7 +11,6 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -67,6 +66,9 @@ public class AuditUtil {
 	@Autowired
 	private AsyncUtil asyncUtil;
 
+	@Autowired
+	private AvailableClaimValueUtility availableClaimValueUtility;
+
 	/** The Constant UNKNOWN_HOST. */
 	private static final String UNKNOWN_HOST = "Unknown Host";
 
@@ -75,7 +77,6 @@ public class AuditUtil {
 	private String hostName = null;
 
 	@Autowired
-	@Lazy
 	private AvailableClaimUtility availableClaimUtility;
 
 	public String getServerIp() {
@@ -111,7 +112,7 @@ public class AuditUtil {
 			if(Utility.isSecureSession()) {
 				String name = null;
 				try {
-					name = availableClaimUtility.getAvailableClaimValue(
+					name = availableClaimValueUtility.getAvailableClaimValue(
 							this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 				} catch (ApisResourceAccessException e) {
 					throw new RuntimeException(e);

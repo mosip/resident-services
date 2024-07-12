@@ -58,7 +58,7 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
             ResponseDTO responseDTO = new ResponseDTO();
-            responseDTO.setStatus(HttpStatus.OK.toString());
+            responseDTO.setStatus(String.valueOf(HttpStatus.OK.value()));
             responseDTO.setMessage(SUCCESS);
             responseWrapper.setResponse(responseDTO);
             logger.debug("PinUnpinStatusServiceImpl::pinStatus()::exit");
