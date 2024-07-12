@@ -1,0 +1,257 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 6f04kcjgrafxk
+info:
+  title: API to validate OTP for verifying email Id or phone number
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /contact-details/update-data:
+    post:
+      summary: contact-details/update-data
+      operationId: post-contact-details-update-data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  response:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      message:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: mosip.resident.contact.details.update.id
+                    version: v1
+                    responsetime: '2022-09-23T08:06:04.802Z'
+                    response:
+                      status: success
+                      message: VALIDATION_SUCCESSFUL
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.contact.details.update.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:06:04.802Z'
+                    response:
+                      status: success
+                      message: VALIDATION_SUCCESSFUL
+                    errors: null
+                'Error: OTP expired - Please send OTP again':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-469
+                        message: OTP expired - Please send OTP again
+                'Error: Invalid Input Parameter- userId':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- userId
+                'Error: Invalid Input Parameter- otp':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- otp
+                'Error: OTP validation failed':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-468
+                        message: OTP validation failed
+                'Error: Unable to access API resource':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-412
+                        message: Unable to access API resource
+                'Error: Invalid Input Parameter- transactionId':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- transactionId
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                    transactionId:
+                      type: string
+                    otp:
+                      type: string
+              x-examples:
+                Example 1:
+                  id: mosip.resident.contact.details.update.id
+                  version: '1.0'
+                  requesttime: '2022-09-20T13:13:04.159Z'
+                  request:
+                    userId: kameshsr1338@gmail.com
+                    transactionId: '1234567890'
+                    otp: '111111'
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.contact.details.update.id
+                  version: '1.0'
+                  requesttime: '2022-09-20T13:13:04.159Z'
+                  request:
+                    userId: kameshsr1338@gmail.com
+                    transactionId: '1234567890'
+                    otp: '111111'
+      description: This API is to verify OTP and update the new email/phone number.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

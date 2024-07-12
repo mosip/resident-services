@@ -1,0 +1,116 @@
+openapi: 3.1.0
+x-stoplight:
+  id: wpbesa5utcs9m
+info:
+  title: API to Get last date-time of user click event on the bell notification
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /bell/notification-click:
+    get:
+      summary: bell/notification-click
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      lastbellnotifclicktime:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: mosip.resident.event.status
+                    version: '1.0'
+                    responsetime: '2022-09-19T11:26:22.045Z'
+                    metadata: null
+                    response:
+                      lastbellnotifclicktime: '2022-09-19T11:24:25.240726'
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.get.notification.click.time
+                    version: '1.0'
+                    responsetime: '2022-09-19T11:26:22.045Z'
+                    metadata: null
+                    response:
+                      lastbellnotifclicktime: '2022-09-19T11:24:25.240726'
+                    errors: null
+        '401':
+          description: Unauthorized
+      operationId: get-bell-notification-click
+      description: |-
+        API to Get last date-time of user click event on the bell notification icon.
+        This is an authenticated API.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization Token
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
