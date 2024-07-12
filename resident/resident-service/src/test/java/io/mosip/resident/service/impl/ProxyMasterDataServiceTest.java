@@ -76,13 +76,13 @@ public class ProxyMasterDataServiceTest {
 	private Utilities utilities;
 
 	@InjectMocks
-	private GetDynamicFieldBasedOnLangCodeAndFieldName getDynamicFieldBasedOnLangCodeAndFieldName;
+	private DynamicFieldBasedOnLangCodeAndFieldName dynamicFieldBasedOnLangCodeAndFieldName;
 
 	@Mock
 	private IdentityDataUtil identityDataUtil;
 
 	@InjectMocks
-	private GetValidDocumentByLangCode getValidDocumentByLangCode;
+	private ValidDocumentByLangCode validDocumentByLangCode;
 
 	@Before
 	public void setup() {
@@ -106,7 +106,7 @@ public class ProxyMasterDataServiceTest {
 	@Test
 	public void testGetValidDocumentByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = validDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -123,7 +123,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(errorList);
 
-		getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
+		validDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(null);
 
-		ResponseWrapper<?> result = getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = validDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -142,7 +142,7 @@ public class ProxyMasterDataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) (ApiName) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		getValidDocumentByLangCode.getValidDocumentByLangCode("eng");
+		validDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
 	@Test(expected = Exception.class)
@@ -592,7 +592,7 @@ public class ProxyMasterDataServiceTest {
 	public void testGetGenderTypesByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> result = getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+		ResponseWrapper<?> result = dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
 				withValue);
 		assertNotNull(result);
 	}
@@ -609,7 +609,7 @@ public class ProxyMasterDataServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "xyz", withValue);
+		dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "xyz", withValue);
 	}
 
 	@Test
@@ -617,7 +617,7 @@ public class ProxyMasterDataServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> result = getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+		ResponseWrapper<?> result = dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
 				withValue);
 		assertNotNull(result);
 	}
@@ -627,7 +627,7 @@ public class ProxyMasterDataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
+		dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 	}
 
 	@Test

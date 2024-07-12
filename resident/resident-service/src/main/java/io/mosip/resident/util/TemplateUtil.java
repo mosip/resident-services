@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import io.mosip.resident.service.impl.GetEventStatusCode;
+import io.mosip.resident.service.impl.EventStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -82,16 +82,16 @@ public class TemplateUtil {
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired
-	private GetEventStatusCode getEventStatusCode;
+	private EventStatusCode eventStatusCode;
 
 	@Autowired
-	private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
 	@Autowired
-	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
 	@Autowired
-	private GetSummaryForLangCode getSummaryForLangCode;
+	private SummaryForLangCode summaryForLangCode;
 
 	/**
 	 * Gets the ack template variables for authentication request.
@@ -107,7 +107,7 @@ public class TemplateUtil {
 	    public Map<String, String> getCommonTemplateVariables(ResidentTransactionEntity residentTransactionEntity, RequestType requestType, String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = new HashMap<>();
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
-		Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
+		Tuple2<String, String> statusCodes = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		String eventTypeBasedOnLangcode = getEventTypeBasedOnLangcode(requestType, languageCode);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, eventTypeBasedOnLangcode);
@@ -141,22 +141,22 @@ public class TemplateUtil {
 
 	public String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
-		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", requestType.name()));
-			templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	public String getServiceTypeBasedOnLangcode(ServiceType serviceType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY, serviceType.name());
-		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", serviceType.name()));
-			templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		String statusCode = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
+		String statusCode = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
 				.getT1();
 		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode);
 	}
@@ -235,7 +235,7 @@ public class TemplateUtil {
 						} else {
 							templateTypeCode = getIDAuthRequestTypeDescriptionTemplateTypeCode(authTypeCode.trim(), statusCode);
 						}
-						return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+						return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 					})
 					.collect(Collectors.toList());
 		}
@@ -444,7 +444,7 @@ public class TemplateUtil {
 	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
 			String languageCode, String statusCode, RequestType requestType) {
 		try {
-			return getSummaryForLangCode.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
+			return summaryForLangCode.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
 					requestType);
 		} catch (ResidentServiceCheckedException e) {
 			return requestType.name();
@@ -593,20 +593,20 @@ public class TemplateUtil {
 
 	public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(emailSubjectTemplateCodeProperty);
+		return eventStatusBasedOnLangCode.getTemplateTypeCode(emailSubjectTemplateCodeProperty);
 	}
 
 	public String getEmailContentTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String emailContentTemplateCodeProperty = requestType.getEmailContentTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(emailContentTemplateCodeProperty);
+		return eventStatusBasedOnLangCode.getTemplateTypeCode(emailContentTemplateCodeProperty);
 	}
 
     private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
 		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
-		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", authTypeCode));
-			return getEventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			return eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		} else {
 			return templateTypeCode;
 		}
@@ -614,23 +614,23 @@ public class TemplateUtil {
 
 	private String getIDAuthRequestTypeDescriptionTemplateTypeCode(String authTypeCode, String statusCode) {
 		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
-		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", authTypeCode));
-			return getEventStatusBasedOnLangCode.getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
+			return eventStatusBasedOnLangCode.getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
 		} else {
 			return templateTypeCode;
 		}
 	}
 
 	public String getAttributeBasedOnLangcode(String attributeName, String languageCode) {
-		String templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(
 				String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", attributeName));
-			templateTypeCode = getEventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
     private String getPaymentStatus(String statusCode) {

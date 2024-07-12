@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetPurposeTemplateTypeCode {
+public class PurposeTemplateTypeCode {
 
 	@Autowired
-	private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
     public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
-		return getEventStatusBasedOnLangCode.getTemplateTypeCode(purposeTemplateCodeProperty);
+		return eventStatusBasedOnLangCode.getTemplateTypeCode(purposeTemplateCodeProperty);
 	}
 }

@@ -20,9 +20,9 @@ import java.util.Optional;
  */
 
 @Component
-public class GetPartnersByPartnerType {
+public class PartnersByPartnerType {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(GetPartnersByPartnerType.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(PartnersByPartnerType.class);
 
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;

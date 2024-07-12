@@ -159,7 +159,7 @@ public class UtilityTest {
 	private PDFGenerator pdfGenerator;
 
 	@Mock
-	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+	private AvailableClaimValueUtility availableClaimValueUtility;
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -194,10 +194,10 @@ public class UtilityTest {
 	private ObjectStoreHelper objectStoreHelper;
 
 	@Mock
-	private GetAcrMappingUtil getAcrMappingUtil;
+	private AcrMappingUtil acrMappingUtil;
 
 	@Mock
-	private GetPartnersByPartnerType getPartnersByPartnerType;
+	private PartnersByPartnerType partnersByPartnerType;
 
 	private String idaToken;
 
@@ -228,13 +228,13 @@ public class UtilityTest {
 	private IdentityUtil identityUtil;
 
 	@Mock
-	private GetValidDocumentByLangCode getValidDocumentByLangCode;
+	private ValidDocumentByLangCode validDocumentByLangCode;
 
 	@InjectMocks
-	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
+	private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
 
 	@InjectMocks
-	private GetPartnersByPartnerTypeCache getPartnersByPartnerTypeCache;
+	private PartnersByPartnerTypeCache partnersByPartnerTypeCache;
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -738,7 +738,7 @@ public class UtilityTest {
 	@Test
 	public void testGetSessionUserName() throws ApisResourceAccessException {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
-		Mockito.when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		Mockito.when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		sessionUserNameUtility.getSessionUserName();
 	}
 
@@ -1034,9 +1034,9 @@ public class UtilityTest {
 		String langCode = "en";
 
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
-		when(getValidDocumentByLangCode.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
+		when(validDocumentByLangCode.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
 
-		ResponseWrapper<?> result = getValidDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> result = validDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 
 		assertEquals(responseWrapper, result);
 	}
@@ -1047,11 +1047,11 @@ public class UtilityTest {
 		ApiName apiUrl = ApiName.PARTNER_API_URL;
 
 		ResponseWrapper expectedResponse = new ResponseWrapper<>();
-		when(getPartnersByPartnerType.getPartnersByPartnerType(
+		when(partnersByPartnerType.getPartnersByPartnerType(
 				Optional.of(partnerType), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = getPartnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, apiUrl);
+		ResponseWrapper<?> result = partnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
@@ -1061,11 +1061,11 @@ public class UtilityTest {
 		ApiName apiUrl = ApiName.PARTNER_API_URL;
 
 		ResponseWrapper expectedResponse = new ResponseWrapper<>();
-		when(getPartnersByPartnerType.getPartnersByPartnerType(
+		when(partnersByPartnerType.getPartnersByPartnerType(
 				Optional.empty(), apiUrl))
 				.thenReturn(expectedResponse);
 
-		ResponseWrapper<?> result = getPartnersByPartnerTypeCache.getPartnersByPartnerType(null, apiUrl);
+		ResponseWrapper<?> result = partnersByPartnerTypeCache.getPartnersByPartnerType(null, apiUrl);
 
 		assertEquals(expectedResponse, result);
 	}
@@ -1081,7 +1081,7 @@ public class UtilityTest {
 
 		Map<String, String> amrAcrMapping = new HashMap<>();
 		amrAcrMapping.put("reqCode", "authCode");
-		when(getAcrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+		when(acrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
 
 		String result = identityDataUtil.getAuthTypeCodefromkey(reqTypeCode);
 
@@ -1093,7 +1093,7 @@ public class UtilityTest {
 		String reqTypeCode = "nonExistentCode";
 
 		Map<String, String> amrAcrMapping = new HashMap<>();
-		when(getAcrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+		when(acrMappingUtil.getAmrAcrMapping()).thenReturn(amrAcrMapping);
 
 		String result = identityDataUtil.getAuthTypeCodefromkey(reqTypeCode);
 

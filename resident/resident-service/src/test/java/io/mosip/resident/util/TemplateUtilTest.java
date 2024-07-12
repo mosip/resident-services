@@ -67,7 +67,7 @@ public class TemplateUtilTest {
     private Environment environment;
 
     @Mock
-    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
     @Mock
     private ResidentServiceImpl residentService;
@@ -76,7 +76,7 @@ public class TemplateUtilTest {
     private ResidentConfigService residentConfigService;
 
     @Mock
-    private GetEventStatusCode getEventStatusCode;
+    private EventStatusCode eventStatusCode;
 
     @Mock
     private ProxyMasterdataService proxyMasterdataService;
@@ -88,19 +88,19 @@ public class TemplateUtilTest {
     private UinVidValidator uinVidValidator;
 
     @InjectMocks
-    private GetSummaryForLangCode getSummaryForLangCodeMock = new GetSummaryForLangCode();
+    private SummaryForLangCode summaryForLangCodeMock = new SummaryForLangCode();
 
     @Mock
-    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+    private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
     @InjectMocks
-    private GetSmsTemplateTypeCode getSmsTemplateTypeCode = new GetSmsTemplateTypeCode();
+    private SmsTemplateTypeCode smsTemplateTypeCode = new SmsTemplateTypeCode();
 
     @InjectMocks
-    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode = new GetPurposeTemplateTypeCode();
+    private PurposeTemplateTypeCode purposeTemplateTypeCode = new PurposeTemplateTypeCode();
 
     @Mock
-    private GetSummaryForLangCode getSummaryForLangCode;
+    private SummaryForLangCode summaryForLangCode;
 
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
@@ -149,10 +149,10 @@ public class TemplateUtilTest {
         responseWrapper.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "otp");
-        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.SUCCESS.name(), "Success"));
-        Mockito.when(getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.anyString())).thenReturn("test");
-        Mockito.when(getEventStatusBasedOnLangCode.getTemplateTypeCode(Mockito.anyString())).thenReturn("test");
-        Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(
+        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.SUCCESS.name(), "Success"));
+        Mockito.when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(Mockito.any(), Mockito.anyString())).thenReturn("test");
+        Mockito.when(eventStatusBasedOnLangCode.getTemplateTypeCode(Mockito.anyString())).thenReturn("test");
+        Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(
                 Mockito.anyString(), Mockito.anyString())).thenReturn("test");
     }
 
@@ -251,7 +251,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         residentTransactionEntity.setAuthTypeCode("");
-        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
+        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
         assertEquals("Failed",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
@@ -261,7 +261,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setAuthTypeCode(null);
-        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
@@ -373,19 +373,19 @@ public class TemplateUtilTest {
     @Test
     public void getSmsTemplateTypeCodeTest() {
         assertEquals("test",
-                getSmsTemplateTypeCode.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                smsTemplateTypeCode.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getPurposeTemplateTypeCodeTest() {
         assertEquals("test",
-                getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                purposeTemplateTypeCode.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSummaryTemplateTypeCodeTest() {
         assertEquals("test",
-                getSummaryForLangCodeMock.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+                summaryForLangCodeMock.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
@@ -419,7 +419,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestForRequestTypeNotPresentInServiceType() throws ResidentServiceCheckedException {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
-        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code").thenReturn(null).thenReturn("template-type-code");
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
@@ -430,7 +430,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
-        Mockito.when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        Mockito.when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
         assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
@@ -554,7 +554,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getSummaryFromResidentTransactionEntityLangCodeTest() throws ResidentServiceCheckedException {
-        Mockito.when(getSummaryForLangCode.getSummaryForLangCode(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+        Mockito.when(summaryForLangCode.getSummaryForLangCode(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenThrow(new ResidentServiceCheckedException());
         assertEquals("AUTHENTICATION_REQUEST",templateUtil.getSummaryFromResidentTransactionEntityLangCode(
                 residentTransactionEntity, "eng", "SUCCESS",
@@ -584,9 +584,9 @@ public class TemplateUtilTest {
     @Test
     public void testGetEventStatusBasedOnLangcode() {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("template-type-code");
-    	assertEquals("test", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("test", eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
-    	assertEquals("test", getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
+    	assertEquals("test", eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.SUCCESS, "eng"));
     }
 
     @Test

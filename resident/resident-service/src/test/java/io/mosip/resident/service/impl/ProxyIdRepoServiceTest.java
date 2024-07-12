@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
@@ -83,16 +82,16 @@ public class ProxyIdRepoServiceTest {
 	private UinForIndividualId uinForIndividualId;
 
 	@Mock
-	private GetDescriptionForLangCode getDescriptionForLangCode;
+	private DescriptionForLangCode descriptionForLangCode;
 
 	@InjectMocks
-	private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+	private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
 
 	@InjectMocks
-	private GetPendingDrafts getPendingDrafts;
+	private PendingDrafts pendingDrafts;
 
 	@Mock
-	private GetEventStatusCode getEventStatusCode;
+	private EventStatusCode eventStatusCode;
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -104,10 +103,10 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> response1 = getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
+		ResponseWrapper<?> response1 = remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
 		assertNotNull(response1);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> response2 = getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
+		ResponseWrapper<?> response2 = remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
 		assertNotNull(response2);
 	}
 
@@ -118,7 +117,7 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of());
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -132,7 +131,7 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(null);
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(null);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -146,7 +145,7 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -159,7 +158,7 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -172,7 +171,7 @@ public class ProxyIdRepoServiceTest {
 		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test
@@ -186,7 +185,7 @@ public class ProxyIdRepoServiceTest {
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		assertNotNull(getPendingDrafts.getPendingDrafts("eng"));
+		assertNotNull(pendingDrafts.getPendingDrafts("eng"));
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -200,7 +199,7 @@ public class ProxyIdRepoServiceTest {
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		getPendingDrafts.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -214,7 +213,7 @@ public class ProxyIdRepoServiceTest {
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		getPendingDrafts.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -223,7 +222,7 @@ public class ProxyIdRepoServiceTest {
 		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenThrow(new ApisResourceAccessException());
-		getPendingDrafts.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test
@@ -256,9 +255,9 @@ public class ProxyIdRepoServiceTest {
 		, Mockito.anyString(), Mockito.anyString())).thenReturn(List.of(residentTransactionEntity, residentTransactionEntity1));
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
 		when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
-		when(getEventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
+		when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
 				"eng"));
-		assertEquals("123", getPendingDrafts.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
+		assertEquals("123", pendingDrafts.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
 	}
 
 }

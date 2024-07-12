@@ -3,7 +3,7 @@ package io.mosip.resident.util;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.impl.GetDescriptionForLangCode;
+import io.mosip.resident.service.impl.DescriptionForLangCode;
 import io.mosip.resident.service.impl.ReplacePlaceholderValueInTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,23 +13,23 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetSummaryForLangCode {
+public class SummaryForLangCode {
 
     @Autowired
-    private GetDescriptionForLangCode getDescriptionForLangCode;
+    private DescriptionForLangCode descriptionForLangCode;
 
     @Autowired
-    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
     @Autowired
     private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
 
     @Autowired
-    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+    private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
     public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
         String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
-        return getEventStatusBasedOnLangCode.getTemplateTypeCode(summaryTemplateCodeProperty);
+        return eventStatusBasedOnLangCode.getTemplateTypeCode(summaryTemplateCodeProperty);
     }
 
     public String getSummaryForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode,
@@ -43,10 +43,10 @@ public class GetSummaryForLangCode {
         } else if (residentTransactionEntity.getStatusCode().equalsIgnoreCase(EventStatusInProgress.IDENTITY_UPDATED.name())) {
             templateType = TemplateType.REGPROC_SUCCESS;
         } else {
-            return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
+            return descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType);
         }
         String templateTypeCode = getSummaryTemplateTypeCode(requestType, templateType);
-        String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+        String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
         return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
     }
 }

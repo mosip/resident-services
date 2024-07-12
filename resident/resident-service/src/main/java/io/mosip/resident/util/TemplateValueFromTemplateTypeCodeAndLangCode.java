@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetTemplateValueFromTemplateTypeCodeAndLangCode {
+public class TemplateValueFromTemplateTypeCodeAndLangCode {
 
     @Autowired
     private ProxyMasterdataService proxyMasterdataService;

@@ -3,8 +3,8 @@ package io.mosip.resident.service.impl;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.util.GetPurposeTemplateTypeCode;
-import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
+import io.mosip.resident.util.PurposeTemplateTypeCode;
+import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetDescriptionForLangCode {
+public class DescriptionForLangCode {
 
     @Autowired
     private ReplacePlaceholderValueInTemplate replacePlaceholderValueInTemplate;
 
     @Autowired
-    private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
     @Autowired
-    private GetPurposeTemplateTypeCode getPurposeTemplateTypeCode;
+    private PurposeTemplateTypeCode purposeTemplateTypeCode;
 
     public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
             throws ResidentServiceCheckedException {
@@ -36,8 +36,8 @@ public class GetDescriptionForLangCode {
         } else {
             templateType = TemplateType.FAILURE;
         }
-        String templateTypeCode = getPurposeTemplateTypeCode.getPurposeTemplateTypeCode(requestType, templateType);
-        String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+        String templateTypeCode = purposeTemplateTypeCode.getPurposeTemplateTypeCode(requestType, templateType);
+        String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
         return replacePlaceholderValueInTemplate.replacePlaceholderValueInTemplate(residentTransactionEntity, fileText, requestType, langCode);
     }
 }

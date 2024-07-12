@@ -19,7 +19,7 @@ import java.util.Map;
  */
 
 @Component
-public class GetValidDocumentByLangCode {
+public class ValidDocumentByLangCode {
 
     private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 

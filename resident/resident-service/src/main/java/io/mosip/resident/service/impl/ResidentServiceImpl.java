@@ -199,7 +199,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private IdAuthService idAuthService;
 
 	@Autowired
-	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -235,7 +235,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private Utilities utilities;
 
 	@Autowired
-	private GetEventStatusCode getEventStatusCode;
+	private EventStatusCode eventStatusCode;
 
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -309,13 +309,13 @@ public class ResidentServiceImpl implements ResidentService {
 	private SessionUserNameUtility sessionUserNameUtility;
 
 	@Autowired
-	private GetAccessTokenUtility getAccessTokenUtility;
+	private AccessTokenUtility accessTokenUtility;
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Autowired
-	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+	private AvailableClaimValueUtility availableClaimValueUtility;
 	
 	@Autowired
 	private IdentityUtil identityUtil;
@@ -324,16 +324,16 @@ public class ResidentServiceImpl implements ResidentService {
 	private MaskDataUtility maskDataUtility;
 
 	@Autowired
-	private GetClaimValueUtility getClaimValueUtility;
+	private ClaimValueUtility claimValueUtility;
 
 	@Autowired
 	private ValidateNewUpdateRequest validateNewUpdateRequest;
 
 	@Autowired
-	private GetDescriptionForLangCode getDescriptionForLangCode;
+	private DescriptionForLangCode descriptionForLangCode;
 
 	@Autowired
-	private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -942,7 +942,7 @@ public class ResidentServiceImpl implements ResidentService {
 						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes, idRepoJson);
 				residentUpdateResponseDTOV2.setStatus(ResidentConstants.SUCCESS);
 				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
-				utility.clearIdentityMapCache(getAccessTokenUtility.getAccessToken());
+				utility.clearIdentityMapCache(accessTokenUtility.getAccessToken());
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
@@ -1767,7 +1767,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
-			Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+			Tuple2<String, String> statusCodes = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
 			RequestType requestType = RequestType
 					.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
@@ -1786,7 +1786,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
+							.setDescription(descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(templateUtil.getEventTypeBasedOnLangcode(requestType, langCode));
@@ -1866,14 +1866,14 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 			eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesConstants.SUMMARY));
 
-			String name = getClaimValueUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			String name = claimValueUtility.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), eventStatusMap.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
+							descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity.get(), languageCode,
 									eventStatusMap.get(TemplateVariablesConstants.EVENT_STATUS_ENUM), requestType));
 				}
 			} else {
@@ -1998,7 +1998,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String serviceTypeTemplateData;
 		String statusFilterTemplateData;
 		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
-		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
@@ -2023,15 +2023,15 @@ public class ResidentServiceImpl implements ResidentService {
 			toDate = LocalDate.now();
 		}
 		if(statusFilter == null || statusFilter.trim().equalsIgnoreCase(EventStatus.ALL.name())){
-			statusFilterTemplateData = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			statusFilterTemplateData = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
-					.map(status -> getEventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
+					.map(status -> eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
 					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
 		if(serviceType == null || serviceType.trim().equalsIgnoreCase(ServiceType.ALL.name())) {
-			serviceTypeTemplateData = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+			serviceTypeTemplateData = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
 					.map(service -> templateUtil.getServiceTypeBasedOnLangcode(ServiceType.getServiceTypeFromString(service).get(), languageCode))
@@ -2067,11 +2067,11 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 			}
 		} else {
-			name = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			name = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		}
-		String photo = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
-		String email = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
-		String phone = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
+		String photo = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
+		String email = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

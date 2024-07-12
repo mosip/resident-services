@@ -10,8 +10,8 @@ import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.impl.GetPendingDrafts;
-import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
+import io.mosip.resident.service.impl.PendingDrafts;
+import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,15 +32,15 @@ public class ValidateNewUpdateRequest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+    private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
 
     @Autowired
-    private GetPendingDrafts getPendingDrafts;
+    private PendingDrafts pendingDrafts;
 
     public void validateUpdateCountLimit(Set<String> identity) throws ResidentServiceCheckedException {
         Set<String> attributesHavingLimitExceeded = new HashSet<>();
         if(!identity.isEmpty()) {
-            ResponseWrapper<?> responseWrapper =  getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of());
+            ResponseWrapper<?> responseWrapper =  remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of());
             AttributeListDto attributeListDto = objectMapper.convertValue(responseWrapper.getResponse(), AttributeListDto.class);
 
             attributesHavingLimitExceeded = attributeListDto.getAttributes().stream()
@@ -64,7 +64,7 @@ public class ValidateNewUpdateRequest {
     }
 
     private void validatePendingDraft() throws ResidentServiceCheckedException {
-        ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= getPendingDrafts.getPendingDrafts(null);
+        ResponseWrapper<DraftResidentResponseDto> getPendingDraftResponseDto= pendingDrafts.getPendingDrafts(null);
         if(!getPendingDraftResponseDto.getResponse().getDrafts().isEmpty()){
             List<DraftUinResidentResponseDto> draftResidentResponseDto = getPendingDraftResponseDto.getResponse().getDrafts();
             for(DraftUinResidentResponseDto uinResidentResponseDto : draftResidentResponseDto){

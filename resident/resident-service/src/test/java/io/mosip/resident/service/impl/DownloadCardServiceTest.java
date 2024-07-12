@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.resident.controller.ResidentVidController;
 import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +71,7 @@ public class DownloadCardServiceTest {
 	private IdAuthService idAuthService;
 
 	@Mock
-	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+	private AvailableClaimValueUtility availableClaimValueUtility;
 
 	@Mock
 	private Utilities utilities;

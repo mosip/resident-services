@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 
 @Component
-public class GetPerpetualVidUtil {
+public class PerpetualVidUtil {
 
     private static final String VID = "vid";
 
@@ -74,7 +74,7 @@ public class GetPerpetualVidUtil {
     private static final String HASH_ATTRIBUTES = "hashAttributes";
 
 
-    private static final Logger logger = LoggerConfiguration.logConfig(GetPerpetualVidUtil.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(PerpetualVidUtil.class);
 
     public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
         ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin, ResidentConstants.UTC_TIMEZONE_OFFSET, null);

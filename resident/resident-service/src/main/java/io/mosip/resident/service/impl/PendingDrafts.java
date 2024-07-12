@@ -32,9 +32,9 @@ import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_E
  */
 
 @Component
-public class GetPendingDrafts {
+public class PendingDrafts {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(GetPendingDrafts.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(PendingDrafts.class);
 
 	@Autowired
 	private AvailableClaimUtility availableClaimUtility;
@@ -69,10 +69,10 @@ public class GetPendingDrafts {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Autowired
-	private GetEventStatusCode getEventStatusCode;
+	private EventStatusCode eventStatusCode;
 
 	@Autowired
-	private GetDescriptionForLangCode getDescriptionForLangCode;
+	private DescriptionForLangCode descriptionForLangCode;
 
 	public ResponseWrapper<DraftResidentResponseDto> getPendingDrafts(String langCode) throws ResidentServiceCheckedException {
 		try {
@@ -168,8 +168,8 @@ public class GetPendingDrafts {
 		if(langCode == null){
 			return "";
 		}
-		Tuple2<String, String> statusCodes = getEventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
-		return getDescriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
+		Tuple2<String, String> statusCodes = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
+		return descriptionForLangCode.getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(),
 				RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()));
 	}
 

@@ -20,9 +20,9 @@ import java.util.Map;
  */
 
 @Component
-public class GetDynamicFieldBasedOnLangCodeAndFieldName {
+public class DynamicFieldBasedOnLangCodeAndFieldName {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(GetDynamicFieldBasedOnLangCodeAndFieldName.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(DynamicFieldBasedOnLangCodeAndFieldName.class);
 
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;

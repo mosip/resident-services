@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import io.mosip.resident.util.GetTemplateValueFromTemplateTypeCodeAndLangCode;
+import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
 import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
@@ -72,7 +72,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	Environment env;
 
 	@Autowired
-	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
 	@Autowired
 	private ProxyMasterdataService proxyMasterdataService;
@@ -132,7 +132,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		}
 		regCentersMap.put(PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		String templateTypeCode = this.env.getProperty(REGISTRATION_CENTRE_TEMPLATE_PROPERTY);
-		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
 
@@ -170,7 +170,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataServiceImpl::downloadSupportingDocsByLanguage()::entry");
 		String templateTypeCode = this.env.getProperty(SUPPORTING_DOCS_TEMPLATE_PROPERTY);
-		String fileText = getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		Map<String, Object> supportingsDocsMap = new HashMap<>();
 		supportingsDocsMap.put(PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));

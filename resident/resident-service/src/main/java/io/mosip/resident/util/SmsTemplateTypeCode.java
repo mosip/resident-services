@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetSmsTemplateTypeCode {
+public class SmsTemplateTypeCode {
 
     @Autowired
-    private GetEventStatusBasedOnLangCode getEventStatusBasedOnLangCode;
+    private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
 
     public String getSmsTemplateTypeCode(RequestType requestType, TemplateType templateType) {
         String smsTemplateCodeProperty = requestType.getSmsTemplateCodeProperty(templateType);
-        return getEventStatusBasedOnLangCode.getTemplateTypeCode(smsTemplateCodeProperty);
+        return eventStatusBasedOnLangCode.getTemplateTypeCode(smsTemplateCodeProperty);
     }
 }

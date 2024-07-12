@@ -30,7 +30,7 @@ public class AvailableClaimUtility {
     private UinForIndividualId uinForIndividualId;
 
     @Autowired
-    private GetClaimValueUtility getClaimValueUtility;
+    private ClaimValueUtility claimValueUtility;
 
     public String getIDAToken(String uin) {
         return getIDAToken(uin, onlineVerificationPartnerId);
@@ -50,6 +50,6 @@ public class AvailableClaimUtility {
 	}
 
     public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
-        return  getClaimValueUtility.getClaimValue(INDIVIDUAL_ID);
+        return  claimValueUtility.getClaimValue(INDIVIDUAL_ID);
     }
 }

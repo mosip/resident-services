@@ -28,9 +28,9 @@ import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_E
  */
 
 @Component
-public class GetRemainingUpdateCountByIndividualId {
+public class RemainingUpdateCountByIndividualId {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(GetRemainingUpdateCountByIndividualId.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(RemainingUpdateCountByIndividualId.class);
 
     @Autowired
     private AvailableClaimUtility availableClaimUtility;

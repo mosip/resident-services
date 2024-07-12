@@ -5,7 +5,7 @@ import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 import java.util.HashMap;
 import java.util.UUID;
 
-import io.mosip.resident.util.GetAvailableClaimValueUtility;
+import io.mosip.resident.util.AvailableClaimValueUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class GrievanceServiceImpl implements GrievanceService {
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
     @Autowired
-    private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+    private AvailableClaimValueUtility availableClaimValueUtility;
 
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
@@ -87,16 +87,16 @@ public class GrievanceServiceImpl implements GrievanceService {
                                                                                     grievanceRequestDTOMainRequestDTO)
             throws ApisResourceAccessException {
         if (grievanceRequestDTOMainRequestDTO.getRequest().getName() == null) {
-            grievanceRequestDTOMainRequestDTO.getRequest().setName(getAvailableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setName(availableClaimValueUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE)));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(getAvailableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(availableClaimValueUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.PHONE_FROM_PROFILE)
             ));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(getAvailableClaimValueUtility.getAvailableClaimValue(
+            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(availableClaimValueUtility.getAvailableClaimValue(
                     this.environment.getProperty(ResidentConstants.EMAIL_FROM_PROFILE)));
         }
         return grievanceRequestDTOMainRequestDTO;

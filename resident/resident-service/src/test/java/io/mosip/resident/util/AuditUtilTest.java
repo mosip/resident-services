@@ -76,7 +76,7 @@ public class AuditUtilTest {
     private Utility utility;
 
     @Mock
-    private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+    private AvailableClaimValueUtility availableClaimValueUtility;
     
     private AsyncUtil asyncUtil = new AsyncUtil();
 
@@ -115,7 +115,7 @@ public class AuditUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
-        when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("user1");
+        when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("user1");
         when(environment.getProperty(Mockito.anyString())).thenReturn("user1");
     }
 
@@ -176,14 +176,14 @@ public class AuditUtilTest {
     @Test(expected = RuntimeException.class)
     public void testSetAuditRequestDtoWithApisResourceAccessException() throws Exception {
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
-    	when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
+    	when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
     	auditUtil.setAuditRequestDto(auditEvent);
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
-    	when(getAvailableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn(null);
+    	when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn(null);
 		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
         auditUtil.setAuditRequestDto(auditEvent);
     }

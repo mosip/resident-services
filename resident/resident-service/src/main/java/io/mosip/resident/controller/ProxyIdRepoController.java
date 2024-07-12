@@ -11,8 +11,8 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DraftResidentResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.impl.GetPendingDrafts;
-import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
+import io.mosip.resident.service.impl.PendingDrafts;
+import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,10 +67,10 @@ public class ProxyIdRepoController {
 	private Environment environment;
 
 	@Autowired
-	private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+	private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
 
 	@Autowired
-	private GetPendingDrafts getPendingDrafts;
+	private PendingDrafts pendingDrafts;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
 
@@ -88,7 +88,7 @@ public class ProxyIdRepoController {
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::entry");
 		try {
-			ResponseWrapper<?> responseWrapper = getRemainingUpdateCountByIndividualId
+			ResponseWrapper<?> responseWrapper = remainingUpdateCountByIndividualId
 					.getRemainingUpdateCountByIndividualId(filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::exit");
@@ -115,7 +115,7 @@ public class ProxyIdRepoController {
 	public ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> getPendingDrafts(@PathVariable String langCode) {
 		logger.debug("ProxyIdRepoController::getPendingDrafts()::entry");
 		try {
-			ResponseWrapper<DraftResidentResponseDto> responseWrapper = getPendingDrafts
+			ResponseWrapper<DraftResidentResponseDto> responseWrapper = pendingDrafts
 					.getPendingDrafts(langCode);
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
 			requestValidator.validateLanguageCode(langCode);

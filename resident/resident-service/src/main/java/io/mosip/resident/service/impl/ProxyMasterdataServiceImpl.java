@@ -64,7 +64,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
 	@Autowired
-	private GetValidDocumentByLangCodeCache getValidDocumentByLangCodeCache;
+	private ValidDocumentByLangCodeCache validDocumentByLangCodeCache;
 
 
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCode}")
@@ -78,7 +78,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
-		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> responseWrapper = validDocumentByLangCodeCache.getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
 

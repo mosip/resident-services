@@ -15,13 +15,13 @@ import java.util.Optional;
  */
 
 @Component
-public class GetPartnersByPartnerTypeCache {
+public class PartnersByPartnerTypeCache {
 
     @Autowired
-    GetPartnersByPartnerType getPartnersByPartnerType;
+    PartnersByPartnerType partnersByPartnerType;
 
     @Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
     public ResponseWrapper<?> getPartnersByPartnerType(String partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
-        return getPartnersByPartnerType.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
+        return partnersByPartnerType.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
     }
 }

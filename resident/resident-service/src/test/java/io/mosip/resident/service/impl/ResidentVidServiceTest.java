@@ -144,7 +144,7 @@ public class ResidentVidServiceTest {
     private UinForIndividualId uinForIndividualId;
 
     @Mock
-    private GetPerpetualVidUtil getPerpetualVidUtil;
+    private PerpetualVidUtil perpetualVidUtil;
 
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
@@ -365,21 +365,21 @@ public class ResidentVidServiceTest {
 
     @Test
     public void testRetrieveVids() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testRetrieveVidsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
                 .thenThrow(new ApisResourceAccessException());
         perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US);
     }
 
     @Test
     public void testRetrieveVidsInvalidYear() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
@@ -389,7 +389,7 @@ public class ResidentVidServiceTest {
         vidDetails.remove("expiryTimestamp");
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
@@ -399,7 +399,7 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", -1);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(2,
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
@@ -409,14 +409,14 @@ public class ResidentVidServiceTest {
         vidDetails.put("transactionLimit", null);
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        when(getPerpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        when(perpetualVidUtil.retrieveVidsfromUin(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
                 perpetualVidUtility.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
     
 	@Test
 	public void getPerpatualVidTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
+		Optional<String> response = perpetualVidUtil.getPerpatualVid("9054257141");
 		Optional<String> perpetualVid = Optional.empty();
 		assertEquals(perpetualVid, response);
 	}
@@ -424,7 +424,7 @@ public class ResidentVidServiceTest {
 	@Test
 	public void getPerpatualVidEmptyTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		vidResponse.setResponse(List.of());
-		Optional<String> response = getPerpetualVidUtil.getPerpatualVid("9054257141");
+		Optional<String> response = perpetualVidUtil.getPerpatualVid("9054257141");
 		assertEquals(Optional.empty(), response);
 	}
 

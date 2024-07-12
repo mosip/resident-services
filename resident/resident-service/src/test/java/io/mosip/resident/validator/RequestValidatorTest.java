@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.impl.GetRemainingUpdateCountByIndividualId;
+import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import io.mosip.resident.util.*;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
@@ -152,7 +152,7 @@ public class RequestValidatorTest {
     private ValidateNewUpdateRequest validateNewUpdateRequest;
 
     @Mock
-    private GetRemainingUpdateCountByIndividualId getRemainingUpdateCountByIndividualId;
+    private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
 
     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -2793,7 +2793,7 @@ public class RequestValidatorTest {
         otpRequestDTOV2.setUserId("kam@g.com");
         userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2, 2));
         userIdOtpRequest.setRequest(otpRequestDTOV2);
-        when(getRemainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
+        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 

@@ -111,10 +111,10 @@ public class NotificationService {
 	private EmailPhoneValidator emailPhoneValidator;
 
 	@Autowired
-	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
 	@Autowired
-	private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+	private SmsTemplateTypeCode smsTemplateTypeCode;
 
 	@SuppressWarnings("rawtypes")
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
@@ -260,7 +260,7 @@ public class NotificationService {
 	private String getTemplate(String langCode, String templateTypeCode) {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templateTypeCode,
 				"NotificationService::getTemplate()::entry");
-		return getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)
@@ -306,10 +306,10 @@ public class NotificationService {
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
 				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
-					languageTemplate = templateMerge(getTemplate(language, getSmsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, smsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				} else{
-					languageTemplate = templateMerge(getTemplate(language, getSmsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
+					languageTemplate = templateMerge(getTemplate(language, smsTemplateTypeCode.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP)), mailingAttributes));
 				}
 

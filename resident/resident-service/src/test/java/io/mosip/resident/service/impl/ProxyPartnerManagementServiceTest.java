@@ -60,10 +60,10 @@ public class ProxyPartnerManagementServiceTest {
 	private ResponseWrapper responseWrapper;
 
 	@InjectMocks
-	private GetPartnersByPartnerType getPartnersByPartnerType;
+	private PartnersByPartnerType partnersByPartnerType;
 
 	@Mock
-	private GetPartnersByPartnerTypeCache getPartnersByPartnerTypeCache;
+	private PartnersByPartnerTypeCache partnersByPartnerTypeCache;
 
 	@Before
 	public void setUp() throws Exception {
@@ -73,7 +73,7 @@ public class ProxyPartnerManagementServiceTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
 		responseWrapper.setResponse(Map.of("partners",List.of(partnerMap)));
-		when(getPartnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
+		when(partnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
 				.thenReturn(responseWrapper);
 	}
 
@@ -101,7 +101,7 @@ public class ProxyPartnerManagementServiceTest {
 
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
-		when(getPartnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
+		when(partnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException());
 
 		responseWrapper.setErrors(errorList);
@@ -111,7 +111,7 @@ public class ProxyPartnerManagementServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetPartnersByPartnerTypeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(getPartnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
+		when(partnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException());
 		proxyPartnerManagementService.getPartnersByPartnerType("Device_Provider");
 	}
@@ -124,7 +124,7 @@ public class ProxyPartnerManagementServiceTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetPartnerDetailFromPartnerIdException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(getPartnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
+		when(partnersByPartnerTypeCache.getPartnersByPartnerType(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION));
 		proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType("", "Auth");
 	}
@@ -141,7 +141,7 @@ public class ProxyPartnerManagementServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any())).thenReturn(responseWrapper);
 		assertSame(responseWrapper,
-				getPartnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL));
+				partnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL));
 		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any());
 	}
@@ -153,7 +153,7 @@ public class ProxyPartnerManagementServiceTest {
 				ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorMessage())));
 		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any())).thenReturn(responseWrapper);
-		getPartnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL);
+		partnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL);
 		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any());
 		verify(responseWrapper, atLeast(1)).getErrors();
@@ -164,7 +164,7 @@ public class ProxyPartnerManagementServiceTest {
 		ResponseWrapper<Object> responseWrapper = (ResponseWrapper<Object>) mock(ResponseWrapper.class);
 		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any())).thenThrow(new ApisResourceAccessException());
-		getPartnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL);
+		partnersByPartnerType.getPartnersByPartnerType(Optional.of("42"), ApiName.PARTNER_API_URL);
 		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				(List<Object>) any(), (Class<Object>) any());
 		verify(responseWrapper, atLeast(1)).getErrors();

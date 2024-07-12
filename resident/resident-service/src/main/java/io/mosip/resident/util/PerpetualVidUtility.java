@@ -25,7 +25,7 @@ public class PerpetualVidUtility {
     private IdentityUtil identityUtil;
 
     @Autowired
-    private GetPerpetualVidUtil getPerpetualVidUtil;
+    private PerpetualVidUtil perpetualVidUtil;
 
     public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
         IdentityDTO identityDTO = identityUtil.getIdentity(residentIndividualId);
@@ -34,7 +34,7 @@ public class PerpetualVidUtility {
 
     public ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, String uin)
             throws ResidentServiceCheckedException, ApisResourceAccessException {
-        return getPerpetualVidUtil.retrieveVidsfromUin(uin, timeZoneOffset, locale);
+        return perpetualVidUtil.retrieveVidsfromUin(uin, timeZoneOffset, locale);
     }
 
 }

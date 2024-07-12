@@ -17,12 +17,12 @@ public class SessionUserNameUtility {
     private Environment environment;
 
     @Autowired
-    private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+    private AvailableClaimValueUtility availableClaimValueUtility;
 
     public String getSessionUserName() {
         String name = null;
         try {
-            name = getAvailableClaimValueUtility.getAvailableClaimValue(this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+            name = availableClaimValueUtility.getAvailableClaimValue(this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
             if (name == null || name.trim().isEmpty()) {
                 name = ResidentConstants.UNKNOWN;
             }

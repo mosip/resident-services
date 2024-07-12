@@ -43,7 +43,7 @@ public class IdentityDataUtil {
     private ProxyMasterdataService proxyMasterdataService;
 
     @Autowired
-    private GetAcrMappingUtil getAcrMappingUtil;
+    private AcrMappingUtil acrMappingUtil;
 
     @Autowired
     private NotificationService notificationService;
@@ -52,7 +52,7 @@ public class IdentityDataUtil {
     private CachedIdentityDataUtil cachedIdentityDataUtil;
 
     @Autowired
-    private GetAccessTokenUtility getAccessToken;
+    private AccessTokenUtility getAccessToken;
 
     public void sendNotification(String eventId, String individualId, TemplateType templateType) {
         try {
@@ -128,7 +128,7 @@ public class IdentityDataUtil {
     }
 
     public String getAuthTypeCodefromkey(String reqTypeCode) throws ResidentServiceCheckedException {
-        Map<String, String> map = getAcrMappingUtil.getAmrAcrMapping();
+        Map<String, String> map = acrMappingUtil.getAmrAcrMapping();
         return map.get(reqTypeCode);
     }
 

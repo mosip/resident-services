@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.resident.util.GetPartnersByPartnerTypeCache;
+import io.mosip.resident.util.PartnersByPartnerTypeCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
@@ -30,12 +30,12 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
     private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
 
 	@Autowired
-	private GetPartnersByPartnerTypeCache getPartnersByPartnerTypeCache;
+	private PartnersByPartnerTypeCache partnersByPartnerTypeCache;
 
 	@Override
 	public ResponseWrapper<?> getPartnersByPartnerType(String partnerType)
 			throws ResidentServiceCheckedException {
-		return getPartnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
+		return partnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	public Map<String, ?> getPartnerDetailFromPartnerIdAndPartnerType(String partnerId, String partnerType) {
 		ResponseWrapper<?> response = null;
 		try {
-			response = getPartnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, ApiName.PARTNER_DETAILS_NEW_URL);
+			response = partnersByPartnerTypeCache.getPartnersByPartnerType(partnerType, ApiName.PARTNER_DETAILS_NEW_URL);
 		} catch (ResidentServiceCheckedException e) {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

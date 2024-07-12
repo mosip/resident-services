@@ -41,7 +41,7 @@ public class IdentityUtil {
 	private CachedIdentityDataUtil cachedIdentityDataUtil;
 
 	@Autowired
-	private GetAccessTokenUtility getAccessTokenUtility;
+	private AccessTokenUtility accessTokenUtility;
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
@@ -57,7 +57,7 @@ public class IdentityUtil {
 	private static final String PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
-	private GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+	private AvailableClaimValueUtility availableClaimValueUtility;
 
 	@Autowired
 	private Utility utility;
@@ -66,10 +66,10 @@ public class IdentityUtil {
 	private String dateFormat;
 
 	@Autowired
-	private GetClaimValueUtility getClaimValueUtility;
+	private ClaimValueUtility claimValueUtility;
 
 	@Autowired
-	private GetPerpetualVidUtil getPerpetualVidUtil;
+	private PerpetualVidUtil perpetualVidUtil;
 
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
 		return getIdentityAttributes(id, schemaType, List.of(
@@ -83,7 +83,7 @@ public class IdentityUtil {
 		try {
 			IdResponseDTO1 idResponseDTO1;
 			if(Utility.isSecureSession()){
-				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(id, getAccessTokenUtility.getAccessToken(), IdResponseDTO1.class);
+				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getCachedIdentityData(id, accessTokenUtility.getAccessToken(), IdResponseDTO1.class);
 			} else {
 				idResponseDTO1 = (IdResponseDTO1) cachedIdentityDataUtil.getIdentityData(id, IdResponseDTO1.class);
 			}
@@ -106,7 +106,7 @@ public class IdentityUtil {
 								&& !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
-								perpVid = getPerpetualVidUtil.getPerpatualVid((String) identity.get(IdType.UIN.name()));
+								perpVid = perpetualVidUtil.getPerpatualVid((String) identity.get(IdType.UIN.name()));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -122,7 +122,7 @@ public class IdentityUtil {
 							String photo;
 							try {
 								if (Utility.isSecureSession()) {
-									photo = getAvailableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
+									photo = availableClaimValueUtility.getAvailableClaimValue(env.getProperty(IMAGE));
 								} else {
 									photo = null;
 								}
@@ -183,7 +183,7 @@ public class IdentityUtil {
 			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 
 			if(fetchFace) {
-				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValueUtility.getClaimValue(env.getProperty(IMAGE)));
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), claimValueUtility.getClaimValue(env.getProperty(IMAGE)));
 				identity.remove("individualBiometrics");
 			}
 

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 public class ProxyMasterDataServiceUtility {
 
     @Autowired
-    private GetDynamicFieldBasedOnLangCodeAndFieldName getDynamicFieldBasedOnLangCodeAndFieldName;
+    private DynamicFieldBasedOnLangCodeAndFieldName dynamicFieldBasedOnLangCodeAndFieldName;
 
     @Cacheable(value = "getDynamicFieldBasedOnLangCodeAndFieldName", key = "{#fieldName, #langCode, #withValue}")
     public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
-        return getDynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+        return dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
     }
 }

@@ -147,7 +147,7 @@ public class ResidentServiceResUpdateTest {
 	private AvailableClaimUtility availableClaimUtility;
 
 	@Mock
-	private GetAccessTokenUtility getAccessTokenUtility;
+	private AccessTokenUtility accessTokenUtility;
 
 	ResidentUpdateRequestDto dto;
 

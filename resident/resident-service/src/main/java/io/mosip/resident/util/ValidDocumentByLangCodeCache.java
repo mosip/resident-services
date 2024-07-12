@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetValidDocumentByLangCodeCache {
+public class ValidDocumentByLangCodeCache {
 
     @Autowired
-    GetValidDocumentByLangCode getValidDocumentByLangCode;
+    ValidDocumentByLangCode validDocumentByLangCode;
 
     @Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
     public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-        return getValidDocumentByLangCode.getValidDocumentByLangCode(langCode);
+        return validDocumentByLangCode.getValidDocumentByLangCode(langCode);
     }
 }

@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
  */
 
 @Component
-public class GetAvailableClaimValueUtility {
+public class AvailableClaimValueUtility {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(GetAvailableClaimValueUtility.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(AvailableClaimValueUtility.class);
 
     @Autowired
-    private GetAccessTokenUtility getAccessTokenUtility;
+    private AccessTokenUtility accessTokenUtility;
 
     @Autowired
     private UserInfoUtility userInfoUtility;
@@ -48,7 +48,7 @@ public class GetAvailableClaimValueUtility {
     }
 
     public Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
-        String accessToken = getAccessTokenUtility.getAccessToken();
+        String accessToken = accessTokenUtility.getAccessToken();
         if (!Objects.equals(accessToken, "")) {
             return getClaimsFromToken(claims, accessToken);
         }

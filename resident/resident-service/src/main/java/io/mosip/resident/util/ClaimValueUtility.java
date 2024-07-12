@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class GetClaimValueUtility {
+public class ClaimValueUtility {
 
 	@Autowired
-	GetAvailableClaimValueUtility getAvailableClaimValueUtility;
+    AvailableClaimValueUtility availableClaimValueUtility;
 
     public String getClaimValue(String claim) throws ApisResourceAccessException {
-		return getAvailableClaimValueUtility.getClaims(claim).get(claim);
+		return availableClaimValueUtility.getClaims(claim).get(claim);
 	}
 }

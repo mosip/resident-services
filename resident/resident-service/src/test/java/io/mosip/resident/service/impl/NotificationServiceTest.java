@@ -93,7 +93,7 @@ public class NotificationServiceTest {
 	private EmailPhoneValidator emailPhoneValidator;
 
 	@Mock
-	private GetTemplateValueFromTemplateTypeCodeAndLangCode getTemplateValueFromTemplateTypeCodeAndLangCode;
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
 
 	@Mock
 	private IdentityService identityService;
@@ -107,7 +107,7 @@ public class NotificationServiceTest {
 	private static final String EMAIL_SUCCESS = "Notification has been sent to the provided email ";
 
 	@Mock
-	private GetSmsTemplateTypeCode getSmsTemplateTypeCode;
+	private SmsTemplateTypeCode smsTemplateTypeCode;
 
 	@Before
 	public void setUp() throws Exception {
@@ -139,14 +139,14 @@ public class NotificationServiceTest {
 		notificationRequestDtoV2.setEventId("1122334455667788");
 		notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
 		notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
-		Mockito.when(getSmsTemplateTypeCode.getSmsTemplateTypeCode(Mockito.any(), Mockito.any()))
+		Mockito.when(smsTemplateTypeCode.getSmsTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("sms-template-type-code");
 		Mockito.when(templateUtil.getEmailSubjectTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("email-subject-template-type-code");
 		Mockito.when(templateUtil.getEmailContentTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("email-content-template-type-code");
 
-		Mockito.when(getTemplateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).
+		Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).
 				thenReturn("Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.<br>");
 
 		String primaryTemplatetext = "Hi Test,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is 10008200070004420191203104356.<br>";
