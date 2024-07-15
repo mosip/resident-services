@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.security.NoSuchAlgorithmException;
 
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +26,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 
@@ -55,6 +55,15 @@ public class VerificationServiceTest {
 
 	private IdentityDTO identityValue;
 
+	@Mock
+	private IdentityUtil identityUtil;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
 	@Before
 	public void setup() throws Exception {
 		when(utility.getIdForResidentTransaction(anyList(), any(), anyString())).thenReturn("hash ref id");
@@ -62,8 +71,8 @@ public class VerificationServiceTest {
 		identityValue.setEmail("aaa@bbb.com");
 		identityValue.setPhone("987654321");
 		identityValue.setUIN("123");
-		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityValue);
-		when(identityService.getIDAToken(Mockito.anyString())).thenReturn("123");
+		when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(availableClaimUtility.getIDAToken(Mockito.anyString())).thenReturn("123");
 	}
 
 	@Test

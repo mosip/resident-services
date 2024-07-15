@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +75,9 @@ public class DownloadmasterDataServiceImplTest {
 	private TemplateUtil templateUtil;
 
 	@Mock
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
+
+	@Mock
 	private ProxyMasterdataService proxyMasterdataService;
 
 	@InjectMocks
@@ -121,7 +125,7 @@ public class DownloadmasterDataServiceImplTest {
 		languageCode = "eng";
 
 		Mockito.when(
-				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn("file text template");
 		ReflectionTestUtils.setField(downLoadMasterDataService, "templateManagerBuilder", templateManagerBuilder);
 		templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();

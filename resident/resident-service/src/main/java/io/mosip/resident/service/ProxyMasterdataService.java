@@ -21,15 +21,6 @@ import reactor.util.function.Tuple2;
 @Service
 public interface ProxyMasterdataService {
 
-	/**
-	 * Get valid documents by language code.
-	 * 
-	 * @param langCode
-	 * @return ResponseWrapper object
-	 * @throws ResidentServiceCheckedException
-	 */
-	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
-
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException;
 
@@ -151,17 +142,6 @@ public interface ProxyMasterdataService {
 	 */
 	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
 			throws ResidentServiceCheckedException;
-	
-	/**
-     * Get gender types by language code.
-     *
-     * @param fieldName
-     * @param langCode
-     * @param withValue
-     * @return ResponseWrapper object
-     * @throws ResidentServiceCheckedException
-     */
-	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
 

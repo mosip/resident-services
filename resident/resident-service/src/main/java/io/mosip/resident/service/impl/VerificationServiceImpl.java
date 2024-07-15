@@ -3,6 +3,9 @@ package io.mosip.resident.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
+import io.mosip.resident.util.MaskDataUtility;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +45,15 @@ public class VerificationServiceImpl implements VerificationService {
 
     private static final Logger logger = LoggerConfiguration.logConfig(VerificationServiceImpl.class);
 
+    @Autowired
+    private MaskDataUtility maskDataUtility;
+
+    @Autowired
+    private AvailableClaimUtility availableClaimUtility;
+
+    @Autowired
+    private IdentityUtil identityUtil;
+
     @Override
 	public VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException {
@@ -49,8 +61,8 @@ public class VerificationServiceImpl implements VerificationService {
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
         String maskedUserId = "";
-        IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
-        String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
+        IdentityDTO identityDTO = identityUtil.getIdentity(individualId);
+        String idaToken = availableClaimUtility.getIDAToken(identityDTO.getUIN());
         boolean entityExist =
                 residentTransactionRepository.existsByRefIdAndStatusCode
                         (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
@@ -60,12 +72,12 @@ public class VerificationServiceImpl implements VerificationService {
             if(channel.equalsIgnoreCase(EMAIL)) {
             	userId = identityDTO.getEmail();
             	if(StringUtils.isNotBlank(userId)) {
-            		maskedUserId = utility.maskEmail(userId);
+            		maskedUserId = maskDataUtility.maskEmail(userId);
             	}
             } else if (channel.equalsIgnoreCase(PHONE)) {
             	userId = identityDTO.getPhone();
             	if(StringUtils.isNotBlank(userId)) {
-            		maskedUserId = utility.maskPhone(userId);
+            		maskedUserId = maskDataUtility.maskPhone(userId);
             	}
 			}
         }

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +20,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
@@ -42,35 +45,36 @@ import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to test Grievance controller api.
  */
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.properties")
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class GrievanceControllerTest {
-	
+
     @Mock
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-    
+
     @Mock
     private Environment environment;
-    
+
     @Mock
     private Utility utility;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
     @MockBean
     private Utility utilityBean;
@@ -94,7 +98,7 @@ public class GrievanceControllerTest {
 
     @MockBean
     private ResidentVidService vidService;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 

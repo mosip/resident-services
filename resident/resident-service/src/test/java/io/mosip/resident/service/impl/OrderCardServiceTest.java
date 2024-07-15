@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.MaskDataUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,7 +76,13 @@ public class OrderCardServiceTest {
 	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
 	Environment env;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
 
 	private ResponseWrapper responseWrapper;
 
@@ -101,7 +109,7 @@ public class OrderCardServiceTest {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("5092d4bf-8f77-4608-a167-76371cc38b5d");
 		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);

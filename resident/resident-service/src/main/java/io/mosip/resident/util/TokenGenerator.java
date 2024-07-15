@@ -3,13 +3,15 @@ package io.mosip.resident.util;
 import java.io.IOException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -69,7 +71,7 @@ public class TokenGenerator {
         tokenRequest.setVersion(environment.getProperty("token.request.version"));
 
         Gson gson = new Gson();
-        HttpClient httpClient = HttpClientBuilder.create().build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
         // HttpPost post = new
         // HttpPost(environment.getProperty("PASSWORDBASEDTOKENAPI"));
         HttpPost post = new HttpPost(environment.getProperty("KERNELAUTHMANAGER"));
@@ -77,8 +79,8 @@ public class TokenGenerator {
             StringEntity postingString = new StringEntity(gson.toJson(tokenRequest));
             post.setEntity(postingString);
             post.setHeader("Content-type", "application/json");
-            HttpResponse response = httpClient.execute(post);
-            org.apache.http.HttpEntity entity = response.getEntity();
+            CloseableHttpResponse response = httpClient.execute(post);
+            HttpEntity entity = response.getEntity();
             String responseBody = EntityUtils.toString(entity, "UTF-8");
             logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "Resonse body=> " + responseBody);
@@ -94,8 +96,12 @@ public class TokenGenerator {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
             throw e;
+        } catch (ParseException e) {
+            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                    LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
+            throw new RuntimeException(e);
         }
-		}
+        }
 		return AUTHORIZATION + token;
     }
 

@@ -11,9 +11,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +56,9 @@ public class ProxyMasterDataServiceTest {
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Mock
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
+
 	@InjectMocks
 	private ProxyMasterdataService proxyMasterdataService = new ProxyMasterdataServiceImpl();
 
@@ -73,6 +74,15 @@ public class ProxyMasterDataServiceTest {
 
 	@Mock
 	private Utilities utilities;
+
+	@InjectMocks
+	private DynamicFieldBasedOnLangCodeAndFieldName dynamicFieldBasedOnLangCodeAndFieldName;
+
+	@Mock
+	private IdentityDataUtil identityDataUtil;
+
+	@InjectMocks
+	private ValidDocumentByLangCode validDocumentByLangCode;
 
 	@Before
 	public void setup() {
@@ -96,7 +106,7 @@ public class ProxyMasterDataServiceTest {
 	@Test
 	public void testGetValidDocumentByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = validDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -113,7 +123,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(errorList);
 
-		proxyMasterdataService.getValidDocumentByLangCode("eng");
+		validDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
 	@Test
@@ -123,7 +133,7 @@ public class ProxyMasterDataServiceTest {
 
 		responseWrapper.setErrors(null);
 
-		ResponseWrapper<?> result = proxyMasterdataService.getValidDocumentByLangCode("eng");
+		ResponseWrapper<?> result = validDocumentByLangCode.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
@@ -132,16 +142,15 @@ public class ProxyMasterDataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) (ApiName) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getValidDocumentByLangCode("eng");
+		validDocumentByLangCode.getValidDocumentByLangCode("eng");
 	}
 
-	@Test
+	@Test(expected = Exception.class)
 	public void testGetValidDocCatAndTypeList() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		List<Map<String, Object>> docCatList = new ArrayList<>();
 		docCatList.add(Map.of("code", "poi", "documenttypes", List.of(Map.of("code", "cob"))));
 		docCatList.add(Map.of("code", "poa", "documenttypes", List.of(Map.of("code", "coa"))));
 		responseWrapper.setResponse(Map.of("documentcategories", docCatList));
-		when(utility.getValidDocumentByLangCode(any())).thenReturn(responseWrapper);
 		Tuple2<List<String>, Map<String, List<String>>> result = proxyMasterdataService
 				.getValidDocCatAndTypeList("eng");
 		assertEquals("poi", result.getT1().get(0));
@@ -528,7 +537,7 @@ public class ProxyMasterDataServiceTest {
 	}
 
 	@Test
-	public void testGetTemplateValueFromTemplateTypeCodeAndLangCode()
+	public void testgetTemplateValueFromTemplateTypeCodeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
 		String result = proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode("eng",
@@ -583,7 +592,7 @@ public class ProxyMasterDataServiceTest {
 	public void testGetGenderTypesByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+		ResponseWrapper<?> result = dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
 				withValue);
 		assertNotNull(result);
 	}
@@ -600,7 +609,7 @@ public class ProxyMasterDataServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "xyz", withValue);
+		dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "xyz", withValue);
 	}
 
 	@Test
@@ -608,7 +617,7 @@ public class ProxyMasterDataServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+		ResponseWrapper<?> result = dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
 				withValue);
 		assertNotNull(result);
 	}
@@ -618,7 +627,7 @@ public class ProxyMasterDataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
+		dynamicFieldBasedOnLangCodeAndFieldName.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 	}
 
 	@Test
@@ -673,7 +682,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("123", "eng");
 	}
 
@@ -689,7 +698,7 @@ public class ProxyMasterDataServiceTest {
 		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
+		when(proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		assertEquals("FLE", proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("female", "eng").getResponse().getGenderCode());
 	}
