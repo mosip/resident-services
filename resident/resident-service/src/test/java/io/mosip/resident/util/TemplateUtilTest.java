@@ -102,6 +102,9 @@ public class TemplateUtilTest {
     @Mock
     private SummaryForLangCode summaryForLangCode;
 
+    @Mock
+    private AttributesDisplayText attributesDisplayText;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -120,11 +123,14 @@ public class TemplateUtilTest {
 
 	private Map<String, Object> mailingAttributes = Map.of();
 
-    @Mock
+    @InjectMocks
     private DescriptionTemplateVariables descriptionTemplateVariables;
 
     @Mock
     private AttributeBasedOnLangCode attributeBasedOnLangCode;
+
+    @Mock
+    private AuthTypeCodeTemplateData authTypeCodeTemplateData;
 
     @Before
     public void setUp() throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -160,6 +166,11 @@ public class TemplateUtilTest {
         Mockito.when(eventStatusBasedOnLangCode.getTemplateTypeCode(Mockito.anyString())).thenReturn("test");
         Mockito.when(templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(
                 Mockito.anyString(), Mockito.anyString())).thenReturn("test");
+        Mockito.when(authTypeCodeTemplateData.getAuthTypeCodeTemplateData("otp", null, "eng"))
+                        .thenReturn("test");
+        Mockito.when(attributesDisplayText.getAttributesDisplayText(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                        .thenReturn("test");
+        Mockito.when(attributeBasedOnLangCode.getAttributeBasedOnLangcode(Mockito.anyString(), Mockito.anyString())).thenReturn("test");
     }
 
     @Test
@@ -447,6 +458,8 @@ public class TemplateUtilTest {
     public void getDescriptionTemplateVariablesForAuthenticationRequestTest() {
     	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "OTP Authentication Success");
+        Mockito.when(authTypeCodeTemplateData.getAuthTypeCodeTemplateData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn("test");
         assertEquals("test",
                 descriptionTemplateVariables.getDescriptionTemplateVariablesForAuthenticationRequest
                         (residentTransactionEntity, null, "eng"));
@@ -457,6 +470,8 @@ public class TemplateUtilTest {
     	Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(null).thenReturn("template-type-code");
     	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "OTP Authentication Success");
+        Mockito.when(authTypeCodeTemplateData.getAuthTypeCodeTemplateData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                        .thenReturn("test");
         assertEquals("test",
                 descriptionTemplateVariables.getDescriptionTemplateVariablesForAuthenticationRequest
                         (residentTransactionEntity, null, "eng"));
