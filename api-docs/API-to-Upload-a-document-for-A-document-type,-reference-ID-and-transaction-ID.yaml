@@ -1,0 +1,222 @@
+openapi: 3.1.0
+x-stoplight:
+  id: e6pg0zpowv9lp
+info:
+  title: 'API to Upload a document for A document type, reference ID and transaction ID'
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/documents​/{transaction-id}':
+    parameters:
+      - schema:
+          type: string
+        name: transaction-id
+        in: path
+        required: true
+    post:
+      summary: Upload a document for given transaction-id
+      operationId: post-documents-transaction-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: object
+                    properties: {}
+                  response:
+                    type: object
+                    properties:
+                      transactionId:
+                        type: string
+                      docId:
+                        type: string
+                      docName:
+                        type: string
+                      docCatCode:
+                        type: string
+                      docTypCode:
+                        type: string
+                      docFileFormat:
+                        type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  example-1:
+                    id: string
+                    version: string
+                    responsetime: '2022-06-09T06:40:54.760Z'
+                    metadata: {}
+                    response:
+                      transactionId: string
+                      docId: string
+                      docName: string
+                      docCatCode: string
+                      docTypCode: string
+                      docFileFormat: string
+                    errors:
+                      - errorCode: string
+                        message: string
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.document.upload
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:40:54.760Z'
+                    metadata: {}
+                    response:
+                      transactionId: string
+                      docId: string
+                      docName: string
+                      docCatCode: string
+                      docTypCode: string
+                      docFileFormat: string
+                    errors: null
+                'Error: Virus scanning failed for the attachment':
+                  value:
+                    id: mosip.resident.document.upload
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:40:54.760Z'
+                    metadata: {}
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-437
+                        message: Virus scanning failed for attached document
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+        description: 'file: The bytes of the file'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: docCatCode
+          required: true
+          description: 'Document type code - like poi,poa'
+        - schema:
+            type: string
+          in: query
+          name: docTypCode
+          description: Document type code - like Driving-License/passport
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: langCode
+          description: 3 letter language code
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: referenceId
+          description: Document reference ID (just stored in object store as metadata)
+      description: This API is to upload a document for a given document type and the given transaction ID
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,76 @@
+openapi: 3.0.1
+info:
+  title: Proxy Masterdata API
+  description: API for fetching dynamic fields based on language code and field name
+  version: 1.0.0
+paths:
+  '/auth-proxy/masterdata/dynamicfields/{fieldName}/{langCode}':
+    get:
+      summary: getDynamicFieldBasedOnLangCodeAndFieldName
+      description: Service to fetch dynamic field based on langcode and field name
+      tags:
+        - proxy-masterdata-controller
+      parameters:
+        - name: fieldName
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: langCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: withValue
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        message:
+          type: string
+        status:
+          type: string

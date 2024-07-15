@@ -1,0 +1,254 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 6oqavuuj1oj15
+info:
+  title: API-AID status and download card
+  version: '1.0'
+  description: description
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/status/individualId/{individualId}':
+    parameters:
+      - schema:
+          type: string
+        name: individualId
+        in: path
+        required: true
+    get:
+      summary: Get Individual ID status
+      tags: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.checkstatus
+                    version: '1.0'
+                    responsetime: '2022-06-27T10:09:23.719Z'
+                    metadata: null
+                    response:
+                      transactionStage: UIN generation stage
+                      aidStatus: SUCCESS/FAILURE/IN-PROGRESS
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      transactionStage:
+                        type: string
+                      aidStatus:
+                        type: string
+                  errors:
+                    type: 'null'
+              examples:
+                success:
+                  value:
+                    id: mosip.resident.checkstatus
+                    version: '1.0'
+                    responsetime: '2022-06-27T10:09:23.719Z'
+                    metadata: null
+                    response:
+                      transactionStage: UIN generation stage
+                      aidStatus: SUCCESS/FAILURE/IN-PROGRESS
+                    errors: null
+        '404':
+          description: User Not Found
+      operationId: get-individual-id-status
+      description: Get the status of the individual-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                responsetime:
+                  type: string
+                metadata:
+                  type: 'null'
+                response:
+                  type: object
+                  properties:
+                    transactionStage:
+                      type: string
+                    aidStatus:
+                      type: string
+                errors:
+                  type: 'null'
+              x-examples:
+                Example 1:
+                  id: mosip.resident.checkstatus
+                  version: '1.0'
+                  responsetime: '2022-06-27T10:09:23.719Z'
+                  metadata: null
+                  response:
+                    transactionStage: UIN generation stage
+                    aidStatus: SUCCESS/FAILURE/IN-PROGRESS
+                  errors: null
+            examples: {}
+    patch:
+      summary: Update User Information
+      operationId: patch-users-userId
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: Update the information of an existing user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  description: 'If a new email is given, the user''s email verified property will be set to false.'
+                dateOfBirth:
+                  type: string
+            examples:
+              Update First Name:
+                value:
+                  firstName: Rebecca
+              Update Email:
+                value:
+                  email: rebecca@gmail.com
+              Update Last Name & Date of Birth:
+                value:
+                  lastName: Baker
+                  dateOfBirth: '1985-10-02'
+        description: Patch user properties to update.
+  /user:
+    post:
+      summary: Create New User
+      operationId: post-user
+      responses:
+        '200':
+          description: User Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                New User Bob Fellow:
+                  value:
+                    id: 12
+                    firstName: Bob
+                    lastName: Fellow
+                    email: bob.fellow@gmail.com
+                    dateOfBirth: '1996-08-24'
+                    emailVerified: false
+                    createDate: '2020-11-18'
+        '400':
+          description: Missing Required Information
+        '409':
+          description: Email Already Taken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+              required:
+                - firstName
+                - lastName
+                - email
+                - dateOfBirth
+            examples:
+              Create User Bob Fellow:
+                value:
+                  firstName: Bob
+                  lastName: Fellow
+                  email: bob.fellow@gmail.com
+                  dateOfBirth: '1996-08-24'
+        description: Post the necessary fields for the API to create a new user.
+      description: Create a new user.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

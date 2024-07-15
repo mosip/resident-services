@@ -1,0 +1,153 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 3ql476s1xepe5
+info:
+  title: API to download the default card with VID as a downloadable PDF
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/request-card/vid/{VID}':
+    parameters:
+      - schema:
+          type: string
+        name: VID
+        in: path
+        required: true
+    get:
+      summary: '/request-card/vid/{VID}'
+      tags: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties: {}
+                x-examples:
+                  example-1:
+                    id: mosip.resident.request.vid.card
+                    version: '1.0'
+                    responsetime: '2022-06-20T08:22:17.802Z'
+                    metadata: null
+                    response:
+                      eventId: c758c9e9-1882-49a4-b07b-db98a1942538
+                    errors: []
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.request.vid.card
+                    version: '1.0'
+                    responsetime: '2022-06-20T08:22:17.802Z'
+                    metadata: null
+                    response:
+                      status: Success
+                    errors: []
+                VID not belonging to the logged in session:
+                  value:
+                    id: mosip.resident.request.vid.card
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      errorCode: RES-SER-452
+                      message: Provided individualId does not belong to the logged in session.
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized Access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: get-download-card-vid-VID
+      description: This API is to request the PDF card generation for the given VID.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Access token
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID Token
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

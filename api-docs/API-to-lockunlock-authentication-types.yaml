@@ -1,0 +1,234 @@
+openapi: 3.1.0
+x-stoplight:
+  id: u9z0b2ns5qr6h
+info:
+  title: unlock authentication types
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /​auth-lock-unlock:
+    post:
+      summary: ​/auth-lock-unlock
+      operationId: post-auth-lock-unlock
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.auth.lock.unlock
+                    version: v1
+                    responsetime: '2022-09-23T13:55:57.655Z'
+                    metadata: null
+                    response:
+                      message: Notification has been sent to the provided contact detail(s)
+                    errors: []
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      message:
+                        type: string
+                      status:
+                        type: string
+                        x-stoplight:
+                          id: k6ocq10ieyk1p
+                  errors:
+                    type:
+                      - array
+                      - 'null'
+                    items: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.auth.lock.unlock
+                    version: '1.0'
+                    responsetime: '2022-09-23T13:55:57.655Z'
+                    metadata: null
+                    response:
+                      message: Notification has been sent to the provided contact detail(s)
+                      status: Success
+                    errors: []
+                'Error: Unable to access the dependent APIs':
+                  value:
+                    id: mosip.resident.auth.lock.unlock
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-412
+                        message: Unable to access API resource
+                'Error: Invalid input attributes':
+                  value:
+                    id: mosip.resident.auth.lock.unlock
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter - authTypes
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                'Error: HTTP Status code: 401':
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      description: This API is to lock or unlock various authentication types.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    authTypes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          authType:
+                            type: string
+                          authSubType:
+                            type:
+                              - 'null'
+                              - string
+                          locked:
+                            type: boolean
+                          unlockForSeconds:
+                            type:
+                              - integer
+                              - 'null'
+              x-examples:
+                Example 1:
+                  id: mosip.resident.auth.lock.unlock
+                  version: '1.0'
+                  requesttime: '2022-05-07T08:26:17.944Z'
+                  request:
+                    authTypes:
+                      - authType: demo
+                        authSubType: null
+                        locked: false
+                        unlockForSeconds: 120
+                      - authType: bio
+                        authSubType: FACE
+                        locked: true
+                        unlockForSeconds: null
+                      - authType: otp
+                        authSubType: email
+                        locked: false
+                        unlockForSeconds: null
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.auth.lock.unlock
+                  version: '1.0'
+                  requesttime: '2022-05-07T08:26:17.944Z'
+                  request:
+                    authTypes:
+                      - authType: demo
+                        authSubType: null
+                        locked: false
+                        unlockForSeconds: 120
+                      - authType: bio
+                        authSubType: FACE
+                        locked: true
+                        unlockForSeconds: null
+                      - authType: otp
+                        authSubType: email
+                        locked: false
+                        unlockForSeconds: null
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: Id token is used to verify which user has logged in.
+          required: true
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

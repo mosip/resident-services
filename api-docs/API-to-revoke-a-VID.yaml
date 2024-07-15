@@ -1,0 +1,256 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 7tdk8zdk8nf78
+info:
+  title: API to revoke a VID
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/revoke-vid​/{vid}':
+    parameters:
+      - schema:
+          type: string
+        name: vid
+        in: path
+        required: true
+    patch:
+      summary: '/revoke-vid​/{vid}'
+      operationId: patch-revoke-vid-vid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.vid.revoke
+                    version: v1
+                    responsetime: '2022-06-14T14:15:08.919Z'
+                    response:
+                      message: Notification has been sent to the provided contact detail(s)
+                    errors: []
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      message:
+                        type: string
+                      status:
+                        type: string
+                        x-stoplight:
+                          id: ec0egquigsvjl
+                  errors:
+                    type:
+                      - array
+                      - 'null'
+                    items: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.vid.revoke
+                    version: '1.0'
+                    responsetime: '2022-06-14T14:15:08.919Z'
+                    response:
+                      message: Notification has been sent to the provided contact detail(s)
+                      status: Success
+                    errors: []
+                'Error: Unable to access the dependent APIs':
+                  value:
+                    id: mosip.resident.vid.revoke
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-412
+                        message: Unable to access API resource
+                'Error: Revoke a VID that is used to login':
+                  value:
+                    id: mosip.resident.vid.revoke
+                    version: '1.0'
+                    responsetime: '2022-10-10T09:14:33.752Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-471
+                        message: This VID cannot be revoked since you have logged in using same VID
+                Invalid VID:
+                  value:
+                    id: mosip.resident.vid.revoke
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-010
+                        message: Invalid VID
+                VID revocation failed:
+                  value:
+                    id: mosip.resident.vid.revoke
+                    version: '1.0'
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-407
+                        message: VID revocation request failed. Please visit the nearest registration center for assistance
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  id: mosip.resident.vidstatus
+                  version: v1
+                  requesttime: '2021-09-27T07:44:06.802Z'
+                  request:
+                    transactionID: '1234327890'
+                    vidStatus: REVOKED
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    transactionID:
+                      type: string
+                      description: 'Deprecated: non-empty string. This will be removed in future release.'
+                    vidStatus:
+                      type: string
+            examples:
+              Success:
+                value:
+                  id: mosip.resident.vid.revoke
+                  version: '1.0'
+                  requesttime: '2021-09-27T07:44:06.802Z'
+                  request:
+                    transactionID: '1234567890'
+                    vidStatus: REVOKED
+          application/xml:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    vidStatus:
+                      type: string
+              x-examples:
+                Example 1:
+                  id: mosip.resident.vid.revoke
+                  version: v1
+                  requesttime: '2021-09-27T07:44:06.802Z'
+                  request:
+                    vidStatus: REVOKED
+            examples:
+              example-1:
+                value:
+                  id: string
+                  version: string
+                  requesttime: string
+                  request:
+                    vidStatus: string
+              example-2:
+                value:
+                  id: mosip.resident.vid.revoke
+                  version: v1
+                  requesttime: '2021-09-27T07:44:06.802Z'
+                  request:
+                    vidStatus: REVOKED
+      description: This API is to revoke VID. It is an authenticated API with the token of UIN/VID based login. It also needs to verify the individual ID in the request belongs to the same user who has logged in.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

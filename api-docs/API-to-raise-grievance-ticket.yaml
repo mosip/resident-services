@@ -1,0 +1,226 @@
+openapi: 3.1.0
+x-stoplight:
+  id: h9v0vrf6wtv8c
+info:
+  title: API-to-raise-grievance-ticket
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /grievance/ticket:
+    post:
+      summary: API to raise grievance ticket
+      operationId: post-grievance-ticket
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.grievance.ticket.request
+                    version: '1.0'
+                    responseTime: '2022-05-07T08:26:17.944Z'
+                    request:
+                      ticketId: ticket ID
+                    errors: []
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responseTime:
+                    type: string
+                  request:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      ticketId:
+                        type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.grievance.ticket.request
+                    version: '1.0'
+                    responseTime: '2022-05-07T08:26:17.944Z'
+                    request:
+                      ticketId: ticket ID
+                    errors: []
+                'Error: Missing input parameter - eventId':
+                  value:
+                    id: string
+                    version: string
+                    responseTime: string
+                    request: null
+                    errors:
+                      - errorCode: RES-SER-414
+                        message: Missing input parameter - eventId
+                'Error: Missing input parameter - message':
+                  value:
+                    id: string
+                    version: string
+                    responseTime: string
+                    request: null
+                    errors:
+                      - errorCode: RES-SER-414
+                        message: Missing input parameter - message
+                'Error: Invalid input parameter - eventId':
+                  value:
+                    id: string
+                    version: string
+                    responseTime: string
+                    request: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid input parameter - eventId
+                'Error: EID is not associated with the UIN/VID used to log in':
+                  value:
+                    id: string
+                    version: string
+                    responseTime: string
+                    request: null
+                    errors:
+                      - errorCode: RES-SER-511
+                        message: The entered EID is not associated with the UIN/VID used to log in
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      description: 'API to create a ticket for grievance on any eventId. There could be multiple grievances raised for an event-id, but this API will raise only one ticket at a time. This information passed on this ticket will be stored in the resident_grievance_ticket table.'
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                Example 1:
+                  id: mosip.resident.grievance.ticket.request
+                  version: '1.0'
+                  requesttime: '2022-05-07T08:26:17.944Z'
+                  request:
+                    eventId: <EID of the service request>
+                    name: Full name of the resident
+                    emailId: string
+                    alternateEmailId: string
+                    phoneNo: string
+                    alternatePhoneNo: string
+                    message: string
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type:
+                    - object
+                    - 'null'
+                  properties:
+                    eventId:
+                      type: string
+                    name:
+                      type: string
+                    emailId:
+                      type: string
+                    alternateEmailId:
+                      type: string
+                    phoneNo:
+                      type: string
+                    alternatePhoneNo:
+                      type: string
+                    message:
+                      type: string
+                  required:
+                    - eventId
+                    - message
+            examples:
+              example:
+                value:
+                  id: string
+                  version: string
+                  requesttime: string
+                  request:
+                    eventId: string
+                    name: string
+                    emailId: string
+                    alternateEmailId: string
+                    phoneNo: string
+                    alternatePhoneNo: string
+                    message: string
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
