@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.util.DescriptionTemplateVariables;
 import org.springframework.core.env.Environment;
 
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -29,19 +30,19 @@ import reactor.util.function.Tuple2;
 
 public enum RequestType implements PreUpdateInBatchJob {
 	AUTHENTICATION_REQUEST("Authentication Request", TemplateUtil::getAckTemplateVariablesForAuthenticationRequest,
-			null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
+			null, DescriptionTemplateVariables::getDescriptionTemplateVariablesForAuthenticationRequest),
 	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForShareCredentialWithPartner,
 			TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
-			TemplateUtil::getDescriptionTemplateVariablesForShareCredentialWithPartner,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForShareCredentialWithPartner,
 			ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY),
 	DOWNLOAD_PERSONALIZED_CARD("Download Personalized Card",
 			TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
 			TemplateUtil::getNotificationTemplateVariablesForDownloadPersonalizedCard,
-			TemplateUtil::getDescriptionTemplateVariablesForDownloadPersonalizedCard,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForDownloadPersonalizedCard,
 			ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY),
 	ORDER_PHYSICAL_CARD("Order a Physical Card", TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
 			TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard,
-			TemplateUtil::getDescriptionTemplateVariablesForOrderPhysicalCard,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForOrderPhysicalCard,
 			ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY) {
 		@Override
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn, Map<String, String> credentialStatus,
@@ -55,10 +56,10 @@ public enum RequestType implements PreUpdateInBatchJob {
 	},
 	GET_MY_ID("Get UIN Card", TemplateUtil::getAckTemplateVariablesForGetMyId,
 			TemplateUtil::getNotificationTemplateVariablesForGetMyId,
-			TemplateUtil::getDescriptionTemplateVariablesForGetMyId),
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForGetMyId),
 	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
-			TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForUpdateMyUin,
 			ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY) {
 		@Override
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
@@ -71,20 +72,20 @@ public enum RequestType implements PreUpdateInBatchJob {
 	},
 	GENERATE_VID("Generate VID", TemplateUtil::getAckTemplateVariablesForGenerateVid,
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
-			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
 	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid,
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
-			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
 	AUTH_TYPE_LOCK_UNLOCK("Secure My ID",
 			TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock,
-			TemplateUtil::getDescriptionTemplateVariablesForSecureMyId,
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForSecureMyId,
 			ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY),
 	VID_CARD_DOWNLOAD("Download VID Card", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload,
-			TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload) {
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForVidCardDownload) {
 		@Override
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
 				Map<String, String> credentialStatus, String newStatusCode)
@@ -98,7 +99,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			TemplateUtil::getNotificationSendOtpVariables, null),
 	VALIDATE_OTP("Verify My Phone/Email", TemplateUtil::getAckTemplateVariablesForValidateOtp,
 			TemplateUtil::getNotificationCommonTemplateVariables,
-			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
+			DescriptionTemplateVariables::getDescriptionTemplateVariablesForValidateOtp),
 	DEFAULT("Default", TemplateUtil::getAckTemplateVariablesForDefault,
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
@@ -123,14 +124,14 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String SEPARATOR = ",";
 	private FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction;
-	private FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
+	private FourArgsFunction<DescriptionTemplateVariables, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
 	private String name;
 
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
-			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
+			FourArgsFunction<DescriptionTemplateVariables, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
 				notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
@@ -138,7 +139,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
-			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
+			FourArgsFunction<DescriptionTemplateVariables, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
@@ -285,8 +286,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return notificationTemplateVariablesFunction.apply(templateUtil, dto, notificationAttributes);
 	}
 
-	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
-		return getDescriptionTemplateVariables.apply(templateUtil, residentTransactionEntity, fileText, languageCode);
+	public String getDescriptionTemplateVariables(DescriptionTemplateVariables descriptionTemplateVariables, ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+		return getDescriptionTemplateVariables.apply(descriptionTemplateVariables, residentTransactionEntity, fileText, languageCode);
 	}
 	
 	public String getNamingProperty() {
