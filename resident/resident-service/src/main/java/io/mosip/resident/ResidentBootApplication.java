@@ -4,6 +4,7 @@ import io.mosip.kernel.idobjectvalidator.config.IdObjectValidatorConfig;
 import io.mosip.kernel.idvalidator.rid.impl.RidValidatorImpl;
 import io.mosip.kernel.idvalidator.uin.impl.UinValidatorImpl;
 import io.mosip.kernel.idvalidator.vid.impl.VidValidatorImpl;
+import io.mosip.kernel.keymanager.hsm.impl.KeyStoreImpl;
 import io.mosip.kernel.pdfgenerator.itext.impl.PDFGeneratorImpl;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.kernel.transliteration.icu4j.impl.TransliterationImpl;
@@ -43,7 +44,7 @@ import org.springframework.web.client.RestTemplate;
 @Import({TokenIDGenerator.class, ValidateTokenUtil.class, CbeffImpl.class, TransliterationService.class, TransliterationServiceUtil.class
 , PDFGeneratorImpl.class, UinValidatorImpl.class, VidValidatorImpl.class, RidValidatorImpl.class, TemplateManagerBuilderImpl.class,
 		SubscriberClientImpl.class, RestTemplateHelper.class, TransliterationImpl.class, PublisherClientImpl.class, IdObjectValidatorConfig.class
-, RestTemplate.class})
+, RestTemplate.class, KeyStoreImpl.class})
 public class ResidentBootApplication {
 
 	public static void main(String[] args) {

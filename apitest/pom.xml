@@ -56,6 +56,7 @@
 		<dependency>
 			<groupId>io.mosip.testrig.apirig.apitest.commons</groupId>
 			<artifactId>apitest-commons</artifactId>
+			<!--	Not migrated so using below version to be changed 		-->
 			<version>1.2.1-java21-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
