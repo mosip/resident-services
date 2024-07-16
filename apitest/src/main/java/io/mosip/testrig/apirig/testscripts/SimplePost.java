@@ -126,8 +126,30 @@ public class SimplePost extends AdminTestUtil implements ITest {
 		}
 
 		else {
-			response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, auditLogCheck, COOKIENAME,
-					testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+			int maxLoopCount = Integer.parseInt(properties.getProperty("uinGenMaxLoopCount"));
+			int currLoopCount = 0;
+			while (currLoopCount < maxLoopCount) {
+				response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, auditLogCheck,
+						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+
+				if (response != null && (response.asString().contains("RES-SER-524")
+						|| response.asString().contains("RES-SER-525"))) {
+					logger.info("waiting for: " + properties.getProperty("uinGenDelayTime")
+							+ " to update UIN as previous packet is pending.");
+					try {
+						Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
+
+					} catch (NumberFormatException | InterruptedException e) {
+						logger.error(e.getMessage());
+						Thread.currentThread().interrupt();
+					}
+				} else {
+					break;
+				}
+
+				currLoopCount++;
+			}
+
 			Map<String, List<OutputValidationDto>> ouputValid = null;
 			if (testCaseName.contains("_StatusCode")) {
 

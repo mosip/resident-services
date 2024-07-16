@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     @Autowired
     private TemplateUtil templateUtil;
 
+    @Autowired
+    private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
+
     private static final String CLASSPATH = "classpath";
     private static final String ENCODE_TYPE = "UTF-8";
 
@@ -75,7 +79,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
             Tuple2<Map<String, String>, String> ackTemplateVariables = requestType.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, timeZoneOffset, locale);
 			String requestProperty = ackTemplateVariables.getT2();
-            String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
+            String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
             Map<String, String> templateVariables = ackTemplateVariables.getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));

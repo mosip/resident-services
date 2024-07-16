@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
+import io.mosip.resident.util.TemplateValueFromTemplateTypeCodeAndLangCode;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -52,7 +53,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 
 /**
@@ -72,6 +72,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	Environment env;
 
 	@Autowired
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
+
+	@Autowired
 	private ProxyMasterdataService proxyMasterdataService;
 
 	private TemplateManager templateManager;
@@ -85,9 +88,6 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	
 	@Autowired
 	private Utility utility;
-
-	@Autowired
-	private TemplateUtil templateUtil;
 
 	@Value("${" + RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT + "}")
 	private Integer maxRegistrationCenterPageSize;
@@ -132,7 +132,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		}
 		regCentersMap.put(PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		String templateTypeCode = this.env.getProperty(REGISTRATION_CENTRE_TEMPLATE_PROPERTY);
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
 
@@ -170,7 +170,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataServiceImpl::downloadSupportingDocsByLanguage()::entry");
 		String templateTypeCode = this.env.getProperty(SUPPORTING_DOCS_TEMPLATE_PROPERTY);
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		String fileText = templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		Map<String, Object> supportingsDocsMap = new HashMap<>();
 		supportingsDocsMap.put(PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));

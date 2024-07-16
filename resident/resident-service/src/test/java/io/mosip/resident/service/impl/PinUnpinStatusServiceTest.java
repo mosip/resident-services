@@ -44,7 +44,7 @@ public class PinUnpinStatusServiceTest {
     @Test
     public void pinStatusSuccessTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", true);
-        assertEquals(responseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
+        assertEquals(String.valueOf(HttpStatus.OK.value()), responseDTO.getResponse().getStatus());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class PinUnpinStatusServiceTest {
     @Test
     public void unPinStatusSuccessTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", false);
-        assertEquals(responseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
+        assertEquals(String.valueOf(HttpStatus.OK.value()), responseDTO.getResponse().getStatus());
     }
 
     @Test

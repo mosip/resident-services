@@ -3,6 +3,7 @@ ReqAidOtp:
       endPoint: /resident/v1/individualId/otp
       role: resident
       restMethod: post
+      checkErrorsOnlyInResponse: true
       auditLogCheck: true
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
       outputTemplate: resident/ReqAidOtp/ReqAidOtpResult

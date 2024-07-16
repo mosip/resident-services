@@ -62,7 +62,7 @@ GetRequestCardVid:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-406"
+      "errorCode": "RES-SER-474"
     }
   ]
 }'
@@ -110,7 +110,7 @@ GetRequestCardVid:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-406",
+      "errorCode": "RES-SER-474",
       "message": "$IGNORE$"
     }
   ]

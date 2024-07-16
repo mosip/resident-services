@@ -192,7 +192,7 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-007",
+         "errorCode": "IDA-MLC-009",
          "errorMessage": "$IGNORE$"
     }'
    Resident_SendOTP_InValid_Empty_transactionID:
