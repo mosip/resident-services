@@ -15,7 +15,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_uin_Invalid_User_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
-      role: partner
+      role: null
       validityCheckRequired: true
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid

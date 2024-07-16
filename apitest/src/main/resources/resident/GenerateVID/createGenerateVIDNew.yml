@@ -107,28 +107,6 @@ GenerateVIDNew:
 	    "maskedEmail": "res***************@gmail.com"
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_TransID_Invalid_Neg:
-      endPoint: /resident/v1/generate-vid
-      role: residentNew
-      restMethod: post
-      inputTemplate: resident/GenerateVID/createGenerateVIDNew
-      outputTemplate: resident/error
-      input: '{
-        "transactionID": "",
-        "requesttime": "$TIMESTAMP$",
-        "id": "mosip.resident.vid.generate",
-        "version": "1.0",
-        "vidType": "Perpetual"
-    }'
-      output: '{
-      "errors": [
-    {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
-    }
-  ]
-}'
-
    Resident_Generate_Perpetual_VID_uin_Empty_requesttime_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       role: residentNew
