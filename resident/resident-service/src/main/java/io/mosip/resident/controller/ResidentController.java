@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 
 import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -446,7 +447,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+            throws ResidentServiceCheckedException, ApisResourceAccessException, IOException, JSONException {
 		logger.debug("ResidentController::updateUinDemographics()::entry");
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
@@ -465,6 +466,7 @@ public class ResidentController {
 			JSONObject idRepoJson = identityData.getT1();
 			String schemaJson = identityData.getT2();
 			validator.validateUpdateRequest(requestWrapper, true, schemaJson);
+			validator.validateSameData(idRepoJson, requestDTO.getRequest().getIdentity());
 			logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
 					idRepoJson.get(IdType.UIN.name()));
@@ -477,8 +479,11 @@ public class ResidentController {
 			audit.setAuditRequestDto(AuditEnum.UPDATE_UIN_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.UPDATE_UIN_ID));
 			throw e;
-		}
-		audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
+		} catch (JSONException e) {
+			audit.setAuditRequestDto(AuditEnum.UPDATE_UIN_FAILURE);
+			throw e;
+        }
+        audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		logger.debug("ResidentController::updateUinDemographics()::exit");
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(response);
