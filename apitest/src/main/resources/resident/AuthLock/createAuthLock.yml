@@ -1144,6 +1144,48 @@ AuthLock:
     }
 }'
 
+   Resident_AuthLock_Valid_UIN_EmptyChannel_Neg:
+      endPoint: /resident/v1/req/auth-lock
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/AuthLock/createAuthLock
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.authlock",
+        "version": "v1",
+        "authType": [{auth: "bio-Iris"},{auth: "demo"},{auth: "bio-FACE"}],
+        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTPAsEmpty",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ],
+  "sendOtpResp":{
+    "errors": [
+    {
+      "errorCode": "IDA-OTA-008",
+      "message": "$IGNORE$"
+    }
+  ],
+        "sendOtpResTemplate":"resident/error"
+    }
+}'
+
    Resident_AuthLock_Valid_UIN_Phone_All:
       endPoint: /resident/v1/req/auth-lock
       role: resident
@@ -1205,48 +1247,6 @@ AuthLock:
   "sendOtpResp":{
         "sendOtpResTemplate":"resident/SendOTP/createSendOTPResultForEmail",
         "maskedEmail": "$IGNORE$"
-    }
-}'
-
-   Resident_AuthLock_Valid_UIN_EmptyChannel_Neg:
-      endPoint: /resident/v1/req/auth-lock
-      role: resident
-      restMethod: post
-      checkErrorsOnlyInResponse: true
-      inputTemplate: resident/AuthLock/createAuthLock
-      outputTemplate: resident/error
-      input: '{
-        "transactionID": "$TRANSACTIONID$",
-        "individualId": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_UIN$",
-        "individualIdType": "UIN",
-        "requesttime": "$TIMESTAMP$",
-        "id": "mosip.resident.authlock",
-        "version": "v1",
-        "authType": [{auth: "bio-Iris"},{auth: "demo"},{auth: "bio-FACE"}],
-        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_EMAIL$",
-        "sendOtp":{
-    "transactionID": "$TRANSACTIONID$",
-    "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_UIN$",
-    "individualIdType": "UIN",
-    "sendOtpReqTemplate": "resident/SendOTP/createSendOTPAsEmpty",
-    "sendOtpEndPoint": "/resident/v1/req/otp"
-    }
-    }'
-      output: '{
-  "errors": [
-    {
-      "errorCode": "RES-SER-422"
-    }
-  ],
-  "sendOtpResp":{
-    "errors": [
-    {
-      "errorCode": "IDA-OTA-008",
-      "message": "$IGNORE$"
-    }
-  ],
-        "sendOtpResTemplate":"resident/error"
     }
 }'
 

@@ -1653,8 +1653,8 @@ AuthUnlock:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "OTP is invalid"
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- otp"
     }
   ],
   "sendOtpResp":{
