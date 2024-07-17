@@ -1,14 +1,12 @@
 package io.mosip.resident.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import io.mosip.resident.service.impl.EventStatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -27,16 +24,11 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
-import io.mosip.resident.constant.UISchemaTypes;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -51,16 +43,11 @@ public class TemplateUtil {
 
 	private static final String RESIDENT = "Resident";
 	private static final String LOGO_URL = "logoUrl";
-	private static final String UNKNOWN = "UNKNOWN";
-	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
-	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
 	private static final String RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY = "resident.event.type.%s.template.property";
 	private static final String RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY = "resident.service-type.%s.template.property";
-	private static final String RESIDENT_TEMPLATE_EVENT_STATUS = "resident.event.status.%s.template.property";
-	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 
 	@Autowired
-	private IdentityServiceImpl identityServiceImpl;
+	private UinVidValidator uinVidValidator;
 
 	@Autowired
 	private ProxyPartnerManagementService proxyPartnerManagementService;
@@ -69,16 +56,7 @@ public class TemplateUtil {
 	private Utility utility;
 
 	@Autowired
-	private ResidentServiceImpl residentService;
-
-	@Autowired
 	Environment env;
-
-	@Autowired
-	private ProxyMasterdataService proxyMasterdataService;
-
-	@Autowired
-	private ResidentConfigService residentConfigService;
 
 	@Value("${resident.template.date.pattern}")
 	private String templateDatePattern;
@@ -87,6 +65,27 @@ public class TemplateUtil {
 	private String templateTimePattern;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(TemplateUtil.class);
+
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Autowired
+	private EventStatusCode eventStatusCode;
+
+	@Autowired
+	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
+
+	@Autowired
+	private TemplateValueFromTemplateTypeCodeAndLangCode templateValueFromTemplateTypeCodeAndLangCode;
+
+	@Autowired
+	private SummaryForLangCode summaryForLangCode;
+
+	@Autowired
+	private AuthTypeCodeTemplateData authTypeCodeTemplateData;
+
+	@Autowired
+	private AttributesDisplayText attributesDisplayText;
 
 	/**
 	 * Gets the ack template variables for authentication request.
@@ -102,7 +101,7 @@ public class TemplateUtil {
 	    public Map<String, String> getCommonTemplateVariables(ResidentTransactionEntity residentTransactionEntity, RequestType requestType, String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = new HashMap<>();
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
-		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
+		Tuple2<String, String> statusCodes = eventStatusCode.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		String eventTypeBasedOnLangcode = getEventTypeBasedOnLangcode(requestType, languageCode);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, eventTypeBasedOnLangcode);
@@ -124,7 +123,7 @@ public class TemplateUtil {
 				utility.createTrackServiceRequestLink(residentTransactionEntity.getEventId()));
 		templateVariables.put(TemplateVariablesConstants.PDF_HEADER_LOGO, utility.getPDFHeaderLogo());
 		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
+				authTypeCodeTemplateData.getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
 		} catch (ApisResourceAccessException e) {
@@ -136,234 +135,38 @@ public class TemplateUtil {
 
 	public String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
-		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", requestType.name()));
-			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	public String getServiceTypeBasedOnLangcode(ServiceType serviceType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY, serviceType.name());
-		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		String templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn(String.format("Template property is missing for %s", serviceType.name()));
-			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+			templateTypeCode = eventStatusBasedOnLangCode.getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
-	}
-
-	public String getEventStatusBasedOnLangcode(EventStatus eventStatus, String languageCode) {
-		String templateCodeProperty = String.format(RESIDENT_TEMPLATE_EVENT_STATUS, eventStatus.name());
-		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		if (templateTypeCode == null) {
-			logger.warn(String.format("Template property is missing for %s", eventStatus.name()));
-			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
-		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
-	}
-
-	/**
-	 * This method accepts a string having comma-separated attributes with camel
-	 * case convention and splits it by a comma. Then it takes each attribute value
-	 * from the template in logged-in language and appends it to a string with
-	 * comma-separated value.
-	 * 
-	 * @param attributesFromDB attribute values having comma separated attributes.
-	 * @param languageCode     logged in language code.
-	 * @return attribute value stored in the template.
-	 */
-	@SuppressWarnings("unchecked")
-	private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
-		List<String> attributeListTemplateValue = new ArrayList<>();
-		if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
-			Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
-			if (schemaType.isPresent()) {
-//	    		Cacheable UI Schema data
-				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
-						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
-				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.SEMI_COLON));
-				attributeListTemplateValue = attributeListFromDB.stream().map(attribute -> {
-					String[] attrArray = attribute.trim().split(ResidentConstants.COLON);
-					String attr = attrArray[0];
-					if (uiSchemaDataMap.containsKey(attr)) {
-						Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attr);
-						attr = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
-						if (attrArray.length > 1) {
-							String formatAttr = attrArray[1];
-							Map<String, String> formatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
-									.get(ResidentConstants.FORMAT_OPTION);
-							List<String> formatAttrList = List
-									.of(formatAttr.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
-									.map(String::trim).map(format -> formatDataMapFromUISchema.get(format))
-									.collect(Collectors.toList());
-							if (!formatAttrList.contains(null)) {
-								return String.format("%s%s%s%s", attr, ResidentConstants.OPEN_PARENTHESIS,
-										formatAttrList.stream().collect(
-												Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER)),
-										ResidentConstants.CLOSE_PARENTHESIS);
-							}
-						}
-					}
-					return attr;
-				}).collect(Collectors.toList());
-			} else {
-				attributeListTemplateValue = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
-						.map(attribute -> getAttributeBasedOnLangcode(attribute.trim(), languageCode))
-						.collect(Collectors.toList());
-			}
-		}
-		if (attributeListTemplateValue.isEmpty()) {
-			return "";
-		} else {
-			return attributeListTemplateValue.stream()
-					.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-		}
-	}
-
-	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
-		return proxyMasterdataService
-					.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
-	}
-
-	public String getDescriptionTemplateVariablesForAuthenticationRequest(
-			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
-				.getT1();
-		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode);
-	}
-
-	private String getAuthTypeCodeTemplateData(String authTypeCodeFromDB, String statusCode, String languageCode) {
-		List<String> authTypeCodeTemplateValues = new ArrayList<>();
-		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
-			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
-					.map(authTypeCode -> {
-						String templateTypeCode;
-						if(statusCode == null) {
-							templateTypeCode = getAuthTypeCodeTemplateTypeCode(authTypeCode.trim());
-						} else {
-							templateTypeCode = getIDAuthRequestTypeDescriptionTemplateTypeCode(authTypeCode.trim(), statusCode);
-						}
-						return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
-					})
-					.collect(Collectors.toList());
-		}
-
-		if (authTypeCodeTemplateValues.isEmpty()) {
-			return "";
-		} else {
-			return authTypeCodeTemplateValues.stream()
-					.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-		}
-	}
-
-	public String getDescriptionTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(
-			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForOrderPhysicalCard(
-			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForGetMyId(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForUpdateMyUin(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForManageMyVid(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		RequestType requestType = RequestType.DEFAULT;
-		String templateData = "";
-		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.VID_TYPE,
-				replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
-		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.MASKED_VID,
-				replaceNullWithEmptyString(residentTransactionEntity.getRefId()));
-		if (RequestType.GENERATE_VID.name().equalsIgnoreCase(residentTransactionEntity.getRequestTypeCode())) {
-			requestType = RequestType.GENERATE_VID;
-		} else if (RequestType.REVOKE_VID.name().equalsIgnoreCase(residentTransactionEntity.getRequestTypeCode())) {
-			requestType = RequestType.REVOKE_VID;
-		}
-		templateData = getAttributeBasedOnLangcode(requestType.name(), languageCode);
-		fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.ACTION_PERFORMED, templateData);
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForVidCardDownload(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForValidateOtp(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		String channelsTemplateData = getAttributesDisplayText(
-				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP);
-			fileText = fileText.replace(ResidentConstants.DOLLAR + TemplateVariablesConstants.CHANNEL, channelsTemplateData);
-		return fileText;
-	}
-
-	public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity,
-			String fileText, String languageCode) {
-		String authTypeFromDB;
-		if (residentTransactionEntity.getAttributeList() != null && !residentTransactionEntity.getAttributeList().isEmpty()) {
-			authTypeFromDB = residentTransactionEntity.getAttributeList();
-		} else {
-			authTypeFromDB = residentTransactionEntity.getPurpose();
-		}
-		if (authTypeFromDB != null) {
-			List<String> authTypeListFromEntity = List
-					.of(authTypeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-			return authTypeListFromEntity.stream().map(authType -> {
-				String fileTextTemplate = fileText;
-				String templateData = "";
-				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
-					templateData = getAttributeBasedOnLangcode(EventStatusSuccess.UNLOCKED.name(), languageCode);
-					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
-							templateData);
-				} else {
-					templateData = getAttributeBasedOnLangcode(EventStatusSuccess.LOCKED.name(), languageCode);
-					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
-							templateData);
-				}
-				templateData = getAttributeBasedOnLangcode(authType.split(ResidentConstants.COLON)[0].trim(), languageCode);
-				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
-						templateData);
-				return fileTextTemplate;
-			}).collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-		}
-		return fileText;
+		return templateValueFromTemplateTypeCodeAndLangCode.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDefault(ResidentTransactionEntity residentTransactionEntity, String languageCode, Integer timeZoneOffset, String locale){
         return Tuples.of(getCommonTemplateVariables(residentTransactionEntity, RequestType.DEFAULT, languageCode, timeZoneOffset, locale), "");
     }
 
-    public String replaceNullWithEmptyString(String input) {
-        return input == null ? "" : input;
-    }
-
 	public String getIndividualIdType() throws ApisResourceAccessException {
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		return identityServiceImpl.getIndividualIdType(individualId).name();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		return uinVidValidator.getIndividualIdType(individualId).name();
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.SHARE_CRED_WITH_PARTNER,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, attributesDisplayText.getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.SHARE_CRED_WITH_PARTNER));
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
@@ -391,7 +194,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.DOWNLOAD_PERSONALIZED_CARD,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, attributesDisplayText.getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.DOWNLOAD_PERSONALIZED_CARD));
 		return Tuples.of(templateVariables, Objects.requireNonNull(
 				this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
@@ -401,7 +204,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.ORDER_PHYSICAL_CARD,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, attributesDisplayText.getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.ORDER_PHYSICAL_CARD));
 		templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
 		templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK,
@@ -430,7 +233,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.UPDATE_MY_UIN,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, attributesDisplayText.getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.UPDATE_MY_UIN));
 		templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
 				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
@@ -454,7 +257,7 @@ public class TemplateUtil {
 	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
 			String languageCode, String statusCode, RequestType requestType) {
 		try {
-			return residentService.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
+			return summaryForLangCode.getSummaryForLangCode(residentTransactionEntity, languageCode, statusCode,
 					requestType);
 		} catch (ResidentServiceCheckedException e) {
 			return requestType.name();
@@ -502,7 +305,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.VALIDATE_OTP,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.CHANNEL, getAttributesDisplayText(
+		templateVariables.put(TemplateVariablesConstants.CHANNEL, attributesDisplayText.getAttributesDisplayText(
 				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP));
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
@@ -603,66 +406,15 @@ public class TemplateUtil {
 
 	public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(emailSubjectTemplateCodeProperty);
+		return eventStatusBasedOnLangCode.getTemplateTypeCode(emailSubjectTemplateCodeProperty);
 	}
 
 	public String getEmailContentTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String emailContentTemplateCodeProperty = requestType.getEmailContentTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(emailContentTemplateCodeProperty);
+		return eventStatusBasedOnLangCode.getTemplateTypeCode(emailContentTemplateCodeProperty);
 	}
 
-	public String getSmsTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String smsTemplateCodeProperty = requestType.getSmsTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(smsTemplateCodeProperty);
-	}
-
-	public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(purposeTemplateCodeProperty);
-	}
-
-	public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(summaryTemplateCodeProperty);
-	}
-
-	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
-		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
-		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		if (templateTypeCode == null) {
-			logger.warn(String.format("Template property is missing for %s", authTypeCode));
-			return getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
-		} else {
-			return templateTypeCode;
-		}
-	}
-
-	private String getIDAuthRequestTypeDescriptionTemplateTypeCode(String authTypeCode, String statusCode) {
-		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
-		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		if (templateTypeCode == null) {
-			logger.warn(String.format("Template property is missing for %s", authTypeCode));
-			return getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
-		} else {
-			return templateTypeCode;
-		}
-	}
-
-	public String getAttributeBasedOnLangcode(String attributeName, String languageCode) {
-		String templateTypeCode = getTemplateTypeCode(
-				String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
-		if (templateTypeCode == null) {
-			logger.warn(String.format("Template property is missing for %s", attributeName));
-			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
-		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
-	}
-
-	private String getTemplateTypeCode(String templateCodeProperty) {
-		return env.getProperty(templateCodeProperty);
-	}
-
-	private String getPaymentStatus(String statusCode) {
+    private String getPaymentStatus(String statusCode) {
 		if (statusCode.equalsIgnoreCase(EventStatusFailure.PAYMENT_FAILED.name())) {
 			return EventStatusFailure.PAYMENT_FAILED.name();
 		} else {

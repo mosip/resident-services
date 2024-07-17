@@ -10,6 +10,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +20,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -42,29 +45,30 @@ import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to test download master data controller api.
  */
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.properties")
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class DownloadMasterdataControllerTest {
-	
+
     @MockBean
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
 
     @MockBean
@@ -91,7 +95,7 @@ public class DownloadMasterdataControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 
@@ -132,7 +136,7 @@ public class DownloadMasterdataControllerTest {
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
-               andExpect(status().isOk());
+                andExpect(status().isOk());
     }
 
     @Test(expected = Exception.class)

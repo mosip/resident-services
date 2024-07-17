@@ -7,6 +7,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +17,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,21 +37,23 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Resident proxy config controller test class.
- * 
+ *
  * @author Ritik Jain
  */
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class ProxyConfigControllerTest {
-	
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
+
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ResidentConfigServiceImpl residentConfigService;
@@ -75,9 +81,9 @@ public class ProxyConfigControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
-	
+
 	@MockBean
-    private ResidentServiceImpl residentService;
+	private ResidentServiceImpl residentService;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -35,26 +35,27 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	public List<ResidentTransactionEntity> findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(List<String> statusCodes, List<String> requestTypes);
 
 
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false' and requestTypeCode in (:requestTypes) AND (olvPartnerId IS NULL OR olvPartnerId = :olvPartnerId)")
+	@Query("SELECT COUNT(r) FROM ResidentTransactionEntity r WHERE r.tokenId = :tokenId AND r.readStatus = false AND r.requestTypeCode IN (:requestTypes) AND (r.olvPartnerId IS NULL OR r.olvPartnerId = :olvPartnerId)")
 	Long countByIdAndUnreadStatusForRequestTypes(@Param("tokenId") String tokenId, @Param("requestTypes") List<String> requestTypes, @Param("olvPartnerId") String olvPartnerId);
-	
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND (crDtimes>= :notificationClickTime OR updDtimes>= :notificationClickTime) AND read_status='false' AND requestTypeCode in (:requestTypes) AND (olvPartnerId IS NULL OR olvPartnerId = :olvPartnerId)")
-	Long countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(@Param("tokenId") String tokenId,@Param("notificationClickTime") LocalDateTime notificationClickTime, @Param("requestTypes") List<String> requestTypes, @Param("olvPartnerId") String olvPartnerId);
+
+	@Query("SELECT COUNT(r) FROM ResidentTransactionEntity r WHERE r.tokenId = :tokenId AND (r.crDtimes >= :notificationClickTime OR r.updDtimes >= :notificationClickTime) AND r.readStatus = false AND r.requestTypeCode IN (:requestTypes) AND (r.olvPartnerId IS NULL OR r.olvPartnerId = :olvPartnerId)")
+	Long countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(@Param("tokenId") String tokenId, @Param("notificationClickTime") LocalDateTime notificationClickTime, @Param("requestTypes") List<String> requestTypes, @Param("olvPartnerId") String olvPartnerId);
 
 	/**
 	 * AuthTransaction entries only will be expected here. This wouldn't fetch the otp Requested performed in resident service.
 	 */
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashRefId AND auth_type_code like %:authType")
+	@Query("SELECT COUNT(r) FROM ResidentTransactionEntity r WHERE r.refId = :hashRefId AND r.authTypeCode LIKE %:authType%")
 	Integer findByRefIdAndAuthTypeCodeLike(@Param("hashRefId") String hashRefId, @Param("authType") String authType);
-	
-	@Modifying
-    @Transactional
-	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
-	int updateReadStatus(@Param("eventId") String eventId);
 
 	@Modifying
-    @Transactional
-	@Query("update ResidentTransactionEntity set pinned_status=:status where event_id=:eventId")
+	@Transactional
+	@Query("UPDATE ResidentTransactionEntity r SET r.readStatus = true WHERE r.eventId = :eventId")
+	int updateReadStatus(@Param("eventId") String eventId);
+
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE ResidentTransactionEntity r SET r.pinnedStatus = :status WHERE r.eventId = :eventId")
 	int updatePinnedStatus(@Param("eventId") String eventId, @Param("status") boolean status);
 
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);

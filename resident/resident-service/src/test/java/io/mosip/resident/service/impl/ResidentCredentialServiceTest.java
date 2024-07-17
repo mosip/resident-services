@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.MaskDataUtility;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +105,12 @@ public class ResidentCredentialServiceTest {
 	@Mock
 	private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
 	private ResidentCredentialRequestDto residentCredentialRequestDto;
 
 	private ResidentTransactionEntity residentTransactionEntity;
@@ -130,7 +138,7 @@ public class ResidentCredentialServiceTest {
 		residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
 		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
 		when(utility.createEventId()).thenReturn("1111111111111111");
 		when(utility.getRidDeliMeterValue()).thenReturn("-PDF");
 	}

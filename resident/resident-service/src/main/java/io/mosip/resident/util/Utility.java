@@ -1,15 +1,11 @@
 package io.mosip.resident.util;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
-import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -18,7 +14,6 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -30,14 +25,12 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.JsonValue;
-import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
@@ -45,13 +38,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.mvel2.MVEL;
@@ -70,21 +58,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -127,7 +110,6 @@ public class Utility {
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
 	private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
-	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String DIGITAL_CARD_PARTNER = "digitalcardPartner";
 	private static final String APP_ID_BASED_CREDENTIAL_ID_SUFFIX = "appIdBasedCredentialIdSuffix";
 
@@ -143,19 +125,10 @@ public class Utility {
 	@Value("${" + ResidentConstants.PREFERRED_LANG_PROPERTY + ":false}")
 	private boolean isPreferedLangFlagEnabled;
 
-	@Value("${mosip.iam.userinfo_endpoint}")
-	private String usefInfoEndpointUrl;
 
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-
-	@Autowired
-	@Qualifier("restClientWithPlainRestTemplate")
-	private ResidentServiceRestClient restClientWithPlainRestTemplate;
-
-	@Autowired
-	private ValidateTokenUtil tokenValidationHelper;
 
 	@Autowired
 	private Environment env;
@@ -176,30 +149,15 @@ public class Utility {
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
-	@Autowired
-	private ProxyPartnerManagementService proxyPartnerManagementService;
-
 	private static String regProcessorIdentityJson = "";
 
 	private static String ANONYMOUS_USER = "anonymousUser";
-
-	private static final String AUTHORIZATION = "Authorization";
-	private static final String BEARER_PREFIX = "Bearer ";
 
 	private String ridDelimeterValue;
 
 	@Autowired(required = true)
 	@Qualifier("varres")
 	private VariableResolverFactory functionFactory;
-
-	@Value("${resident.email.mask.function}")
-	private String emailMaskFunction;
-
-	@Value("${resident.phone.mask.function}")
-	private String phoneMaskFunction;
-
-	@Value("${resident.data.mask.function}")
-	private String maskingFunction;
 
 	@Value("${resident.ui.track-service-request-url}")
 	private String trackServiceUrl;
@@ -209,12 +167,6 @@ public class Utility {
 
 	@Value("${resident.date.time.replace.special.chars:{}}")
 	private String specialCharsReplacement;
-
-	@Autowired
-	private IdentityServiceImpl identityService;
-
-	@Autowired
-	private ProxyMasterdataService proxyMasterdataService;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -230,7 +182,10 @@ public class Utility {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
-	private NotificationService notificationService;
+	private SessionUserNameUtility sessionUserNameUtility;
+
+	@Autowired
+	private ProxyMasterDataServiceUtility proxyMasterDataServiceUtility;
 
 	@PostConstruct
 	private void loadRegProcessorIdentityJson() {
@@ -246,12 +201,6 @@ public class Utility {
 			logger.error("Error parsing special chars map used for replacement in timestamp in filename.");
 			specialCharsReplacementMap = Map.of();
 		}
-	}
-
-	public String getAuthTypeCodefromkey(String reqTypeCode) throws ResidentServiceCheckedException {
-		Map<String, String> map = utilities.getAmrAcrMapping();
-		String authTypeCode = map.get(reqTypeCode);
-		return authTypeCode;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -389,7 +338,7 @@ public class Utility {
 		if (isPreferedLangFlagEnabled) {
 			try {
 				ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
-						utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
+						proxyMasterDataServiceUtility.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
 								env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
 				DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
 						mapper.writeValueAsString(responseWrapper.getResponse()),
@@ -468,29 +417,6 @@ public class Utility {
 		}
 	}
 
-
-	public String maskData(Object object, String maskingFunctionName) {
-		Map context = new HashMap();
-		context.put(VALUE, String.valueOf(object));
-		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
-		myVarFactory.setNextFactory(functionFactory);
-		Serializable serializable = MVEL.compileExpression(maskingFunctionName + "(value);");
-		String formattedObject = MVEL.executeExpression(serializable, context, myVarFactory, String.class);
-		return formattedObject;
-	}
-
-	public String maskEmail(String email) {
-		return maskData(email, emailMaskFunction);
-	}
-
-	public String maskPhone(String phone) {
-		return maskData(phone, phoneMaskFunction);
-	}
-
-	public String convertToMaskData(String maskData) {
-		return maskData(maskData, maskingFunction);
-	}
-
 	public String getPassword(List<String> attributeValues) {
 		Map<String, List<String>> context = new HashMap<>();
 		context.put("attributeValues", attributeValues);
@@ -505,7 +431,7 @@ public class Utility {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy(getSessionUserName());
+		residentTransactionEntity.setCrBy(sessionUserNameUtility.getSessionUserName());
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
 		if (ServiceType.ASYNC.getRequestTypes().contains(requestType)) {
@@ -768,83 +694,6 @@ public class Utility {
 		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
 	}
 
-	public String getSessionUserName() {
-		String name = null;
-		try {
-			name = identityService.getAvailableclaimValue(this.env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
-			if (name == null || name.trim().isEmpty()) {
-				name = ResidentConstants.UNKNOWN;
-			}
-		} catch (ApisResourceAccessException e) {
-			throw new RuntimeException(e);
-		}
-		return name;
-	}
-
-	@Cacheable(value = "userInfoCache", key = "#token")
-	public Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
-		UriComponents uriComponent = builder.build(false).encode();
-
-		Map<String, Object> responseMap;
-		try {
-			MultiValueMap<String, String> headers =
-					new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			String responseStr = restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers);
-			responseMap = (Map<String, Object>) decodeAndDecryptUserInfo(responseStr);
-		} catch (ApisResourceAccessException e) {
-			throw e;
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
-					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
-							+ ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
-		}
-		return responseMap;
-	}
-
-	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException {
-		String userInfoStr;
-		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
-			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
-				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
-						.verifyJWTSignagure(decodedJWT);
-				if (verifySignagure.left) {
-					userInfoStr = decodeString(getPayload(decodedJWT));
-				} else {
-					throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE,
-							String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(),
-									String.format("User info signature validation failed. Error: %s: %s",
-											verifySignagure.getRight().getErrorCode(),
-											verifySignagure.getRight().getErrorMessage())));
-				}
-			} else {
-				userInfoStr = decodeString(getPayload(decodedJWT));
-			}
-		} else {
-			userInfoStr = userInfoResponseStr;
-		}
-		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))) {
-			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
-		}
-		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
-	}
-
-	public String decodeString(String payload) {
-		byte[] bytes = java.util.Base64.getUrlDecoder().decode(payload);
-		return new String(bytes, UTF_8);
-	}
-
-	private String getPayload(DecodedJWT decodedJWT) {
-		return decodedJWT.getPayload();
-	}
-
-	public String decryptPayload(String payload) {
-		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID),
-				this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
-	}
-
 	@CacheEvict(value = "userInfoCache", key = "#token")
 	public void clearUserInfoCache(String token) {
 		logger.info("Clearing User Info cache");
@@ -927,32 +776,9 @@ public class Utility {
 		return name;
 	}
 
-	@Cacheable(value = "identityMapCache", key = "#accessToken")
-	public <T> T getCachedIdentityData(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
-		return getIdentityData(id, responseType);
-	}
-
-	public <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
-		Map<String, String> pathSegments = new HashMap<String, String>();
-		pathSegments.put("id", id);
-
-		List<String> queryParamName = new ArrayList<String>();
-		queryParamName.add("type");
-
-		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
-		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-				pathSegments, queryParamName, queryParamValue, responseType);
-	}
-
 	@CacheEvict(value = "identityMapCache", key = "#accessToken")
 	public void clearIdentityMapCache(String accessToken) {
 		logger.info("Clearing Identity Map cache IdResponseDto1");
-	}
-
-	@Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
-	public ResponseWrapper<?> getPartnersByPartnerType(String partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
-		return proxyPartnerManagementService.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
 	}
 
 	@CacheEvict(value = "partnerListCache", allEntries = true)
@@ -965,11 +791,6 @@ public class Utility {
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
 	public void emptyPartnerDetailCache() {
 		logger.info("Emptying Partner detail cache");
-	}
-
-	@Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
-	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-		return proxyMasterdataService.getValidDocumentByLangCode(langCode);
 	}
 
 	@CacheEvict(value = "getValidDocumentByLangCode", allEntries = true)
@@ -1089,19 +910,6 @@ public class Utility {
 
 	public void saveEntity(ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionRepository.save(residentTransactionEntity);
-	}
-
-	public void sendNotification(String eventId, String individualId, TemplateType templateType) {
-		try {
-			NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
-			notificationRequestDtoV2.setTemplateType(templateType);
-			notificationRequestDtoV2.setRequestType(RequestType.UPDATE_MY_UIN);
-			notificationRequestDtoV2.setEventId(eventId);
-			notificationRequestDtoV2.setId(individualId);
-			notificationService.sendNotification(notificationRequestDtoV2, null);
-		}catch (ResidentServiceCheckedException exception){
-			logger.error("Error while sending notification:- "+ exception);
-		}
 	}
 
 	@PostConstruct

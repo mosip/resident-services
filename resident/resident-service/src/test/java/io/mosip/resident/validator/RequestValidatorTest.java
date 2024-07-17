@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
+import io.mosip.resident.util.*;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -94,8 +96,6 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilities;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -105,6 +105,9 @@ public class RequestValidatorTest {
 
     @Mock
     private UinValidator<String> uinValidator;
+
+    @Mock
+    private EmailPhoneValidator emailPhoneValidator;
 
     @Mock
     private VidValidator<String> vidValidator;
@@ -145,6 +148,12 @@ public class RequestValidatorTest {
     @Mock
     private ProxyIdRepoService idRepoService;
 
+    @Mock
+    private ValidateNewUpdateRequest validateNewUpdateRequest;
+
+    @Mock
+    private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
+
     String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     @InjectMocks
@@ -152,6 +161,18 @@ public class RequestValidatorTest {
 
     private Object schema;
     private String schemaJson;
+
+    @Mock
+    private UinVidValidator uinVidValidator;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
+    @Mock
+    private IdentityUtil identityUtil;
+
+    @Mock
+    private ValidateOtpCharLimit validateOtpCharLimit;
 
     @Before
     public void setup() {
@@ -348,6 +369,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -365,6 +387,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthLockOrUnlockRequestSuccessForUnlock() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
         authLockRequestDto.setTransactionID("12345");
         authLockRequestDto.setIndividualId("12345");
@@ -729,6 +752,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateEuinRequestSuccess() throws Exception {
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
         euinRequestDTO.setIndividualIdType(IdType.VID.name());
         euinRequestDTO.setIndividualId("1234567");
@@ -962,6 +986,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequest() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.VID.name());
         requestDTO.setIndividualId("1234567");
@@ -978,6 +1003,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
         requestDTO.setIndividualIdType(IdType.UIN.name());
         requestDTO.setIndividualId("1234567");
@@ -1034,6 +1060,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testReprintSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
         RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
@@ -1132,6 +1159,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthHistoryRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
         authRequestDTO.setIndividualId("1234567");
         authRequestDTO.setOtp("1245");
@@ -1189,6 +1217,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateAuthUnlockRequestSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
         authUnLockRequestDto.setTransactionID("12345");
         authUnLockRequestDto.setIndividualId("12345");
@@ -1514,6 +1543,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateChannelVerificationStatusSuccess() throws Exception {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         String channel = "PHONE";
         requestValidator.validateChannelVerificationStatus(channel, "12345678");
     }
@@ -1622,16 +1652,16 @@ public class RequestValidatorTest {
 
     @Test
     public void testPhoneValidator() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         String phone = "1234567890";
-        requestValidator.phoneValidator(phone);
+        emailPhoneValidator.phoneValidator(phone);
     }
 
     @Test
     public void testEmailValidator() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
         String email = "abc@gmail.com";
-        requestValidator.emailValidator(email);
+        emailPhoneValidator.emailValidator(email);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -1695,6 +1725,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateDownloadCardVid() throws Exception {
+        Mockito.when(uinVidValidator.validateVid(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "reprintId", "mosip.resident.print");
         requestValidator.validateDownloadCardVid("12345");
     }
@@ -1891,10 +1922,9 @@ public class RequestValidatorTest {
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8809393939");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -1922,8 +1952,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateDataRequestInvalidPhoneUserId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1938,9 +1967,8 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectPhoneUserId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
@@ -1956,8 +1984,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateDataRequestCorrectEmailId() throws Exception {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
@@ -2039,6 +2066,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateVidCreateV2RequestSuccess() {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
         ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
         ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
@@ -2067,14 +2095,14 @@ public class RequestValidatorTest {
     public void testValidateUin() {
         Mockito.when(uinValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_UIN.getErrorCode(),
                 ResidentErrorCode.INVALID_UIN.getErrorMessage()));
-        assertEquals(false, requestValidator.validateUin("123"));
+        assertEquals(false, uinVidValidator.validateUin("123"));
     }
 
     @Test
     public void testValidateVid() {
         Mockito.when(vidValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_VID.getErrorCode(),
                 ResidentErrorCode.INVALID_VID.getErrorMessage()));
-        assertEquals(false, requestValidator.validateVid("123"));
+        assertEquals(false, uinVidValidator.validateVid("123"));
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2089,8 +2117,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testInvalidUserId() {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         requestValidator.validateUserIdAndTransactionId("shgasbieh", "3232323232");
     }
 
@@ -2531,19 +2558,19 @@ public class RequestValidatorTest {
         residentTransactionEntity.setTokenId("123");
         Optional<ResidentTransactionEntity> residentTransactionEntity1 = Optional.of(residentTransactionEntity);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity1);
-        Mockito.when(identityService.getResidentIdaToken()).thenReturn("2");
+        Mockito.when(availableClaimUtility.getResidentIdaToken()).thenReturn("2");
         ReflectionTestUtils.invokeMethod(requestValidator, "validateEventIdBelongToSameSession", "12");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidateEmailId() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(false);
         ReflectionTestUtils.invokeMethod(requestValidator, "validateEmailId", "123");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidatePhone() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(false);
         ReflectionTestUtils.invokeMethod(requestValidator, "validatePhoneNumber", "w");
     }
 
@@ -2624,8 +2651,8 @@ public class RequestValidatorTest {
     public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
         Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
         io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
@@ -2642,6 +2669,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateReqCredentialRequestSuccess() {
+        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
         RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
         ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
         residentCredentialRequestDto.setIndividualId("1232323232");
@@ -2726,16 +2754,14 @@ public class RequestValidatorTest {
         requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = InvalidInputException.class)
     public void testValidateProxySendOtpRequestInCorrectPhoneUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("8878787878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2748,16 +2774,16 @@ public class RequestValidatorTest {
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test
     public void testValidateProxySendOtpRequestInCorrectEmailUserId() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(emailPhoneValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+        when(emailPhoneValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+        when(identityUtil.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2767,20 +2793,18 @@ public class RequestValidatorTest {
         otpRequestDTOV2.setUserId("kam@g.com");
         userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2, 2));
         userIdOtpRequest.setRequest(otpRequestDTOV2);
-        when(idRepoService.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
+        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.anyList())).thenReturn(new ResponseWrapper<>());
         requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = InvalidInputException.class)
     public void testValidateProxySendOtpRequestFailed() throws Exception {
         IdentityDTO identityDTO = new IdentityDTO();
         identityDTO.setFullName("kamesh");
         identityDTO.setEmail("kam@g.com");
         identityDTO.setPhone("887878");
-        when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
-        when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-        ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
-        ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+        when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+        when(identityUtil.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
         io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
                 new io.mosip.resident.dto.MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
@@ -2808,12 +2832,12 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateOtpCharLimit() {
-        requestValidator.validateOtpCharLimit("111111");
+        validateOtpCharLimit.validateOtpCharLimit("111111");
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test
     public void testValidateOtpCharLimitFailed() {
-        requestValidator.validateOtpCharLimit("11111111");
+        validateOtpCharLimit.validateOtpCharLimit("11111111");
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2862,7 +2886,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2Failed() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2891,7 +2915,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2Passed() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2923,7 +2947,7 @@ public class RequestValidatorTest {
 
     @Test
     public void testValidateUpdateRequestV2PassedWithLanguageCode() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -2961,7 +2985,7 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateUpdateRequestV2InvalidTransactionId() throws Exception {
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.2");
         ResponseWrapper idSchemaResponse = new ResponseWrapper();
@@ -3000,7 +3024,7 @@ public class RequestValidatorTest {
     @Test
     public void testValidateUpdateRequestV2FailedWithLanguageCode() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");
@@ -3044,7 +3068,7 @@ public class RequestValidatorTest {
     @Test(expected = RuntimeException.class)
     public void testValidateUpdateRequestV2FailedWithRunTimeException() throws Exception {
         ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
-        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+        Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
         Map<String, Object> identityMappingMap = new HashMap<>();
         Map<String, String> identityValue = new HashMap<>();
         identityValue.put("value", "email");

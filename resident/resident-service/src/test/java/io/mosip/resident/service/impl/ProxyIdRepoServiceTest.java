@@ -13,8 +13,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,140 +72,161 @@ public class ProxyIdRepoServiceTest {
 	@Mock
 	private ResidentServiceImpl residentService;
 
+	@Mock
+	private UinVidValidator uinVidValidator;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private UinForIndividualId uinForIndividualId;
+
+	@Mock
+	private DescriptionForLangCode descriptionForLangCode;
+
+	@InjectMocks
+	private RemainingUpdateCountByIndividualId remainingUpdateCountByIndividualId;
+
+	@InjectMocks
+	private PendingDrafts pendingDrafts;
+
+	@Mock
+	private EventStatusCode eventStatusCode;
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testGetRemainingUpdateCountByIndividualId()
+	public void testgetRemainingUpdateCountByIndividualId()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> response1 = service.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
+		ResponseWrapper<?> response1 = remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
 		assertNotNull(response1);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> response2 = service.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
+		ResponseWrapper<?> response2 = remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
 		assertNotNull(response2);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetRemainingUpdateCountByIndividualIdException()
+	public void testgetRemainingUpdateCountByIndividualIdException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		service.getRemainingUpdateCountByIndividualId(List.of());
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetRemainingUpdateCountByIndividualIdIfIf()
+	public void testgetRemainingUpdateCountByIndividualIdIfIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
 		error.setErrorCode("IDR-IDC-007");
 		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		service.getRemainingUpdateCountByIndividualId(null);
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(null);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetRemainingUpdateCountByIndividualIdIfElse()
+	public void testgetRemainingUpdateCountByIndividualIdIfElse()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
 		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetRemainingUpdateCountByIndividualIdErrorCodeEmpty()
+	public void testgetRemainingUpdateCountByIndividualIdErrorCodeEmpty()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
 		error.setErrorCode("");
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetRemainingUpdateCountByIndividualIdErrorCodeNull()
+	public void testgetRemainingUpdateCountByIndividualIdErrorCodeNull()
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		ServiceError error = new ServiceError();
 		error.setErrorCode(null);
 		responseWrapper.setErrors(List.of(error));
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		service.getRemainingUpdateCountByIndividualId(List.of("fullName"));
+		remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(List.of("fullName"));
 	}
 
 	@Test
-	public void testGetPendingDraftsSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public void testgetPendingDraftsSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<DraftResponseDto> responseWrapper = new ResponseWrapper<>();
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setResponse(draftResponseDto);
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(uinForIndividualId.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		assertNotNull(service.getPendingDrafts("eng"));
+		assertNotNull(pendingDrafts.getPendingDrafts("eng"));
 	}
 
 	@Test(expected = InvalidInputException.class)
-	public void testGetPendingDraftsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public void testgetPendingDraftsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<DraftResponseDto> responseWrapper = new ResponseWrapper<>();
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-002", "No Record found")));
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		service.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetPendingDraftsFailureUnknownException() throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public void testgetPendingDraftsFailureUnknownException() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<DraftResponseDto> responseWrapper = new ResponseWrapper<>();
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		responseWrapper.setErrors(List.of(new ServiceError("IDR-IDC-003", "No Record found")));
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
-		service.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetPendingDraftsFailureApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
+	public void testgetPendingDraftsFailureApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenThrow(new ApisResourceAccessException());
-		service.getPendingDrafts("eng");
+		pendingDrafts.getPendingDrafts("eng");
 	}
 
 	@Test
-	public void testGetPendingDraftsSuccessWithPendingDraft() throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public void testgetPendingDraftsSuccessWithPendingDraft() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<DraftResponseDto> responseWrapper = new ResponseWrapper<>();
 		DraftResponseDto draftResponseDto = new DraftResponseDto();
 		DraftUinResponseDto draftUinResponseDto = new DraftUinResponseDto();
@@ -225,8 +245,8 @@ public class ProxyIdRepoServiceTest {
 		residentTransactionEntity1.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity1.setEventId("1234");
 
-		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123");
-		when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
+		when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn("123");
+		when(uinForIndividualId.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
 		when(environment.getProperty(Mockito.anyString())).thenReturn("id");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), any())).thenReturn(responseWrapper);
 		when(objectMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(draftResponseDto);
@@ -234,10 +254,10 @@ public class ProxyIdRepoServiceTest {
 		when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeAndStatusCode(Mockito.anyString()
 		, Mockito.anyString(), Mockito.anyString())).thenReturn(List.of(residentTransactionEntity, residentTransactionEntity1));
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
-		when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
+		when(availableClaimUtility.getResidentIdaToken()).thenReturn("123");
+		when(eventStatusCode.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatusInProgress.NEW.name(),
 				"eng"));
-		assertEquals("123", service.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
+		assertEquals("123", pendingDrafts.getPendingDrafts("eng").getResponse().getDrafts().get(0).getEid());
 	}
 
 }
