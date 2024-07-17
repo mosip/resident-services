@@ -1510,7 +1510,7 @@ public class RequestValidator {
 			Object identityValue = identity.get(key);
 
 			if (identityValue instanceof String) {
-				if (idRepoJson.containsKey(key) && idRepoJson.get(key).equals(identityValue)) {
+				if (idRepoJson.containsKey(key) && idRepoJson.get(key).toString().equalsIgnoreCase((String) identityValue)) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode(),
 							String.format(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorMessage(), key));
 				}
@@ -1527,7 +1527,7 @@ public class RequestValidator {
                         for (Object o : repoArray) {
                             JSONObject repoObj = (JSONObject) o;
                             if (repoObj.get(ResidentConstants.LANGUAGE).equals(language)) {
-                                if (repoObj.get(ResidentConstants.VALUE).equals(value)) {
+                                if (repoObj.get(ResidentConstants.VALUE).toString().equalsIgnoreCase(value)) {
 									throw new ResidentServiceCheckedException(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode(),
 											String.format(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorMessage(), key + AND_LANGUAGE_CODE + language));
                                 } else {
