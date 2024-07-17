@@ -1,6 +1,7 @@
 GrievanceTicket:
    Resident_GrievanceTicket_uin_all_Valid_Smoke:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged using UIN    
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -22,6 +23,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_InvalidUser_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged using UIN with invalid token 
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -49,6 +51,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with invalid token      
       role: invalid
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -69,6 +72,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_StatusCode_Empty_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN without token      
       role: 
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -89,6 +93,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Invalid_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with invalid EID      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -115,6 +120,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Diff_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with EID taken from other UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -141,6 +147,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Missing_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN without EID value      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -167,6 +174,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Empty_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with empty EID value      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -193,6 +201,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Empty_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with empty message      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -219,6 +228,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_Missing_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN without message value      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post

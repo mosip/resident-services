@@ -1,6 +1,7 @@
 GetRemainingupdatecountbyIndividualIdRequest2:
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_uin_Valid_Smoke:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      description: Get remaining update count for UIN       
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ GetRemainingupdatecountbyIndividualIdRequest2:
 
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_vid_Valid_Smoke:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      description: Get remaining update count for VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -31,6 +33,7 @@ GetRemainingupdatecountbyIndividualIdRequest2:
 
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_Invalid_Token:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      description: Get remaining update count when invalid token is used      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

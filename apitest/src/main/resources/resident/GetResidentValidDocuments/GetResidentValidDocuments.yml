@@ -1,6 +1,7 @@
 GetResidentValidDocuments:
    Resident_GetResidentValidDocuments_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
+      description: Get Resident valid documents      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -15,6 +16,7 @@ GetResidentValidDocuments:
 
    Resident_GetResidentValidDocuments_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
+      description: Get Resident valid documents when invalid language code is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -35,6 +37,7 @@ GetResidentValidDocuments:
 
    Resident_GetResidentValidDocuments_Invalid_ApplicantId:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
+      description: Get Resident valid documents when invalid applicant ID is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -55,6 +58,7 @@ GetResidentValidDocuments:
 
    Resident_GetResidentValidDocuments_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
+      description: Get Resident valid documents when language code is not given in input parameters    
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -75,6 +79,7 @@ GetResidentValidDocuments:
 
    Resident_GetResidentValidDocuments_StatusCode_Empty_ApplicantId_Neg:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
+      description: Get Resident valid documents when applicant ID value is not given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
