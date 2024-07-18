@@ -26,6 +26,8 @@
         <kernel-openid-bridge-api.version>1.2.1-java21-SNAPSHOT</kernel-openid-bridge-api.version>
         <maven.jacoco.plugin.version>0.8.11</maven.jacoco.plugin.version>
         <kernel.idobjectvalidator.version>1.2.1-java21-SNAPSHOT</kernel.idobjectvalidator.version>
+        <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
+        <configuration-skip>false</configuration-skip>
     </properties>
     <dependencies>
         <dependency>
@@ -409,6 +411,42 @@
                         <goals>
                             <goal>build-info</goal>
                             <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <skipTests>false</skipTests>
+                    <skip>${configuration-skip}</skip>
+                    <argLine>
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                        --add-opens=java.base/java.util=ALL-UNNAMED
+                        --add-opens=java.base/java.net=ALL-UNNAMED
+                        --add-opens=java.base/java.time=ALL-UNNAMED
+                        --add-opens=java.base/java.io=ALL-UNNAMED
+                        --add-opens=java.base/java.time.format=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
