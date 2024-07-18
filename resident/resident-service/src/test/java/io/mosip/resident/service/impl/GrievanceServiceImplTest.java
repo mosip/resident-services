@@ -2,6 +2,8 @@ package io.mosip.resident.service.impl;
 
 import static org.junit.Assert.assertNotNull;
 
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.AvailableClaimValueUtility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,12 @@ public class GrievanceServiceImplTest {
 
     @Mock
     private ResidentGrievanceRepository residentGrievanceRepository;
+
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
+    @Mock
+    private AvailableClaimValueUtility availableClaimValueUtility;
     
     private MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO;
 
@@ -50,7 +58,7 @@ public class GrievanceServiceImplTest {
         grievanceRequestDTO.setMessage("message");
         grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("Kamesh");
-        Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn("kamesh");
+        Mockito.when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("kamesh");
     }
 
     @Test
@@ -61,7 +69,7 @@ public class GrievanceServiceImplTest {
 
     @Test(expected = ApisResourceAccessException.class)
     public void testGetGrievanceTicketFailed() throws ApisResourceAccessException {
-        Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+        Mockito.when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
         ResponseWrapper<Object> actualResult = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
     }

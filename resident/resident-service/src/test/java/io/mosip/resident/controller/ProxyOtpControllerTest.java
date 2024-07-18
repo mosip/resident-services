@@ -8,6 +8,9 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.idrepository.core.util.EnvUtil;
+import io.mosip.resident.util.AvailableClaimUtility;
+import io.mosip.resident.util.IdentityUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +20,16 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,30 +55,31 @@ import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.context.WebApplicationContext;
 import reactor.util.function.Tuples;
 
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to test proxy otp controller.
  */
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.properties")
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class ProxyOtpControllerTest {
-	
+
     @MockBean
     private RequestValidator validator;
 
     @Mock
     private AuditUtil audit;
-	
-	@MockBean
-	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private ObjectStoreHelper objectStore;
 
     @MockBean
     private Utility utilityBean;
@@ -103,7 +109,7 @@ public class ProxyOtpControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
-    
+
     @MockBean
     private ResidentServiceImpl residentService;
 
@@ -113,10 +119,16 @@ public class ProxyOtpControllerTest {
     @Mock
     private Environment environment;
 
+    @Mock
+    private AvailableClaimUtility availableClaimUtility;
+
+    @Mock
+    private IdentityUtil identityUtil;
+
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     private MainRequestDTO<OtpRequestDTOV2> userOtpRequest;
-    
+
     private MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest;
 
     String reqJson;
@@ -124,7 +136,7 @@ public class ProxyOtpControllerTest {
     byte[] pdfbytes;
 
     private ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
-    
+
     private MainResponseDTO<AuthNResponse> response;
 
     @Before
@@ -158,10 +170,10 @@ public class ProxyOtpControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/send-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
-    
+
     @Test(expected = ResidentServiceException.class)
     public void testSendOtpException() throws Exception {
-    	doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any(), Mockito.any());
+        doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any(), Mockito.any());
         proxyOtpController.sendOTP(userOtpRequest);
     }
 
@@ -184,10 +196,10 @@ public class ProxyOtpControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/update-data").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
-    
+
     @Test(expected = ResidentServiceException.class)
     public void testValidateOtpException() throws Exception {
-    	doThrow(new InvalidInputException("error message")).when(validator).validateUpdateDataRequest(Mockito.any());
+        doThrow(new InvalidInputException("error message")).when(validator).validateUpdateDataRequest(Mockito.any());
         proxyOtpController.validateWithUserIdOtp(userIdOtpRequest);
     }
 

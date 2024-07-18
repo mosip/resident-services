@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.util.*;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,9 +41,6 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
 
 /**
  * Order card service implementation class.
@@ -80,7 +78,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 	@Autowired
 	Environment env;
 
+	@Autowired
+	private AvailableClaimUtility availableClaimUtility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardServiceImpl.class);
+
+	@Autowired
+	private MaskDataUtility maskDataUtility;
 
 	@SuppressWarnings("unlikely-arg-type")
 	@Override
@@ -88,7 +92,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::entry");
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		String individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto, individualId);
 		if (requestDto.getConsent() == null || requestDto.getConsent().trim().isEmpty()
 				|| !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
@@ -130,7 +134,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		String attributeList = requestDto.getSharableAttributes().stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType(
@@ -138,7 +142,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 						ResidentConstants.PRINT_PARTNER));
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ResidentConstants.ORGANIZATION_NAME));
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(ResidentConstants.PARTNER_TYPE));
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setConsent(requestDto.getConsent());
@@ -311,7 +315,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(partnerId);
 		Map<String, ?> partnerDetail = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType(
@@ -319,7 +323,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 						ResidentConstants.PRINT_PARTNER));
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ResidentConstants.ORGANIZATION_NAME));
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(ResidentConstants.PARTNER_TYPE));
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 		return residentTransactionEntity;

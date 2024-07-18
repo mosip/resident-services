@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Map;
 
+import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +15,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,22 +42,24 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import org.springframework.web.context.WebApplicationContext;
 import reactor.util.function.Tuples;
 
 /**
  * Resident IdAuth controller test class.
- * 
+ *
  * @author Ritik Jain
  */
+@ContextConfiguration(classes = { TestContext.class, WebApplicationContext.class })
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
+@WebMvcTest
+@Import(EnvUtil.class)
+@ActiveProfiles("test")
 public class IdAuthControllerTest {
-	
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
+
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private IdAuthServiceImpl idAuthService;
@@ -64,7 +70,7 @@ public class IdAuthControllerTest {
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-	
+
 	@MockBean
 	private ResidentVidService vidService;
 
@@ -73,15 +79,15 @@ public class IdAuthControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@MockBean
 	private DocumentService docService;
-	
+
 	@MockBean
 	private ObjectStoreHelper objectStore;
-	
+
 	@MockBean
-    private ResidentServiceImpl residentService;
+	private ResidentServiceImpl residentService;
 
 	@MockBean
 	private Utility utilityBean;

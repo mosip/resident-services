@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.*;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +48,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.UINCardDownloadHelper;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 
@@ -99,6 +98,18 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	@Mock
 	private Environment environment;
 
+	@Mock
+	private UinVidValidator uinVidValidator;
+
+	@Mock
+	private AvailableClaimUtility availableClaimUtility;
+
+	@Mock
+	private MaskDataUtility maskDataUtility;
+
+	@Mock
+	private IdentityUtil identityUtil;
+
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
 
@@ -117,8 +128,8 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
-		individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
+		individualId = availableClaimUtility.getResidentIndvidualIdFromSession();
+		when(uinVidValidator.getIndividualIdType(Mockito.anyString())).thenReturn(IdType.UIN);
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");
