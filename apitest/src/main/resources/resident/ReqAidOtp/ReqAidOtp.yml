@@ -1,6 +1,7 @@
 ReqAidOtp:
    Resident_ReqAidOtp_all_Valid_Smoke:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp using UIN      
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -21,6 +22,7 @@ ReqAidOtp:
 
    Resident_ReqAidOtp_Invalid_IndividualId_Neg:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp using invalid individualID      
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -43,6 +45,7 @@ ReqAidOtp:
 
    Resident_ReqAidOtp_Empty_IndividualId_Neg:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp when individualId value is empty      
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -65,6 +68,7 @@ ReqAidOtp:
 
    Resident_ReqAidOtp_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp bu giving invalid transcationId      
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -87,6 +91,7 @@ ReqAidOtp:
 
    Resident_ReqAidOtp_Empty_TransactionID_Neg:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp when transcationId is empty      
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -109,6 +114,7 @@ ReqAidOtp:
 
    Resident_ReqAidOtp_Invalid_OtpChannel_Neg:
       endPoint: /resident/v1/individualId/otp
+      description: Request otp with invalid otpChannel      
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp

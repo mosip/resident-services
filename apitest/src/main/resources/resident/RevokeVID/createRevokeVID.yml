@@ -1,6 +1,7 @@
 RevokeVID:
    Resident_Revoke_Perpetual_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Perpetual_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Perpetual VID when Otp requested using same VID      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -39,6 +40,7 @@ RevokeVID:
 
    Resident_Revoke_Temporary_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Temporary VID when Otp requested using same VID      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -77,6 +79,7 @@ RevokeVID:
 
    Resident_Revoke_Onetimeuse_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Onetimeuse_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Onetimeuse VID when Otp requested using same VID      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -115,6 +118,7 @@ RevokeVID:
 
    Resident_RevokeVID_Invalid_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Perpetual VID by giving id value invalid      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -153,6 +157,7 @@ RevokeVID:
 
    Resident_RevokeVID_Missing_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Perpetual VID by removing id attribute from request     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -192,6 +197,7 @@ RevokeVID:
 
    Resident_RevokeVID_Empty_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke Perpetual VID when Otp requested using same UIN and id value is given empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -231,6 +237,7 @@ RevokeVID:
 
    Resident_RevokeVID_Invalid_Individual_Id:
       endPoint: /resident/v1/vid/@234rff
+      description: Revoke Perpetual VID when Otp requested using same UIN and invalid individual id is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -269,6 +276,7 @@ RevokeVID:
 }'
    Resident_RevokeVID_Missing_Individual_Id:
       endPoint: /resident/v1/vid/$REMOVE$
+      description: Revoke Perpetual VID when Otp requested using same UIN and individual id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -308,6 +316,7 @@ RevokeVID:
 
    Resident_RevokeVID_Empty_Individual_Id:
       endPoint: /resident/v1/vid/""
+      description: Revoke Perpetual VID when Otp requested using same UIN and individual id value is given empty     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -346,6 +355,7 @@ RevokeVID:
 }'
    Resident_RevokeVID_Missing_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke temporary VID when Otp requested using same UIN and requesttime is removed in request     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -384,6 +394,7 @@ RevokeVID:
 }'
    Resident_RevokeVID_Invalid_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke temporary VID when Otp requested using same UIN and invalid requesttime is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -423,6 +434,7 @@ RevokeVID:
 
    Resident_RevokeVID_Empty_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke temporary VID when Otp requested using same UIN and requesttime is given empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -462,6 +474,7 @@ RevokeVID:
 
    Resident_RevokeVID_Invalid_version:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
+      description: Revoke temporary VID when Otp requested using same UIN and invalid version is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
