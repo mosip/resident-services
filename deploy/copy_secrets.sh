@@ -3,8 +3,11 @@
 # DST_NS: Destination namespace
 
 function copying_secrets() {
+  UTIL_URL=https://github.com/mosip/mosip-infra/blob/master/deployment/v3/utils/copy_cm_func.sh
   COPY_UTIL=./copy_cm_func.sh
   DST_NS=resident
+
+  wget -q $UTIL_URL -O copy_cm_func.sh && chmod +x copy_cm_func.sh
 
   $COPY_UTIL secret keycloak-client-secrets keycloak $DST_NS
   return 0
