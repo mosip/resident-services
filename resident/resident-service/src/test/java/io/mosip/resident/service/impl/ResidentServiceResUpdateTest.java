@@ -23,6 +23,7 @@ import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestValidator;
 import io.mosip.resident.validator.ValidateNewUpdateRequest;
+import io.mosip.resident.validator.ValidateSameData;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -124,6 +125,9 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+
+	@Mock
+	private ValidateSameData validateSameData;
 	
 	@Mock
 	private ProxyMasterdataService proxyMasterdataService;

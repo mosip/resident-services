@@ -39,10 +39,12 @@ import java.util.stream.Stream;
 
 import io.mosip.resident.util.*;
 import io.mosip.resident.validator.ValidateNewUpdateRequest;
+import io.mosip.resident.validator.ValidateSameData;
 import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -334,6 +336,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private EventStatusBasedOnLangCode eventStatusBasedOnLangCode;
+
+	@Autowired
+	private ValidateSameData validateSameData;
 
 	@PostConstruct
 	public void idTemplateManagerPostConstruct() {
@@ -834,6 +839,7 @@ public class ResidentServiceImpl implements ResidentService {
 					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
+				validateSameData.validateSameData(idRepoJson, demographicIdentity);
 				validateNewUpdateRequest.validateNewUpdateRequest();
 				if(Utility.isSecureSession()){
 					Set<String> identity = dto.getIdentity().keySet();
@@ -1051,9 +1057,9 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 			}
 
-		}
-
-		finally {
+		} catch (JSONException e) {
+            throw new RuntimeException(e);
+        } finally {
 			if (Utility.isSecureSession() && residentTransactionEntity != null) {
 				// if the status code will come as null, it will set it as failed.
 				if (residentTransactionEntity.getStatusCode() == null) {
