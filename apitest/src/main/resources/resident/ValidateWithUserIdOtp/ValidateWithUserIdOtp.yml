@@ -1,6 +1,7 @@
 ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Invalid_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when invalid request time is given in request     
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -34,6 +35,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Past_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when request time is given as past time      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -66,6 +68,7 @@ ValidateWithUserIdOtp:
 }'
 
    Resident_ValidateWithUserIdOtp_uin_Future_RequestTime_Neg:
+      description: Validate OTP requested using userId when request time is given as future value   
       endPoint: /resident/v1/contact-details/update-data
       role: residentNew
       restMethod: post
@@ -100,6 +103,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId and userId value is given invalid in request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -134,6 +138,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when userId value is given as empty      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -168,6 +173,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when only spaces is given as user id value      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -202,6 +208,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when userid attribute is removed from request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -235,6 +242,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when userid value given as null      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -268,6 +276,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when invalid transactionid is given     
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -301,6 +310,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when transactionid value is empty      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -334,6 +344,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when transactionid is removed from request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -367,6 +378,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Space_val_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when only spaces given for transactionid value      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -400,6 +412,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Null_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when transactionid value is given as null      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -433,6 +446,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when invalid otp is passed      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -466,6 +480,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Missing_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when otp attribute is removed from request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -499,6 +514,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Null_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when otp value is given as null      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -532,6 +548,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_SpaceVal_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when only spaces given as otp value      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -565,6 +582,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_uin_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId when otp value is empty      
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -598,6 +616,7 @@ ValidateWithUserIdOtp:
 
    Resident_ValidateWithUserIdOtp_vid_Invalid_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      description: Validate OTP requested using userId       
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp

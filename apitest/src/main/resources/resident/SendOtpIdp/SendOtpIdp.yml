@@ -1,6 +1,7 @@
 SendOtpIdp:
    Resident_ESignet_SendOtpIdp_all_Valid_Smoke:
       endPoint: /v1/idp/authorization/send-otp
+      description: Request OTP using UIN      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

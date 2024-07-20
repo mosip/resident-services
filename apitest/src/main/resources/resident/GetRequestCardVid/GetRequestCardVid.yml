@@ -1,6 +1,7 @@
 GetRequestCardVid:
    Resident_GetRequestCardVid_uin_all_Valid_Smoke_sid:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using temporary VID when logged in using UIN      
       role: residentNew
       restMethod: get
       auditLogCheck: true
@@ -15,6 +16,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_uin_Invalid_User_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using VID when logged in using invalid UIN      
       role: partner
       validityCheckRequired: true
       restMethod: get
@@ -34,6 +36,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_uin_Invalid_Vid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using invalid VID when logged in using UIN      
       role: residentNew
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
@@ -52,6 +55,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_uin_Invalid_UserVid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using invalid VID when logged in using UIN      
       role: residentNew
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
@@ -69,6 +73,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_vid_all_Valid_Smoke_sid:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using Onetimeuse VID when logged in using VID      
       role: residentNewVid
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
@@ -82,6 +87,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_vid_Invalid_Vid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using invalid VID when logged in using VID      
       role: residentNewVid
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
@@ -100,6 +106,7 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_vid_Invalid_UserVid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+      description: Request card using VID when logged in using invalid VID      
       role: residentNewVid
       restMethod: get
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
