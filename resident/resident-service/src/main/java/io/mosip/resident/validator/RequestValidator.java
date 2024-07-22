@@ -95,7 +95,6 @@ public class RequestValidator {
 	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
 	private static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
-	private static final String AND_LANGUAGE_CODE = " and Language code: ";
 
 	@Autowired
 	private RidValidator<String> ridValidator;
@@ -1501,43 +1500,6 @@ public class RequestValidator {
 	public void validateProfileApiRequest(String languageCode) {
 		if (languageCode != null) {
 			validateLanguageCode(languageCode);
-		}
-	}
-
-	public void validateSameData(JSONObject idRepoJson, JSONObject identity) throws ResidentServiceCheckedException, JSONException {
-		for (Object keyObj : identity.keySet()) {
-			String key = (String) keyObj;
-			Object identityValue = identity.get(key);
-
-			if (identityValue instanceof String) {
-				if (idRepoJson.containsKey(key) && idRepoJson.get(key).toString().equalsIgnoreCase((String) identityValue)) {
-					throw new ResidentServiceCheckedException(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode(),
-							String.format(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorMessage(), key));
-				}
-			} else if (identityValue instanceof ArrayList<?>) {
-				if (idRepoJson.containsKey(key)) {
-					ArrayList<Object> identityArray = (ArrayList<Object>) identityValue;
-					JSONArray repoArray = (JSONArray) idRepoJson.get(key);
-
-                    for (Object object : identityArray) {
-                        Map identityObj = (Map) object;
-                        String language = (String) identityObj.get(ResidentConstants.LANGUAGE);
-                        String value = (String) identityObj.get(ResidentConstants.VALUE);
-
-                        for (Object o : repoArray) {
-                            JSONObject repoObj = (JSONObject) o;
-                            if (repoObj.get(ResidentConstants.LANGUAGE).equals(language)) {
-                                if (repoObj.get(ResidentConstants.VALUE).toString().equalsIgnoreCase(value)) {
-									throw new ResidentServiceCheckedException(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode(),
-											String.format(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorMessage(), key + AND_LANGUAGE_CODE + language));
-                                } else {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-				}
-			}
 		}
 	}
 }
