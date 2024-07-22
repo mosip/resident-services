@@ -1028,7 +1028,8 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utility.isSecureSession()) {
 				if(e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.UPDATE_COUNT_LIMIT_EXCEEDED.getErrorCode())
 				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET.getErrorCode())
-				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode())){
+				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode())
+				|| e.getErrorCode().equalsIgnoreCase(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode())){
 					throw new ResidentServiceException(
 							e.getErrorCode(),
 							e.getErrorText(),
