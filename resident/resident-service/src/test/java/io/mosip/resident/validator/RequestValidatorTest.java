@@ -222,11 +222,12 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "numericDataRegex", "^[0-9]+$");
         ReflectionTestUtils.setField(requestValidator, "transactionIdRegex", "^[0-9]{10}$");
         ReflectionTestUtils.setField(requestValidator, "eventIdRegex", "^[0-9]{16}$");
+        String[] valuesOfExcludedAttributeList = {"UIN", "IDSchemaVersion"};
+        ReflectionTestUtils.setField(validateSameData,  "valuesOfExcludedAttributeList", valuesOfExcludedAttributeList);
         Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
-        Mockito.when(environment.getProperty(Mockito.anyString(), Mockito.anyString())).thenReturn("UIN");
         JSONParser parser = new JSONParser();
         idRepoJson = (JSONObject) parser.parse("{\"gender\":[{\"language\":\"eng\",\"value\":\"Female\"},{\"language\":\"ara\",\"value\":\"أنثى\"},{\"language\":\"fra\",\"value\":\"Femelle\"},{\"language\":\"tam\",\"value\":\"பெண்\"},{\"language\":\"hin\",\"value\":\"महिला\"},{\"language\":\"kan\",\"value\":\"ಹೆಣ್ಣು\"}],\"city\":[{\"language\":\"eng\",\"value\":\"TEST_CITYeng\"},{\"language\":\"ara\",\"value\":\"TEST_CITYara\"},{\"language\":\"fra\",\"value\":\"TEST_CITYfra\"},{\"language\":\"tam\",\"value\":\"TEST_CITYtam\"},{\"language\":\"hin\",\"value\":\"TEST_CITYhin\"},{\"language\":\"kan\",\"value\":\"TEST_CITYkan\"}],\"postalCode\":\"14022\"}");
         identity = (JSONObject) parser.parse("{\"email\":\"kam@g1.com\",\"gender\":[{\"language\":\"eng\",\"value\":\"Female\"},{\"language\":\"ara\",\"value\":\"أنثى\"},{\"language\":\"fra\",\"value\":\"Femelle\"},{\"language\":\"tam\",\"value\":\"பெண்\"},{\"language\":\"hin\",\"value\":\"महिला\"},{\"language\":\"kan\",\"value\":\"ಹೆಣ್ಣು\"}]}");
