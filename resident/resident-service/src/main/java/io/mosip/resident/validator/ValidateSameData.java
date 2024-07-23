@@ -22,7 +22,7 @@ public class ValidateSameData {
 
     private static final String AND_LANGUAGE_CODE = " and Language code: ";
 
-    @Value("${listOfExcludedAttributeList:UIN}")
+    @Value("${mosip.identity.get.excluded.attribute.list:UIN}")
     private String[] valuesOfExcludedAttributeList;
 
     public void validateSameData(JSONObject idRepoJson, JSONObject identity) throws ResidentServiceCheckedException, JSONException {
