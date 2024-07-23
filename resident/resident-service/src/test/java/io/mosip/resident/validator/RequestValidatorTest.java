@@ -222,6 +222,8 @@ public class RequestValidatorTest {
         ReflectionTestUtils.setField(requestValidator, "numericDataRegex", "^[0-9]+$");
         ReflectionTestUtils.setField(requestValidator, "transactionIdRegex", "^[0-9]{10}$");
         ReflectionTestUtils.setField(requestValidator, "eventIdRegex", "^[0-9]{16}$");
+        String[] valuesOfExcludedAttributeList = {"UIN", "IDSchemaVersion"};
+        ReflectionTestUtils.setField(validateSameData,  "valuesOfExcludedAttributeList", valuesOfExcludedAttributeList);
         Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
         Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);

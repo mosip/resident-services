@@ -6,9 +6,11 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -20,11 +22,18 @@ public class ValidateSameData {
 
     private static final String AND_LANGUAGE_CODE = " and Language code: ";
 
+    @Value("${mosip.identity.get.excluded.attribute.list:UIN}")
+    private String[] valuesOfExcludedAttributeList;
+
     public void validateSameData(JSONObject idRepoJson, JSONObject identity) throws ResidentServiceCheckedException, JSONException {
         for (Object keyObj : identity.keySet()) {
             String key = (String) keyObj;
-            Object identityValue = identity.get(key);
 
+            if(Arrays.asList(valuesOfExcludedAttributeList).contains(key)){
+                continue;
+            }
+
+            Object identityValue = identity.get(key);
             if (identityValue instanceof String) {
                 if (idRepoJson.containsKey(key) && idRepoJson.get(key).toString().equalsIgnoreCase((String) identityValue)) {
                     throw new ResidentServiceCheckedException(ResidentErrorCode.SAME_ATTRIBUTE_ALREADY_PRESENT.getErrorCode(),
