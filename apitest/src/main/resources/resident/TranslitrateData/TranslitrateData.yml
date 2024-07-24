@@ -60,7 +60,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Invalid_UserToken_Neg:
       endPoint: /resident/v1/transliteration/transliterate
-      description: Transliterate data when user token is invalid when logged in using UIN      
+      description: Transliterate data when user token is invalid      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -83,7 +83,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Invalid_Token_Neg:
       endPoint: /resident/v1/transliteration/transliterate
-      description: Transliterate data when token is invalid when logged in using UIN      
+      description: Transliterate data when token is invalid     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -106,6 +106,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_StatusCode_Empty_Token_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when token is empty      
       role: 
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -121,6 +122,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Invalid_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is given invalid and logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -143,6 +145,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Missing_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is removed from request and logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -165,6 +168,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Empty_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is given empty and logged in using UIN     
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -187,6 +191,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Invalid_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when to language is given invalid and logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -209,6 +214,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Missing_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when to language is removed from request and logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -231,6 +237,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_uin_Empty_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is given empty and logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -253,6 +260,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Same_Lang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from and to language is given same and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -275,6 +283,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Invalid_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is given invalid and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -297,6 +306,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Missing_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is missing and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -319,6 +329,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Empty_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when from language is given empty and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -341,6 +352,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Invalid_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when to language is given invalid and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -363,6 +375,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Missing_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when to language is removed from request and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -385,6 +398,7 @@ TranslitrateData:
 
    Resident_TranslitrateData_vid_Empty_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
+      description: Transliterate data when to language is given empty and logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post

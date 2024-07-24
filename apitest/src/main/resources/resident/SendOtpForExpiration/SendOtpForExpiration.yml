@@ -1,6 +1,7 @@
 SendOtpForExpiration:
    Resident_SendOtpForExpiration_Valid_UIN_All_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request Otp using UIN      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -18,6 +19,7 @@ SendOtpForExpiration:
 
    Resident_SendOtpForExpiration_using_PerpetualVid_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request Otp using perpetual VID      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -35,6 +37,7 @@ SendOtpForExpiration:
 
    Resident_SendOtpForExpiration_using_TempVid_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request Otp using temporary VID     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -52,6 +55,7 @@ SendOtpForExpiration:
 
    Resident_SendOtpForExpiration_using_OneTimeUseVid_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request Otp using onetimeuse VID      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

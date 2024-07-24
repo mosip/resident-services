@@ -24,7 +24,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithAutogenIdWithOtpGenerate" />
 		</classes>
 	</test>
-	<!--<test name="GetOrderStatus">
+	<test name="GetOrderStatus">
 		<parameter name="ymlFile"
 			value="resident/GetOrderStatus/GetOrderStatus.yml" />
 		<classes>
@@ -37,7 +37,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="RevokeVID">
 		<parameter name="ymlFile"
 			value="resident/RevokeVID/createRevokeVID.yml" />
@@ -45,14 +45,14 @@
 			<class name="io.mosip.testrig.apirig.testscripts.PatchWithBodyWithOtpGenerate" />
 		</classes>
 	</test>
-	<!--<test name="UpdateUIN">
+	<test name="UpdateUIN">
 		<parameter name="ymlFile"
 			value="resident/UpdateUIN/UpdateUIN.yml" />
 			<parameter name="idKeyName"	value="registrationId" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithAutogenIdWithOtpGenerate" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetRidByIndividualId">
 		<parameter name="ymlFile"
 			value="resident/GetRidByIndividualId/GetRidByIndividualId.yml" />
@@ -67,7 +67,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
-	<!--<test name="ReqAidOtp">
+	<test name="ReqAidOtp">
 		<parameter name="ymlFile"
 			value="resident/ReqAidOtp/ReqAidOtp.yml" />
 		<classes>
@@ -94,7 +94,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithBodyWithOtpGenerate" />
 		</classes>
-	</test>	-->
+	</test>	
 	<test name="PrintUin">
 		<parameter name="ymlFile"
 			value="resident/PRINTUIN/createPrintUin.yml" />
@@ -117,7 +117,7 @@
 		</classes>
 	</test>
 	
-	<!--<test name="AuthLock">
+	<test name="AuthLock">
 		<parameter name="ymlFile"
 			value="resident/AuthLock/createAuthLock.yml" />
 		<classes>
@@ -130,7 +130,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithBodyWithOtpGenerate" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="RequestCredentials">
 		<parameter name="ymlFile"
 			value="resident/CredentialIssuance/RequestCredentials/ReqCredential.yml" />
@@ -139,7 +139,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithAutogenIdWithOtpGenerate" />
 		</classes>
 	</test>
-	<!--<test name="CredentialCheckStatus">
+	<test name="CredentialCheckStatus">
 		<parameter name="ymlFile"
 			value="resident/CredentialIssuance/CredentialCheckStatus/CredentialCheckStatus.yml" />
 		<classes>
@@ -153,7 +153,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithAutogenIdWithOtpGenerate" />
 		</classes>
-	</test>-->	
+	</test>	
 <!-- Please don't uncomment this CancelCredential until we fix it-->	
 <!--	<test name="CancelCredential">
 		<parameter name="ymlFile"
@@ -169,7 +169,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
 	</test>	
-	<!--<test name="GetCredentialTypes">
+	<test name="GetCredentialTypes">
 		<parameter name="ymlFile"
 			value="resident/CredentialIssuance/GetCredentialTypes/GetCredentialTypes.yml" />
 		<classes>
@@ -182,7 +182,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParamForDownloadCard" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetUiProperties">
 		<parameter name="ymlFile"
 			value="resident/GetUiProperties/GetUiProperties.yml" />
@@ -190,7 +190,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
- 	<!--<test name="GetLocationHierarchyByLanguageCode">
+ 	<test name="GetLocationHierarchyByLanguageCode">
 		<parameter name="ymlFile"
 			value="resident/GetLocationHierarchyByLanguageCode/GetLocationHierarchyByLangCode.yml" />
 		<classes>
@@ -217,7 +217,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetRegistrationCenterWorkingDays">
 		<parameter name="ymlFile"
 			value="resident/GetRegistrationCenterWorkingDays/GetRegistrationCenterWorkingDays.yml" />
@@ -225,13 +225,13 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
-	<!--<test name="GetLocationDetailsByLocCodeAndLangCode">
+	<test name="GetLocationDetailsByLocCodeAndLangCode">
 		<parameter name="ymlFile"
 			value="resident/GetLocationDetailsByLocCodeAndLangCode/GetLocationDetailsByLocCodeAndLangCode.yml" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetResidentValidDocuments">
 		<parameter name="ymlFile"
 			value="resident/GetResidentValidDocuments/GetResidentValidDocuments.yml" />
@@ -239,13 +239,13 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test> 
-	<!--<test name="GetLatestIdSchema">
+	<test name="GetLatestIdSchema">
 		<parameter name="ymlFile"
 			value="resident/GetLatestIdSchema/GetLatestIdSchema.yml" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetRegCenterByLangCodeAndHierarchyLevel">
 		<parameter name="ymlFile"
 			value="resident/GetRegCenterByLangCodeAndHierarchyLevel/GetRegCenterByLangCodeAndHierarchyLevel.yml" />
@@ -260,13 +260,13 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
-	<!--<test name="GetChannelVerificationStatus">
+	<test name="GetChannelVerificationStatus">
 		<parameter name="ymlFile"
 			value="resident/GetChannelVerificationStatus/GetChannelVerificationStatus.yml" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParamWithOtpGenerate" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="OAuthDetailsRequest">
 		<parameter name="ymlFile"
 			value="resident/OAuthDetailsRequest/OAuthDetailsRequest.yml" />
@@ -314,7 +314,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
-	<!--<test name="PersonalizedCard">
+	<test name="PersonalizedCard">
 		<parameter name="ymlFile"
 			value="resident/PersonalizedCard/PersonalizedCard.yml" />
 			<parameter name="idKeyName"	value="access_token" />
@@ -362,7 +362,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 <!-- Please don't uncomment this GetProfile until we fix it-->	
 <!--	<test name="GetProfile">
 		<parameter name="ymlFile"
@@ -372,7 +372,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>-->
-	<!--<test name="GetLastClickNotification">
+	<test name="GetLastClickNotification">
 		<parameter name="ymlFile"
 			value="resident/GetLastClickNotification/GetLastClickNotification.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -419,7 +419,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GetValidateToken">
 		<parameter name="ymlFile"
 			value="resident/GetValidateToken/GetValidateToken.yml" />
@@ -428,7 +428,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
 	</test>
-	<!--<test name="AuthLockNew">
+	<test name="AuthLockNew">
 		<parameter name="ymlFile"
 			value="resident/AuthLockNew/CreateAuthLockNew.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -451,7 +451,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GenerateVIDNew">
 		<parameter name="ymlFile"
 			value="resident/GenerateVID/createGenerateVIDNew.yml" />
@@ -495,7 +495,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParamForAutoGenId" />
 		</classes>
 	</test>
-	<!--<test name="AcknowledgementController">
+	<test name="AcknowledgementController">
 		<parameter name="ymlFile"
 			value="resident/AcknowledgementController/AcknowledgementController.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -518,7 +518,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="GrievanceTicket">
 		<parameter name="ymlFile"
 			value="resident/GrievanceTicket/GrievanceTicket.yml" />
@@ -527,7 +527,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
 	</test>
-	<!--<test name="DownloadServiceHistory">
+	<test name="DownloadServiceHistory">
 		<parameter name="ymlFile"
 			value="resident/DownloadServiceHistory/DownloadServiceHistory.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -567,7 +567,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithOnlyPathParam" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="RevokeVIDNew">
 		<parameter name="ymlFile"
 			value="resident/RevokeVIDNew/CreateRevokeVIDNew.yml" />
@@ -576,7 +576,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePatch" />
 		</classes>
 	</test>
-	<!--<test name="UploadDocument">
+	<test name="UploadDocument">
 		<parameter name="ymlFile"
 			value="resident/DocumentController/UploadDocument/UploadDocument.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -624,7 +624,7 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePost" />
 		</classes>
-	</test>-->
+	</test>
 	<test name="DownloadSupportingDocs">
 		<parameter name="ymlFile"
 			value="resident/DownloadSupportingDocs/DownloadSupportingDocs.yml" />
@@ -633,7 +633,7 @@
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithQueryParamForDownloadCard" />
 		</classes>
 	</test>
-	<!--<test name="GetDocumentTypes">
+	<test name="GetDocumentTypes">
 		<parameter name="ymlFile"
 			value="resident/GetDocumentTypes/GetDocumentTypes.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -648,12 +648,12 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.GetWithParam" />
 		</classes>
-	</test>-->
+	</test>
 	<!-- Keep the below 4 API's (SendOtpForContactDet, UpdateContactDetails, SendOtpToUserId, ValidateWithUserIdOtp)
 	 at the bottom of the suite always. Because, Below we are updating the mail id of the UIN.
 	 Keeping it atlast will not impact any otp API's -->
 		
-	<!--<test name="SendOtpForContactDet">
+	<test name="SendOtpForContactDet">
 		<parameter name="ymlFile"
 			value="resident/SendOtpForContactDet/SendOtpForContactDet.yml" />
 			<parameter name="sendEsignetToken"	value="true" />
@@ -684,6 +684,6 @@
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithBodyWithOtpGenerate" />
 		</classes>
-	</test>-->
+	</test>
 
 </suite>
