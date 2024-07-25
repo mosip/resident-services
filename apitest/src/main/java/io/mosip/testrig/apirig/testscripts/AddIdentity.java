@@ -111,6 +111,7 @@ public class AddIdentity extends AdminTestUtil implements ITest {
 		inputJson = inputJson.replace("$UIN$", uin);
 		inputJson = inputJson.replace("$RID$", genRid);
 		String phoneNumber = "";
+		String dateOfBirth = "";
 		if (inputJson.contains("$PHONENUMBERFORIDENTITY$")) {
 			if (!phoneSchemaRegex.isEmpty())
 				try {
@@ -119,6 +120,16 @@ public class AddIdentity extends AdminTestUtil implements ITest {
 					logger.error(e.getMessage());
 				}
 			inputJson = replaceKeywordWithValue(inputJson, "$PHONENUMBERFORIDENTITY$", phoneNumber);
+		}
+		
+		if (inputJson.contains("$DOB$")) {
+			if (!dateOfBirthSchemaRegex.isEmpty())
+				try {
+					dateOfBirth = genStringAsperRegex(dateOfBirthSchemaRegex);
+				} catch (Exception e) {
+					logger.error(e.getMessage());
+				}
+			inputJson = replaceKeywordWithValue(inputJson, "$DOB$", dateOfBirth);
 		}
 
 		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, COOKIENAME,

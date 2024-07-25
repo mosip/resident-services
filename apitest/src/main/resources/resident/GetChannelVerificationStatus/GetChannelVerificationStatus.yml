@@ -61,7 +61,7 @@ GetChannelVerificationStatus:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
-    "otp": "$ID:AddIdentity_withValidParameters_smoke_Pos_EMAIL$",
+    "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_PHONE$@phone",
     "validateOtpReqTemplate": "resident/ValidateOTP/ValidateOTP",
     "validateOtpEndPoint": "/resident/v1/validate-otp"
     }
@@ -325,7 +325,7 @@ GetChannelVerificationStatus:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
-    "otp": "$ID:AddIdentity_withValidParameters_smoke_Pos_EMAIL$",
+    "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_PHONE$@phone",
     "validateOtpReqTemplate": "resident/ValidateOTP/ValidateOTP",
     "validateOtpEndPoint": "/resident/v1/validate-otp"
     }
