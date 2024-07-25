@@ -175,11 +175,10 @@ public class PendingDrafts {
 
 	private ResidentTransactionEntity getEventIdFromRid(String rid, String individualId, List<String> attributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntityAlreadyPresent = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(rid);
-		String eventId = residentTransactionEntityAlreadyPresent.getEventId();
-		if(eventId == null){
+
+		if(residentTransactionEntityAlreadyPresent == null){
 			ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
-			eventId = utility.createEventId();
-			residentTransactionEntity.setEventId(eventId);
+			residentTransactionEntity.setEventId(utility.createEventId());
 			residentTransactionEntity.setRefId(maskDataUtility.convertToMaskData(individualId));
 			residentTransactionEntity.setIndividualId(individualId);
 			residentTransactionEntity.setTokenId(availableClaimUtility.getResidentIdaToken());
