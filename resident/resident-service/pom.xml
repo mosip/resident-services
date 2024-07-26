@@ -423,12 +423,14 @@
                     <skipTests>false</skipTests>
                     <skip>${configuration-skip}</skip>
                     <argLine>
-                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                        ${argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
                         --add-opens=java.base/java.util=ALL-UNNAMED
                         --add-opens=java.base/java.net=ALL-UNNAMED
                         --add-opens=java.base/java.time=ALL-UNNAMED
                         --add-opens=java.base/java.io=ALL-UNNAMED
                         --add-opens=java.base/java.time.format=ALL-UNNAMED
+                        --illegal-access=permit
+
                     </argLine>
                 </configuration>
             </plugin>
@@ -438,19 +440,22 @@
                 <version>${jacoco.maven.plugin.version}</version>
                 <executions>
                     <execution>
+                        <id>jacoco-initialize</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
+                        <id>jacoco-site</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>report-aggregate</goal>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+
         </plugins>
     </build>
     <profiles>
