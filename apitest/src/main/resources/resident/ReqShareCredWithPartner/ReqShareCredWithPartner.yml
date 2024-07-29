@@ -1,4 +1,4 @@
-	ReqShareCredWithPartner:
+ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_all_Valid_Smoke:
       endPoint: /resident/v1/share-credential
       description: Request credential to share with partner      

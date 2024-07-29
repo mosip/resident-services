@@ -255,6 +255,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_uin_OverRange_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using UIN with message is given more than limited characters       
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -281,6 +282,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_vid_all_Valid_Smoke:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -302,6 +304,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_vid_Invalid_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using VID and given invalid EID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -328,6 +331,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_vid_Diff_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using VID and given EID belongs to different VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -354,6 +358,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_vid_Missing_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using VID and EID is removed from request      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -380,6 +385,7 @@ GrievanceTicket:
 
    Resident_GrievanceTicket_vid_Empty_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
+      description: Log Grievance ticket when logged in using VID and empty value is given for EID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
