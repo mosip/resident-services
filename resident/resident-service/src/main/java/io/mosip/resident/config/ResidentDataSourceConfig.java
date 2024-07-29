@@ -31,7 +31,7 @@ public class ResidentDataSourceConfig extends HibernateDaoConfig {
 
 	public Map<String, Object> jpaProperties() {
 		Map<String, Object> jpaProperties = super.jpaProperties();
-		jpaProperties.put("hibernate.ejb.interceptor", interceptor);
+		jpaProperties.put("hibernate.session_factory.interceptor", interceptor);
 		return jpaProperties;
 	}
 }
