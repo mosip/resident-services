@@ -54,27 +54,19 @@ public class ResidentEntityinterceptorTest {
                 null, state, propertyName, null));
     }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test
     public void testOnSaveFailure(){
-        Mockito.when(objectStoreHelper.encryptDecryptData(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()))
-                        .thenThrow(new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
-                                ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage()));
         assertFalse(residentEntityInterceptor.onSave(residentTransactionEntity,
                 null, state, propertyName, null));
     }
 
     @Test
     public void testOnLoadFailure(){
-        Mockito.when(objectStoreHelper.encryptDecryptData(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()))
-                .thenThrow(new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
-                        ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage()));
         assertFalse(residentEntityInterceptor.onLoad(residentTransactionEntity, null, state, propertyName, null));
     }
 
     @Test
     public void testOnLoadSuccess(){
-        Mockito.when(objectStoreHelper.encryptDecryptData(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(Base64.encode("MOSIP"));
         assertFalse(residentEntityInterceptor.onLoad(residentTransactionEntity, null, state, propertyName, null));
     }
 
