@@ -57,11 +57,17 @@ mosip.service.end-points=/**/req/otp,/**/proxy/**,/**/validate-otp,/**/channel/v
     $ cd <service folder>
     $ docker build -f Dockerfile
     ```
+##Below Jar should be there in class path to run service
+1. https://oss.sonatype.org/content/repositories/snapshots/io/mosip/kernel/kernel-auth-adapter/1.2.1-SNAPSHOT/kernel-auth-adapter-1.2.1-20240718.062459-116.jar
+2. https://oss.sonatype.org/content/repositories/snapshots/io/mosip/kernel/kernel-ref-idobjectvalidator/1.2.1-SNAPSHOT/kernel-ref-idobjectvalidator-1.2.1-20240716.132954-60.jar
+
 ## Deploy
 To deploy Commons services on Kubernetes cluster using Dockers refer to [Sandbox Deployment](https://docs.mosip.io/1.2.0/deployment/sandbox-deployment).
 
 ## Configuration
-[Configuration](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties) defined here.
+[resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+[application-default.properties](https://github.com/mosip/mosip-config/blob/develop/application-default.properties)
+defined here.
 
 ## Test
 Automated functional tests available in [Functional Tests repo](https://github.com/mosip/mosip-functional-tests).
