@@ -13,17 +13,14 @@ See [DB guide](db_scripts/README.md)
 To run Resident services, run [Config Server](https://docs.mosip.io/1.2.0/modules/module-configuration#config-server)
 
 ## Build & run (for developers)
-Prerequisites:
-
-1. [Config Server](https://docs.mosip.io/1.2.0/modules/module-configuration#config-server)
-1. JDK 1.21  
+The project requires JDK 1.21.
 1. Build and install:
     ```
-    $ cd resident-services
+    $ cd resident-service
     $ mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
     ```
 
-## Add Below Config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+### Add Below Config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
 ```
 hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 ## Keymanager service
@@ -48,33 +45,47 @@ resident.template.purpose.success.AUTHENTICATION_REQUEST=mosip.event.type.AUTHEN
 resident.template.purpose.failure.AUTHENTICATION_REQUEST=mosip.event.type.AUTHENTICATION_REQUEST
 ```
 
-## Update below config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
-# The exclusion list of URL patterns that should not be part of authentication and authorization
+### Update below config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+### The exclusion list of URL patterns that should not be part of authentication and authorization
+```
 mosip.service.end-points=/**/req/otp,/**/proxy/**,/**/validate-otp,/**/channel/verification-status/**,/**/req/credential/**,/**/req/card/*,/**/req/auth-history,/**/rid/check-status,/**/req/auth-lock,/**/req/auth-unlock,/**/req/update-uin,/**/req/print-uin,/**/req/euin,/**/credential/types,/**/req/policy/**,/**/aid/status,/**/individualId/otp,/**/mock/**,/**/callback/**,/**/download-card,/**/download/registration-centers-list/**,/**/download/supporting-documents/**,/**/vid/policy,/**/vid,/vid/**,/**/download/nearestRegistrationcenters/**,/**/authorize/admin/validateToken,/**/logout/user,/**/aid-stage/**
+```
 
 1. Build Docker for a service:
     ```
     $ cd <service folder>
     $ docker build -f Dockerfile
     ```
-##Below Jar should be there in class path to run service
-1. https://oss.sonatype.org/content/repositories/snapshots/io/mosip/kernel/kernel-auth-adapter/1.2.1-SNAPSHOT/kernel-auth-adapter-1.2.1-20240718.062459-116.jar
-2. https://oss.sonatype.org/content/repositories/snapshots/io/mosip/kernel/kernel-ref-idobjectvalidator/1.2.1-SNAPSHOT/kernel-ref-idobjectvalidator-1.2.1-20240716.132954-60.jar
 
-## Deploy
+### Add Below jars in a class-path to run a services
+   ```
+   <dependency>
+       <groupId>io.mosip.kernel</groupId>
+       <artifactId>kernel-auth-adapter</artifactId>
+       <version>${kernel.auth.adaptor.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>io.mosip.kernel</groupId>
+       <artifactId>kernel-ref-idobjectvalidator</artifactId>
+       <version>${kernel-ref-idobjectvalidator.version}</version>
+   </dependency>
+   ```
+
+### Deploy
 To deploy Commons services on Kubernetes cluster using Dockers refer to [Sandbox Deployment](https://docs.mosip.io/1.2.0/deployment/sandbox-deployment).
 
-## Configuration
+### Configuration
 [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+
 [application-default.properties](https://github.com/mosip/mosip-config/blob/develop/application-default.properties)
 defined here.
 
-## Test
+### Test
 Automated functional tests available in [Functional Tests repo](https://github.com/mosip/mosip-functional-tests).
 
-## APIs
+### APIs
 API documentation is available [here](https://mosip.github.io/documentation/).
 
-## License
+### License
 This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
 
