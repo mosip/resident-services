@@ -380,7 +380,7 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_EmptyChannel_Pos:
+   Resident_Generate_Perpetual_VID_uin_EmptyChannel_Neg:
       endPoint: /resident/v1/generate-vid
       role: residentNewVid
       restMethod: post
