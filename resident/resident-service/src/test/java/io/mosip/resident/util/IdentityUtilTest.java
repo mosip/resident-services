@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static io.mosip.resident.service.impl.IdentityServiceTest.getAuthUserDetailsFromAuthentication;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -55,15 +57,27 @@ public class IdentityUtilTest {
     @Mock
     private AvailableClaimValueUtility availableClaimValueUtility;
 
+    @Mock
+    private MaskDataUtility maskDataUtility;
+
+    @Mock
+    private Utility utility;
+
+    @Mock
+    private ClaimValueUtility claimValueUtility;
+
     private IdResponseDTO1 idResponseDTO1;
+    private String uin;
 
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
         Map identityMap = new LinkedHashMap();
-        identityMap.put("UIN", "8251649601");
+        uin = "8251649601";
+        identityMap.put("UIN", uin);
         identityMap.put("email", "manojvsp12@gmail.com");
         identityMap.put("phone", "9395910872");
         identityMap.put("dateOfBirth", "1970/11/16");
+        identityMap.put("masked", "1970/11/16");
         idResponseDTO1 = new IdResponseDTO1();
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
         responseDTO1.setIdentity(identityMap);
@@ -89,12 +103,12 @@ public class IdentityUtilTest {
     @Test
     public void testGetIdentityAttributesCachedIdentityDataSuccessSecureSession() throws ResidentServiceCheckedException, IOException {
         getAuthUserDetailsFromAuthentication();
-        identityUtil.getIdentityAttributes("6", "personalized-card");
+        assertEquals(uin, identityUtil.getIdentityAttributes("6", "personalized-card").get("UIN"));
     }
 
     @Test
     public void testGetIdentityAttributesCachedIdentityDataSuccess() throws ResidentServiceCheckedException, IOException {
-        identityUtil.getIdentityAttributes("6", "personalized-card");
+        assertEquals(uin, identityUtil.getIdentityAttributes("6", "personalized-card").get("UIN"));
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
@@ -108,7 +122,7 @@ public class IdentityUtilTest {
     public void testGetIdentityAttributesCachedIdentityDataSuccessSchemaTypeNull() throws ResidentServiceCheckedException, IOException {
         when(environment.getProperty("resident.additional.identity.attribute.to.fetch"))
                 .thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
-        identityUtil.getIdentityAttributes("6", null);
+        assertEquals(uin, identityUtil.getIdentityAttributes("6", null).get("UIN"));
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -127,6 +141,55 @@ public class IdentityUtilTest {
         when(environment.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
         when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("photo");
         getAuthUserDetailsFromAuthentication();
-        identityUtil.getIdentityAttributes("6", null);
+        assertEquals(uin, identityUtil.getIdentityAttributes("6", null).get("UIN"));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetIdentityAttributesCachedIdentityDataFailureWithPhoto() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        when(environment.getProperty("resident.additional.identity.attribute.to.fetch"))
+                .thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID,photo");
+        when(environment.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
+        when(environment.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
+        when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+        getAuthUserDetailsFromAuthentication();
+        identityUtil.getIdentityAttributes("6", null).get("UIN");
+    }
+
+    @Test
+    public void testGetIdentityAttributesCachedIdentityDataSuccessWithMaskedAttribute() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        when(environment.getProperty("resident.additional.identity.attribute.to.fetch"))
+                .thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID,photo,masked_email");
+        when(maskDataUtility.convertToMaskData(Mockito.anyString())).thenReturn("8**3");
+        getAuthUserDetailsFromAuthentication();
+        assertEquals(uin, identityUtil.getIdentityAttributes("6", null).get("UIN"));
+    }
+
+    @Test
+    public void testGetIdentity() throws ResidentServiceCheckedException, IOException {
+        when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenReturn("2016/02/02");
+        ReflectionTestUtils.setField(identityUtil, "dateFormat", "yyyy/MM/dd");
+        assertEquals("1970/11/16", identityUtil.getIdentity(uin).getDateOfBirth());
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetIdentityFailure() throws ResidentServiceCheckedException, IOException {
+        when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenThrow(new IOException());
+        identityUtil.getIdentity(uin).getDateOfBirth();
+    }
+
+    @Test
+    public void testGetIdentityWithFetchFace() throws ResidentServiceCheckedException, IOException {
+        when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenReturn("2016/02/02");
+        ReflectionTestUtils.setField(identityUtil, "dateFormat", "yyyy/MM/dd");
+        assertEquals("1970/11/16", identityUtil.getIdentity(uin, true, "eng").getDateOfBirth());
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetIdentityWithFetchFaceFailure() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString())).thenReturn("2016/02/02");
+        when(environment.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("photo");
+        ReflectionTestUtils.setField(identityUtil, "dateFormat", "yyyy/MM/dd");
+        when(claimValueUtility.getClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+        assertEquals("1970/11/16", identityUtil.getIdentity(uin, true, "eng").getDateOfBirth());
     }
 }
