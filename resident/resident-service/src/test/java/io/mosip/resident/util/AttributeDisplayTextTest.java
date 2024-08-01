@@ -39,6 +39,7 @@ public class AttributeDisplayTextTest {
 
         Map<String, Object> attributeMap = new HashMap<>();
         attributeMap.put(ResidentConstants.LABEL, "Mocked Label");
+        attributeMap.put("label1", "Mocked Label2");
 
         Map<String, String> formatOptionMap = new HashMap<>();
         formatOptionMap.put("format1", "Formatted 1");
@@ -66,7 +67,7 @@ public class AttributeDisplayTextTest {
 
     @Test
     public void testGetAttributesDisplayText_withoutSchemaType() {
-        String attributesFromDB = "attr1";
+        String attributesFromDB = "attr1:attr2";
         String languageCode = "en";
         RequestType requestType = RequestType.UPDATE_MY_UIN;
         String result = attributesDisplayText.getAttributesDisplayText(attributesFromDB, languageCode, requestType);
