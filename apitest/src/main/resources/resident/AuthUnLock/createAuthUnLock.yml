@@ -1624,7 +1624,7 @@ AuthUnlock:
     }
 }'
 
-   Resident_AuthUnLock_Valid_UIN_EmptyChannel_Neg:
+   Resident_AuthUnLock_Valid_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-unlock
       role: resident
       restMethod: post
@@ -1654,7 +1654,11 @@ AuthUnlock:
   "errors": [
     {
       "errorCode": "RES-SER-410",
+<<<<<<< HEAD
       "message": "Invalid Input Parameter- otp"
+=======
+      "message": "OTP is invalid"
+>>>>>>> upstream/develop
     }
   ],
   "sendOtpResp":{

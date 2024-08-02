@@ -532,7 +532,7 @@ AuthHistory:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_AuthHistory_With_UIN_EmptyChannel_Neg:
+   Resident_AuthHistory_With_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-history
       role: resident
       checkErrorsOnlyInResponse: true

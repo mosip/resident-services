@@ -1,12 +1,13 @@
 package io.mosip.resident.interceptor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.codec.binary.Base64;
-import org.hibernate.EmptyInterceptor;
+import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +25,11 @@ import io.mosip.resident.helper.ObjectStoreHelper;
  *
  */
 @Component
-public class ResidentEntityInterceptor extends EmptyInterceptor {
+public class ResidentEntityInterceptor implements Interceptor, Serializable {
 	/**
-	 * 
+	The Constant serialVersionUID.
 	 */
+	@Serial
 	private static final long serialVersionUID = 3428378823034671471L;
 
 	private static final String INDIVIDUAL_ID = "individualId";
@@ -45,7 +47,7 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentEntityInterceptor.class);
 
 	@Override
-	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onSave(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
 			if (entity instanceof ResidentTransactionEntity) {
 				List<String> propertyNamesList = Arrays.asList(propertyNames);
@@ -57,10 +59,10 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 			throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
 		}
-		return super.onSave(entity, id, state, propertyNames, types);
+		return Interceptor.super.onSave(entity, id, state, propertyNames, types);
 	}
 
-	private <T extends ResidentTransactionEntity> void encryptDataOnSave(Serializable id, Object[] state,
+	private <T extends ResidentTransactionEntity> void encryptDataOnSave(Object id, Object[] state,
 			List<String> propertyNamesList, Type[] types, T uinEntity) throws ResidentServiceException {
 		if (Objects.nonNull(uinEntity.getIndividualId())) {
 			String idividualId = Base64.encodeBase64String(uinEntity.getIndividualId().getBytes());
@@ -72,7 +74,7 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 	}
 	
 	@Override
-	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+	public boolean onLoad(Object entity, Object id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
 			if (entity instanceof ResidentTransactionEntity) {
 				List<String> propertyNamesList = Arrays.asList(propertyNames);
@@ -87,20 +89,19 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 			throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
 		}
-		return super.onLoad(entity, id, state, propertyNames, types);
+		return Interceptor.super.onLoad(entity, id, state, propertyNames, types);
 	}
 
 	@Override
-	public boolean onFlushDirty(Object entity, Serializable id, Object[] state, Object[] previousState,
-			String[] propertyNames, Type[] types) {
+	public boolean onFlushDirty(Object entity, Object id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
 		if(entity instanceof ResidentTransactionEntity) {
 			List<String> propertyNamesList = Arrays.asList(propertyNames);
-			encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
+			encryptDataOnSave(id, previousState, propertyNamesList, types, (ResidentTransactionEntity) entity);
 		}
-		return super.onFlushDirty(entity, id, state, previousState, propertyNames, types);
+		return Interceptor.super.onFlushDirty(entity, id, currentState, previousState, propertyNames, types);
 	}
 
-	private <T extends ResidentTransactionEntity> void decryptDataOnLoad(Serializable id, Object[] state,
+	private <T extends ResidentTransactionEntity> void decryptDataOnLoad(Object id, Object[] state,
 			List<String> propertyNamesList, Type[] types, T uinEntity) throws ResidentServiceException {
 		int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
 		if (Objects.nonNull(state[indexOfData])) {
