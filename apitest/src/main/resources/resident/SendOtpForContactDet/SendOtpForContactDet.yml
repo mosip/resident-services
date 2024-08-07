@@ -289,7 +289,7 @@ SendOtpForContactDet:
       description: Request otp when invalid transactionid is given and logged in uisng VID      
       role: residentNewVid
       restMethod: post
-      inputTemplate: resident/Sen	dOtpForContactDet/SendOtpForContactDet
+      inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
