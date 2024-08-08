@@ -1,6 +1,7 @@
 GetOrderStatus:
    Resident_GetOrderStatus_0_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -14,6 +15,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_1_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 1st order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -27,6 +29,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_2_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 2nd order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -40,6 +43,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_3_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 3rd order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -53,6 +57,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_4_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 4th order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -66,6 +71,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_5_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 5th order status using UIN with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -79,6 +85,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_6_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 6th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -97,6 +104,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_7_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 7th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -115,6 +123,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_8_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 8th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -133,6 +142,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_9_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 9th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -152,6 +162,7 @@ GetOrderStatus:
 
    Resident_GetOrderStatus_Vid_0_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -165,6 +176,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_1_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 1st order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -178,6 +190,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_2_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 2nd order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -191,6 +204,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_3_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 3rd order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -204,6 +218,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_4_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 4th order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -217,6 +232,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_5_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 5th order status using VID with valid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -230,6 +246,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_6_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 6th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -248,6 +265,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_7_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 7th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -266,6 +284,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_8_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 8th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -284,6 +303,7 @@ GetOrderStatus:
 }'
    Resident_GetOrderStatus_Vid_9_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      description: Get 9th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus

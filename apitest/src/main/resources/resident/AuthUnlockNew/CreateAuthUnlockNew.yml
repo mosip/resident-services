@@ -1,6 +1,7 @@
 AuthUnlockNew:
    Resident_AuthUnlockNew_Demo_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the demo authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -19,6 +20,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Email_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-email authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -37,6 +39,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Email_Valid_UIN_Unlocke_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-email authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -55,6 +58,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_OTPphone_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-phone authentication type using a valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -73,6 +77,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_OTPphone_Valid_UIN_UnLocke_Spacified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-phone authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -91,6 +96,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Demo_Valid_UIN_Unlock_120_Sec:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the demo authentication type using a valid UIN for 120 seconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -109,6 +115,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Face_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the face authentication type using a valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -126,6 +133,7 @@ AuthUnlockNew:
 }'
    Resident_AuthUnlockNew_Face_Valid_UIN_UnLocke_For Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the face authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -144,6 +152,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Iris_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the iris authentication type using a valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -162,6 +171,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Iris_Valid_UIN_Unlocke_For_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the iris authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -180,6 +190,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Finger_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the finger authentication type using a valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -198,6 +209,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Finger_Valid_UIN_Unlocke_For_Specificed_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the finger authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -216,6 +228,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -239,6 +252,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid ID
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -262,6 +276,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -285,6 +300,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -308,6 +324,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid locked status
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -331,6 +348,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an invalid unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -354,6 +372,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -377,6 +396,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty ID
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -400,6 +420,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -423,6 +444,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -446,6 +468,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty locked status
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -464,6 +487,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid UIN and an empty unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -482,6 +506,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -505,6 +530,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing ID
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -528,6 +554,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -551,6 +578,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missingy_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -574,6 +602,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing lockedstatus
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -592,6 +621,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_uin_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid UIN with missing unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -610,6 +640,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Invalid_Token_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using an invalid token
       role: resident
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -633,6 +664,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Demo_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the demo authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -651,6 +683,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Phone_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-phone authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -669,6 +702,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Email_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the otp-email authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -687,6 +721,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Demo_Valid_Vid_Unlock_For_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the demo authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -705,6 +740,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Face_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the face authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -723,6 +759,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Face_Valid_Vid_Unlocke_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the face authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -741,6 +778,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Iris_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the iris authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -759,6 +797,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Iris_Valid_Vid_Unlocke_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the iris authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -777,6 +816,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Finger_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the finger authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -795,6 +835,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_Finger_Valid_Vid_UnLocke_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the finger authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -813,6 +854,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -836,6 +878,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid ID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -859,6 +902,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -882,6 +926,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -905,6 +950,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -928,6 +974,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an invalid unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -951,6 +998,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -974,6 +1022,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty ID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -997,6 +1046,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1020,6 +1070,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1043,6 +1094,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1061,6 +1113,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using a valid VID and an empty unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1079,6 +1132,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1102,6 +1156,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing ID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1125,6 +1180,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1148,6 +1204,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missingy_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1171,6 +1228,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -1189,6 +1247,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_vid_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Unlock the authentication type using valid VID with missing unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew

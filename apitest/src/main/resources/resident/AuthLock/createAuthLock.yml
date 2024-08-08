@@ -1,6 +1,7 @@
 AuthLock:
    Resident_AuthLock_Valid_UIN_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock all authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -34,6 +35,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_VID_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock all authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -67,6 +69,7 @@ AuthLock:
 
    Resident_AuthLock_VID_Use_Two_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock all authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -100,6 +103,7 @@ AuthLock:
 
    Resident_AuthLock_VID_Use_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock all authentication type using VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -133,6 +137,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_UIN_smoke_demo_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the demo authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -165,6 +170,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_VID_smoke_demo_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the demo authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -197,6 +203,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_UIN_smoke_Face_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the face authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -229,6 +236,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_VID_smoke_Face_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the face authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -261,6 +269,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_UIN_smoke_Finger_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the finger authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -293,6 +302,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_VID_smoke_Finger_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the finger authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -325,6 +335,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_VID_smoke_Iris_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the iris authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -357,6 +368,7 @@ AuthLock:
 }'
    Resident_AuthLock_Valid_UIN_smoke_Iris_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the iris authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -389,6 +401,7 @@ AuthLock:
 }'
    Resident_AuthLock_Missing_individualIdType_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using missing individualIDtype
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -421,6 +434,7 @@ AuthLock:
 }'
    Resident_AuthLock_InValid_AuthType_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type with an invalid authtype
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -459,6 +473,7 @@ AuthLock:
 }'
    Resident_AuthLock_InValid_UIN_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -497,6 +512,7 @@ AuthLock:
 }'
    Resident_AuthLock_missing_UIN_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type with a missing UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -535,6 +551,7 @@ AuthLock:
 }'
    Resident_AuthLock_InValid_OTP_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -574,6 +591,7 @@ AuthLock:
 
    Resident_AuthLock_InValid_OTP_Vid_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid OTP and VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -613,6 +631,7 @@ AuthLock:
 
    Resident_AuthLock_TransactionMismatch_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using mismatched transaction
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -651,6 +670,7 @@ AuthLock:
 }'
    Resident_AuthLock_Invalid_Id_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -689,6 +709,7 @@ AuthLock:
 }'
    Resident_AuthLock_missing_Id_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using missing Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -727,6 +748,7 @@ AuthLock:
 }'
    Resident_AuthLock_InValid_version_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -765,6 +787,7 @@ AuthLock:
 }'
    Resident_AuthLock_Missing_version_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using a missing version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -803,6 +826,7 @@ AuthLock:
 }'
    Resident_AuthLock_InvalidTimestamp_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -841,6 +865,7 @@ AuthLock:
 }'
    Resident_AuthLock_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using missing timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -880,6 +905,7 @@ AuthLock:
 
    Resident_AuthLock_Invalid_Authtype_Otp_VID_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an invalid authtype-otp and VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -919,6 +945,7 @@ AuthLock:
 
    Resident_AuthLock_Empty_UIN_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -957,6 +984,7 @@ AuthLock:
 }'
    Resident_AuthLock_Empty_OTP_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -995,6 +1023,7 @@ AuthLock:
 }'
    Resident_AuthLock_Empty_TransactionId_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1033,6 +1062,7 @@ AuthLock:
 }'
    Resident_AuthLock_Empty_Id_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1072,6 +1102,7 @@ AuthLock:
 
    Resident_AuthLock_Empty_requesttime_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty requesttime
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1111,6 +1142,7 @@ AuthLock:
 
    Resident_AuthLock_Empty_version_Pos:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using an empty version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1146,6 +1178,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_UIN_Phone_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using valid UIN and phone
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1178,6 +1211,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_UIN_Email_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using valid UIN and email
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1208,8 +1242,9 @@ AuthLock:
     }
 }'
 
-   Resident_AuthLock_Valid_UIN_EmptyChannel_Invalid_Neg:
+   Resident_AuthLock_Valid_UIN_EmptyChannel_Neg:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using valid UIN with an empty channel
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1236,7 +1271,7 @@ AuthLock:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
@@ -1252,6 +1287,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_UIN_Transactions_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using valid UIN and transactions
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1285,6 +1321,7 @@ AuthLock:
 
    Resident_AuthLock_Valid_UIN_Transactions_Second_All:
       endPoint: /resident/v1/req/auth-lock
+      description: Lock the authentication type using valid UIN and transactions
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true

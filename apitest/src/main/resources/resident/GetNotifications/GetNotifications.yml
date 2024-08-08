@@ -1,6 +1,7 @@
 GetNotifications:
    Resident_GetNotifications_vid_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}
+      description: Get notifications of VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -17,6 +18,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_pageSize_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of VID using pageSize with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -33,6 +35,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_pageIndex_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      description: Get notifications of VID using pageIndex with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -49,6 +52,7 @@ GetNotifications:
 
    Resident_GetNotifications_Invalid_pageIndex_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      description: Get notifications using an invalid pageIndex
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -70,6 +74,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_Invalid_Token_Neg:
       endPoint: /resident/v1/notifications/{langCode}
+      description: Get notifications of VID using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -91,6 +96,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_1_Invalid_PageNo_Pos:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of VID using an invalid page number
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -107,6 +113,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_all_InValid_langcode_Neg:
       endPoint: /resident/v1/notifications/{langCode}
+      description: Get notifications of VID using an invalid token
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -128,6 +135,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_SpaceVal_langcode_Neg:
       endPoint: /resident/v1/notifications/{langCode}
+      description: Get notifications of VID using special value langcode
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -149,6 +157,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_Neg_Value_PageStart_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of VID using negative value pagestart
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -170,6 +179,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_Neg_Value_pageSize_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of VID using negative value pageSize
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -192,6 +202,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_StringVal_Invalid_pageSize_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of VID using stringvalue in pageSize
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -213,6 +224,7 @@ GetNotifications:
 
    Resident_GetNotifications_vid_StringVal_Invalid_pageIndex_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}
+      description: Get notifications of VID using stringvalue in pageIndex
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -234,6 +246,7 @@ GetNotifications:
 }'
    Resident_GetNotifications_uin_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}
+      description: Get notifications of UIN using all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -250,6 +263,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_pageSize_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using valid pageSize and all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -266,6 +280,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_pageIndex_all_Valid_Smoke:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using valid pageIndex and all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -282,6 +297,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_1_Invalid_PageNo_Pos:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using invalid pageNo
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -297,6 +313,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_all_InValid_langcode_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using invalid langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -318,6 +335,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_StatusCode_empty_langcode_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN status code using an empty langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -332,6 +350,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_SpaceVal_langcode_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using an space value langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -353,6 +372,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_Neg_Value_PageStart_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using negative value PageStart
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -374,6 +394,7 @@ GetNotifications:
 
    Resident_GetNotifications_uin_Neg_Value_pageSize_Neg:
       endPoint: /resident/v1/notifications/{langCode}?pageIndex={pageIndex}&pageSize={pageSize}
+      description: Get notifications of UIN using negative value PageSize
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get

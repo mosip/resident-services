@@ -1,6 +1,7 @@
 residentNewVid:
    Resident_GetAuthLockStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/auth-lock-status
+      description: Get authlock status using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -13,6 +14,7 @@ residentNewVid:
 
    Resident_GetAuthLockStatus_Invalid_Token_Neg:
       endPoint: /resident/v1/auth-lock-status
+      description: Get authlock status using a valid UIN with an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -31,6 +33,7 @@ residentNewVid:
 
    Resident_GetAuthLockStatus_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/auth-lock-status
+      description: Get authlock status using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get

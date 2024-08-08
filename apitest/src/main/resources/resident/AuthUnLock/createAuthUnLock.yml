@@ -1,6 +1,7 @@
 AuthUnlock:
    Resident_AuthUnLock_Valid_UIN_All:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock all authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -35,6 +36,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_VID_All:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock all authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -69,6 +71,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Use_Three_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock authentication types using valid VID through three possible elements
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -103,6 +106,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Use_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock authentication types using valid VID through possible elements
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -136,6 +140,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_UIN_All_Invalid_Unlock_Seconds:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock all authentication types using a valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -176,6 +181,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_All_Invalid_Unlock_Seconds:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock all authentication types using a valid VID with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -216,6 +222,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_smoke_demo_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the demo authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -250,6 +257,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Invalid_Unlock_Seconds_demo_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the demo authentication type using valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -290,6 +298,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_VID_smoke_demo_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the demo authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -324,6 +333,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Invalid_Unlock_Seconds_demo_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the demo authentication type using valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -364,6 +374,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_smoke_Face_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the face authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -398,6 +409,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Invalid_Unlock_Seconds_Face_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the face authentication type using valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -438,6 +450,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_VID_smoke_Face_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the face authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -472,6 +485,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Invalid_Unlock_Seconds_Face_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the face authentication type using valid VID with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -512,6 +526,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_smoke_Finger_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the finger authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -546,6 +561,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Invalid_Unlock_Seconds_Finger_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the finger authentication type using valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -586,6 +602,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_VID_smoke_Finger_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the finger authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -620,6 +637,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Invalid_Unlock_Seconds_Finger_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the finger authentication type using valid VID with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -660,6 +678,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_VID_smoke_Iris_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the Iris authentication type using a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -694,6 +713,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Invalid_Unlock_Seconds_Iris_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the iris authentication type using valid VID with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -734,6 +754,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_smoke_Iris_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the iris authentication type using a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -768,6 +789,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Invalid_Unlock_Seconds_Iris_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the iris authentication type using valid UIN with an invalid unlockForSeconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -808,6 +830,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Missing_Unlock_Seconds_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using a valid UIN but with the 'unlockForSeconds' parameter missing
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -848,6 +871,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Missing_Unlock_Seconds_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using a valid VID but with the 'unlockForSeconds' parameter missing
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -888,6 +912,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_InValid_AuthType_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type with an invalid authtype
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -927,6 +952,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_InValid_UIN_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type with an invalid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -966,6 +992,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_missing_UIN_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type with a missing UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1005,6 +1032,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_InValid_OTP_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1044,6 +1072,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_TransactionMismatch_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using mismatched transaction
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1083,6 +1112,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_Invalid_Id_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an invalid ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1122,6 +1152,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_missing_Id_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using missing ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1161,6 +1192,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_InValid_version_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an invalid version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1200,6 +1232,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_Missing_version_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using missing version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1239,6 +1272,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_InvalidTimestamp_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an invalid timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1278,6 +1312,7 @@ AuthUnlock:
 }'
    Resident_AuthUnLock_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using missing timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1318,6 +1353,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Invalid_Authtype_Otp_UIN_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an invalid authtype-otp and UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1358,6 +1394,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_For_30secs_Valid_UIN_All:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using the UIN for 30 seconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1392,6 +1429,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_For_30secs_Valid_VID_All:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using the VID for 30 seconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1426,6 +1464,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Empty_transactionID_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an empty transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1466,6 +1505,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Empty_individualId_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an empty individualId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1506,6 +1546,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Empty_requesttime_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an empty requesttime
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1546,6 +1587,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Empty_id_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an empty ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1586,6 +1628,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Empty_otp_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using an empty OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1624,8 +1667,9 @@ AuthUnlock:
     }
 }'
 
-   Resident_AuthUnLock_Valid_UIN_EmptyChannel_Invalid_Neg:
+   Resident_AuthUnLock_Valid_UIN_EmptyChannel_Neg:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using valid UIN with an empty channel
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1653,7 +1697,7 @@ AuthUnlock:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
+      "errorCode": "RES-SER-422",
       "message": "OTP is invalid"
     }
   ],
@@ -1670,6 +1714,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_EmailChannel_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using a valid UIN with the email channel
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1703,6 +1748,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_PhoneChannel_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using a valid UIN through the phone channel
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1736,6 +1782,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Forsecs_Valid_UIN_smoke_Finger_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the finger authentication type using a valid UIN for seconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1770,6 +1817,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Forsecs_Valid_UIN_smoke_Face_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the face authentication type using a valid UIN for seconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1804,6 +1852,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Forsecs_Valid_UIN_smoke_Iris_Pos:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the iris authentication type using a valid UIN for seconds
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1838,6 +1887,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_Valid_UIN_Transactions_All:
       endPoint: /resident/v1/req/auth-unlock
+      description: Unlock the authentication type using valid UIN and transactions
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true

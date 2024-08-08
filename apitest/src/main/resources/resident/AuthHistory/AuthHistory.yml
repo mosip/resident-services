@@ -1,6 +1,7 @@
 AuthHistory:
    Resident_AuthHistory_With_UIN_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve authentication history based on a resident's unique identification number (UIN)
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -32,6 +33,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_With_VID_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve authentication history based on a resident's virtual (VID)
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -63,6 +65,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_InValid_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using invalid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -100,6 +103,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_missing_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history by missing UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -138,6 +142,7 @@ AuthHistory:
 
    Resident_AuthHistory_Missing_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history by missing OTP parameter
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -175,6 +180,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_TransactionMismatch_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history by transaction mismatch
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -212,6 +218,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Invalid_Id_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using an invalid ID parameter
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -249,6 +256,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_Id_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using missing ID parameter
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -286,6 +294,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_InValid_version_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using invalid version parameter
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -323,6 +332,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_version_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history with missing version
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -360,6 +370,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Invalid_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using invalid timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -397,6 +408,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history with missing timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -435,6 +447,7 @@ AuthHistory:
 
    Resident_AuthHistory_InValid_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history using invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -473,6 +486,7 @@ AuthHistory:
 
    Resident_AuthHistory_With_UIN_Phone_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history with UIN via phone
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -504,6 +518,7 @@ AuthHistory:
 
    Resident_AuthHistory_With_UIN_Email_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history with UIN via email
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -532,8 +547,9 @@ AuthHistory:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_AuthHistory_With_UIN_EmptyChannel_Invalid_Neg:
+   Resident_AuthHistory_With_UIN_EmptyChannel_Neg:
       endPoint: /resident/v1/req/auth-history
+      description: Retrieve the authentication history with UIN using an empty channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -559,7 +575,7 @@ AuthHistory:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
+      "errorCode": "RES-SER-422",
       "message": "$IGNORE$"
     }
   ],

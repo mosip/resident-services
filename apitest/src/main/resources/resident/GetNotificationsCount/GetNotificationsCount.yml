@@ -1,6 +1,7 @@
 GetNotificationsCount:
    Resident_GetNotificationsCount_vid_all_Valid_Smoke:
       endPoint: /resident/v1/unread/notification-count
+      description: Get notifications count of VID using all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -14,6 +15,7 @@ GetNotificationsCount:
 
    Resident_GetNotificationsCount_uin_all_Valid_Smoke:
       endPoint: /resident/v1/unread/notification-count
+      description: Get notifications count of UIN using all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -27,6 +29,7 @@ GetNotificationsCount:
 
    Resident_GetNotificationsCount_uin_InvalidToken_Neg:
       endPoint: /resident/v1/unread/notification-count
+      description: Get notifications count of VID using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -45,6 +48,7 @@ GetNotificationsCount:
 
    Resident_GetNotificationsCount_vid_InvalidToken_Neg:
       endPoint: /resident/v1/unread/notification-count
+      description: Get notifications count of VID using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
