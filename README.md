@@ -71,21 +71,21 @@ mosip.service.end-points=/**/req/otp,/**/proxy/**,/**/validate-otp,/**/channel/v
    </dependency>
    ```
 
-### Deploy
+## Deploy
 To deploy Commons services on Kubernetes cluster using Dockers refer to [Sandbox Deployment](https://docs.mosip.io/1.2.0/deployment/sandbox-deployment).
 
-### Configuration
+## Configuration
 [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
 
 [application-default.properties](https://github.com/mosip/mosip-config/blob/develop/application-default.properties)
 defined here.
 
-### Test
+## Test
 Automated functional tests available in [Functional Tests repo](https://github.com/mosip/mosip-functional-tests).
 
-### APIs
+## APIs
 API documentation is available [here](https://mosip.github.io/documentation/).
 
-### License
+## License
 This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
 
