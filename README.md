@@ -13,25 +13,72 @@ See [DB guide](db_scripts/README.md)
 To run Resident services, run [Config Server](https://docs.mosip.io/1.2.0/modules/module-configuration#config-server)
 
 ## Build & run (for developers)
-Prerequisites:
-
-1. [Config Server](https://docs.mosip.io/1.2.0/modules/module-configuration#config-server)
-1. JDK 1.11  
+The project requires JDK 1.21.
 1. Build and install:
     ```
-    $ cd resident-services
+    $ cd resident-service
     $ mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
     ```
+
+### Add Below Config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+```
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+## Keymanager service
+#Type of keystore, Supported Types: PKCS11, PKCS12, Offline, JCE
+mosip.kernel.keymanager.hsm.keystore-type=OFFLINE
+# For PKCS11 provide Path of config file.
+# For PKCS12 keystore type provide the p12/pfx file path. P12 file will be created internally so provide only file path & file name.
+# For Offline & JCE property can be left blank, specified value will be ignored.
+mosip.kernel.keymanager.hsm.config-path=/config/softhsm-application.conf
+# Passkey of keystore for PKCS11, PKCS12
+# For Offline & JCE proer can be left blank. JCE password use other JCE specific properties.
+
+mosip.kernel.keymanager.hsm.keystore-pass=${softhsm.kernel.security.pin}
+
+# For Spring-boot 3.x we need to specify the ANT Path Matcher for using the existing ANT path patterns.
+spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER
+
+# Spring boot 3.x onwards we need to specify the below property to unmask values in actuator env url
+management.endpoint.env.show-values=ALWAYS  
+
+resident.template.purpose.success.AUTHENTICATION_REQUEST=mosip.event.type.AUTHENTICATION_REQUEST
+resident.template.purpose.failure.AUTHENTICATION_REQUEST=mosip.event.type.AUTHENTICATION_REQUEST
+```
+
+### Update below config in [resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+### The exclusion list of URL patterns that should not be part of authentication and authorization
+```
+mosip.service.end-points=/**/req/otp,/**/proxy/**,/**/validate-otp,/**/channel/verification-status/**,/**/req/credential/**,/**/req/card/*,/**/req/auth-history,/**/rid/check-status,/**/req/auth-lock,/**/req/auth-unlock,/**/req/update-uin,/**/req/print-uin,/**/req/euin,/**/credential/types,/**/req/policy/**,/**/aid/status,/**/individualId/otp,/**/mock/**,/**/callback/**,/**/download-card,/**/download/registration-centers-list/**,/**/download/supporting-documents/**,/**/vid/policy,/**/vid,/vid/**,/**/download/nearestRegistrationcenters/**,/**/authorize/admin/validateToken,/**/logout/user,/**/aid-stage/**
+```
+
 1. Build Docker for a service:
     ```
     $ cd <service folder>
     $ docker build -f Dockerfile
     ```
+
+### Add Below jars in a class-path to run a services
+   ```
+   <dependency>
+       <groupId>io.mosip.kernel</groupId>
+       <artifactId>kernel-auth-adapter</artifactId>
+       <version>${kernel.auth.adaptor.version}</version>
+   </dependency>
+   <dependency>
+       <groupId>io.mosip.kernel</groupId>
+       <artifactId>kernel-ref-idobjectvalidator</artifactId>
+       <version>${kernel-ref-idobjectvalidator.version}</version>
+   </dependency>
+   ```
+
 ## Deploy
 To deploy Commons services on Kubernetes cluster using Dockers refer to [Sandbox Deployment](https://docs.mosip.io/1.2.0/deployment/sandbox-deployment).
 
 ## Configuration
-Refer to the [configuration guide](docs/configuration.md).
+[resident-default.properties](https://github.com/mosip/mosip-config/blob/develop/resident-default.properties)
+
+[application-default.properties](https://github.com/mosip/mosip-config/blob/develop/application-default.properties)
+defined here.
 
 ## Test
 Automated functional tests available in [Functional Tests repo](https://github.com/mosip/mosip-functional-tests).
