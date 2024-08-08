@@ -1242,7 +1242,7 @@ AuthLock:
     }
 }'
 
-   Resident_AuthLock_Valid_UIN_EmptyChannel_Neg:
+   Resident_AuthLock_Valid_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-lock
       description: Lock the authentication type using valid UIN with an empty channel
       role: resident
@@ -1271,7 +1271,7 @@ AuthLock:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{

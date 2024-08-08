@@ -547,7 +547,7 @@ AuthHistory:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_AuthHistory_With_UIN_EmptyChannel_Neg:
+   Resident_AuthHistory_With_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-history
       description: Retrieve the authentication history with UIN using an empty channel
       role: resident
@@ -575,7 +575,7 @@ AuthHistory:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
+      "errorCode": "RES-SER-410",
       "message": "$IGNORE$"
     }
   ],
