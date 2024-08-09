@@ -26,9 +26,7 @@
         <kernel.idobjectvalidator.version>1.2.1-SNAPSHOT</kernel.idobjectvalidator.version>
         <pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
         <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
-
-        <!-- Not migrated so using below version to be changed for below services -->
-        <id-repository-core.version>1.2.1-java21-SNAPSHOT</id-repository-core.version>
+        <id-repository-core.version>1.2.1-SNAPSHOT</id-repository-core.version>
 
     </properties>
     <dependencies>
