@@ -132,13 +132,12 @@ public class PostWithAutogenIdWithOtpGenerate extends AdminTestUtil implements I
 						GlobalConstants.RESIDENT, testCaseDTO.getTestCaseName());
 			}
 
-			if (otpResponse != null && otpResponse.asString().contains("IDA-MLC-018")) {
+			if (otpResponse != null && otpResponse.asString().contains("IDA-MLC-018")
+					&& !(testCaseName.contains("_CheckVidIs_REVOKED_Neg"))) {
 				logger.info("waiting for: " + properties.getProperty("uinGenDelayTime")
 						+ " as UIN not available in database");
 				try {
 					Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
-//					SlackChannelIntegration.sendMessageToSlack("UIN not available in database in :" + ApplnURI + "Env") ;
-
 				} catch (NumberFormatException | InterruptedException e) {
 					logger.error(e.getMessage());
 					Thread.currentThread().interrupt();
