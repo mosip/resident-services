@@ -41,7 +41,7 @@
           </elementProp>
           <elementProp name="runTimeFilePath" elementType="Argument">
             <stringProp name="Argument.name">runTimeFilePath</stringProp>
-            <stringProp name="Argument.value">./RunTimeFiles</stringProp>
+            <stringProp name="Argument.value">./runtime-files</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="scope" elementType="Argument">
@@ -522,7 +522,7 @@ vars.put(&quot;utcTime&quot;, utcTime);</stringProp>
             </RegexExtractor>
             <hashTree/>
           </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add Identity (bio) Endpoint" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add Identity Endpoint" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -7095,12 +7095,12 @@ vars.put(&quot;utcTime&quot;, utcTime);</stringProp>
         <com.blazemeter.jmeter.control.WeightedSwitchController guiclass="com.blazemeter.jmeter.control.WeightedSwitchControllerGui" testclass="com.blazemeter.jmeter.control.WeightedSwitchController" testname="S10 Get My UIN Weightage Controller" enabled="true">
           <boolProp name="IsRandomChoice">true</boolProp>
           <collectionProp name="Weights">
-            <collectionProp name="-667791201">
+            <collectionProp name="906941564">
               <stringProp name="-1077792467">S10 T01 Aid status Controller</stringProp>
               <stringProp name="1691">50</stringProp>
               <stringProp name="3569038">true</stringProp>
             </collectionProp>
-            <collectionProp name="1045291550">
+            <collectionProp name="-1257922925">
               <stringProp name="-968747412">S10 T02 Download Card Controller</stringProp>
               <stringProp name="1691">50</stringProp>
               <stringProp name="3569038">true</stringProp>
