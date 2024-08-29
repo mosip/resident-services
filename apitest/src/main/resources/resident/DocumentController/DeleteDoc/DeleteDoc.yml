@@ -143,7 +143,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_Token_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
-      role: partner
+      role: null
       validityCheckRequired: true
       restMethod: get
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc

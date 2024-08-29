@@ -16,7 +16,10 @@ GetRequestCardVid:
 
    Resident_GetRequestCardVid_uin_Invalid_User_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
+<<<<<<< HEAD
       description: Request card using VID when logged in using invalid UIN      
+=======
+>>>>>>> upstream/develop
       role: null
       validityCheckRequired: true
       restMethod: get

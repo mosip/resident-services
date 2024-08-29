@@ -55,7 +55,10 @@ GetRemainingupdatecountbyIndividualIdRequest:
 
    Resident_GetRemainingupdatecountbyIndividualIdRequest_Invalid_Token:
       endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+<<<<<<< HEAD
       description: Get remaining update count when invalid token is used    
+=======
+>>>>>>> upstream/develop
       role: null
       checkErrorsOnlyInResponse: true
       restMethod: get
