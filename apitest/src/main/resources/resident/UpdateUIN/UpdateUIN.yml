@@ -1,6 +1,7 @@
 UpdateUIN:
    Resident_UpdateUIN_Valid_All_Smoke_Pos_sid:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN with all valid details      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -34,6 +35,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_Otp_Empty_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when otp is not given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -73,6 +75,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_Otp_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid otp is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -112,6 +115,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Missing_Otp_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when otp is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -151,6 +155,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_TrnxID_Empty_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid transactionid is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -190,6 +195,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_TrnxID_Mismatch_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when transactionid is mismatched from Request otp API      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -229,6 +235,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_IndividualId_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid individualid is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -268,6 +275,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Missing_IndividualId_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when individualid is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -307,6 +315,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_Id_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid id is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -346,6 +355,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Missing_Id_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -385,6 +395,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when timestamp is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -424,6 +435,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_Timestamp_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid timestamp is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -463,6 +475,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Invalid_Version_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when invalid version is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -502,6 +515,7 @@ UpdateUIN:
 
    Resident_UpdateUIN_Missing_Version_Neg:
       endPoint: /resident/v1/req/update-uin
+      description: Update UIN when version is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

@@ -1,6 +1,7 @@
 GetUiProperties:
    Resident_GetUiProperties_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/config/ui-properties
+      description: Get UI properties      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

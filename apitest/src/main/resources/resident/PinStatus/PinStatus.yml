@@ -1,6 +1,7 @@
 PinStatus:
    Resident_PinStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Pin status for EID when logged in using UIN      
       role: residentNew
       restMethod: post
       inputTemplate: resident/PinStatus/PinStatus
@@ -14,6 +15,7 @@ PinStatus:
 
    Resident_PinStatus_vid_all_Valid_Smoke:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Pin status for EID when logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/PinStatus/PinStatus
@@ -27,6 +29,7 @@ PinStatus:
 
    Resident_PinStatus_uin_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Pin status for invalid EID when logged in using UIN      
       role: residentNew
       restMethod: post
       inputTemplate: resident/PinStatus/PinStatus
@@ -45,6 +48,7 @@ PinStatus:
 
    Resident_PinStatus_vid_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Pin status for invalid EID when logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/PinStatus/PinStatus
@@ -63,6 +67,7 @@ PinStatus:
 
    Resident_PinStatus_uin_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Pin status for EID when logged in using UIN with invalid token      
       role: invalid
       validityCheckRequired: true
       restMethod: post
