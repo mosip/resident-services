@@ -1,23 +1,24 @@
 ### Contains
 * This folder contains scenario-based performance test scripts for Resident Services.
    
-*List of  Scenarios:
-	* UIN services Login
-	* View My History 
-	* Manage My VID
-	* Secure My ID 
-	* Track My Requests
-	* Get Personalized Card
-	* Share My Data
-	* Update My Data
-	* Get Information
-	* Get My UIN
- 	* Verify Phone/Email ID
-	* Menu Bar
-	* Audit
-	* Logout
+*List of  Scenarios: 
+	* S01 UIN Services Login
+	* S02 View My History 
+	* S03 Manage My VID
+	* S04 Secure My ID 
+	* S05 Track My Requests
+	* S06 Get Personalized Card
+	* S07 Share My Data
+	* S08 Update My Data
+	* S09 Menu Bar
+	* S10 Profile ICon and Logout
+	* S11 Get My UIN
+	* S12 Get Information
+	* S13 Audit
+ 	* S14 Verify Phone/Email ID
+
  
-* Open source Tools used,
+* Open source tools used,
     1. [Apache JMeter](https://jmeter.apache.org/)
 
 ### How to run performance scripts using Apache JMeter tool
@@ -29,7 +30,7 @@
 * Execute a dry run for 10 min.
 * Execute performance run with various loads in order to achieve targeted NFR's.
 
-### Setup points for Execution
+### Setup points before execution
 
 * We need some jmeter plugin files that needs to be insatlled before opening of this script, PFA dependency links for your reference : 
 	* jmeter-plugins-synthesis-2.2.jar
@@ -110,32 +111,38 @@
           Value = (10 * 60 )/(Number of users)
 
 
-### Description of the scenarios
+### Description of the scenario's
 
-* View My History: This feature enables the Resident to view the history of transactions associated with their UIN.
+* S01 UIN Services Login: This scenario includes login api's like V2 and redirect login via E-signet. Validate token endpoint API is also part of this scenario.
 
-* Manage My VID: Residents can create, delete, and download VID cards based on requirements.
+* S02 View My History: This feature enables the Resident to view the history of transactions associated with their UIN.
 
-* Secure My ID: Residents can lock or unlock their authentication modalities such as fingerprint authentication, iris authentication, email OTP authentication, SMS OTP authentication, thumbprint authentication, and face authentication.
+* S03 Manage My VID: Residents can create, delete, and download VID cards based on requirements.
 
-* Track My Requests: This feature enables the Residents to enter an Event ID associated with the logged-in user’s UIN to track the status of the event.
+* S04 Secure My ID: Residents can lock or unlock their authentication modalities such as fingerprint authentication, iris authentication, email OTP authentication, SMS OTP authentication, thumbprint authentication, and face authentication.
 
-* Get Personalized Card: The residents can download a personalized card which essentially means that they can choose the attributes that they would want to be added to their cards.
+* S05 Track My Requests: This feature enables the Residents to enter an Event ID associated with the logged-in user’s UIN to track the status of the event.
 
-* Share My Data: This feature enables Residents to choose the data that they want to share with a MOSIP-registered partner.
+* S06 Get Personalized Card: The residents can download a personalized card which essentially means that they can choose the attributes that they would want to be added to their cards.
 
-* Update My Data: This feature enables the Resident to update their identity data, address, email ID, phone number, and notification language preference.
+* S07 Share My Data: This feature enables Residents to choose the data that they want to share with a MOSIP-registered partner.
 
-* Logout: Once the Resident is done with the activities that he wanted to perform, he can end the active session by logging out from the portal.
+* S08 Update My Data: This feature enables the Resident to update their identity data, address, email ID, phone number, and notification language preference.
 
-* Get Information: Residents can get a list of Registration Centers near them or Registration Centers based on the location hierarchy also residents can get the list of all the supporting documents as Proof of Identity, Proof of Address, Proof of Relationship, etc.
+* S09 Menu Bar: In the menu bar there are options like read, unread notifications, bell update time and also the language code.
 
-* Get My UIN: Using this feature, the Resident can download their password-protected UIN card if the UIN card is ready or they can view the status of their Application ID (AID) if the UIN card is still under progress.
+* S10 Profile and Logout: The Resident will be able to view the name, and photo of the logged-in user. They will also be able to see the last login details of the Resident. In logout Once the Resident is done with the activities that he wanted to perform, he can end the active session by logging out from the portal.
 
-* Verify email ID and/ or phone number: Using this feature, the Resident can verify if the email ID/ Phone number given during registration is correct or not. This will be done by verifying the OTP sent over the registered email ID/ Phone number.
+* S11 Get My UIN: Using this feature, the Resident can download their password-protected UIN card if the UIN card is ready or they can view the status of their Application ID (AID) if the UIN card is still under progress.
 
-* Notifications: Residents will be getting bell-icon notifications for the asynchronous events if they have an active session i.e. they have logged into the Resident Portal.
+* S12 Get Information: Residents can get a list of Registration Centers near them or Registration Centers based on the location hierarchy also residents can get the list of all the supporting documents as Proof of Identity, Proof of Address, Proof of Relationship, etc.
 
-* Profile details of the logged-in user (name, photo, and last login details): The Resident will be able to view the name, and photo of the logged-in user. They will also be able to see the last login details of the Resident.
+* S13 Audit: All the user activity is logged using the audit API's.
+
+* S14 Verify email ID and/ or phone number: Using this feature, the Resident can verify if the email ID/ Phone number given during registration is correct or not. This will be done by verifying the OTP sent over the registered email ID/ Phone number.
+
+
+
+
 
 
