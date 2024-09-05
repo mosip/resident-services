@@ -20,7 +20,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Email_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
-      description: Unlock the otp-email authentication type using valid UIN
+      description: Unlock the otp email authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -39,7 +39,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_otp_Email_Valid_UIN_Unlocke_Specified_Time:
       endPoint: /resident/v1/auth-lock-unlock
-      description: Unlock the otp-email authentication type using a valid UIN for the specified time
+      description: Unlock the otp email authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -58,7 +58,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_OTPphone_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
-      description: Unlock the otp-phone authentication type using a valid UIN
+      description: Unlock the otp phone authentication type using a valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
@@ -77,7 +77,7 @@ AuthUnlockNew:
 
    Resident_AuthUnlockNew_OTPphone_Valid_UIN_UnLocke_Spacified_Time:
       endPoint: /resident/v1/auth-lock-unlock
-      description: Unlock the otp-phone authentication type using a valid UIN for the specified time
+      description: Unlock the otp phone authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew

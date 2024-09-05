@@ -294,7 +294,7 @@ AddIdentity:
 
    Resident_AddIdentity_Valid_Params_AddUser_smoke_Pos:
       endPoint: /idrepository/v1/identity/
-      description: Add identity using valid parameters,ensuring that the user is successfully added
+      description: Add identity using valid parameters ensuring that the user is successfully added
       role: idrepo
       restMethod: post
       inputTemplate: resident/AddIdentity/addIdentity_$LANGNUMBER$
@@ -720,7 +720,7 @@ AddIdentity:
 
    Resident_AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos:
       endPoint: /idrepository/v1/identity/
-      description: Adding identity with valid parameters to generate a Virtual ID (VID) under the Six scenario
+      description: Adding identity with valid parameters to generate a VID under the Six scenario
       role: idrepo
       restMethod: post
       inputTemplate: resident/AddIdentity/addIdentity_$LANGNUMBER$

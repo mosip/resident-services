@@ -35,7 +35,6 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_Valid_Smoke_send_otp_with_max_email_character_sid:
       endPoint: /resident/v1/vid
       description: Generate a perpetual VID by sending an OTP to an email ID with maximum character
-      description: Generate perpetual VID using valid inputs
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true

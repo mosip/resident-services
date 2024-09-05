@@ -1,7 +1,7 @@
 AuthHistory:
    Resident_AuthHistory_With_UIN_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
-      description: Retrieve authentication history based on a resident's unique identification number (UIN)
+      description: Retrieve authentication history based on residents UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -33,7 +33,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_With_VID_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
-      description: Retrieve authentication history based on a resident's virtual (VID)
+      description: Retrieve authentication history based on residents VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

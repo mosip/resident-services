@@ -830,7 +830,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_UIN_Missing_Unlock_Seconds_Neg:
       endPoint: /resident/v1/req/auth-unlock
-      description: Unlock the authentication type using a valid UIN but with the 'unlockForSeconds' parameter missing
+      description: Unlock the authentication type using a valid UIN but with the unlockForSeconds parameter missing
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -871,7 +871,7 @@ AuthUnlock:
 
    Resident_AuthUnLock_VID_Missing_Unlock_Seconds_Neg:
       endPoint: /resident/v1/req/auth-unlock
-      description: Unlock the authentication type using a valid VID but with the 'unlockForSeconds' parameter missing
+      description: Unlock the authentication type using a valid VID but with the unlockForSeconds parameter missing
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
