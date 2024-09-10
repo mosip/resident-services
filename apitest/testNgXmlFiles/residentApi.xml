@@ -12,6 +12,7 @@
 	<test name="AddIdentity">
 		<parameter name="ymlFile"
 			value="resident/AddIdentity/AddIdentity.yml" />
+			<parameter name="prerequisite" value="Yes" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.AddIdentity" />
 		</classes>
@@ -271,6 +272,7 @@
 		<parameter name="ymlFile"
 			value="resident/OAuthDetailsRequest/OAuthDetailsRequest.yml" />
 			<parameter name="idKeyName"	value="transactionId,encodedResp" />
+			<parameter name="prerequisite" value="Yes" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePostForAutoGenId" />
 		</classes>
@@ -278,6 +280,7 @@
 	<test name="AuthenticateUser">
 		<parameter name="ymlFile"
 			value="resident/AuthenticateUser/AuthenticateUser.yml" />
+			<parameter name="prerequisite" value="Yes" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.PostWithAutogenIdWithOtpGenerate" />
 		</classes>
@@ -286,6 +289,7 @@
 		<parameter name="ymlFile"
 			value="resident/AuthorizationCode/AuthorizationCode.yml" />
 			<parameter name="idKeyName"	value="code,state,redirectUri" />
+			<parameter name="prerequisite" value="Yes" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePostForAutoGenId" />
 		</classes>
@@ -302,6 +306,7 @@
 		<parameter name="ymlFile"
 			value="resident/GenerateToken/GenerateToken.yml" />
 			<parameter name="idKeyName"	value="access_token" />
+			<parameter name="prerequisite" value="Yes" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.testscripts.SimplePostForAutoGenIdForUrlEncoded" />
 		</classes>
