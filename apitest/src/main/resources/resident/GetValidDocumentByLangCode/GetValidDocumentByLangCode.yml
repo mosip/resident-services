@@ -1,6 +1,7 @@
 GetValidDocumentByLangCode:
    Resident_GetValidDocumentByLangCode_All_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      description: Get valid documents for given language code      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ GetValidDocumentByLangCode:
 
    Resident_GetValidDocumentByLangCode_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      description: Get valid documents by giving invalid language code      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -35,6 +37,7 @@ GetValidDocumentByLangCode:
 
    Resident_GetValidDocumentByLangCode_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      description: Get valid documents for given language code      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -49,6 +52,7 @@ GetValidDocumentByLangCode:
 
    Resident_GetValidDocumentByLangCode_StatusCode_Empty_Invalid_Neg:
       endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      description: Get valid documents by not giving language code in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -61,6 +65,7 @@ GetValidDocumentByLangCode:
 
    Resident_GetValidDocumentByLangCode_Invalid_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      description: Get valid documents by giving invalid language code is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

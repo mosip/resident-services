@@ -1,6 +1,7 @@
 PrintUin:
    Resident_PrintUin_All_Valid_Smoke:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -33,6 +34,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Empty_Cardtype_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid card type is given in request       
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -71,6 +73,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_MaxLength10_Cardtype_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid card type is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -109,6 +112,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Missing_Cardtype_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and card type value is missing       
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -147,6 +151,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_IndividualIDType_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and individualId type value is given as invalid      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -185,6 +190,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_MaxLength3_IndividualIDType_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid IndividualID type value is given       
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -223,6 +229,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Missing_IndividualID_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and individualId value is missing      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -261,6 +268,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Empty_Otp_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and otp is not given in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -299,6 +307,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_MaxLength6_Otp_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid otp is given in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -337,6 +346,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Otp_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid otp is given in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -375,6 +385,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Empty_requestTime_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and request time value is given as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -413,6 +424,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Empty_TrnxID_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and transaction id value is given as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -451,6 +463,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Value_TrnxID_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid transaction id is given in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -489,6 +502,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Empty_version_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and version value is given as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -527,6 +541,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_version_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid version is given in request     
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -565,6 +580,7 @@ PrintUin:
 }'
    Resident_PrintUin_Invalid_Individual_Id_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and invalid individualId is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -603,6 +619,7 @@ PrintUin:
 }'
    Resident_PrintUin_Missing_Individual_Id_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and individualId is missing in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -641,6 +658,7 @@ PrintUin:
 }'
    Resident_PrintUin_Empty_Individual_Id_Neg:
       endPoint: /resident/v1/req/print-uin
+      description: Print UIN card when otp requested using UIN and individualId value is given as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

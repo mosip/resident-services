@@ -1,6 +1,7 @@
 ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_UIN_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
+      description: Validate expired otp, otp requested using UIN      
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -22,6 +23,7 @@ ValidateExpiredOTP:
 
    Resident_ValidateExpiredOTP_PerpVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
+      description: Validate expired otp, otp requested using perpetual VID  
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -43,6 +45,7 @@ ValidateExpiredOTP:
 
    Resident_ValidateExpiredOTP_TempVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
+      description: Validate expired otp, otp requested using temporary VID      
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -64,6 +67,7 @@ ValidateExpiredOTP:
 
    Resident_ValidateExpiredOTP_OnetimeVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
+      description: Validate expired otp, otp requested using onetimeuse VID      
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP

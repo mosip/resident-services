@@ -1,6 +1,7 @@
 SendOtpToUserId:
    Resident_SendOtpToUserId_Invalid_User_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when invalid token is given      
       role: resident
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -21,6 +22,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when invalid requesttime is given      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -41,6 +43,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Missing_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when requesttime is removed from request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -61,6 +64,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Null_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when requesttime value is given as null      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -82,6 +86,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when invalid userid is given      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -102,6 +107,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid value is given empty      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -122,6 +128,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when only spaces is given as userid value      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -142,6 +149,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid is removed in request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -162,6 +170,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when null value is given for userid      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -183,6 +192,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when invalid transactionid is given      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -203,6 +213,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when empty transactionid is given      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -223,6 +234,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_SpaceVal_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when only spaces id given as transactionid      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -243,6 +255,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when transactionid is removed in request      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -263,6 +276,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when logged in using UIN      
       role: residentNew
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -278,6 +292,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when invalid requesttime is given      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -298,6 +313,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when is requesttime is removed from request      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -318,6 +334,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Null_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when request time given as null and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -339,6 +356,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to invalid userid when logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -359,6 +377,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid value is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -379,6 +398,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid value is given with only spaces and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -399,6 +419,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -419,6 +440,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp when userid value is given null and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -440,6 +462,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when invalid transactionid is given and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -460,6 +483,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when transactionid is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -480,6 +504,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_SpaceVal_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when only spaces given as transactionid and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -500,6 +525,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid when transactionid is removed and logged in using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -520,6 +546,7 @@ SendOtpToUserId:
 
    Resident_SendOtpToUserId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
+      description: Request otp to given userid and logged in using VID     
       role: residentNewVid
       restMethod: post
       auditLogCheck: true
