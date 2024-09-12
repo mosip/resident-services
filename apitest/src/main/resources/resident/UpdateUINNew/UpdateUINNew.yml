@@ -12,7 +12,7 @@ UpdateUINNew:
         "consent" : "Accepted",
         "language": "eng",
 		"value": "Sohan",
-        "email": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$"
+        "email": "$REMOVE$"
 }'
       output: '{
         "status": "Success"
@@ -31,7 +31,7 @@ UpdateUINNew:
         "consent" : "Accepted",
         "language": "eng",
 		"value": "Sohan",
-        "email": "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$"
+        "email": "$REMOVE$"
 }'
       output: '{
         "status": "Success"

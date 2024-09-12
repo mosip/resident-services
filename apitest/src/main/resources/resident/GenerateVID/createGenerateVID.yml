@@ -1873,7 +1873,7 @@ GenerateVID:
         "id": "mosip.resident.vid",
         "version": "v1",
         "vidType": "Perpetual",
-        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_PHONE$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
