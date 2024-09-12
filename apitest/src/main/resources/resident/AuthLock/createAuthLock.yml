@@ -1159,7 +1159,7 @@ AuthLock:
         "id": "mosip.resident.authlock",
         "version": "v1",
         "authType": [{auth: "bio-Iris"},{auth: "demo"},{auth: "bio-FACE"}],
-        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_PHONE$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
