@@ -290,6 +290,9 @@ public class Utility {
 					if (identityNodeObj instanceof ArrayList) {
 						List identityValueList = (List) identityNodeObj;
 						for (Object identityValue : identityValueList) {
+							if(identityValue instanceof String){
+								continue;
+							}
 							JsonValue jsonValue = mapper.convertValue(identityValue, JsonValue.class);
 							if (templateLangauges.contains(jsonValue.getLanguage())) {
 								attributes.put(mappingValue + "_" + jsonValue.getLanguage(), jsonValue.getValue());
@@ -308,7 +311,7 @@ public class Utility {
 		return attributes;
 	}
 
-	@Cacheable(value = "getPreferredLanguage", key = "#demographicIdentity")
+	//@Cacheable(value = "getPreferredLanguage")
 	public Set<String> getPreferredLanguage(Map demographicIdentity) {
 		String preferredLang = null;
 		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
