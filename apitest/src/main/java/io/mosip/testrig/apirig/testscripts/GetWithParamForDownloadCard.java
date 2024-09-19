@@ -29,6 +29,7 @@ import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.ConfigManager;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.ResidentUtil;
 import io.restassured.response.Response;
 
 public class GetWithParamForDownloadCard extends AdminTestUtil implements ITest {
@@ -82,6 +83,7 @@ public class GetWithParamForDownloadCard extends AdminTestUtil implements ITest 
 	@Test(dataProvider = "testcaselist")
 	public void test(TestCaseDTO testCaseDTO) throws AdminTestException {	
 		testCaseName = testCaseDTO.getTestCaseName();
+		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
 		testCaseName = isTestCaseValidForExecution(testCaseDTO);
 		if (HealthChecker.signalTerminateExecution) {
 			throw new SkipException(GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
