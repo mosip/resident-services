@@ -341,6 +341,9 @@ public class Utility {
 					if (identityNodeObj instanceof ArrayList) {
 						List identityValueList = (List) identityNodeObj;
 						for (Object identityValue : identityValueList) {
+							if(identityValue instanceof String){
+								continue;
+							}
 							JsonValue jsonValue = mapper.convertValue(identityValue, JsonValue.class);
 							if (templateLangauges.contains(jsonValue.getLanguage())) {
 								attributes.put(mappingValue + "_" + jsonValue.getLanguage(), jsonValue.getValue());
