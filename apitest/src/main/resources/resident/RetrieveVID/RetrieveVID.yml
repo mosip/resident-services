@@ -1,6 +1,7 @@
 RetrieveVID:
    Resident_RetrieveVID_uin_all_Valid_Smoke:
       endPoint: /resident/v1/vids
+      description: Retrieve VIDs when logged using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -14,6 +15,7 @@ RetrieveVID:
 
    Resident_RetrieveVID_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/vids
+      description: Retrieve VIDs when logged using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -26,6 +28,7 @@ RetrieveVID:
 
    Resident_RetrieveVID_Invalid_Token_Neg:
       endPoint: /resident/v1/vids
+      description: Retrieve VIDs when invalid token is used      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

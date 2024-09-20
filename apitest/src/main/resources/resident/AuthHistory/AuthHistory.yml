@@ -499,7 +499,7 @@ AuthHistory:
         "requesttime": "$TIMESTAMP$",
         "id": "mosip.resident.authhistory",
         "version": "v1",
-        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_ValidParameters_ChannelVerify_smoke_Pos_PHONE$@phone",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",

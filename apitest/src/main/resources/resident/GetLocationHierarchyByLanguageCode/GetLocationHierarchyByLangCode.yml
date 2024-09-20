@@ -34,16 +34,22 @@ GetLocationHierarchyByLanguageCode:
   ]
 }'
 
-   Resident_GetLocationHierarchyByLanguageCode_Empty_LangCode_Pos:
+   Resident_GetLocationHierarchyByLanguageCode_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
       description: Get location hierarchy by language code using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetLocationHierarchyByLanguageCode/getLocationHierarchyByLangCode
-      outputTemplate: resident/GetLocationHierarchyByLanguageCode/getLocationHierarchyByLangCodeResult
+      outputTemplate: resident/error
       input: '{
       "langCode":""
 }'
       output: '{
+      "errors": [
+  {
+    "errorCode": "RES-SER-418",
+    "message": "$IGNORE$"
+  }
+]
 }'

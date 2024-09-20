@@ -1,6 +1,7 @@
 UnPinStatus:
    Resident_UnPinStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/unpinned/{eventId}
+      description: Unpin status for given eventid when logged using UIN     
       role: residentNew
       restMethod: post
       inputTemplate: resident/UnPinStatus/UnPinStatus
@@ -14,6 +15,7 @@ UnPinStatus:
 
    Resident_UnPinStatus_vid_all_Valid_Smoke:
       endPoint: /resident/v1/unpinned/{eventId}
+      description: Unpin status for given eventid when logged using VID      
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/UnPinStatus/UnPinStatus
@@ -27,6 +29,7 @@ UnPinStatus:
 
    Resident_UnPinStatus_uin_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Unpin status for invalid eventid when logged using UIN    
       role: residentNew
       restMethod: post
       inputTemplate: resident/UnPinStatus/UnPinStatus
@@ -45,6 +48,7 @@ UnPinStatus:
 
    Resident_UnPinStatus_vid_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Unpin status for invalid eventid when logged using VID       
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/UnPinStatus/UnPinStatus
@@ -63,6 +67,7 @@ UnPinStatus:
 
    Resident_UnPinStatus_uin_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/pinned/{eventId}
+      description: Unpin status for eventid when logged using UIN with invalid token     
       role: invalid
       validityCheckRequired: true
       restMethod: post

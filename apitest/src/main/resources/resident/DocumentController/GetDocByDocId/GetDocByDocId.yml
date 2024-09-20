@@ -76,7 +76,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_uin_Invalid_Token:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       description: Get the document by docId using a valid UIN with an invalid token
-      role: partner
+      role: null
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
       restMethod: get

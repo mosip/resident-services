@@ -1,6 +1,7 @@
 SendOTP:
    Resident_SendOTP_Valid_UIN_All_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -19,6 +20,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_UIN_Transactions_All_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -37,6 +39,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_VID_All_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using VID as individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -56,6 +59,7 @@ SendOTP:
 
    Resident_SendOTP_Valid_VID_Use_Five_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using VID as individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -74,6 +78,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_VID_Use_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using VID as individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -92,6 +97,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_UIN_Phone_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and otp channel as phone      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -110,6 +116,7 @@ SendOTP:
     }'
    Resident_SendOTP_Valid_UIN_Email_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and otp channel as email      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -128,6 +135,7 @@ SendOTP:
     }'
    Resident_SendOTP_RevokedVID_Invalid:
       endPoint: /resident/v1/req/otp
+      description: Request otp using Revoked VID as individual id       
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -145,6 +153,7 @@ SendOTP:
     }'
    Resident_SendOTP_Valid_UIN_Invalid_empty_otpChannel:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and otp channel as empty array      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -163,6 +172,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_individualId:
       endPoint: /resident/v1/req/otp
+      description: Request otp using invalid individual id      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -180,6 +190,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Missing_individualId:
       endPoint: /resident/v1/req/otp
+      description: Request otp without individual id attribute in request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -197,6 +208,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Empty_transactionID:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and transcationid value as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -214,6 +226,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_transactionID:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and invalid transaction id is given  
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -231,6 +244,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Missing_transactionID:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and transactionid value is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -248,6 +262,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Empty_requestTime:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and requesttime is given as empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -265,6 +280,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_requestTime:
       endPoint: /resident/v1/req/otp
+      description: Request otp using UIN as individual id and invalid request time is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -283,6 +299,7 @@ SendOTP:
 
    Resident_SendOTP_Empty_individualId_Neg:
       endPoint: /resident/v1/req/otp
+      description: Request otp when individual id value is empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -300,6 +317,7 @@ SendOTP:
     }'
    Resident_SendOTP_Empty_individualIdType_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp when individual id type value is empty      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -318,6 +336,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_VID_Phone_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using VID as individual id and otp channel as only phone      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -337,6 +356,7 @@ SendOTP:
     
    Resident_SendOTP_Valid_Vid_Email_Smoke:
       endPoint: /resident/v1/req/otp
+      description: Request otp using VID as individual id and otp channel as only email      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

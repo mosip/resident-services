@@ -1,6 +1,7 @@
 RidCheckStatus:
    Resident_RidCheckStatus_AllValid_Smoke:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -17,6 +18,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when individual id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -38,6 +40,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when invalid value is given for individual id       
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -60,6 +63,7 @@ RidCheckStatus:
 
    Resident_RidCheckStatus_Missing_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when individual id type is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -81,6 +85,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when individual id type value is given invalid      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -102,6 +107,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_Id:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -123,6 +129,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_timestamp:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when requesttime is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -144,6 +151,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_timestamp:
       endPoint: /resident/v1/rid/check-status
+      description: Fetch RID status when invalid request time is given      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

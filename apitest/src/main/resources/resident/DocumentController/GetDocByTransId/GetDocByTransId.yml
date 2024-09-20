@@ -50,7 +50,7 @@ GetDocByTransId:
    Resident_GetDocByTransId_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}
       description: Get the document by transactionId using a valid UIN with an invalid token
-      role: partner
+      role: null
       restMethod: get
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
       outputTemplate: resident/error

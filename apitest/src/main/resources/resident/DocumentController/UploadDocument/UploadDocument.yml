@@ -202,7 +202,7 @@ UploadDocument:
    Resident_UploadDocument_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       description: Upload the document using an invalid token
-      role: partner
+      role: null
       restMethod: post
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
