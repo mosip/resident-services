@@ -1,6 +1,7 @@
 GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_allValid_smoke:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
+      description: Get location details by location code and language code using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ GetLocationDetailsByLocCodeAndLangCode:
 
    Resident_GetLocationDetailsByLocCodeAndLangCode_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
+      description: Get location details by location code and language code using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -36,6 +38,7 @@ GetLocationDetailsByLocCodeAndLangCode:
 
    Resident_GetLocationDetailsByLocCodeAndLangCode_Invalid_LocationCode:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
+      description: Get location details by location code and language code using an invalid location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -56,6 +59,7 @@ GetLocationDetailsByLocCodeAndLangCode:
 
    Resident_GetLocationDetailsByLocCodeAndLangCode_StatusCode_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
+      description: Get location details by location code and language code using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -69,6 +73,7 @@ GetLocationDetailsByLocCodeAndLangCode:
 
    Resident_GetLocationDetailsByLocCodeAndLangCode_StatusCode_Empty_LocationCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
+      description: Get location details by location code and language code using an empty location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

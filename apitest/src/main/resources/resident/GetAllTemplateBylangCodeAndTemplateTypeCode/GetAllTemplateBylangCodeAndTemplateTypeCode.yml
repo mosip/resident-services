@@ -1,6 +1,7 @@
 GetAllTemplateBylangCodeAndTemplateTypeCode:
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_uin_1_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using one valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_uin_2_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using second valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -31,6 +33,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_uin_3_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using third valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -46,6 +49,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_uin_Invalid_Langcode:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using valid UIN with an invalid langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -66,6 +70,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_uin_Invalid_Templatetypecode:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using valid UIN with an invalid templatetype code
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -86,6 +91,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_Invalid_Token:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using valid UIN with an invalid token
       role: invalid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -106,6 +112,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_vid_1_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -121,6 +128,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_vid_2_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using an another valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -136,6 +144,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_vid_3_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using an another valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -151,6 +160,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_vid_Invalid_Langcode:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using a valid VID with an invalid langcode
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -171,6 +181,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
 
    Resident_GetAllTemplateBylangCodeAndTemplateTypeCode_vid_Invalid_Templatetypecode:
       endPoint: /resident/v1/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}
+      description: Get all template by language code and templatetype code using a valid VID with an invalid templatetype code
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get

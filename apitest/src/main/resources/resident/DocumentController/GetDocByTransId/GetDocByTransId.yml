@@ -1,6 +1,7 @@
 GetDocByTransId:
    Resident_GetDocByTransId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{transactionId}
+      description: Get the document by transactionId using a valid UIN with all valid inputs
       role: residentNew
       restMethod: get
       auditLogCheck: true
@@ -15,6 +16,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{transactionId}
+      description: Get the document by transactionId using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: get
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
@@ -28,6 +30,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_uin_Invalid_TransactionId:
       endPoint: /resident/v1/documents/{transactionId}
+      description: Get the document by transactionId using a valid UIN with an invalid transactionId
       role: residentNew
       restMethod: get
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
@@ -46,6 +49,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}
+      description: Get the document by transactionId using a valid UIN with an invalid token
       role: null
       restMethod: get
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
@@ -64,6 +68,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_vid_Invalid_TransactionId:
       endPoint: /resident/v1/documents/{transactionId}
+      description: Get the document by transactionId using a valid VID with an invalid transactionId
       role: residentNewVid
       restMethod: get
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId

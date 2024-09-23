@@ -1,6 +1,7 @@
 CheckAidStatus:
    Resident_CheckAidStatus_all_Valid_Smoke:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using valid data
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -31,6 +32,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_Aid_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID by using an invalid AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -67,6 +69,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using an invalid transactionID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -103,6 +106,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_Otp_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -139,6 +143,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_Aid_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using an empty AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -175,6 +180,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using an empty transaction ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -211,6 +217,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_Otp_Neg:
       endPoint: /resident/v1/aid/status
+      description: Check the status of the AID using an empty otp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true

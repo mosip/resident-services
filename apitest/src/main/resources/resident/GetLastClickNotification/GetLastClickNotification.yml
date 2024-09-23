@@ -1,6 +1,7 @@
 GetLastClickNotification:
    Resident_GetLastClickNotification_uin_all_Valid_Smoke:
       endPoint: /resident/v1/bell/notification-click
+      description: Get last click notification using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -14,6 +15,7 @@ GetLastClickNotification:
 
    Resident_GetLastClickNotification_vid_all_Valid_Smoke:
       endPoint: /resident/v1/bell/notification-click
+      description: Get last click notification using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -27,6 +29,7 @@ GetLastClickNotification:
 
    Resident_GetLastClickNotification_uin_InValid_Token:
       endPoint: /resident/v1/bell/notification-click
+      description: Get last click notification using a valid UIN with an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -46,6 +49,7 @@ GetLastClickNotification:
 
    Resident_GetLastClickNotification_Invalid_Token:
       endPoint: /resident/v1/bell/notification-click
+      description: Get last click notification using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

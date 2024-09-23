@@ -1,6 +1,7 @@
 GetInputAttributeValues:
    Resident_GetInputAttributeValues1_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -15,6 +16,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues2_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get second input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -28,6 +30,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues3_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get third input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -41,6 +44,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues_UIN_Invalid_SchemaType_Neg:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get input attribute values using a valid UIN with an invalid schematype
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -60,6 +64,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues1_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -73,6 +78,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues2_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get second input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -86,6 +92,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues3_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      description: Get third input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
