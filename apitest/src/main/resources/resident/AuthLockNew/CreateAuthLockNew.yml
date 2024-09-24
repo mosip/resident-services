@@ -1,6 +1,7 @@
 AuthLockNew:
    Resident_AuthLockNew_Demo_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the demo authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -19,6 +20,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Otp_Phone_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the otp-phone authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -37,6 +39,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Otp_Email_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the otp-email authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -55,6 +58,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Face_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the bio-face authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -73,6 +77,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Iris_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the bio-iris authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -91,6 +96,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Finger_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the bio-finger authentication type using valid UIN
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -109,6 +115,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN and an invalid requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -132,6 +139,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN and an invalid Id
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -155,6 +163,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN and an invalid version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -178,6 +187,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN and an invalid authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -201,6 +211,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN and an invalid locked status
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -224,6 +235,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an invalid unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -247,6 +259,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -270,6 +283,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty Id
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -293,6 +307,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -316,6 +331,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -339,6 +355,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty locked status
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -357,6 +374,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with an empty unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -375,6 +393,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing requesttime
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -398,6 +417,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing Id
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -421,6 +441,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing version
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -444,6 +465,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing authtype
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -467,6 +489,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing locked status
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -485,6 +508,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_uin_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid UIN with missing unlockforseconds
       role: residentNew
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -503,6 +527,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid statuscode and an invalid token
       role: invalid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -519,6 +544,7 @@ AuthLockNew:
       
    Resident_AuthLockNew_Demo_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the demo authentication type using valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -537,6 +563,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Face_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the face authentication type using valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -555,6 +582,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Iris_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the iris authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -573,6 +601,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_Finger_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the finger authentication type using a valid VID
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -591,6 +620,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -614,6 +644,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid Id
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -637,6 +668,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -660,6 +692,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -683,6 +716,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -706,6 +740,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an invalid unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -729,6 +764,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -752,6 +788,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty Id
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -775,6 +812,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -798,6 +836,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -821,6 +860,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -839,6 +879,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with an empty unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -857,6 +898,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing requesttime
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -880,6 +922,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing Id
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -903,6 +946,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing version
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -926,6 +970,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing authtype
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -949,6 +994,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing lockedstatus
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -967,6 +1013,7 @@ AuthLockNew:
 
    Resident_AuthLockNew_vid_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
+      description: Lock the authentication type using valid VID with missing unlockforseconds
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew

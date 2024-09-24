@@ -1,6 +1,7 @@
 GetLocationHierarchyByLanguageCode:
    Resident_GetLocationHierarchyByLanguageCode_All_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      description: Get location hierarchy by language code using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -15,6 +16,7 @@ GetLocationHierarchyByLanguageCode:
 
    Resident_GetLocationHierarchyByLanguageCode_InValid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      description: Get location hierarchy by language code using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -34,6 +36,7 @@ GetLocationHierarchyByLanguageCode:
 
    Resident_GetLocationHierarchyByLanguageCode_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      description: Get location hierarchy by language code using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

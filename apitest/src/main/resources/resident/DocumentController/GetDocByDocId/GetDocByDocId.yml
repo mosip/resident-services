@@ -1,6 +1,7 @@
 GetDocByDocId:
    Resident_GetDocByDocId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -31,6 +33,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_uin_Invalid_TransactionId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid UIN with an invalid transactionId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -51,6 +54,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_uin_Invalid_docId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid UIN with an invalid docId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -71,6 +75,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_uin_Invalid_Token:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid UIN with an invalid token
       role: null
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -92,6 +97,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_vid_Invalid_TransactionId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid VID with an invalid transactionId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -112,6 +118,7 @@ GetDocByDocId:
 
    Resident_GetDocByDocId_vid_Invalid_docId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      description: Get the document by docId using a valid VID with an invalid docId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get

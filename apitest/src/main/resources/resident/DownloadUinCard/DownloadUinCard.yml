@@ -1,6 +1,7 @@
 DownloadUinCard:
    Resident_DownloadUinCard_all_Valid_Smoke:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -33,6 +34,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_With_Invalid_OTP_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card with an invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -68,6 +70,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an invalid transactionId
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -103,6 +106,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Empty_TransactionID_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an empty transactionId
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -138,6 +142,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Invalid_Otp_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -173,6 +178,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Empty_Otp_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an empty OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -208,6 +214,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Invalid_IndividualID_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an invalid individualId
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -243,6 +250,7 @@ DownloadUinCard:
 
    Resident_DownloadUinCard_Empty_IndividualID_Neg:
       endPoint: /resident/v1/download-card
+      description: Download UIN card using an empty individualId
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

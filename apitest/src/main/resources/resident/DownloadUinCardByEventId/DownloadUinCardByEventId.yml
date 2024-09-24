@@ -1,6 +1,7 @@
 DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -16,6 +17,7 @@ DownloadUinCardByEventId:
 
    Resident_DownloadUinCardByEventId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -30,6 +32,7 @@ DownloadUinCardByEventId:
 
    Resident_DownloadUinCardByEventId_uin_Invalid_EventId_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid UIN with an invalid eventId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -44,6 +47,7 @@ DownloadUinCardByEventId:
 
    Resident_DownloadUinCardByEventId_vid_Invalid_EventId_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid VID with an invalid eventId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -61,6 +65,7 @@ DownloadUinCardByEventId:
 
    Resident_DownloadUinCardByEventId_uin_Without_Token_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid UIN without token
       role:
       validityCheckRequired: true
       checkErrorsOnlyInResponse: true
@@ -82,6 +87,7 @@ DownloadUinCardByEventId:
 
    Resident_DownloadUinCardByEventId_uin_Diff_User_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
+      description: Download UIN card by eventId using a valid UIN with different user
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true

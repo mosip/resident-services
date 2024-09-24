@@ -1,6 +1,7 @@
 DownloadServiceHistory:
    Resident_DownloadServiceHistory_uin_all_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -24,6 +25,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_Invalid_User_Neg:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with an invalid user
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -47,6 +49,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_Missing_LangCode_Neg:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with missing langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -70,6 +73,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_FromDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid fromdate
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -93,6 +97,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_ToDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid todate
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -116,6 +121,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_PageStart_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid pagestart
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -139,6 +145,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_ServiceType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid servicetype
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -162,6 +169,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_SortType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid sorttype
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -185,6 +193,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_uin_StatusFilter_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid UIN with valid statusfilter
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -208,6 +217,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -231,6 +241,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_Missing_LangCode_Neg:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with missing langcode
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -254,6 +265,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_FromDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid fromdate
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -277,6 +289,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_ToDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid todate
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -300,6 +313,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_PageStart_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid pagestart
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -323,6 +337,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_ServiceType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid servicetype
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -346,6 +361,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_SortType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid sorttype
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -369,6 +385,7 @@ DownloadServiceHistory:
 
    Resident_DownloadServiceHistory_vid_StatusFilter_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
+      description: Download service history using a valid VID with valid statusfilter
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
