@@ -1,6 +1,7 @@
 GetRidByIndividualId:
    Resident_GetRidByIndividualId_all_Valid_Smoke:
       endPoint: /idrepository/v1/identity/rid/{individualId}
+      uniqueIdentifier: TC_Idrepo_dependency      
       description: Get RID when valid individual id is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetRidByIndividualId:
 
    Resident_GetRidByIndividualId_Perp_Vid_all_Valid_Smoke:
       endPoint: /idrepository/v1/identity/rid/{individualId}
+      uniqueIdentifier: TC_Idrepo_dependency      
       description: Get RID when valid perpetual VID is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -31,6 +33,7 @@ GetRidByIndividualId:
 
    Resident_GetRidByIndividualId_OneTime_Vid_Valid_Smoke:
       endPoint: /idrepository/v1/identity/rid/{individualId}
+      uniqueIdentifier: TC_Idrepo_dependency      
       description: Get RID when valid OneTime use VID is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -46,6 +49,7 @@ GetRidByIndividualId:
 
    Resident_GetRidByIndividualId_Temp_Vid_all_Valid_Smoke:
       endPoint: /idrepository/v1/identity/rid/{individualId}
+      uniqueIdentifier: TC_Idrepo_dependency      
       description: Get RID when valid Temporary VID is given in input parameters      
       role: resident
       checkErrorsOnlyInResponse: true
