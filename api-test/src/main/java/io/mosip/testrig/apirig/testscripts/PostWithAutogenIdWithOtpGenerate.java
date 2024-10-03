@@ -27,10 +27,10 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
-import io.mosip.testrig.apirig.utils.ConfigManager;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
+import io.mosip.testrig.apirig.utils.ResidentConfigManager;
 import io.mosip.testrig.apirig.utils.ResidentUtil;
 import io.restassured.response.Response;
 
@@ -43,7 +43,7 @@ public class PostWithAutogenIdWithOtpGenerate extends AdminTestUtil implements I
 
 	@BeforeClass
 	public static void setLogLevel() {
-		if (ConfigManager.IsDebugEnabled())
+		if (ResidentConfigManager.IsDebugEnabled())
 			logger.setLevel(Level.ALL);
 		else
 			logger.setLevel(Level.ERROR);
@@ -121,10 +121,10 @@ public class PostWithAutogenIdWithOtpGenerate extends AdminTestUtil implements I
 		int currLoopCount = 0;
 		while (currLoopCount < maxLoopCount) {
 			if (testCaseName.contains(GlobalConstants.ESIGNET_)) {
-				if (ConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
+				if (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
 					throw new SkipException("esignet is not deployed hence skipping the testcase");
 				}
-				String tempUrl = ConfigManager.getEsignetBaseUrl();
+				String tempUrl = ResidentConfigManager.getEsignetBaseUrl();
 				otpResponse = postRequestWithCookieAuthHeaderAndXsrfToken(tempUrl + sendOtpEndPoint,
 						getJsonFromTemplate(otpReqJson.toString(), sendOtpReqTemplate), COOKIENAME,
 						testCaseDTO.getTestCaseName());
@@ -183,10 +183,10 @@ public class PostWithAutogenIdWithOtpGenerate extends AdminTestUtil implements I
 		}
 
 		if (testCaseName.contains(GlobalConstants.ESIGNET_)) {
-			if (ConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
+			if (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
 				throw new SkipException("esignet is not deployed hence skipping the testcase");
 			}
-			String tempUrl = ConfigManager.getEsignetBaseUrl();
+			String tempUrl = ResidentConfigManager.getEsignetBaseUrl();
 			response = postRequestWithCookieAuthHeaderAndXsrfTokenForAutoGenId(tempUrl + testCaseDTO.getEndPoint(),
 					getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,
 					testCaseDTO.getTestCaseName(), idKeyName);
