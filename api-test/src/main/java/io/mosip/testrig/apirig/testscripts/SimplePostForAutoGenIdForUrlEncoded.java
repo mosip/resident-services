@@ -28,10 +28,10 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
-import io.mosip.testrig.apirig.utils.ConfigManager;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
+import io.mosip.testrig.apirig.utils.ResidentConfigManager;
 import io.mosip.testrig.apirig.utils.ResidentUtil;
 import io.restassured.response.Response;
 
@@ -43,7 +43,7 @@ public class SimplePostForAutoGenIdForUrlEncoded extends AdminTestUtil implement
 
 	@BeforeClass
 	public static void setLogLevel() {
-		if (ConfigManager.IsDebugEnabled())
+		if (ResidentConfigManager.IsDebugEnabled())
 			logger.setLevel(Level.ALL);
 		else
 			logger.setLevel(Level.ERROR);
@@ -97,7 +97,7 @@ public class SimplePostForAutoGenIdForUrlEncoded extends AdminTestUtil implement
 			}
 		}
 
-		if (ConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
+		if (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
 			throw new SkipException("esignet is not deployed hence skipping the testcase");
 		}
 		testCaseName = isTestCaseValidForExecution(testCaseDTO);
@@ -131,7 +131,7 @@ public class SimplePostForAutoGenIdForUrlEncoded extends AdminTestUtil implement
 			}
 		} else {
 			if (testCaseName.contains("ESignet_")) {
-				String tempUrl = ConfigManager.getEsignetBaseUrl();
+				String tempUrl = ResidentConfigManager.getEsignetBaseUrl();
 				String endPoint = tempUrl + testCaseDTO.getEndPoint();
 				if (testCaseDTO.getEndPoint().contains("$GETENDPOINTFROMRESIDENTACTUATOR$")
 						&& BaseTestCase.currentModule.equalsIgnoreCase("resident")) {
