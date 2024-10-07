@@ -74,7 +74,7 @@ public class MosipTestRunner {
 			}
 			AdminTestUtil.init();
 			ResidentConfigManager.init();
-			BaseTestCase.suiteSetup(getRunType());
+			suiteSetup(getRunType());
 			SkipTestCaseHandler.loadTestcaseToBeSkippedList("testCaseSkippedList.txt");
 			setLogLevels();
 
