@@ -1,6 +1,7 @@
 AuthHistory:
    Resident_AuthHistory_With_UIN_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_01
       description: Retrieve authentication history based on residents UIN
       role: resident
       checkErrorsOnlyInResponse: true
@@ -33,6 +34,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_With_VID_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_02
       description: Retrieve authentication history based on residents VID
       role: resident
       checkErrorsOnlyInResponse: true
@@ -65,6 +67,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_InValid_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_03
       description: Retrieve the authentication history using invalid UIN
       role: resident
       checkErrorsOnlyInResponse: true
@@ -103,6 +106,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_missing_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_04
       description: Retrieve the authentication history by missing UIN
       role: resident
       checkErrorsOnlyInResponse: true
@@ -142,6 +146,7 @@ AuthHistory:
 
    Resident_AuthHistory_Missing_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_05
       description: Retrieve the authentication history by missing OTP parameter
       role: resident
       checkErrorsOnlyInResponse: true
@@ -180,6 +185,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_TransactionMismatch_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_06
       description: Retrieve the authentication history by transaction mismatch
       role: resident
       checkErrorsOnlyInResponse: true
@@ -218,6 +224,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Invalid_Id_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_07
       description: Retrieve the authentication history using an invalid ID parameter
       role: resident
       checkErrorsOnlyInResponse: true
@@ -256,6 +263,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_Id_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_08
       description: Retrieve the authentication history using missing ID parameter
       role: resident
       checkErrorsOnlyInResponse: true
@@ -294,6 +302,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_InValid_version_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_09
       description: Retrieve the authentication history using invalid version parameter
       role: resident
       checkErrorsOnlyInResponse: true
@@ -332,6 +341,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_version_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_10
       description: Retrieve the authentication history with missing version
       role: resident
       checkErrorsOnlyInResponse: true
@@ -370,6 +380,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Invalid_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_11
       description: Retrieve the authentication history using invalid timestamp
       role: resident
       checkErrorsOnlyInResponse: true
@@ -408,6 +419,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_12
       description: Retrieve the authentication history with missing timestamp
       role: resident
       checkErrorsOnlyInResponse: true
@@ -447,6 +459,7 @@ AuthHistory:
 
    Resident_AuthHistory_InValid_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_13
       description: Retrieve the authentication history using invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
@@ -486,6 +499,7 @@ AuthHistory:
 
    Resident_AuthHistory_With_UIN_Phone_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_14
       description: Retrieve the authentication history with UIN via phone
       role: resident
       checkErrorsOnlyInResponse: true
@@ -518,6 +532,7 @@ AuthHistory:
 
    Resident_AuthHistory_With_UIN_Email_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_15
       description: Retrieve the authentication history with UIN via email
       role: resident
       checkErrorsOnlyInResponse: true
@@ -549,6 +564,7 @@ AuthHistory:
 }'
    Resident_AuthHistory_With_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-history
+      uniqueIdentifier: TC_Resident_AuthHistory_16
       description: Retrieve the authentication history with UIN using an empty channel
       role: resident
       checkErrorsOnlyInResponse: true
