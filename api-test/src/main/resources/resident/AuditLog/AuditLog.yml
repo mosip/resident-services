@@ -1,0 +1,60 @@
+AuditLog:
+   Resident_AuditLog_StatusCode_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/auth-proxy/audit/log
+      uniqueIdentifier: TC_Resident_AuditLog_01
+      description: Audit log correctly returns the status codes for all operations performed on a resident when a valid UIN is provided
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/AuditLog/createAuditLog
+      outputTemplate: resident/AuditLog/createAuditLogResult
+      input: '{
+		  "auditEventId": "RES-SER-191",
+		  "auditEventName": "get vids",
+		  "auditEventType": "SYSTEM",
+		  "actionTimeStamp": "$TIMESTAMP$",
+		  "hostName": "resident-6f6fb6c845-6frw4",
+		  "hostIp": "10.42.2.150",
+		  "applicationId": "10011",
+		  "applicationName": "Resident portal",
+		  "sessionUserId": "resident-111995",
+		  "sessionUserName": "resident-111995",
+		  "id": "NO_ID",
+		  "idType": "NO_ID_TYPE",
+		  "createdBy": "resident-111995",
+		  "moduleName": "Residence service",
+		  "moduleId": "RES-SER",
+		  "description": "get vids"
+}'
+      output: "200"
+
+   Resident_AuditLog_StatusCode_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/auth-proxy/audit/log
+      uniqueIdentifier: TC_Resident_AuditLog_02
+      description: Audit log correctly returns the status codes for all operations performed on a resident when a valid VID is provided
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/AuditLog/createAuditLog
+      outputTemplate: resident/AuditLog/createAuditLogResult
+      input: '{
+		  "auditEventId": "RES-SER-191",
+		  "auditEventName": "get vids",
+		  "auditEventType": "SYSTEM",
+		  "actionTimeStamp": "$TIMESTAMP$",
+		  "hostName": "resident-6f6fb6c845-6frw4",
+		  "hostIp": "10.42.2.150",
+		  "applicationId": "10011",
+		  "applicationName": "Resident portal",
+		  "sessionUserId": "resident-111995",
+		  "sessionUserName": "resident-111995",
+		  "id": "NO_ID",
+		  "idType": "NO_ID_TYPE",
+		  "createdBy": "resident-111995",
+		  "moduleName": "Residence service",
+		  "moduleId": "RES-SER",
+		  "description": "get vids"
+}'
+      output: "200"
+      
+      
