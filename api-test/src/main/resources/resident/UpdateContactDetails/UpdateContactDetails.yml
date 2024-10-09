@@ -1,6 +1,7 @@
 UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Invalid_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_01      
       description: Update contact details by giving invalid userid and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -34,6 +35,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Empty_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_02      
       description: Update contact details by giving userid value empty and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -67,6 +69,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_User_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_03      
       description: Update contact details when userid is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -100,6 +103,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_04      
       description: Update contact details when invalid transactionid is given and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -133,6 +137,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_05      
       description: Update contact details when transactionid is given empty and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -166,6 +171,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_06      
       description: Update contact details when transactionid is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -199,6 +205,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_07      
       description: Update contact details when invalid otp is used and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -232,6 +239,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_08      
       description: Update contact details when otp value is empty and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -265,6 +273,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Otp_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_09      
       description: Update contact details when otp is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
@@ -298,6 +307,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_Invalid_Token_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_10      
       description: Update contact details when invalid token is used      
       role: resident
       restMethod: post
@@ -336,6 +346,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Invalid_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_11      
       description: Update contact details when invalid userid is given and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -369,6 +380,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Empty_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_12      
       description: Update contact details when userid is given as empty value and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -402,6 +414,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_User_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_13      
       description: Update contact details when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -435,6 +448,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_14      
       description: Update contact details when invalid transaction id is given and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -468,6 +482,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_15      
       description: Update contact details when transaction id is given as empty and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -501,6 +516,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_16      
       description: Update contact details when transaction id is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -534,6 +550,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_17      
       description: Update contact details when invalid otp is given and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -567,6 +584,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_18      
       description: Update contact details when otp is given empty value and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -600,6 +618,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Otp_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_19      
       description: Update contact details when otp is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -633,6 +652,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_uin_Valid_All_Smoke_Pos:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_20      
       description: Update contact details when logged in using UIN      
       role: residentNew
       restMethod: post
@@ -662,6 +682,7 @@ UpdateContactDetails:
 
    Resident_UpdateContactDetails_vid_Valid_All_Smoke_Pos:
       endPoint: /resident/v1/contact-details/update-data
+      uniqueIdentifier: TC_Resident_UpdateContact_21      
       description: Update contact details when logged in using VID      
       role: residentNewVid
       restMethod: post

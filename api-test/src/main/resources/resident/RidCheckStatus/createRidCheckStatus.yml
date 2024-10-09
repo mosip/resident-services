@@ -1,6 +1,7 @@
 RidCheckStatus:
    Resident_RidCheckStatus_AllValid_Smoke:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_01      
       description: Fetch RID status      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -18,6 +19,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_02      
       description: Fetch RID status when individual id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -40,6 +42,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_03      
       description: Fetch RID status when invalid value is given for individual id       
       role: resident
       checkErrorsOnlyInResponse: true
@@ -63,6 +66,7 @@ RidCheckStatus:
 
    Resident_RidCheckStatus_Missing_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_04      
       description: Fetch RID status when individual id type is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -85,6 +89,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_05      
       description: Fetch RID status when individual id type value is given invalid      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -107,6 +112,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_Id:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_06      
       description: Fetch RID status when id is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -129,6 +135,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Missing_timestamp:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_07      
       description: Fetch RID status when requesttime is removed from request      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -151,6 +158,7 @@ RidCheckStatus:
 }'
    Resident_RidCheckStatus_Invalid_timestamp:
       endPoint: /resident/v1/rid/check-status
+      uniqueIdentifier: TC_Resident_Ridstatus_08      
       description: Fetch RID status when invalid request time is given      
       role: resident
       checkErrorsOnlyInResponse: true

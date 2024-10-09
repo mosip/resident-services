@@ -1,6 +1,7 @@
 SignJWT:
    Resident_SignJWT_all_Valid_Smoke_sid:
       endPoint: /v1/keymanager/jwtSign
+      uniqueIdentifier: TC_Dependency_esignet      
       description: Get signJWT      
       role: resident
       checkErrorsOnlyInResponse: true
