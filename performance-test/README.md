@@ -90,7 +90,7 @@ Pre-requisite to install the plugins:
 ### Designing the workload model for performance test execution
 
 * Calculation of number of users depending on Transactions per second (TPS) provided by client
-* The script and the below calculation is preconfigured as per 100 tps, if you are testing for other tps, the below values neds to be adjusted.
+* The script and the below calculation is preconfigured as per 100 tps, if you are testing for other tps, the below values needs to be adjusted.
 
 * Applying little's law
 	* Users = TPS * (SLA of transaction + think time + pacing)
