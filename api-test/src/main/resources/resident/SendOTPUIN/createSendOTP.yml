@@ -1,6 +1,7 @@
 createSendOTP:
    Resident_SendOTP_All_Valid_Smoke:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_01      
       description: Request otp using UIN      
       role: resident
       checkErrorsOnlyInResponse: true

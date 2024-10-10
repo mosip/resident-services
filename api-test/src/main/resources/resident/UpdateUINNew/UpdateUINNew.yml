@@ -1,6 +1,7 @@
 UpdateUINNew:
    Resident_UpdateUINNew_all_Valid_Smoke:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_01      
       description: Update demographic details with all valid details and logged in using UIN     
       role: residentNew
       restMethod: patch
@@ -20,6 +21,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_all_Valid_Smoke:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_02      
       description: Update demographic details with all valid details and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -39,6 +41,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_Language_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_03      
       description: Update email with invalid language is given and logged in using UIN      
       role: residentNew
       restMethod: patch
@@ -62,6 +65,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Invalid_Language_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_04      
       description: Update email with invalid language is given and logged in using VID       
       role: residentNewVid
       restMethod: patch
@@ -86,6 +90,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_User_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_05      
       description: Update email with invalid token      
       role: resident
       restMethod: patch
@@ -110,6 +115,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_06      
       description: Update email with invalid transactionid is given      
       role: residentNew
       restMethod: patch
@@ -134,6 +140,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Missing_TransactionID_Pos:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_07      
       description: Update email when transactionid is removed from request      
       role: residentNew
       restMethod: patch
@@ -157,6 +164,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Empty_TransactionID_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_08      
       description: Update email when transactionid is given empty     
       role: residentNew
       restMethod: patch
@@ -181,6 +189,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_09      
       description: Update email with invalid consent is given      
       role: residentNew
       restMethod: patch
@@ -205,6 +214,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Missing_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_10      
       description: Update email when consent is removed from request      
       role: residentNew
       restMethod: patch
@@ -229,6 +239,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Empty_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_11      
       description: Update email when consent is given empty      
       role: residentNew
       restMethod: patch
@@ -253,6 +264,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_12      
       description: Update email when invalid requesttime is given      
       role: residentNew
       restMethod: patch
@@ -277,6 +289,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Missing_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_13      
       description: Update email when requesttime is removed from request      
       role: residentNew
       restMethod: patch
@@ -301,6 +314,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Empty_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_14      
       description: Update email when requesttime is given empty      
       role: residentNew
       restMethod: patch
@@ -325,6 +339,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_15      
       description: Update email when invalid transactionid is given and logged in using VID  
       role: residentNewVid
       restMethod: patch
@@ -349,6 +364,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Missing_TransactionID_Pos:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_16      
       description: Update email when transactionid is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -372,6 +388,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Empty_TransactionID_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_17      
       description: Update email when transactionid is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -396,6 +413,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Invalid_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_18      
       description: Update email when invalid consent is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -420,6 +438,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Missing_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_19      
       description: Update email when consent is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -444,6 +463,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Empty_Consent_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_20      
       description: Update email when consent is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -468,6 +488,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_21      
       description: Update email when invalid requestime is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -492,6 +513,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_22      
       description: Update email when requestime is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -516,6 +538,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_vid_Empty_Requesttime_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_23      
       description: Update email when requestime is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -540,6 +563,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Invalid_Identity_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_24      
       description: Update email when invalid identity is given and logged in using UIN      
       role: residentNew
       restMethod: patch
@@ -564,6 +588,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Vid_Invalid_Identity_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_25      
       description: Update email when invalid identity is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
@@ -588,6 +613,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Missing_Identity_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_26      
       description: Update when identity is removed and logged in using UIN      
       role: residentNew
       restMethod: patch
@@ -612,6 +638,7 @@ UpdateUINNew:
 
    Resident_UpdateUINNew_Vid_Missing_Identity_Neg:
       endPoint: /resident/v1/update-uin
+      uniqueIdentifier: TC_Resident_UpdateUINNew_27      
       description: Update when identity is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch

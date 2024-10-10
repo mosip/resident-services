@@ -1,6 +1,7 @@
 SendOTP:
    Resident_SendOTP_Valid_UIN_All_Smoke:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_01      
       description: Request OTP using UIN       
       role: resident
       checkErrorsOnlyInResponse: true
@@ -19,6 +20,7 @@ SendOTP:
     }'
    Resident_SendOTP_Valid_UIN_Phone_Smoke:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_02      
       description: Request OTP using UIN when otp channel is given as only phone      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -38,6 +40,7 @@ SendOTP:
     }'
    Resident_SendOTP_Valid_UIN_Email_Smoke:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_03      
       description: Request OTP using UIN when otp channel is given as only Email      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -57,6 +60,7 @@ SendOTP:
     }'
    Resident_SendOTP_RevokedVID_Invalid:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_04      
       description: Request OTP using Revoked VID      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -75,6 +79,7 @@ SendOTP:
     }'
    Resident_SendOTP_Valid_UIN_Invalid_empty_otpChannel:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_05      
       description: Request OTP using UIN when otp channel is empty array      
       role: resident
       restMethod: post
@@ -93,6 +98,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_individualId:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_06      
       description: Request OTP using invalid individualId      
       role: resident
       restMethod: post
@@ -110,6 +116,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Missing_individualId:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_07      
       description: Request OTP when individualId is removed from request      
       role: resident
       restMethod: post
@@ -127,6 +134,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Empty_transactionID:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_07      
       description: Request OTP when transcationId is given empty      
       role: resident
       restMethod: post
@@ -144,6 +152,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_transactionID:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_09      
       description: Request OTP when invalid transcationId is given      
       role: resident
       restMethod: post
@@ -161,6 +170,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Missing_transactionID:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_10      
       description: Request OTP when transcationId is removed from request      
       role: resident
       restMethod: post
@@ -178,6 +188,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_Empty_requestTime:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_11      
       description: Request OTP when requesttime is given empty      
       role: resident
       restMethod: post
@@ -195,6 +206,7 @@ SendOTP:
     }'
    Resident_SendOTP_InValid_requestTime:
       endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_12      
       description: Request OTP when invalid requesttime is given      
       role: resident
       restMethod: post

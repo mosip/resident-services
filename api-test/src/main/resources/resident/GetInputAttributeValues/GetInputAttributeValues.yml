@@ -1,6 +1,7 @@
 GetInputAttributeValues:
    Resident_GetInputAttributeValues1_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_01      
       description: Get input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues2_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_02      
       description: Get second input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -30,6 +32,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues3_UIN_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_03      
       description: Get third input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -44,6 +47,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues_UIN_Invalid_SchemaType_Neg:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_04      
       description: Get input attribute values using a valid UIN with an invalid schematype
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -64,6 +68,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues1_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_05      
       description: Get input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -78,6 +83,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues2_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_05      
       description: Get second input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -92,6 +98,7 @@ GetInputAttributeValues:
 
    Resident_GetInputAttributeValues3_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/identity/info/type/{schemaType}
+      uniqueIdentifier: TC_Resident_GetInputAtributes_06      
       description: Get third input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
