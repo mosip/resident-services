@@ -1,6 +1,7 @@
 GetIdentityMapping:
    Resident_GetIdentityMapping_all_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/config/identity-mapping
+      uniqueIdentifier: TC_Resident_GetIdentityMapping_01      
       description: Get identity mapping using all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true

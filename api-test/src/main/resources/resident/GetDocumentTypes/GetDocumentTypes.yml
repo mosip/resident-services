@@ -1,6 +1,7 @@
 GetDocumentTypes:
-   Resident_GetGetDocumentTypes_all_Valid_Smoke:
+   Resident_GetDocumentTypes_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_01      
       description: Get getdocumenttypes using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -14,8 +15,9 @@ GetDocumentTypes:
       output: '{
 }'
 
-   Resident_GetGetDocumentTypes1_all_Valid_Smoke:
+   Resident_GetDocumentTypes1_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_02      
       description: Get one getdocumenttypes using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -29,8 +31,9 @@ GetDocumentTypes:
       output: '{
 }'
 
-   Resident_GetGetDocumentTypes2_all_Valid_Smoke:
+   Resident_GetDocumentTypes2_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_03      
       description: Get second getdocumenttypes using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -44,8 +47,9 @@ GetDocumentTypes:
       output: '{
 }'
 
-   Resident_GetGetDocumentTypes3_all_Valid_Smoke:
+   Resident_GetDocumentTypes3_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_04      
       description: Get third getdocumenttypes using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -59,8 +63,9 @@ GetDocumentTypes:
       output: '{
 }'
 
-   Resident_GetGetDocumentTypes4_all_Valid_Smoke:
+   Resident_GetDocumentTypes4_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_05      
       description: Get fourth getdocumenttypes using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -74,8 +79,9 @@ GetDocumentTypes:
       output: '{
 }'
 
-   Resident_GetGetDocumentTypes_Invalid_Documentcatagorycode_Neg:
+   Resident_GetDocumentTypes_Invalid_Documentcatagorycode_Neg:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_06      
       description: Get getdocumenttypes using an invalid documentcategorycode
       role: resident
       restMethod: get
@@ -94,8 +100,9 @@ GetDocumentTypes:
   ]
 }'
 
-   Resident_GetGetDocumentTypes_Invalid_langcode_Neg:
+   Resident_GetDocumentTypes_Invalid_langcode_Neg:
       endPoint: /resident/v1/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}
+      uniqueIdentifier: TC_Resident_GetDocumentTypes_07      
       description: Get getdocumenttypes using an invalid langcode
       role: resident
       restMethod: get
