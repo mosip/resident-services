@@ -60,9 +60,9 @@ Pre-requisite to install the plugins:
    * id-authentication default properties: Update the value for the below properties.
           otp.request.flooding.max-count - 100000
 
-* Resident Id Access Token Creation For Logout(Setup) : We need to create the resident id access tokens seperately for the logout scenario, because we cannot re use the same tokens that are generated for the other scenario's. As the tokens will be expired as soon as the logout is executed. Based on the TPS provided for logout scenario, we can keep the access tokens ready for the test.
-
 * Create Resident Services EventId (Setup) : This thread contains service history endpoint api to capture the event id's required for the test.
+
+* Resident Id Access Token Creation For Logout(Preparation) : We need to create the resident id access tokens seperately for the logout scenario, because we cannot re use the same tokens that are generated for the other scenario's. As the tokens will be expired as soon as the logout is executed. Based on the TPS provided for logout scenario, we can keep the access tokens ready for the test.
           
 
 ### Data prerequisite
