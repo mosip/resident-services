@@ -115,12 +115,18 @@ public class AddIdentity extends AdminTestUtil implements ITest {
 		String phoneNumber = "";
 		String email = testCaseName +"@mosip.net";
 		if (inputJson.contains("$PHONENUMBERFORIDENTITY$")) {
+			
+			// MOSIP-34689 - UI spec has invalid regex till that is fixed from server end. get regex properties from resident actuator.
+			
+			phoneSchemaRegex = getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES, "mosip.id.validation.identity.phone");
+			
 			if (!phoneSchemaRegex.isEmpty())
 				try {
 					phoneNumber = genStringAsperRegex(phoneSchemaRegex);
 				} catch (Exception e) {
 					logger.error(e.getMessage());
 				}
+			
 			inputJson = replaceKeywordWithValue(inputJson, "$PHONENUMBERFORIDENTITY$", phoneNumber);
 			inputJson = replaceKeywordWithValue(inputJson, "$EMAILVALUE$", email);
 		}
