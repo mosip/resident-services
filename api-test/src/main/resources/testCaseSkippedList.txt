@@ -1,9 +1,2 @@
 ##### JIRA number;testcase 
 #MOSIP-12345------Test_Case_Name
-MOSIP-34689------Resident_GetChannelVerificationStatus_For_Phone_all_Valid_Smoke
-MOSIP-34689------Resident_GetChannelVerificationStatus_Phone_Valid_Smoke
-MOSIP-34689------Resident_Generate_Perpetual_VID_Phone_Valid_Smoke_sid
-MOSIP-34689------Resident_AuthHistory_With_UIN_Phone_smoke_Pos
-MOSIP-34689------Resident_AuthLock_Valid_UIN_Phone_All
-MOSIP-34689------Resident_AuthUnLock_Valid_UIN_PhoneChannel_Pos
-MOSIP-34689------Resident_RequestCredentials_Phone_Channel_Pos
