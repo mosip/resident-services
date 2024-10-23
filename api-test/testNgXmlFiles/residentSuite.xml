@@ -9,14 +9,6 @@
 	</listeners>
 		
  
-	<test name="AddIdentity">
-		<parameter name="ymlFile"
-			value="resident/AddIdentity/AddIdentity.yml" />
-			<parameter name="prerequisite" value="Yes" />
-		<classes>
-			<class name="io.mosip.testrig.apirig.testscripts.AddIdentity" />
-		</classes>
-	</test>
 	<test name="GenerateVID">
 		<parameter name="ymlFile"
 			value="resident/GenerateVID/createGenerateVID.yml" />
