@@ -100,7 +100,14 @@ public class PerpetualVidUtil {
                             + e.getMessage() + ExceptionUtils.getStackTrace(e));
             throw new ApisResourceAccessException("Unable to retrieve VID : " + e.getMessage());
         }
-
+        ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
+        res.setId(residentVidGetId);
+        res.setVersion(newVersion);
+        res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        if(response.getErrors()!=null && !response.getErrors().isEmpty()){
+            res.setResponse(List.of());
+            return res;
+        }
         List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
                 .map(map -> {
                     LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
@@ -112,10 +119,6 @@ public class PerpetualVidUtil {
                 })
                 .filter(map1 -> map1.get(TRANSACTIONS_LEFT_COUNT) == null || (int) map1.get(TRANSACTIONS_LEFT_COUNT) > 0)
                 .collect(Collectors.toList());
-        ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
-        res.setId(residentVidGetId);
-        res.setVersion(newVersion);
-        res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         res.setResponse(filteredList);
         return res;
     }

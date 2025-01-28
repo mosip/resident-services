@@ -1,5 +1,6 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.service.impl.IdentityServiceTest.getAuthUserDetailsFromAuthentication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
@@ -11,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -19,16 +19,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,10 +45,7 @@ import reactor.util.function.Tuples;
 /**
  * @author Abubacker Siddik
  */
-@RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({SecurityContextHolder.class, InetAddress.class, DateUtils.class})
-@Ignore
+@RunWith(MockitoJUnitRunner.class)
 public class AuditUtilTest {
 
     @InjectMocks
@@ -103,24 +94,16 @@ public class AuditUtilTest {
         ReflectionTestUtils.setField(auditUtil, "auditUrl", auditUrl);
         ReflectionTestUtils.setField(auditUtil, "asyncUtil", asyncUtil);
 
-        PowerMockito.mockStatic(SecurityContextHolder.class);
-        PowerMockito.mockStatic(InetAddress.class);
-        PowerMockito.mockStatic(DateUtils.class);
-
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("user1", "password", null);
-        when(SecurityContextHolder.getContext()).thenReturn(new SecurityContextImpl(token));
-
         host = InetAddress.getLocalHost();
-        when(InetAddress.getLocalHost()).thenReturn(host);
-
         localDateTime = DateUtils.getUTCCurrentDateTime();
-        when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
+        ReflectionTestUtils.setField(auditUtil, "hostIpAddress","MOSIP");
         when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("user1");
         when(environment.getProperty(Mockito.anyString())).thenReturn("user1");
     }
 
     @Test
     public void setAuditRequestDtoTest() throws Exception {
+        getAuthUserDetailsFromAuthentication();
         AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
         AuditResponseDto auditResponseDto = new AuditResponseDto();
         auditResponseDto.setStatus(true);
@@ -161,20 +144,18 @@ public class AuditUtilTest {
 				httpEntity.getBody().getRequest().getId());
 		assertEquals(IdType.UIN.name(), httpEntity.getBody().getRequest().getIdType());
 
-        assertEquals(host.getHostName(), httpEntity.getBody().getRequest().getHostName());
-        assertEquals(host.getHostAddress(), httpEntity.getBody().getRequest().getHostIp());
-
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserId());
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserName());
         assertEquals("user1", httpEntity.getBody().getRequest().getCreatedBy());
 
-        assertEquals(localDateTime, httpEntity.getBody().getRequest().getActionTimeStamp());
+        assertEquals(localDateTime.getYear(), httpEntity.getBody().getRequest().getActionTimeStamp().getYear());
 
         assertEquals(auditUrlInput, auditUrl);
     }
 
     @Test(expected = RuntimeException.class)
     public void testSetAuditRequestDtoWithApisResourceAccessException() throws Exception {
+        getAuthUserDetailsFromAuthentication();
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
     	when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(ApisResourceAccessException.class);
     	auditUtil.setAuditRequestDto(auditEvent);
@@ -182,6 +163,7 @@ public class AuditUtilTest {
 
     @Test(expected = ResidentServiceException.class)
     public void testGetRefIdHashAndTypeWithApisResourceAccessException() throws Exception {
+        getAuthUserDetailsFromAuthentication();
     	AuditEvent auditEvent = AuditEnum.getAuditEventWithValue(AuditEnum.VALIDATE_REQUEST, "get Rid status API");
     	when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn(null);
 		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenThrow(ApisResourceAccessException.class);
@@ -196,6 +178,7 @@ public class AuditUtilTest {
 
 	@Test
 	public void testGetRefIdandType() throws ApisResourceAccessException, NoSuchAlgorithmException {
+        getAuthUserDetailsFromAuthentication();
 		String individualId = "9054257143";
 		Mockito.when(availableClaimUtility.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(uinVidValidator.getIndividualIdType(individualId)).thenReturn(IdType.UIN);

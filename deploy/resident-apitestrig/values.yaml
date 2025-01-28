@@ -1,0 +1,7 @@
+modules:
+  resident:
+    enabled: true
+    image:
+      repository: mosipqa/apitest-resident
+      tag: develop
+      pullPolicy: Always

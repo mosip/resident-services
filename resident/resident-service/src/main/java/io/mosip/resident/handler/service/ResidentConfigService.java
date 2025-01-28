@@ -57,4 +57,5 @@ public interface ResidentConfigService {
 	 */
 	Map<String, Map<String, Map<String, Object>>> getUISchemaCacheableData(String schemaType);
 
+	Map<String, Object> getIdentityMappingMap() throws ResidentServiceCheckedException, IOException;
 }

@@ -1,0 +1,4 @@
+${schemaType}
+update-demographics
+personalized-card
+share-credential
