@@ -195,7 +195,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 
 	public Map<String, Object> getIdentityMappingMap()
-			throws ResidentServiceCheckedException, IOException, JsonParseException, JsonMappingException {
+			throws ResidentServiceCheckedException, IOException {
 		String identityMapping = getIdentityMapping();
 		Map<String, Object> identityMappingMap = objectMapper
 				.readValue(identityMapping.getBytes(StandardCharsets.UTF_8), Map.class);

@@ -10,8 +10,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/getRegistrationCenterByHierarchyLevelAndTextPaginatedResult
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"1",
 		"sortBy":"createdDateTime",
@@ -31,8 +31,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"engg",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"1",
 		"sortBy":"createdDateTime",
@@ -85,7 +85,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
 		"name":"Random",
 		"pageNumber":"0",
 		"pageSize":"1",
@@ -112,8 +112,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"999",
 		"pageSize":"10",
 		"sortBy":"createdDateTime",
@@ -139,8 +139,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"-999",
 		"sortBy":"createdDateTime",
@@ -166,8 +166,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"10",
 		"sortBy":"Random",
@@ -193,8 +193,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"10",
 		"sortBy":"createdDateTime",
@@ -221,7 +221,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       input: '{
       	"langcode":"$1STLANG$",
 		"hierarchylevel":"tt",
-		"name":"10104",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"1",
 		"sortBy":"createdDateTime",
@@ -247,8 +247,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"tt",
 		"pageSize":"10",
 		"sortBy":"createdDateTime",
@@ -274,8 +274,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"tt",
 		"sortBy":"createdDateTime",
@@ -301,8 +301,8 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"",
-		"hierarchylevel":"5",
-		"name":"10104",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"1",
 		"sortBy":"createdDateTime",
@@ -322,7 +322,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       input: '{
       	"langcode":"$1STLANG$",
 		"hierarchylevel":"",
-		"name":"10104",
+		"name":"$LOCATIONNAME$",
 		"pageNumber":"0",
 		"pageSize":"1",
 		"sortBy":"createdDateTime",
@@ -341,7 +341,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
       outputTemplate: resident/error
       input: '{
       	"langcode":"$1STLANG$",
-		"hierarchylevel":"5",
+		"hierarchylevel":"$HIERARCHYLEVELWITHLOCATIONCODE$",
 		"name":"",
 		"pageNumber":"0",
 		"pageSize":"1",

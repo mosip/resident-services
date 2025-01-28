@@ -89,32 +89,53 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     @Value("${resident.websub.regproc.workflow.complete.secret}")
     private String regProcWorkFlowCompleteSecret;
-    
-    
+
+    @Value("${task.scheduler.pool-size:10}")
+    private int poolSize;
+
+    @Value("${task.scheduler.thread-name-prefix:TaskScheduler-}")
+    private String threadNamePrefix;
+
+    @Value("${task.scheduler.await-termination-seconds:30}")
+    private int awaitTerminationSeconds;
+
+    @Value("${task.scheduler.wait-for-tasks-to-complete-on-shutdown:true}")
+    private boolean waitForTasksToCompleteOnShutdown;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("onApplicationEvent", "BaseWebSubInitializer", "Application is ready");
-		logger.info("Scheduling event subscriptions after (milliseconds): " + taskSubscriptionInitialDelay);
-        taskScheduler.schedule(() -> {
-            //Invoke topic registrations. This is done only once.
-            //Note: With authenticated websub, only register topics which are only published by IDA
-            tryRegisteringTopics();
-            //Init topic subscriptions
-            initTopicSubscriptions();
-        }, new Date(System.currentTimeMillis() + taskSubscriptionInitialDelay));
-        
-        if (reSubscriptionIntervalSecs > 0) {
-			logger.info("Work around for web-sub notification issue after some time.");
-			scheduleRetrySubscriptions();
-		} else {
-			logger.info("Scheduling for re-subscription is Disabled as the re-subsctription delay value is: "
-							+ reSubscriptionIntervalSecs);
-		}
+        logger.info("Scheduling event subscriptions after (milliseconds): " + taskSubscriptionInitialDelay);
+        taskScheduler.setPoolSize(poolSize);
+        taskScheduler.setThreadNamePrefix(threadNamePrefix);
+        taskScheduler.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
+        taskScheduler.setAwaitTerminationSeconds(awaitTerminationSeconds);
 
+        taskScheduler.schedule(() -> {
+            try {
+                // Invoke topic registrations (done only once)
+                tryRegisteringTopics();
+                // Initialize topic subscriptions
+                initTopicSubscriptions();
+            } catch (Exception e) {
+                logger.error("Error while scheduling topic registrations and subscriptions", e);
+            }
+        }, trigger -> {
+            // Schedule task to execute once after the initial delay
+            return new Date(System.currentTimeMillis() + taskSubscriptionInitialDelay).toInstant();
+        });
+
+        if (reSubscriptionIntervalSecs > 0) {
+            logger.info("Workaround for web-sub notification issue after some time.");
+            scheduleRetrySubscriptions();
+        } else {
+            logger.info("Re-subscription scheduling is disabled as the re-subscription interval is: "
+                    + reSubscriptionIntervalSecs);
+        }
     }
 
-	private void initTopicSubscriptions() {
+
+    private void initTopicSubscriptions() {
 		authTypStatusTopicSubsriptions();
 		authTransactionTopicSubscription();
 		credentialStatusUpdateTopicSubscription();

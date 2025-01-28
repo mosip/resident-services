@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import io.mosip.resident.dto.*;
 import io.mosip.resident.util.*;
 import io.mosip.resident.validator.ValidateNewUpdateRequest;
 import io.mosip.resident.validator.ValidateSameData;
@@ -86,53 +87,6 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthTypeStatusDtoV2;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.BellNotificationDto;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.EventStatusResponseDTO;
-import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.dto.MachineCreateRequestDTO;
-import io.mosip.resident.dto.MachineCreateResponseDTO;
-import io.mosip.resident.dto.MachineDto;
-import io.mosip.resident.dto.MachineSearchRequestDTO;
-import io.mosip.resident.dto.MachineSearchResponseDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationRequestDtoV2;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
-import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResidentUpdateResponseDTOV2;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ServiceHistoryResponseDto;
-import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
@@ -157,6 +111,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -545,7 +500,7 @@ public class ResidentServiceImpl implements ResidentService {
 			RegProcRePrintRequestDto rePrintReq = new RegProcRePrintRequestDto();
 			rePrintReq.setCardType(dto.getCardType());
 			rePrintReq.setCenterId(centerId);
-			rePrintReq.setMachineId(machineId);
+			rePrintReq.setMachineId(getMachineId());
 			rePrintReq.setId(dto.getIndividualId());
 			rePrintReq.setIdType(dto.getIndividualIdType());
 			rePrintReq.setReason("resident");
@@ -862,20 +817,11 @@ public class ResidentServiceImpl implements ResidentService {
 				logger.debug(AuditEnum.VALIDATE_OTP_SUCCESS.getDescription(), dto.getTransactionID());
 			}
 
-			final String publicKey = getPublicKeyFromKeyManager();
-			MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix,
-					publicKey);
-			String machineId = getMachineId(machineSearchResponseDTO, publicKey);
-			if (machineId == null) {
-				machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId,
-						publicKey);
-			}
-
 			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
 			regProcReqUpdateDto.setCenterId(centerId);
-			regProcReqUpdateDto.setMachineId(machineId);
+			regProcReqUpdateDto.setMachineId(getMachineId());
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put(IDENTITY, demographicIdentity);
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
@@ -1078,6 +1024,45 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug("ResidentServiceImpl::reqUinUpdate()::exit");
 		return Tuples.of(responseDto, eventId);
 	}
+
+	private String getMachineId() throws ApisResourceAccessException {
+		final String publicKey = getPublicKeyFromKeyManager();
+		MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix,
+				publicKey);
+		String machineId = getMachineIdIfExists(machineSearchResponseDTO, publicKey);
+		if (machineId == null) {
+			machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId,
+					publicKey);
+		}
+		activateMachineId(machineId);
+		return machineId;
+	}
+
+	private void activateMachineId(String machineId) throws ApisResourceAccessException {
+		try {
+			String baseUrl = env.getProperty(ApiName.MACHINESTATUSUPDATE.name());
+
+			String apiUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+					.queryParam("id", machineId)
+					.queryParam("isActive", true)
+					.toUriString();
+
+			ResponseWrapper<StatusResponseDto> response =
+					residentServiceRestClient.patchApi(apiUrl, MediaType.APPLICATION_JSON, null,
+							ResponseWrapper.class);
+
+			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+				throw new ResidentMachineServiceException(response.getErrors().get(0).getErrorCode(),
+						response.getErrors().get(0).getMessage());
+			}
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					residentMachinePrefix, "ResidentServiceImpl::reqUinUpdate():: activateMachineId Patch service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not activate machines in master data", e);
+		}
+	}
+
 
 	private void sendFailureNotification(ResidentTransactionEntity residentTransactionEntity, ResidentUpdateRequestDto dto, JSONObject idRepoJson) throws ResidentServiceCheckedException {
 		if (Utility.isSecureSession()) {
@@ -1369,7 +1354,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return machineSearchResponseDTO;
 	}
 
-	private String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
+	private String getMachineIdIfExists(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
 		if (machineSearchResponseDTO.getResponse() != null) {
 			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
 			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
@@ -2067,7 +2052,7 @@ public class ResidentServiceImpl implements ResidentService {
 			try {
 				Map<String, Object> identity = identityUtil
 						.getIdentityAttributes(availableClaimUtility.getResidentIndvidualIdFromSession(), null);
-				name = utility.getMappingValue(identity, ResidentConstants.NAME, langCode);
+				name = identityUtil.getFullName(identity, langCode);
 			} catch (IOException e) {
 				logger.error("Error occured in accessing identity data %s", e.getMessage());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),

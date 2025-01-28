@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import io.mosip.kernel.websub.api.config.WebSubClientConfig;
 import jakarta.servlet.Filter;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -49,6 +51,7 @@ import io.mosip.resident.util.Utility;
 @Configuration
 @EnableScheduling
 @EnableAsync
+@Import(WebSubClientConfig.class)
 public class Config {
 	private String defaultEncoding = StandardCharsets.UTF_8.name();
 	/** The resource loader. */
@@ -68,7 +71,15 @@ public class Config {
 	
 	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_METRICS_INTERCEPTOR_FILTER_ENABLED + ":false}")
 	private boolean isResidentMetricsInterceptorFilterEnabled;
-	
+
+	@Value("${task.scheduler.pool-size:10}")
+	private int poolSize;
+
+	@Value("${task.scheduler.await-termination-seconds:30}")
+	private int awaitTerminationSeconds;
+
+	@Value("${task.scheduler.wait-for-tasks-to-complete-on-shutdown:true}")
+	private boolean waitForTasksToCompleteOnShutdown;
 
 	@Autowired(required = false)
 	private RestTemplateLoggingInterceptor restTemplateLoggingInterceptor;
@@ -172,8 +183,10 @@ public class Config {
 	@Bean
 	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
 		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		threadPoolTaskScheduler.setPoolSize(5);
+		threadPoolTaskScheduler.setPoolSize(poolSize);
 		threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+		threadPoolTaskScheduler.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
+		threadPoolTaskScheduler.setAwaitTerminationSeconds(awaitTerminationSeconds);
 		return threadPoolTaskScheduler;
 	}
 

@@ -10,8 +10,8 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/GetRegCenterByLangCodeAndHierarchyLevel/getRegCenterByLangCodeAndHierarchyLevelResult
       input: '{
 		  "langcode": "$1STLANG$",
-		  "hierarchylevel": "5",
-		  "name": "10112"
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
+		  "name": "$LOCATIONNAME$"
 }'
       output: '{
 }'
@@ -29,7 +29,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       input: '{
 		  "langcode": "$1STLANG$",
 		  "hierarchylevel": "tt",
-		  "name": "10112"
+		  "name": "$LOCATIONNAME$"
 }'
       output: '{
 	   "errors": [
@@ -51,7 +51,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "$1STLANG$",
-		  "hierarchylevel": "5",
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
 		  "name": "tt"
 }'
       output: '{
@@ -74,8 +74,8 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "engg",
-		  "hierarchylevel": "5",
-		  "name": "10112"
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
+		  "name": "$LOCATIONNAME$"
 }'
       output: '{
 	   "errors": [
@@ -97,8 +97,8 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "1234",
-		  "hierarchylevel": "7",
-		  "name": "10112"
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
+		  "name": "$LOCATIONNAME$"
 }'
       output: '{
 		"errors": [
@@ -121,7 +121,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       input: '{
 		  "langcode": "$1STLANG$",
 		  "hierarchylevel": "-177",
-		  "name": "10112"
+		  "name": "$LOCATIONNAME$"
 }'
       output: '{
 		"errors": [
@@ -143,7 +143,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "1234",
-		  "hierarchylevel": "7",
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
 		  "name": "Random"
 }'
       output: '{
@@ -166,8 +166,8 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "",
-		  "hierarchylevel": "5",
-		  "name": "10112"
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
+		  "name": "$LOCATIONNAME$"
 }'
       output: "404"
 
@@ -183,7 +183,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       input: '{
 		  "langcode": "$1STLANG$",
 		  "hierarchylevel": "",
-		  "name": "10112"
+		  "name": "$LOCATIONNAME$"
 }'
       output: "404"
 
@@ -198,7 +198,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
       outputTemplate: resident/error
       input: '{
 		  "langcode": "$1STLANG$",
-		  "hierarchylevel": "5",
+		  "hierarchylevel": "$HIERARCHYLEVELWITHLOCATIONCODE$",
 		  "name": ""
 }'
       output: '{
