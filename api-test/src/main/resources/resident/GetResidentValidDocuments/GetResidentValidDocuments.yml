@@ -15,7 +15,7 @@ GetResidentValidDocuments:
       output: '{
 }'
 
-   Resident_GetResidentValidDocuments__Invalid_LangCode:
+   Resident_GetResidentValidDocuments_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/applicanttype/{applicantId}/languages?languages={langCode}
       uniqueIdentifier: TC_Resident_GetValidDocumets_02      
       description: Get Resident valid documents when invalid language code is given in input parameters      
