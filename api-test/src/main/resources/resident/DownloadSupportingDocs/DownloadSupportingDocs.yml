@@ -1,6 +1,7 @@
 DownloadSupportingDocs:
    Resident_DownloadSupportingDocs_all_Valid_smoke:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_01
       description: Download supporting documents using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -15,6 +16,7 @@ DownloadSupportingDocs:
 
    Resident_DownloadSupportingDocs_Valid_smoke:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_02
       description: Download supporting documents using valid data
       role: resident
       checkErrorsOnlyInResponse: true
@@ -30,6 +32,7 @@ DownloadSupportingDocs:
 
    Resident_DownloadSupportingDocs_Empty_Lang_Neg:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_03
       description: Download supporting documents using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -45,6 +48,7 @@ DownloadSupportingDocs:
 
    Resident_DownloadSupportingDocs_Invalid_token_Neg:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_04
       description: Download supporting documents using an invalid token
       role: invalid
       checkErrorsOnlyInResponse: true
@@ -59,6 +63,7 @@ DownloadSupportingDocs:
 
    Resident_DownloadSupportingDocs_Invalid_lang_Neg:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_05
       description: Download supporting documents using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -73,6 +78,7 @@ DownloadSupportingDocs:
 
    Resident_DownloadSupportingDocs_Absent_langCode_Neg:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_DownloadSupportingDocs_06
       description: Download supporting documents using an absent langcode
       role: resident
       checkErrorsOnlyInResponse: true

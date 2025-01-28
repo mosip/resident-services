@@ -1,6 +1,7 @@
 DownloadCredential:
    Resident_CredentialsStatus_All_Valid_Smoke_euin:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_01
       description: Check the credential status using valid EUIN and inputs.
       role: resident
       restMethod: get
@@ -16,6 +17,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_All_Valid_Smoke_QrCode:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_02
       description: Check the Qrcode credential status using valid inputs
       role: resident
       restMethod: get
@@ -31,6 +33,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_All_Valid_Smoke_Reprint:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_03
       description: Check the reprint credential status using valid inputs
       role: resident
       restMethod: get
@@ -46,6 +49,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_VID_All_Valid_Smoke_euin:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_04
       description: Check the credential status using VID with EUIN and valid inputs
       role: resident
       restMethod: get
@@ -61,6 +65,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_VID_All_Valid_Smoke_Reprint:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_05
       description: Check the reprint credential status using VID and valid inputs
       role: resident
       restMethod: get
@@ -76,6 +81,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_VID_All_Valid_Smoke_QrCode:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_06
       description: Check the Qrcode credential status using VID and valid inputs
       role: resident
       restMethod: get
@@ -91,6 +97,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_Invalid_requestId:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_07
       description: Check the credential status using an invalid requestId
       role: resident
       restMethod: get
@@ -110,6 +117,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_Invalid_requesttime:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_08
       description: Check the credential status using an invalid requesttime
       role: resident
       restMethod: get
@@ -129,6 +137,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_Empty_requestId:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_09
       description: Check the credential status using an empty requestId
       role: resident
       restMethod: get
@@ -148,6 +157,7 @@ DownloadCredential:
     }'
    Resident_CredentialsStatus_Empty_requesttime:
       endPoint: /resident/v1/req/card/{requestId}
+      uniqueIdentifier: TC_Resident_DownloadCredential_10
       description: Check the credential status using an empty requesttime
       role: resident
       restMethod: get

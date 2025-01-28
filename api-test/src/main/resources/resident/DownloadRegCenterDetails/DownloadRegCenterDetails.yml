@@ -1,6 +1,7 @@
 DownloadRegCenterDetails:
    Resident_DownloadRegCenterDetails_all_Valid_Smoke:
       endPoint: /resident/v1/download/registrationcenters
+      uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_01
       description: Download registration center details using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -18,6 +19,7 @@ DownloadRegCenterDetails:
 
    Resident_DownloadRegCenterDetails_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/registrationcenters
+      uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_02
       description: Download registration center details using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -35,6 +37,7 @@ DownloadRegCenterDetails:
 
    Resident_DownloadRegCenterDetails_Invalid_Hierarchylevel_Neg:
       endPoint: /resident/v1/download/registrationcenters
+      uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_03
       description: Download registration center details using an invalid hierarchylevel
       role: resident
       checkErrorsOnlyInResponse: true
@@ -52,6 +55,7 @@ DownloadRegCenterDetails:
 
    Resident_DownloadRegCenterDetails_Invalid_Name_Neg:
       endPoint: /resident/v1/download/registrationcenters
+      uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_04
       description: Download registration center details using an invalid name
       role: resident
       checkErrorsOnlyInResponse: true
@@ -69,6 +73,7 @@ DownloadRegCenterDetails:
 
    Resident_DownloadRegCenterDetails_Invalid_All_Input_Neg:
       endPoint: /resident/v1/download/registrationcenters
+      uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_05
       description: Download registration center details using all invalid inputs
       role: resident
       checkErrorsOnlyInResponse: true

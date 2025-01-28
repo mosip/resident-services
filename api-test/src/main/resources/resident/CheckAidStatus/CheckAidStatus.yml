@@ -1,6 +1,7 @@
 CheckAidStatus:
    Resident_CheckAidStatus_all_Valid_Smoke:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_01
       description: Check the status of the AID using valid data
       role: resident
       restMethod: post
@@ -32,6 +33,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_Aid_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_02
       description: Check the status of the AID by using an invalid AID
       role: resident
       restMethod: post
@@ -69,6 +71,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_03
       description: Check the status of the AID using an invalid transactionID
       role: resident
       restMethod: post
@@ -106,6 +109,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Invalid_Otp_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_04
       description: Check the status of the AID using an invalid OTP
       role: resident
       restMethod: post
@@ -143,6 +147,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_Aid_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_05
       description: Check the status of the AID using an empty AID
       role: resident
       restMethod: post
@@ -180,6 +185,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_06
       description: Check the status of the AID using an empty transaction ID
       role: resident
       restMethod: post
@@ -217,6 +223,7 @@ CheckAidStatus:
 
    Resident_CheckAidStatus_Empty_Otp_Neg:
       endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_07
       description: Check the status of the AID using an empty otp
       role: resident
       restMethod: post

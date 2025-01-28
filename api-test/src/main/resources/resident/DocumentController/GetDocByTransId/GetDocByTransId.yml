@@ -1,6 +1,7 @@
 GetDocByTransId:
    Resident_GetDocByTransId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByTransId_01
       description: Get the document by transactionId using a valid UIN with all valid inputs
       role: residentNew
       restMethod: get
@@ -16,6 +17,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByTransId_02
       description: Get the document by transactionId using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: get
@@ -30,6 +32,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_uin_Invalid_TransactionId:
       endPoint: /resident/v1/documents/{transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByTransId_03
       description: Get the document by transactionId using a valid UIN with an invalid transactionId
       role: residentNew
       restMethod: get
@@ -49,6 +52,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByTransId_04
       description: Get the document by transactionId using a valid UIN with an invalid token
       role: null
       restMethod: get
@@ -68,6 +72,7 @@ GetDocByTransId:
 
    Resident_GetDocByTransId_vid_Invalid_TransactionId:
       endPoint: /resident/v1/documents/{transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByTransId_05
       description: Get the document by transactionId using a valid VID with an invalid transactionId
       role: residentNewVid
       restMethod: get

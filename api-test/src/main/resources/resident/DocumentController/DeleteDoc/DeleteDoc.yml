@@ -1,6 +1,7 @@
 DeleteDoc:
    Resident_DeleteDoc_uin_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_01
       description: Delete document using a valid UIN with all valid inputs
       role: residentNew
       restMethod: get
@@ -16,6 +17,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_all_Valid_Smoke:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_02
       description: Delete document using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: get
@@ -31,6 +33,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_TransactionId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_03
       description: Delete document using a valid UIN with an invalid transactionId
       role: residentNew
       restMethod: get
@@ -51,6 +54,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_Format_TransactionId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_04
       description: Delete document using a valid UIN with an invalid format transactionId
       role: residentNew
       restMethod: get
@@ -71,6 +75,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_TransactionId_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_05
       description: Delete document using a valid UIN with an invalid transactionId and docId
       role: residentNew
       restMethod: get
@@ -91,6 +96,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_Format_TransactionId_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_06
       description: Delete document using a valid UIN with an invalid format transactionId and docId
       role: residentNew
       restMethod: get
@@ -111,6 +117,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_07
       description: Delete document using a valid UIN with an invalid docId
       role: residentNew
       restMethod: get
@@ -131,6 +138,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_Format_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_08
       description: Delete document using a valid UIN with an invalid format docId
       role: residentNew
       restMethod: get
@@ -151,6 +159,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_uin_Invalid_Token_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_09
       description: Delete document using a valid UIN with an invalid token
       role: null
       validityCheckRequired: true
@@ -172,6 +181,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_TransactionId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_10
       description: Delete document using a valid VID with an invalid transactionId
       role: residentNewVid
       restMethod: get
@@ -192,6 +202,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_Format_TransactionId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_11
       description: Delete document using a valid VID with an invalid format transactionId
       role: residentNewVid
       restMethod: get
@@ -212,6 +223,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_TransactionId_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_12
       description: Delete document using a valid UIN with an invalid token
       role: residentNewVid
       restMethod: get
@@ -232,6 +244,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_Format_TransactionId_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_13
       description: Delete document using a valid VID with an invalid format transactionId and docId
       role: residentNewVid
       restMethod: get
@@ -252,6 +265,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_14
       description: Delete document using a valid VID with an invalid docId
       role: residentNewVid
       restMethod: get
@@ -272,6 +286,7 @@ DeleteDoc:
 
    Resident_DeleteDoc_vid_Invalid_Format_DocId_Neg:
       endPoint: /resident/v1/documents/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_DeleteDoc_15
       description: Delete document using a valid VID with an invalid format docId
       role: residentNewVid
       restMethod: get
