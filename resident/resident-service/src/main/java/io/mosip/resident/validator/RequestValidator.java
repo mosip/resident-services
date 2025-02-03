@@ -44,6 +44,7 @@ import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.BaseResidentUncheckedExceptionWithMetadata;
@@ -56,8 +57,6 @@ import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.*;
-import org.json.JSONException;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -384,6 +383,13 @@ public class RequestValidator {
 					"Request to generate VID"));
 
 			throw new InvalidInputException("transactionId");
+		}
+
+		if(vidRequestDto instanceof VidRequestDtoV2){
+			if(requestDto.getRequest().getTransactionID()!=null){
+				audit.setAuditRequestDto(AuditEnum.INPUT_DOESNT_EXISTS);
+				throw new InvalidInputException(REQUEST);
+			}
 		}
 	}
 
