@@ -230,9 +230,9 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 			if ((!testCaseName.contains(GlobalConstants.ESIGNET_))
 					&& (!testCaseName.contains("Resident_CheckAidStatus"))) {
 				long delayTime = Long.parseLong(properties.getProperty("Delaytime"));
-				if (!BaseTestCase.isTargetEnvLTS())
-					delayTime = Long.parseLong(properties.getProperty("uinGenDelayTime"))
-							* Long.parseLong(properties.getProperty("uinGenMaxLoopCount"));
+//				if (!BaseTestCase.isTargetEnvLTS())
+//					delayTime = Long.parseLong(properties.getProperty("uinGenDelayTime"))
+//							* Long.parseLong(properties.getProperty("uinGenMaxLoopCount"));
 				logger.info("waiting for " + delayTime + " mili secs after VID Generation In RESIDENT SERVICES");
 				Thread.sleep(delayTime);
 			}
