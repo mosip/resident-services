@@ -33,7 +33,7 @@ import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
 import io.restassured.response.Response;
 
-public class PostWithBodyWithPdfDownload extends AdminTestUtil implements ITest {
+public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(PostWithBodyWithPdfDownload.class);
 	protected String testCaseName = "";
 	public Response response = null;
