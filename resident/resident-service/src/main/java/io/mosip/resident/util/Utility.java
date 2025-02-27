@@ -14,6 +14,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.pdfgenerator.constant.PDFGeneratorExceptionCodeConstant;
 import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -517,7 +518,7 @@ public class Utility {
 			pdfSignatured = Base64.decodeBase64(signatureResponseDto.getData());
 
 		} catch (Exception e) {
-			logger.error(io.mosip.kernel.pdfgenerator.itext.constant.PDFGeneratorExceptionCodeConstant.PDF_EXCEPTION.getErrorMessage(), e.getMessage()
+			logger.error(PDFGeneratorExceptionCodeConstant.PDF_EXCEPTION.getErrorMessage(), e.getMessage()
 					+ ExceptionUtils.getStackTrace(e));
 		}
 		logger.debug("UinCardGeneratorImpl::generateUinCard()::exit");
