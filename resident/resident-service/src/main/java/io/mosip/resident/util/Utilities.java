@@ -2,7 +2,6 @@ package io.mosip.resident.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.pdf.PdfReader;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -25,8 +24,9 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.service.IdentityService;
 import lombok.Data;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,8 +38,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
@@ -80,6 +80,8 @@ public class Utilities {
 	/** The Constant FILE_SEPARATOR. */
 	public static final String FILE_SEPARATOR = "\\";
 
+	private static final long SIZE_THRESHOLD = 10 * 1024 * 1024; // 10MB threshold
+
 	@Value("${provider.packetwriter.resident}")
 	private String provider;
 
@@ -106,17 +108,17 @@ public class Utilities {
 
 	private String mappingJsonString = null;
 
-    private static String regProcessorIdentityJson = "";
+	private static String regProcessorIdentityJson = "";
 	private SecureRandom secureRandom;
 
 	@PostConstruct
-    private void loadRegProcessorIdentityJson() {
-        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
-        logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
-    }
+	private void loadRegProcessorIdentityJson() {
+		regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
+		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
+	}
 
-    public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+	public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 
 		if (uin != null) {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
@@ -294,11 +296,11 @@ public class Utilities {
 	}
 
 	public String getJson(String configServerFileStorageURL, String uri) {
-        if (StringUtils.isBlank(regProcessorIdentityJson)) {
-            return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
-        }
-        return regProcessorIdentityJson;
-    }
+		if (StringUtils.isBlank(regProcessorIdentityJson)) {
+			return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
+		}
+		return regProcessorIdentityJson;
+	}
 
 	public String retrieveIdrepoJsonStatus(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 		String response = null;
@@ -395,22 +397,22 @@ public class Utilities {
 		}
 		return langCode;
 	}
-	
-	    
-    public String getPhoneAttribute() throws ResidentServiceCheckedException {
-    	return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
-    }
-    
-    public String getEmailAttribute() throws ResidentServiceCheckedException {
-    	return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
-    }
+
+
+	public String getPhoneAttribute() throws ResidentServiceCheckedException {
+		return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
+	}
+
+	public String getEmailAttribute() throws ResidentServiceCheckedException {
+		return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
+	}
 
 	private String getIdMappingAttributeForKey(String attributeKey) throws ResidentServiceCheckedException {
 		try {
 			JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
 			String phoneAttribute = JsonUtil.getJSONValue(
-			        JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
-			        MappingJsonConstants.VALUE);
+					JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
+					MappingJsonConstants.VALUE);
 			return phoneAttribute;
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -419,10 +421,16 @@ public class Utilities {
 	}
 
 	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
-		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
-		return pdfReader.getNumberOfPages();
+		byte[] pdfBytes = outputStream.toByteArray();
+		return getPageCountWithPDDocument(pdfBytes);
 	}
 
+	private static int getPageCountWithPDDocument(byte[] pdfBytes) throws IOException {
+		try (InputStream inputStream = new ByteArrayInputStream(pdfBytes);
+			 PDDocument document = PDDocument.load(inputStream, MemoryUsageSetting.setupTempFileOnly())) {
+			return document.getNumberOfPages();
+		}
+	}
 	@PostConstruct
 	public void initializeSecureRandomInstance(){
 		secureRandom = new SecureRandom();
