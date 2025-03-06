@@ -1,0 +1,133 @@
+openapi: 3.1.0
+x-stoplight:
+  id: jygyosciueetv
+info:
+  title: API to apply data format and masking from user input by overriding policy format
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /issue:
+    post:
+      summary: /issue
+      operationId: post-issue
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                credentialType:
+                  type: string
+                issuer:
+                  type: string
+                encrypt:
+                  type: boolean
+                encryptionKey:
+                  type: string
+                sharableAttributes:
+                  type: array
+                  items:
+                    type: string
+                additionalData:
+                  type: object
+                  properties:
+                    formatingAttributes:
+                      type: object
+                      properties:
+                        attributeName:
+                          type: string
+                        format:
+                          type: string
+                    maskingAttributes:
+                      type: array
+                      items:
+                        type: string
+              x-examples:
+                example-1:
+                  id: '8251649601'
+                  credentialType: eUIN_with_faceQR
+                  issuer: mpartner-default-print
+                  encrypt: false
+                  encryptionKey: abc123
+                  sharableAttributes:
+                    - firstName
+                    - middleName
+                    - lastName
+                    - dateOfBirth
+                    - phone
+                    - email
+                    - UIN
+                    - VID
+                  additionalData:
+                    formatingAttributes:
+                      attributeName: dateOfBirth
+                      format: DD/MMM/YYYY
+                    maskingAttributes:
+                      - phone
+                      - email
+                      - UIN
+                      - VID
+            examples:
+              example-1:
+                value:
+                  id: string
+                  credentialType: string
+                  issuer: string
+                  encrypt: true
+                  encryptionKey: string
+                  sharableAttributes:
+                    - string
+                  additionalData:
+                    formatingAttributes:
+                      attributeName: string
+                      format: string
+                    maskingAttributes:
+                      - string
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

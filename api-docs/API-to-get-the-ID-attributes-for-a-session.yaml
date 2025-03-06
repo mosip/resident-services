@@ -1,0 +1,240 @@
+openapi: 3.1.0
+x-stoplight:
+  id: mj7f4n76k8s6c
+info:
+  title: API to get the ID attributes for a session
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /identity/info:
+    get:
+      summary: /identity/info
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      fullName:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      dateOfBirth:
+                        type: string
+                      gender:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      region:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      province:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      city:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      zone:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      postalCode:
+                        type: string
+                      residenceStatus:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      addressLine1:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      phone:
+                        type: string
+                      email:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T08:18:16.563Z'
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: ara
+                          value: Manoj_ara
+                        - language: eng
+                          value: Manoj_eng
+                      dateOfBirth: 1972/05/07
+                      gender:
+                        - language: eng
+                          value: Male
+                      region:
+                        - language: eng
+                          value: RSK
+                      province:
+                        - language: ara
+                          value: KTA
+                        - language: eng
+                          value: KTA
+                      city:
+                        - language: eng
+                          value: KNT
+                        - language: ara
+                          value: KNT
+                      zone:
+                        - language: eng
+                          value: BNMR
+                      postalCode: '14022'
+                      residenceStatus:
+                        - language: ara
+                          value: Foreigner
+                        - language: eng
+                          value: Foreigner
+                      addressLine1:
+                        - language: ara
+                          value: '#991, 47 Street, 6 block'
+                        - language: eng
+                          value: '#٩٩١، ٤٧ سترِِت، ٦ بلُكك'
+                      phone: '9395910872'
+                      email: manojvsp12@gmail.com
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: string
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: string
+                          value: string
+                      dateOfBirth: string
+                      gender:
+                        - language: string
+                          value: string
+                      region:
+                        - language: string
+                          value: string
+                      province:
+                        - language: string
+                          value: string
+                      city:
+                        - language: string
+                          value: string
+                      zone:
+                        - language: string
+                          value: string
+                      postalCode: string
+                      residenceStatus:
+                        - language: string
+                          value: string
+                      addressLine1:
+                        - language: string
+                          value: string
+                      phone: string
+                      email: string
+                    errors: null
+      operationId: get-identity-info
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

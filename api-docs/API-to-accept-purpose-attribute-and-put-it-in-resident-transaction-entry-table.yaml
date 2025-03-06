@@ -1,0 +1,224 @@
+openapi: 3.1.0
+x-stoplight:
+  id: om3bhqwoxhp27
+info:
+  title: API to accept purpose attribute and put it in resident transaction entry table
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /share-credential:
+    post:
+      summary: /share-credential
+      operationId: post-share-credential
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.share.credential
+                    version: '1.0'
+                    responsetime: '2022-06-23T12:00:40.326Z'
+                    metadata: null
+                    response:
+                      status: Success
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      status:
+                        type: string
+                  errors: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.share.credential
+                    version: '1.0'
+                    responsetime: '2022-06-23T12:00:40.326Z'
+                    metadata: null
+                    response:
+                      status: Success
+                    errors: null
+                'Error: Unable to access API resource':
+                  value:
+                    id: mosip.resident.share.credential
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-412
+                        message: Unable to access API resource
+                'Error: Consent not provided':
+                  value:
+                    id: mosip.resident.share.credential
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-472
+                        message: Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                Example 1:
+                  id: mosip.resident.share.credential
+                  request:
+                    partnerId: mpartner-default-print
+                    sharableAttributes:
+                      - attributeName: dateOfBirth
+                        format: YYYY
+                        isMasked: false
+                    purpose: string
+                    consent: Accepted
+                  requesttime: '2021-10-19T17:01:59.538Z'
+                  version: '1.0'
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+                request:
+                  type:
+                    - object
+                    - 'null'
+                  properties:
+                    partnerId:
+                      type: string
+                    sharableAttributes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          attributeName:
+                            type: string
+                          format:
+                            type: string
+                          isMasked:
+                            type: boolean
+                    purpose:
+                      type: string
+                    consent:
+                      type: string
+                requesttime:
+                  type: string
+                version:
+                  type: string
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.share.credential
+                  request:
+                    partnerId: mpartner-default-print
+                    sharableAttributes:
+                      - attributeName: dateOfBirth
+                        format: YYYY
+                        isMasked: false
+                    purpose: string
+                    consent: Accepted
+                  requesttime: '2021-10-19T17:01:59.538Z'
+                  version: '1.0'
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      description: This API is to share the user specified attributes to selected partner in the selected formats along with a purpose.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

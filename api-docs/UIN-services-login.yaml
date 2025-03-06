@@ -1,0 +1,166 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 8xlt6teu57cq1
+info:
+  title: UIN-services-login
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /authorize​/admin​/validateToken:
+    get:
+      summary: /authorize​/admin​/validateToken
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-authorize-admin-validateToken
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization Token
+  '/login​/{redirectURI}':
+    parameters:
+      - schema:
+          type: string
+        name: redirectURI
+        in: path
+        required: true
+    get:
+      summary: '/login​/{redirectURI}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-login-redirectURI
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: state
+        - schema:
+            type: string
+          in: query
+          name: state
+  '/login-redirect​/{redirectURI}':
+    parameters:
+      - schema:
+          type: string
+        name: redirectURI
+        in: path
+        required: true
+    get:
+      summary: '/login-redirect​/{redirectURI}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-login-redirect-redirectURI
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session_state
+        - schema:
+            type: string
+          in: cookie
+          name: state
+          required: true
+          description: state cookie value to check the state in query param
+        - schema:
+            type: string
+          in: cookie
+        - schema:
+            type: string
+          in: query
+          name: code
+          required: true
+          description: Authorization code
+        - schema:
+            type: string
+          in: query
+          name: state
+          required: true
+          description: 'state value, this should be matching with the state cookie'
+  /logout​/user:
+    get:
+      summary: /logout​/user
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+      operationId: get-logout-user
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirecturi
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

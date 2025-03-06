@@ -1,0 +1,171 @@
+openapi: 3.1.0
+x-stoplight:
+  id: ysrya29nyukbs
+info:
+  title: API to get resident properties based on the allowed configurations property keys
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  proxy​/config​/ui-properties:
+    get:
+      summary: proxy​/config​/ui-properties
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      mosip-prereg-ui-url:
+                        type: string
+                      mosip.resident.api.id.auth:
+                        type: string
+                      resident.revokevid.version:
+                        type: string
+                      resident.datetime.pattern:
+                        type: string
+                      resident.vid.id:
+                        type: string
+                      mosip.mandatory-languages:
+                        type: string
+                      resident.authunlock.id:
+                        type: string
+                      resident.vid.version:
+                        type: string
+                      resident.revokevid.id:
+                        type: string
+                      mosip.resident.api.id.otp.request:
+                        type: string
+                      mosip.resident.api.version.otp.request:
+                        type: string
+                      resident.authhistory.id:
+                        type: string
+                      auth.type.status.id:
+                        type: string
+                      mosip.resident.api.version.auth:
+                        type: string
+                      resident.updateuin.id:
+                        type: string
+                      mosip-prereg-host:
+                        type: string
+                      mosip.optional-languages:
+                        type: string
+                      mosip.utc-datetime-pattern:
+                        type: string
+                      mosip.iam.adapter.clientid:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-03T15:10:31.221Z'
+                    metadata: null
+                    response:
+                      mosip-prereg-ui-url: 'https://prereg.dev3.mosip.net/pre-registration-ui/'
+                      mosip.resident.api.id.auth: mosip.identity.auth.internal
+                      resident.revokevid.version: v1
+                      resident.datetime.pattern: 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''
+                      resident.vid.id: mosip.resident.vid
+                      mosip.mandatory-languages: eng
+                      resident.authunlock.id: mosip.resident.authunlock
+                      resident.vid.version: v1
+                      resident.revokevid.id: mosip.resident.vidstatus
+                      mosip.resident.api.id.otp.request: mosip.identity.otp.internal
+                      mosip.resident.api.version.otp.request: '1.0'
+                      resident.authhistory.id: mosip.resident.authhistory
+                      auth.type.status.id: mosip.identity.authtype.status.update
+                      mosip.resident.api.version.auth: '1.0'
+                      resident.updateuin.id: mosip.resident.updateuin
+                      mosip-prereg-host: prereg.dev3.mosip.net
+                      mosip.optional-languages: 'fra,ara'
+                      mosip.utc-datetime-pattern: 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''
+                      mosip.iam.adapter.clientid: mosip-resident-client
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-03T15:10:31.221Z'
+                    metadata: null
+                    response:
+                      mosip-prereg-ui-url: 'https://prereg.dev3.mosip.net/pre-registration-ui/'
+                      mosip.resident.api.id.auth: mosip.identity.auth.internal
+                      resident.revokevid.version: v1
+                      resident.datetime.pattern: 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''
+                      resident.vid.id: mosip.resident.vid
+                      mosip.mandatory-languages: eng
+                      resident.authunlock.id: mosip.resident.authunlock
+                      resident.vid.version: v1
+                      resident.revokevid.id: mosip.resident.vidstatus
+                      mosip.resident.api.id.otp.request: mosip.identity.otp.internal
+                      mosip.resident.api.version.otp.request: '1.0'
+                      resident.authhistory.id: mosip.resident.authhistory
+                      auth.type.status.id: mosip.identity.authtype.status.update
+                      mosip.resident.api.version.auth: '1.0'
+                      resident.updateuin.id: mosip.resident.updateuin
+                      mosip-prereg-host: prereg.dev3.mosip.net
+                      mosip.optional-languages: 'fra,ara'
+                      mosip.utc-datetime-pattern: 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''
+                      mosip.iam.adapter.clientid: mosip-resident-client
+                    errors: null
+      operationId: get-resident-v1-proxy-config-ui-properties
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

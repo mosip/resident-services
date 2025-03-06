@@ -1,0 +1,132 @@
+openapi: 3.0.0
+x-stoplight:
+  id: pjvkjw2mlvglv
+info:
+  title: Discard Pending Draft API
+  version: 1.0.0
+paths:
+  '/identity/discardPendingDraft/{eid}':
+    post:
+      summary: Discard a pending draft
+      description: Discard a pending draft associated with the specified enrollment ID (EID).
+      parameters:
+        - in: path
+          name: eid
+          required: true
+          schema:
+            type: string
+          description: Enrollment ID of the pending draft to discard
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: mosip.resident.discard.pending.drafts
+                    description: Identifier of the response
+                  version:
+                    type: string
+                    example: '1'
+                    description: Version of the response
+                  responsetime:
+                    type: string
+                    format: date-time
+                    example: '2024-03-18T06:49:24.128Z'
+                    description: Response timestamp
+                  metadata:
+                    description: Metadata information (currently null)
+                  response:
+                    type: string
+                    example: DISCARDED
+                    description: Response indicating the draft has been discarded
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                    description: Error information (empty array indicates no errors)
+      x-stoplight:
+        id: ndgz15ymcnzbz
+  '/identity/get-pending-drafts/{langCode}':
+    get:
+      summary: Get pending drafts for residents
+      description: Retrieve pending drafts for residents in the specified language.
+      parameters:
+        - in: path
+          name: langCode
+          required: true
+          schema:
+            type: string
+          description: Language code for response localization
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: mosip.resident.get.pending.drafts
+                    description: Identifier of the response
+                  version:
+                    type: string
+                    example: '1'
+                    description: Version of the response
+                  responsetime:
+                    type: string
+                    format: date-time
+                    example: '2024-03-27T04:28:31.583Z'
+                    description: Response timestamp
+                  metadata:
+                    description: Metadata information (currently null)
+                  response:
+                    type: object
+                    properties:
+                      drafts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            eid:
+                              type: string
+                              example: '1373606406711464'
+                              description: Enrollment ID
+                            aid:
+                              type: string
+                              example: '10007100200012320240319063055'
+                              description: Application ID
+                            createdDTimes:
+                              type: string
+                              format: date-time
+                              example: '2024-03-27T04:23:52.949342'
+                              description: Creation timestamp of the draft
+                            attributes:
+                              type: array
+                              items:
+                                type: string
+                              example:
+                                - fullName
+                                - dateOfBirth
+                              description: Attributes included in the draft
+                            cancellable:
+                              type: boolean
+                              example: true
+                              description: Indicates whether the draft is cancellable
+                            description:
+                              type: string
+                              example: An attempt was made to update data
+                              description: Description of the draft
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                    description: Error information (empty array indicates no errors)
+      x-stoplight:
+        id: f9lauga5jwpf2

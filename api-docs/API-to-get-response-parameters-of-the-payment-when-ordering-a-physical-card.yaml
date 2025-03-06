@@ -1,0 +1,112 @@
+openapi: 3.1.0
+x-stoplight:
+  id: dgjklrvrn6lox
+info:
+  title: API to get response parameters of the payment when ordering a physical card
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /order/physical-card:
+    get:
+      summary: order/physical-card
+      tags: []
+      responses:
+        '302':
+          description: |-
+            #Upon valid request: 
+            302 redirection to the giver redirect URL (which is Resident Services card/order-redirect API).
+
+            ##Query Params:
+
+            * eventId - The event ID provided by resident service
+
+            * paymentTransactionId - The payment transaction ID for the payment made by the resident
+
+            * residentFullAddress - required- base64-url encoded full address string - full address specified by the user during card ordering in  Print Partner’s order-card page.
+
+
+            #Upon invalid request: 
+
+            ##Query params:
+
+            * error_code: refer to below table
+
+            * error_message: refer to below table
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Upon valid request:
+                  value: 302 redirection to Resident Services card/order-redirect API.
+      operationId: get-order-physical-card
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: true
+          description: The base64 encoded URL for Resident-Service’s order handling API.
+        - schema:
+            type: string
+          in: query
+          name: eventId
+          required: true
+          description: the event ID to be used to track the status of whole process of order untill the card delivery.
+        - schema:
+            type: string
+          in: query
+          name: 'residentName '
+          required: true
+          description: resident name - for display purpose in  Print Partner’s order-card page
+        - schema:
+            type: string
+          in: query
+          name: residentDefaultFullAddress
+          required: true
+          description: base64-url encoded full address string - for display purpose in  Print Partner’s order-card page
+      description: 'This API is the redirect page on Print partner''s portal, and based on the resident''s action such as order confirmation / order cancellation / payment failure it will redirect with the response parameters.'
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

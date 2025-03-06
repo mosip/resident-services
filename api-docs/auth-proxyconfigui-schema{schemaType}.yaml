@@ -1,0 +1,53 @@
+openapi: 3.0.1
+info:
+  title: Proxy Config API
+  description: API for getting the Resident-UI Schema
+  version: 1.0.0
+paths:
+  '/auth-proxy/config/ui-schema/{schemaType}':
+    get:
+      summary: getResidentUISchema
+      description: Get the Resident-UI Schema
+      tags:
+        - proxy-config-controller
+      parameters:
+        - name: schemaType
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''

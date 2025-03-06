@@ -1,0 +1,248 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 01v9wgu5xwi1q
+info:
+  title: View history
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /callback​/authTransaction:
+    post:
+      summary: /callback​/authTransaction
+      operationId: post-callback-authTransaction
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  example-1:
+                    id: null
+                    version: v1
+                    responsetime: '2022-06-10T12:00:43.226Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-418
+                        message: 'KER-WSC-106 --> Error occured while verifing authenticated content :- header for signature is empty or null'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                publisher:
+                  type: string
+                topic:
+                  type: string
+                publishedOn:
+                  type: string
+                event:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    transactionId:
+                      type: string
+                    type:
+                      type: object
+                      properties:
+                        namespace:
+                          type: string
+                        name:
+                          type: string
+                    timestamp:
+                      type: string
+                    dataShareUri:
+                      type: string
+                    data:
+                      type: object
+                      properties:
+                        additionalProp1:
+                          type: object
+                          properties: {}
+                        additionalProp2:
+                          type: object
+                          properties: {}
+                        additionalProp3:
+                          type: object
+                          properties: {}
+              x-examples:
+                example-1:
+                  publisher: string
+                  topic: string
+                  publishedOn: string
+                  event:
+                    id: string
+                    transactionId: string
+                    type:
+                      namespace: string
+                      name: string
+                    timestamp: string
+                    dataShareUri: string
+                    data:
+                      additionalProp1: {}
+                      additionalProp2: {}
+                      additionalProp3: {}
+      description: Resident Service to get the Auth Transaction event in callback for each Online Verification Partner and store it in auth_transactions table along with the Online Verification Partner ID in a new column.
+  /download/service-history:
+    get:
+      summary: /download/service-history
+      tags: []
+      responses:
+        '200':
+          description: OK - PDF Bytes
+          content:
+            application/pdf:
+              schema:
+                type: object
+                properties: {}
+              examples: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: get-download-service-history
+      requestBody:
+        content: {}
+        description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: serviceType
+          description: 'The service type in general. It can map to different request types. Possible values: AUTHENTICATION_REQUEST, SERVICE_REQUEST,DATA_UPDATE_REQUEST,ID_MANAGEMENT_REQUEST,DATA_SHARE_REQUEST,ALL; default is ALL'
+        - schema:
+            type: string
+          in: query
+          name: fromDate
+          description: Start date of the request inclusive; the default date will be the 1st of January of that year
+        - schema:
+            type: string
+          in: query
+          name: toDate
+          description: End date of the request inclusive; the default date will be the date on which this transaction is being done (today’s date)
+        - schema:
+            type: string
+            maxLength: 30
+            minLength: 0
+          in: query
+          name: searchText
+          description: This will be used to look for Event Id- string greater than 0 but not more than 30
+        - schema:
+            type: string
+          in: query
+          name: sortType
+          description: 'ASC/DESC, default is ASC'
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: Id token is used to verify which user has logged in.
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: Accept
+          description: It can be application/pdf or csv etc (in future scope)
+        - schema:
+            type: string
+          in: query
+          name: statusFilter
+          description: 'Comma separated service types status code. This can be one of - ALL,SUCCESS,IN_PROGRESS,FAILED'
+        - schema:
+            type: string
+          in: header
+          name: locale
+          description: Locale based on Language and country. Used in date time formatting. Ex. en-US
+        - schema:
+            type: string
+          in: header
+          name: time-zone-offset
+          description: Used in time conversion per the client on any timestamps returned in the response. Ex. -330 - for India
+      description: This API is used to download the result of service history search as a PDF.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

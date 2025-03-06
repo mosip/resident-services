@@ -1,0 +1,43 @@
+openapi: 3.1.0
+x-stoplight:
+  id: bnbop24sa89dt
+info:
+  title: v2
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/login/v2/{redirectURI}':
+    get:
+      tags:
+        - login-controller
+      operationId: '/login/v2/{redirectURI}'
+      parameters:
+        - name: state
+          in: cookie
+          required: false
+          schema:
+            type: string
+        - name: redirectURI
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ui_locales
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+      summary: '/login/v2/{redirectURI}'
+      x-stoplight:
+        id: bc805cheiryu6
+    parameters:
+      - schema:
+          type: string
+        name: redirectURI
+        in: path
+        required: true
+        description: Redirection URI

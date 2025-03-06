@@ -1,0 +1,176 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 1j2m9vsiib2ab
+info:
+  title: API to download the UIN card using a URL
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/download-card/event/{event-id}':
+    get:
+      summary: '/download-card/event/{event-id}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Success:
+                  value: PDF bytes in the response with application/pdf mime-type
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                'Error: Unable to access API resource':
+                  value:
+                    id: mosip.resident.download.uin.card.eventId
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      errorCode: RES-SER-412
+                      message: Unable to access API resource
+                'Error: EID not available':
+                  value:
+                    id: mosip.resident.download.uin.card.eventId
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:34:35.775Z'
+                    metadata: {}
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-459
+                        message: EID not available in database
+                'Error: EID not belongs to logged in user':
+                  value:
+                    id: mosip.resident.download.uin.card.eventId
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:34:35.775Z'
+                    metadata: {}
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-511
+                        message: The entered EID is not associated with the UIN/VID used to log in.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: get-download-card-event-event-id
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      description: This API is to download the UIN card using URL sent over email/SMS/track event/notification section.
+    parameters:
+      - schema:
+          type: string
+        name: event-id
+        in: path
+        required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

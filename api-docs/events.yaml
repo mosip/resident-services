@@ -1,0 +1,87 @@
+openapi: 3.0.1
+info:
+  title: Event Status API
+  description: API for checking the status of an event by event ID
+  version: 1.0.0
+paths:
+  '/events/{event-id}':
+    get:
+      summary: checkEventIdStatus
+      description: checkEventIdStatus
+      tags:
+        - resident-controller
+      parameters:
+        - name: event-id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: langCode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: time-zone-offset
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: locale
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EventStatusResponseDTO'
+        message:
+          type: string
+        status:
+          type: string
+    EventStatusResponseDTO:
+      type: object
+      properties:
+        status:
+          type: string
+        description:
+          type: string

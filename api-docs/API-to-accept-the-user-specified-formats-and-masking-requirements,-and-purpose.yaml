@@ -1,0 +1,263 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 04du081okmkpy
+info:
+  title: 'API to accept the user specified formats and masking requirements, and purpose'
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /share-credential:
+    post:
+      summary: Your POST endpoint
+      x-stoplight:
+        id: 73422249ac323
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      eventId:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: string
+                    version: v1
+                    responsetime: '2022-06-23T12:00:40.326Z'
+                    metadata: null
+                    response:
+                      eventId: string
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: string
+                    version: string
+                    responsetime: string
+                    metadata: null
+                    response:
+                      eventId: string
+                    errors: null
+      operationId: get-share-credential
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+        description: |-
+          {
+             "id":"8251649601",
+             "credentialType":"eUIN_with_faceQR",
+             "issuer":"mpartner-default-print",
+             "encrypt":false,
+             "encryptionKey":"abc123",
+             "sharableAttributes":[
+                "firstName",
+                "middleName",
+                "lastName",
+                "dateOfBirth",
+                "phone",
+                "email",
+                "UIN",
+                "VID"
+             ],
+             "additionalData":{
+                "formatingAttributes":{
+                   "attributeName":"dateOfBirth",
+                   "format":"DD/MMM/YYYY"
+                },
+                "maskingAttributes": ["phone", "email", "UIN", "VID"]
+             }
+          }
+  /download/personalized-card:
+    post:
+      summary: /download/personalized-card
+      x-stoplight:
+        id: 1e727f4dc0f51
+      tags: []
+      responses:
+        '200':
+          description: OK - The PDF bytes
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+          content:
+            application/pdf:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                'Error: Invalid html attribute':
+                  value:
+                    id: mosip.resident.download.personalized.card
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      errorCode: RES-SER-410
+                      message: Invalid Input Parameter- html
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: post-download-personalized-card
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    html:
+                      type: string
+              x-examples:
+                Example 1:
+                  id: mosip.resident.download.personalized.card
+                  version: '1.0'
+                  requesttime: '2021-09-14T12:32:49.483Z'
+                  request:
+                    html: base-64-url-encoded html content
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.download.personalized.card
+                  version: '1.0'
+                  requesttime: '2021-09-14T12:32:49.483Z'
+                  request:
+                    html: base-64-url-encoded html content
+      description: This API is to download the personalized PDF card from the preview.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      security: []
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

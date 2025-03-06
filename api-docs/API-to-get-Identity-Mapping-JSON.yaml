@@ -1,0 +1,429 @@
+openapi: 3.1.0
+x-stoplight:
+  id: vbc0uvvqydhjp
+info:
+  title: API to get Identity Mapping JSON
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  proxy​/config​/identity-mapping:
+    get:
+      summary: proxy​/config​/identity-mapping
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identity:
+                    type: object
+                    properties:
+                      IDSchemaVersion:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      name:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      gender:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      dob:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      age:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      introducerRID:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      introducerUIN:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      introducerVID:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      introducerName:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      phone:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      phoneNumber:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      email:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      emailId:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      uin:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      individualBiometrics:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      introducerBiometrics:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      individualAuthBiometrics:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      officerBiometricFileName:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      supervisorBiometricFileName:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      residenceStatus:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      preferredLanguage:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      locationHierarchyForProfiling:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      addressLine1:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      addressLine2:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      addressLine3:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      location1:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      location2:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      location3:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      postalCode:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      location4:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      fullAddress:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                  metaInfo:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                  audits:
+                    type: object
+                    properties:
+                      value:
+                        type: string
+                  documents:
+                    type: object
+                    properties:
+                      poa:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      poi:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      por:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      pob:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                      poe:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                x-examples:
+                  example-1:
+                    identity:
+                      IDSchemaVersion:
+                        value: IDSchemaVersion
+                      name:
+                        value: fullName
+                      gender:
+                        value: gender
+                      dob:
+                        value: dateOfBirth
+                      age:
+                        value: age
+                      introducerRID:
+                        value: introducerRID
+                      introducerUIN:
+                        value: introducerUIN
+                      introducerVID:
+                        value: introducerVID
+                      introducerName:
+                        value: introducerName
+                      phone:
+                        value: phone
+                      phoneNumber:
+                        value: phone
+                      email:
+                        value: email
+                      emailId:
+                        value: email
+                      uin:
+                        value: UIN
+                      individualBiometrics:
+                        value: individualBiometrics
+                      introducerBiometrics:
+                        value: introducerBiometrics
+                      individualAuthBiometrics:
+                        value: individualAuthBiometrics
+                      officerBiometricFileName:
+                        value: officerBiometricFileName
+                      supervisorBiometricFileName:
+                        value: supervisorBiometricFileName
+                      residenceStatus:
+                        value: residenceStatus
+                      preferredLanguage:
+                        value: preferredLang
+                      locationHierarchyForProfiling:
+                        value: 'zone,postalCode'
+                      addressLine1:
+                        value: addressLine1
+                      addressLine2:
+                        value: addressLine2
+                      addressLine3:
+                        value: addressLine3
+                      location1:
+                        value: city
+                      location2:
+                        value: region
+                      location3:
+                        value: province
+                      postalCode:
+                        value: postalCode
+                      location4:
+                        value: zone
+                      fullAddress:
+                        value: 'addressLine1,addressLine2,addressLine3,city,region,province,postalCode'
+                    metaInfo:
+                      value: metaInfo
+                    audits:
+                      value: audits
+                    documents:
+                      poa:
+                        value: proofOfAddress
+                      poi:
+                        value: proofOfIdentity
+                      por:
+                        value: proofOfRelationship
+                      pob:
+                        value: proofOfDateOfBirth
+                      poe:
+                        value: proofOfException
+              examples:
+                Success:
+                  value:
+                    identity:
+                      IDSchemaVersion:
+                        value: IDSchemaVersion
+                      name:
+                        value: fullName
+                      gender:
+                        value: gender
+                      dob:
+                        value: dateOfBirth
+                      age:
+                        value: age
+                      introducerRID:
+                        value: introducerRID
+                      introducerUIN:
+                        value: introducerUIN
+                      introducerVID:
+                        value: introducerVID
+                      introducerName:
+                        value: introducerName
+                      phone:
+                        value: phone
+                      phoneNumber:
+                        value: phone
+                      email:
+                        value: email
+                      emailId:
+                        value: email
+                      uin:
+                        value: UIN
+                      individualBiometrics:
+                        value: individualBiometrics
+                      introducerBiometrics:
+                        value: introducerBiometrics
+                      individualAuthBiometrics:
+                        value: individualAuthBiometrics
+                      officerBiometricFileName:
+                        value: officerBiometricFileName
+                      supervisorBiometricFileName:
+                        value: supervisorBiometricFileName
+                      residenceStatus:
+                        value: residenceStatus
+                      preferredLanguage:
+                        value: preferredLang
+                      locationHierarchyForProfiling:
+                        value: 'zone,postalCode'
+                      addressLine1:
+                        value: addressLine1
+                      addressLine2:
+                        value: addressLine2
+                      addressLine3:
+                        value: addressLine3
+                      location1:
+                        value: city
+                      location2:
+                        value: region
+                      location3:
+                        value: province
+                      postalCode:
+                        value: postalCode
+                      location4:
+                        value: zone
+                      fullAddress:
+                        value: 'addressLine1,addressLine2,addressLine3,city,region,province,postalCode'
+                    metaInfo:
+                      value: metaInfo
+                    audits:
+                      value: audits
+                    documents:
+                      poa:
+                        value: proofOfAddress
+                      poi:
+                        value: proofOfIdentity
+                      por:
+                        value: proofOfRelationship
+                      pob:
+                        value: proofOfDateOfBirth
+                      poe:
+                        value: proofOfException
+      operationId: get-resident-v1-proxy-config-identity-mapping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      description: This API is to get identity-mapping JSON
+    parameters: []
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
