@@ -169,7 +169,7 @@ public class AddIdentity extends ResidentUtil implements ITest {
 
 		try {
 			logger.info(
-					"waiting for " + properties.getProperty("Delaytime") + " mili secs after UIN Generation In IDREPO"); //
+					"waiting for " + properties.getProperty("Delaytime") + " mili secs after UIN Generation In IDREPO");
 			Thread.sleep(Long.parseLong(properties.getProperty("Delaytime")));
 		} catch (Exception e) {
 			logger.error("Exception : " + e.getMessage());

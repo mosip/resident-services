@@ -167,7 +167,6 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 
 			if (!OutputValidationUtil.publishOutputResult(ouputValidOtp)) {
 				if (otpResponse.asString().contains("IDA-OTA-001")) {
-//					SlackChannelIntegration.sendMessageToSlack("Exceeded number of OTP requests in a given time, :" + ApplnURI + "Env") ;
 					throw new AdminTestException(
 							"Exceeded number of OTP requests in a given time, Increase otp.request.flooding.max-count");
 				}
@@ -230,9 +229,6 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 			if ((!testCaseName.contains(GlobalConstants.ESIGNET_))
 					&& (!testCaseName.contains("Resident_CheckAidStatus"))) {
 				long delayTime = Long.parseLong(properties.getProperty("Delaytime"));
-//				if (!BaseTestCase.isTargetEnvLTS())
-//					delayTime = Long.parseLong(properties.getProperty("uinGenDelayTime"))
-//							* Long.parseLong(properties.getProperty("uinGenMaxLoopCount"));
 				logger.info("waiting for " + delayTime + " mili secs after VID Generation In RESIDENT SERVICES");
 				Thread.sleep(delayTime);
 			}
