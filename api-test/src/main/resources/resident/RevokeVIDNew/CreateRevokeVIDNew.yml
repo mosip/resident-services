@@ -57,7 +57,7 @@ RevokeVIDNew:
 }'
 
    Resident_RevokeVIDNew_StatusCode_Without_Token_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_04      
       description: Revoke VID without token 
       role: 
@@ -75,7 +75,7 @@ RevokeVIDNew:
       output: "401"
 
    Resident_RevokeVIDNew_Diff_Token_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_05      
       description: Revoke VID when logged which does not belonged to logged in UIN    
       role: resident
@@ -118,7 +118,7 @@ RevokeVIDNew:
 }'
 
    Resident_RevokeVIDNew_uin_Using_Vid_Invalid_User_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_Smoke_sid_vid$
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_07      
       description: Revoke perpetual VID when logged in using invalid VID      
       role: residentNew

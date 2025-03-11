@@ -60,7 +60,7 @@ SendOTP:
     }'
     
 
-   Resident_SendOTP_Valid_VID_Use_Five_Smoke:
+   Resident_SendOTP_Valid_VID_Use_Five_Pos:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_04      
       description: Request otp using VID as individual id      
@@ -72,7 +72,7 @@ SendOTP:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
     "individualIdType": "UIN"
 }'
       output: '{
@@ -80,7 +80,7 @@ SendOTP:
         "maskedEmail": "$IGNORE$"
     }' 
     
-   Resident_SendOTP_Valid_VID_Use_Smoke:
+   Resident_SendOTP_Valid_VID_Use_Pos:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_05      
       description: Request otp using VID as individual id      
@@ -92,7 +92,7 @@ SendOTP:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
     "individualIdType": "UIN"
 }'
       output: '{

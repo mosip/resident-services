@@ -33,7 +33,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_Generate_Perpetual_VID_Valid_Smoke_send_otp_with_max_email_character_sid:
+   Resident_Generate_Perpetual_VID_Valid_Smoke_send_otp_with_max_email_character_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_02
       description: Generate a perpetual VID by sending an OTP to an email ID with maximum character
@@ -1024,7 +1024,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Perpetual_VID_Using_Perpetual_VID_sid_Neg:
+   Resident_Generate_Perpetual_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_28
       description: Generate perpetual VID using perpetual VID in negative way
@@ -1065,7 +1065,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Perpetual_VID_Using_Temp_VID_sid_Neg:
+   Resident_Generate_Perpetual_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_29
       description: Generate perpetual VID using temporary VID in negative way
@@ -1106,7 +1106,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Perpetual_VID_Using_Onetimeuse_VID_sid_Neg:
+   Resident_Generate_Perpetual_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_30
       description: Generate perpetual VID using an Onetimeuse VID in negative way
@@ -1147,7 +1147,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_Using_Perpetual_VID_sid_Neg:
+   Resident_Generate_Temporary_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_31
       description: Generate temporary VID using perpetual VID in negative way
@@ -1188,7 +1188,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_Using_Temp_VID_sid_Neg:
+   Resident_Generate_Temporary_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_32
       description: Generate temporary VID using temporary VID in negative way
@@ -1229,7 +1229,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_sid_Neg:
+   Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_33
       description: Generate temporary VID using an Onetimeuse VID in negative way
@@ -1270,7 +1270,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Onetimeuse_VID_Using_Perpetual_VID_sid_Neg:
+   Resident_Generate_Onetimeuse_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_34
       description: Generate an Onetimeuse VID using perpetual VID in negative way
@@ -1311,7 +1311,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Onetimeuse_VID_Using_Temp_VID_sid_Neg:
+   Resident_Generate_Onetimeuse_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_35
       description: Generate an Onetimeuse VID using temporary VID in negative way
@@ -1352,7 +1352,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Onetimeuse_VID_Using_Onetimeuse_VID_sid_Neg:
+   Resident_Generate_Onetimeuse_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_36
       description: Generate an Onetimeuse VID using an Onetimeuse VID in negative way
@@ -1568,7 +1568,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_Smoke_sid:
+   Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_42
       description: Generate temporary VID using Onetimeuse VID in positive way
@@ -2316,7 +2316,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid:
+   Resident_GenerateVID_Temporary_1_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_62
       description: Generate one temporary VID using an esignet integer with valid inputs
@@ -2350,7 +2350,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_GenerateVID_Temporary_2_Esignet_Integ_Valid_Smoke_sid:
+   Resident_GenerateVID_Temporary_2_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_63
       description: Generate two temporary VID using an esignet integer with valid inputs
@@ -2384,7 +2384,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_GenerateVID_Temporary_3_Esignet_Integ_Valid_Smoke_sid:
+   Resident_GenerateVID_Temporary_3_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_64
       description: Generate three temporary VID using an esignet integer with valid inputs
@@ -2418,7 +2418,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_GenerateVID_Temporary_4_Esignet_Integ_Valid_Smoke_sid:
+   Resident_GenerateVID_Temporary_4_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_65
       description: Generate four temporary VID using an esignet integer with valid inputs
@@ -2452,7 +2452,7 @@ GenerateVID:
         "maskedEmail": "$IGNORE$"
     }
 }'
-   Resident_GenerateVID_Onetimeuse_Esignet_Integ_Valid_Smoke_sid:
+   Resident_GenerateVID_Onetimeuse_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_66
       description: Generate Onetimeuse VID using an esignet integer with valid inputs
@@ -2832,7 +2832,7 @@ GenerateVID:
     }
 }'
 
-   Resident_GenerateVID_Perpetual_Inv_Scen_Valid_Smoke_sid:
+   Resident_GenerateVID_Perpetual_Inv_Scen_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_77
       description: Generate perpetual VID for invoice scenario with valid inputs
@@ -2937,7 +2937,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_TWO_Valid_Smoke_sid:
+   Resident_Generate_Temporary_VID_TWO_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_80
       description: Generate second temporary VID using valid inputs
@@ -2972,7 +2972,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_Three_Valid_Smoke_sid:
+   Resident_Generate_Temporary_VID_Three_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_81
       description: Generate third temporary VID using valid inputs
@@ -3007,7 +3007,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_FOUR_Valid_Smoke_sid:
+   Resident_Generate_Temporary_VID_FOUR_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_82
       description: Generate fourth temporary VID using valid inputs
@@ -3042,7 +3042,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_FIVE_Valid_Smoke_sid:
+   Resident_Generate_Temporary_VID_FIVE_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_83
       description: Generate fifth temporary VID using valid inputs
@@ -3077,7 +3077,7 @@ GenerateVID:
     }
 }'
 
-   Resident_Generate_Temporary_VID_SIX_Valid_Smoke_sid:
+   Resident_Generate_Temporary_VID_SIX_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_84
       description: Generate six temporary VID using valid inputs
@@ -3120,7 +3120,7 @@ GenerateVID:
     
 }'
 
-   Resident_Generate_Perpetual_VID_Valid_First_Smoke_sid:
+   Resident_Generate_Perpetual_VID_Valid_First_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_85
       description: Generate first perpetual VID using valid inputs
@@ -3157,7 +3157,7 @@ GenerateVID:
  
 }'
 
-   Resident_Generate_Perpetual_VID_SecondTime_Smoke_sid:
+   Resident_Generate_Perpetual_VID_SecondTime_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_86
       description: Generate perpetual VID secondtime using valid inputs
@@ -3193,7 +3193,7 @@ GenerateVID:
     
 }'
 
-   Resident_Generate_Perpetual_VID_1_Smoke_sid:
+   Resident_Generate_Perpetual_VID_1_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_87
       description: Generate one perpetual VID using valid inputs
@@ -3229,7 +3229,7 @@ GenerateVID:
     
 }'
 
-   Resident_Generate_Perpetual_VID_2_Smoke_sid:
+   Resident_Generate_Perpetual_VID_2_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_88
       description: Generate second perpetual VID using valid inputs
@@ -3265,7 +3265,7 @@ GenerateVID:
     
 }'
 
-   Resident_Generate_Perpetual_VID_3_Smoke_sid:
+   Resident_Generate_Perpetual_VID_3_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_89
       description: Generate third perpetual VID using valid inputs
@@ -3301,7 +3301,7 @@ GenerateVID:
     
 }'
 
-   Resident_Generate_Temporary_VID_use_3_Smoke_sid:
+   Resident_Generate_Temporary_VID_use_3_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_90
       description: Generate temporary VID using three cases with valid inputs
