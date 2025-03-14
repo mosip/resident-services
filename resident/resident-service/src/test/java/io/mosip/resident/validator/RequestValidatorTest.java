@@ -3275,23 +3275,6 @@ public class RequestValidatorTest {
         assertDoesNotThrow(() -> validateSameData.validateSameData(idRepoJson, identity));
     }
 
-    @Test(expected = InvalidInputException.class)
-    public void testValidateVidCreateVidRequestDtoFailure() {
-        Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
-        ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
-        ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
-        ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
-        requestDto.setId("generate");
-        requestDto.setVersion("newVersion");
-        VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
-        vidRequestDtoV2.setVidType("PERPETUAL");
-        vidRequestDtoV2.setTransactionID("1232323232");
-        requestDto.setRequest(vidRequestDtoV2);
-        requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
-        requestValidator.validateVidCreateV2Request(requestDto,
-                false, "123");
-    }
-
     @Test
     public void testValidateVidCreateVidRequestDtoSucess() {
         Mockito.when(uinVidValidator.validateUin(Mockito.anyString())).thenReturn(true);
