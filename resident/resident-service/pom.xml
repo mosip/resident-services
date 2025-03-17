@@ -7,29 +7,29 @@
     <parent>
         <groupId>io.mosip.resident</groupId>
         <artifactId>resident-parent</artifactId>
-        <version>1.3.0-beta.1</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>resident-service</artifactId>
     <name>resident-service</name>
-    <version>1.3.0-beta.1</version>
+    <version>1.3.0-SNAPSHOT</version>
     <properties>
-        <commons.packet.manager.version>1.3.0-beta.1</commons.packet.manager.version>
-        <kernel.core.version>1.3.0-beta.2</kernel.core.version>
-        <kernel.virusscanner.clamav.version>1.3.0-beta.2</kernel.virusscanner.clamav.version>
-        <kernel-keymanager-service.version>1.3.0-beta.2</kernel-keymanager-service.version>
-        <kernel.authcodeflowproxy.api.version>1.3.0-beta.1</kernel.authcodeflowproxy.api.version>
-        <kernel.parent.version>1.3.0-beta.2</kernel.parent.version>
-        <kernel-cbeffutil-api.version>1.3.0-beta.1</kernel-cbeffutil-api.version>
-        <kernel.khazana.version>1.3.0-beta.1</kernel.khazana.version>
-        <kernel-openid-bridge-api.version>1.3.0-beta.1</kernel-openid-bridge-api.version>
+        <commons.packet.manager.version>1.3.0-SNAPSHOT</commons.packet.manager.version>
+        <kernel.core.version>1.3.0-SNAPSHOT</kernel.core.version>
+        <kernel.virusscanner.clamav.version>1.3.0-SNAPSHOT</kernel.virusscanner.clamav.version>
+        <kernel-keymanager-service.version>1.3.0-SNAPSHOT</kernel-keymanager-service.version>
+        <kernel.authcodeflowproxy.api.version>1.3.0-SNAPSHOT</kernel.authcodeflowproxy.api.version>
+        <kernel.parent.version>1.3.0-SNAPSHOT</kernel.parent.version>
+        <kernel-cbeffutil-api.version>1.3.0-SNAPSHOT</kernel-cbeffutil-api.version>
+        <kernel.khazana.version>1.3.0-SNAPSHOT</kernel.khazana.version>
+        <kernel-openid-bridge-api.version>1.3.0-SNAPSHOT</kernel-openid-bridge-api.version>
         <maven.jacoco.plugin.version>0.8.11</maven.jacoco.plugin.version>
-        <pre-registration-application-service.version>1.3.0-beta.1</pre-registration-application-service.version>
+        <pre-registration-application-service.version>1.3.0-SNAPSHOT</pre-registration-application-service.version>
         <jacoco.maven.plugin.version>0.8.11</jacoco.maven.plugin.version>
-        <id-repository-core.version>1.3.0-beta.1</id-repository-core.version>
-        <kernel-websubclient-api.version>1.3.0-beta.2</kernel-websubclient-api.version>
-        <kernel-pdfgenerator-itext.version>1.3.0-beta.1</kernel-pdfgenerator-itext.version>
-        <kernel-ref-idobjectvalidator.version>1.3.0-beta.2</kernel-ref-idobjectvalidator.version>
-        <kernel-auth-adpater.version>1.3.0-beta.1</kernel-auth-adpater.version>
+        <id-repository-core.version>1.3.0-SNAPSHOT</id-repository-core.version>
+        <kernel-websubclient-api.version>1.3.0-SNAPSHOT</kernel-websubclient-api.version>
+        <kernel-pdfgenerator-itext.version>1.3.0-SNAPSHOT</kernel-pdfgenerator-itext.version>
+        <kernel-ref-idobjectvalidator.version>1.3.0-SNAPSHOT</kernel-ref-idobjectvalidator.version>
+        <kernel-auth-adpater.version>1.3.0-SNAPSHOT</kernel-auth-adpater.version>
     </properties>
     <dependencies>
         <dependency>
