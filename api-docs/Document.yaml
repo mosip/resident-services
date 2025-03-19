@@ -1,0 +1,455 @@
+openapi: 3.1.0
+info:
+  title: Document
+  version: '1.0'
+  summary: API for to uploading and getting documents to resident portal
+  description: API for to uploading and getting documents
+servers:
+  - url: 'http://localhost:8099'
+  - url: 'https://dev.mosip.net'
+    description: ''
+paths:
+  '/documents/{transaction-id}':
+    parameters:
+      - schema:
+          type: string
+        name: transaction-id
+        in: path
+        required: true
+    get:
+      summary: Get documents by transaction-id
+      tags: []
+      responses:
+        '200':
+          description: Documents Found
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.pre-registration.document.fetch.metadata
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:09:00.536Z'
+                    response:
+                      documentsMetaData:
+                        - docName: temp.pdf
+                          documentId: 12215bee-b41d-11ec-8584-9950af2dc4f5
+                          docCatCode: POI
+                          docTypCode: CIN
+                          langCode: eng
+                          refNumber: qq
+                        - docName: temp.pdf
+                          documentId: 185de2df-b41d-11ec-8584-017efff3568d
+                          docCatCode: POA
+                          docTypCode: RNC
+                          langCode: eng
+                          refNumber: '22'
+                        - docName: temp.pdf
+                          documentId: fc36d381-b41f-11ec-8584-81210f13bb39
+                          docCatCode: POR
+                          docTypCode: CRN
+                          langCode: eng
+                          refNumber: ''
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  version:
+                    type: string
+                    minLength: 1
+                  responsetime:
+                    type: string
+                    minLength: 1
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    required:
+                      - documentsMetaData
+                    properties:
+                      documentsMetaData:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            docName:
+                              type: string
+                              minLength: 1
+                            documentId:
+                              type: string
+                              minLength: 1
+                            docCatCode:
+                              type: string
+                              minLength: 1
+                            docTypCode:
+                              type: string
+                              minLength: 1
+                            langCode:
+                              type: string
+                              minLength: 1
+                            refNumber:
+                              type: string
+                              minLength: 1
+                          required:
+                            - docName
+                            - documentId
+                            - docCatCode
+                            - docTypCode
+                            - langCode
+                            - refNumber
+                  errors:
+                    type:
+                      - array
+                      - 'null'
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?deref=bundle'
+                required:
+                  - id
+                  - version
+                  - responsetime
+                  - response
+              examples:
+                Get Documents information uploaded for transaction-id:
+                  value:
+                    id: mosip.resident.document.fetch.metadata
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:09:00.536Z'
+                    response:
+                      documentsMetaData:
+                        - docName: temp0.pdf
+                          documentId: 12215bee-b41d-11ec-8584-9950af2dc4f5
+                          docCatCode: POI
+                          docTypCode: CIN
+                          langCode: eng
+                          refNumber: qq
+                        - docName: temp1.pdf
+                          documentId: 185de2df-b41d-11ec-8584-017efff3568d
+                          docCatCode: POA
+                          docTypCode: RNC
+                          langCode: eng
+                          refNumber: '22'
+                        - docName: temp2.pdf
+                          documentId: fc36d381-b41f-11ec-8584-81210f13bb39
+                          docCatCode: POR
+                          docTypCode: CRN
+                          langCode: eng
+                          refNumber: '33'
+                    errors: null
+                'Error: Documents not available for transaction ID':
+                  value:
+                    id: mosip.resident.document.fetch.metadata
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:09:00.536Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-UPD-001
+                        message: Documents not available for transaction ID
+            application/xml:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.pre-registration.document.upload
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:10:19.266Z'
+                    response:
+                      preRegistrationId: '42847563954961'
+                      docId: 12215bee-b41d-11ec-8584-9950af2dc4f5
+                      docName: temp.pdf
+                      refNumber: null
+                      docCatCode: POI
+                      docTypCode: CIN
+                      docFileFormat: pdf
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  version:
+                    type: string
+                    minLength: 1
+                  responsetime:
+                    type: string
+                    minLength: 1
+                  response:
+                    type: object
+                    required:
+                      - transactioonId
+                      - docId
+                      - docName
+                      - docCatCode
+                      - docTypCode
+                      - docFileFormat
+                    properties:
+                      transactioonId:
+                        type: string
+                        minLength: 1
+                      docId:
+                        type: string
+                        minLength: 1
+                      docName:
+                        type: string
+                        minLength: 1
+                      refNumber:
+                        type: number
+                      docCatCode:
+                        type: string
+                        minLength: 1
+                      docTypCode:
+                        type: string
+                        minLength: 1
+                      docFileFormat:
+                        type: string
+                        minLength: 1
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?mid=5336'
+                required:
+                  - id
+                  - version
+                  - responsetime
+                  - response
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.pre-registration.document.fetch.metadata
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:09:00.536Z'
+                    response:
+                      documentsMetaData:
+                        - docName: temp.pdf
+                          documentId: 12215bee-b41d-11ec-8584-9950af2dc4f5
+                          docCatCode: POI
+                          docTypCode: CIN
+                          langCode: eng
+                          refNumber: qq
+                        - docName: temp.pdf
+                          documentId: 185de2df-b41d-11ec-8584-017efff3568d
+                          docCatCode: POA
+                          docTypCode: RNC
+                          langCode: eng
+                          refNumber: '22'
+                        - docName: temp.pdf
+                          documentId: fc36d381-b41f-11ec-8584-81210f13bb39
+                          docCatCode: POR
+                          docTypCode: CRN
+                          langCode: eng
+                          refNumber: ''
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  version:
+                    type: string
+                    minLength: 1
+                  responsetime:
+                    type: string
+                    minLength: 1
+                  response:
+                    type: object
+                    required:
+                      - documentsMetaData
+                    properties:
+                      documentsMetaData:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            docName:
+                              type: string
+                              minLength: 1
+                            documentId:
+                              type: string
+                              minLength: 1
+                            docCatCode:
+                              type: string
+                              minLength: 1
+                            docTypCode:
+                              type: string
+                              minLength: 1
+                            langCode:
+                              type: string
+                              minLength: 1
+                            refNumber:
+                              type: string
+                              minLength: 1
+                            '':
+                              type: string
+                          required:
+                            - docName
+                            - documentId
+                            - docCatCode
+                            - docTypCode
+                            - langCode
+                            - refNumber
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?mid=5336'
+                required:
+                  - id
+                  - version
+                  - responsetime
+                  - response
+        '404':
+          description: User Not Found
+      operationId: get-documents-for-transacion-id
+      description: Retrieve the document information uploaded for the transation-id
+      parameters: []
+    post:
+      summary: Upload document for the transaction-id
+      operationId: post-documents-transaction-id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    id: mosip.pre-registration.document.upload
+                    version: '1.0'
+                    responsetime: '2022-04-11T10:10:19.266Z'
+                    response:
+                      preRegistrationId: '42847563954961'
+                      docId: 12215bee-b41d-11ec-8584-9950af2dc4f5
+                      docName: temp.pdf
+                      refNumber: null
+                      docCatCode: POI
+                      docTypCode: CIN
+                      docFileFormat: pdf
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  version:
+                    type: string
+                    minLength: 1
+                  responsetime:
+                    type: string
+                    minLength: 1
+                  response:
+                    type: object
+                    required:
+                      - transactionId
+                      - docId
+                      - docName
+                      - docCatCode
+                      - docTypCode
+                      - docFileFormat
+                    properties:
+                      transactionId:
+                        type: string
+                        minLength: 1
+                      docId:
+                        type: string
+                        minLength: 1
+                      docName:
+                        type: string
+                        minLength: 1
+                      refNumber:
+                        type: string
+                      docCatCode:
+                        type: string
+                        minLength: 1
+                      docTypCode:
+                        type: string
+                        minLength: 1
+                      docFileFormat:
+                        type: string
+                        minLength: 1
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'https://stoplight.io/api/v1/projects/mosip/commons/nodes/models/Error.yaml?mid=5336'
+                required:
+                  - id
+                  - version
+                  - responsetime
+                  - response
+              examples: {}
+      description: Upload a document.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              description: ''
+              type: object
+              properties:
+                id:
+                  type: string
+                  minLength: 1
+                request:
+                  type: object
+                  properties:
+                    docCatCode:
+                      type: string
+                      minLength: 1
+                    docTypCode:
+                      type: string
+                      minLength: 1
+                    langCode:
+                      type: string
+                      minLength: 1
+                    refNumber:
+                      type: string
+                      minLength: 1
+                  required:
+                    - docCatCode
+                    - docTypCode
+                    - langCode
+                    - refNumber
+                metadata:
+                  type: object
+                  properties: {}
+                  required: []
+                version:
+                  type: string
+                  minLength: 1
+                requesttime:
+                  type: string
+                  minLength: 1
+              required:
+                - id
+                - request
+                - metadata
+                - version
+                - requesttime
+              x-examples:
+                example-1:
+                  id: mosip.pre-registration.document.upload
+                  request:
+                    docCatCode: POI
+                    docTypCode: CIN
+                    langCode: eng
+                    refNumber: qq
+                  metadata: {}
+                  version: '1.0'
+                  requesttime: '2022-04-11T10:10:18.120Z'
+            examples: {}
+          application/pdf:
+            schema:
+              type: object
+              properties: {}
+        description: 'Document request: document description, file: application/pdf'
+components:
+  schemas: {}

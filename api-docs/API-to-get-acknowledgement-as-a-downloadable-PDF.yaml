@@ -1,0 +1,145 @@
+openapi: 3.1.0
+x-stoplight:
+  id: clcxcbv0cvptt
+info:
+  title: API to get acknowledgement as a downloadable PDF
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/ack/download/pdf/event/{eventId}/language/{languageCode}':
+    get:
+      summary: '/ack/download/pdf/event/{eventId}/language/{languageCode}'
+      tags: []
+      responses:
+        '200':
+          description: |-
+            OK
+            PDF of acknowledgement with mime type of application/pdf
+          content:
+            application/pdf:
+              schema:
+                type: object
+                properties: {}
+              examples: {}
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                'Error: EID not available in database':
+                  value:
+                    id: mosip.resident.event.ack.download
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-459
+                        message: EID not available in database
+                'Error: Acknowledgement Template Property not found':
+                  value:
+                    id: mosip.resident.event.ack.download
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-460
+                        message: Acknowledgement Template Property not found
+        '401':
+          description: |-
+            Unauthorized
+            If token is invalid or authentication has failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      operationId: get-ack-download-pdf-event-eventId-language-languageCode
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+        - schema:
+            type: number
+          in: header
+          name: time-zone-offset
+          description: 'Default value : 0'
+        - schema:
+            type: string
+          in: header
+          name: locale
+          description: Used to get locale based values
+      description: This API is to convert the acknowledgement of Share credentials with partner Request as a downloadable PDF for a given event ID
+    parameters:
+      - schema:
+          type: string
+        name: eventId
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: languageCode
+        in: path
+        required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

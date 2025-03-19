@@ -1,0 +1,108 @@
+openapi: 3.1.0
+x-stoplight:
+  id: fqcj6sql00a18
+info:
+  title: auth-unlock
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /req/auth-unlock:
+    post:
+      summary: ''
+      operationId: post-req-auth-unlock
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.authunlock
+                    version: v1
+                    responseTime: '2018-12-09T06:39:04.683Z'
+                    response:
+                      status: success
+                      message: Notification has been sent to the provided contact detail(s)
+                    errors: null
+                OTP Authentication Failed:
+                  value:
+                    id: mosip.resident.authunlock
+                    version: v1
+                    responseTime: '2018-12-09T06:39:04.683Z'
+                    response: {}
+                    errors:
+                      - errorCode: XXX-XXX-002
+                        errorMessage: OTP Authentication Failed
+      description: This request will authenticate an Individual based on provided OTP and will unlock provided locked authentication types.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authentication
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            examples:
+              Example 1:
+                value:
+                  id: mosip.resident.authunlock
+                  version: v1
+                  requestTime: '2018-12-09T06:39:04.683Z'
+                  request:
+                    transactionID: dabed834-974f-11e9-bc42-526af7764f64
+                    individualId: '9830872690593682'
+                    individualIdType: UIN
+                    otp: '123456'
+                    authType:
+                      - bio-FIR
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,104 @@
+openapi: 3.1.0
+x-stoplight:
+  id: pcdtoifc6302b
+info:
+  title: check-status
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /rid/check-status:
+    post:
+      summary: /rid/check-status
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.checkstatus
+                    version: v1
+                    responseTime: '2018-12-09T06:39:04.683Z'
+                    response:
+                      ridStatus: PROCESSING
+                    errors: null
+                Invalid RID:
+                  value:
+                    id: mosip.resident.checkstatus
+                    version: v1
+                    responseTime: '2018-12-09T06:39:04.683Z'
+                    response: {}
+                    errors:
+                      - errorCode: XXX-XXX-002
+                        errorMessage: Invalid RID
+      operationId: post-rid-check-status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            examples:
+              Example 1:
+                value:
+                  id: mosip.resident.checkstatus
+                  version: v1
+                  requestTime: '2018-12-09T06:39:04.683Z'
+                  request:
+                    individualId: '9830872690593682'
+                    individualIdType: RID
+      description: This API is to check the status of RID.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authentication
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

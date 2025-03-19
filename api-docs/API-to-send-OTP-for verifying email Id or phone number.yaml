@@ -1,0 +1,275 @@
+openapi: 3.1.0
+x-stoplight:
+  id: ye9p7hp529uxo
+info:
+  title: phone number)
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /contact-details/send-otp:
+    post:
+      summary: contact-details/send-otp
+      operationId: post-contact-details-send-otp
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  response:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                      message:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: v1
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response:
+                      status: Email Request submitted
+                      message: success
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response:
+                      status: Email Request submitted
+                      message: success
+                    errors: null
+                Error Unable to access API resource:
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-412
+                        message: Unable to access API resource
+                'Error: Invalid Input Parameter- userid':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- userid
+                'Error: Send OTP failed':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-463
+                        message: Send OTP failed.
+                'Error: Innumerous OTP requests received':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES_SER_510
+                        message: Innumerous OTP requests received
+                'Error: Unable to process':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-466
+                        message: Unable to process
+                'Error: OTP is blocked':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-465
+                        message: OTP is blocked
+                'Error: Invalid Input Parameter- id':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- id
+                'Error: Invalid Input Parameter- requesttime':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- requesttime
+                'Error: Invalid Input Parameter- transactionId':
+                  value:
+                    id: mosip.resident.contact.details.send.otp.id
+                    version: '1.0'
+                    responsetime: '2022-09-23T08:05:34.374379Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-410
+                        message: Invalid Input Parameter- transactionId
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                    transactionId:
+                      type: string
+              x-examples:
+                Example 1:
+                  id: mosip.resident.contact.details.send.otp.id
+                  version: '1.0'
+                  requesttime: '2022-09-20T13:13:04.159Z'
+                  request:
+                    userId: kameshsr1338@gmail.com
+                    transactionId: '1234567890'
+            examples:
+              example-1:
+                value:
+                  id: mosip.resident.contact.details.send.otp.id
+                  version: '1.0'
+                  requesttime: '2022-09-20T13:13:04.159Z'
+                  request:
+                    userId: kameshsr1338@gmail.com
+                    transactionId: '1234567890'
+      description: This API is to send OTP to new email Id/phone number.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

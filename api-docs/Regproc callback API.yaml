@@ -1,0 +1,45 @@
+openapi: 3.0.0
+x-stoplight:
+  id: bb7qdoshx4zlt
+info:
+  title: Registration Process Workflow Callback API
+  version: 1.0.0
+paths:
+  /callback/regprocworkflow:
+    post:
+      summary: Callback for registration process workflow completion
+      description: Endpoint to receive callbacks when registration process workflow is completed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowCompletedEventDTO'
+      responses:
+        '204':
+          description: No content
+      x-stoplight:
+        id: w6znqxvb4wpwl
+components:
+  schemas:
+    WorkflowCompletedEventDTO:
+      type: object
+      properties:
+        instanceId:
+          type: string
+          description: The ID of the workflow instance
+        resultCode:
+          type: string
+          description: Result code indicating the outcome of the workflow
+        workflowType:
+          type: string
+          description: Type of the workflow
+        errorCode:
+          type: string
+          description: Error code if there was an error during the workflow
+      required:
+        - instanceId
+        - resultCode
+        - workflowType
+      x-stoplight:
+        id: u407eiyc9qhfl

@@ -1,0 +1,533 @@
+openapi: 3.1.0
+x-stoplight:
+  id: znpm3vmzy5cqp
+info:
+  title: info and return attributes in the UI spec including photo
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/identity/info/type/{schemaType}':
+    parameters:
+      - schema:
+          type: string
+        name: schemaType
+        in: path
+        required: true
+    get:
+      summary: '/identity/info/type/{schemaType}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      fullName:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      dateOfBirth:
+                        type: string
+                      gender:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      region:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      province:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      city:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      zone:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      postalCode:
+                        type: string
+                      residenceStatus:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      addressLine1:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      phone:
+                        type: string
+                      email:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T08:18:16.563Z'
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: ara
+                          value: Manoj_ara
+                        - language: eng
+                          value: Manoj_eng
+                      dateOfBirth: 1972/05/07
+                      gender:
+                        - language: eng
+                          value: Male
+                      region:
+                        - language: eng
+                          value: RSK
+                      province:
+                        - language: ara
+                          value: KTA
+                        - language: eng
+                          value: KTA
+                      city:
+                        - language: eng
+                          value: KNT
+                        - language: ara
+                          value: KNT
+                      zone:
+                        - language: eng
+                          value: BNMR
+                      postalCode: '14022'
+                      residenceStatus:
+                        - language: ara
+                          value: Foreigner
+                        - language: eng
+                          value: Foreigner
+                      addressLine1:
+                        - language: ara
+                          value: '#991, 47 Street, 6 block'
+                        - language: eng
+                          value: '#٩٩١، ٤٧ سترِِت، ٦ بلُكك'
+                      phone: '9395910872'
+                      email: manojvsp12@gmail.com
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.identity.info
+                    version: '1.0'
+                    responsetime: '2022-06-14T08:18:16.563Z'
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: ara
+                          value: Manoj_ara
+                        - language: eng
+                          value: Manoj_eng
+                      dateOfBirth: 1972/05/07
+                      gender:
+                        - language: eng
+                          value: Male
+                      region:
+                        - language: eng
+                          value: RSK
+                      province:
+                        - language: ara
+                          value: KTA
+                        - language: eng
+                          value: KTA
+                      city:
+                        - language: eng
+                          value: KNT
+                        - language: ara
+                          value: KNT
+                      zone:
+                        - language: eng
+                          value: BNMR
+                      postalCode: '14022'
+                      residenceStatus:
+                        - language: ara
+                          value: Foreigner
+                        - language: eng
+                          value: Foreigner
+                      addressLine1:
+                        - language: ara
+                          value: '#991, 47 Street, 6 block'
+                        - language: eng
+                          value: '#٩٩١، ٤٧ سترِِت، ٦ بلُكك'
+                      phone: '9395910872'
+                      email: manojvsp12@gmail.com
+                    errors: null
+                'Error: Unable to access resource':
+                  value:
+                    id: mosip.resident.identity.info
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      errorCode: RES-SER-412
+                      message: Unable to access API resource
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+        '':
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.identity.info
+                    version: '1.0'
+                    responsetime: '2022-06-14T08:18:16.563Z'
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: ara
+                          value: Manoj_ara
+                        - language: eng
+                          value: Manoj_eng
+                      dateOfBirth: 1972/05/07
+                      gender:
+                        - language: eng
+                          value: Male
+                      region:
+                        - language: eng
+                          value: RSK
+                      province:
+                        - language: ara
+                          value: KTA
+                        - language: eng
+                          value: KTA
+                      city:
+                        - language: eng
+                          value: KNT
+                        - language: ara
+                          value: KNT
+                      zone:
+                        - language: eng
+                          value: BNMR
+                      postalCode: '14022'
+                      residenceStatus:
+                        - language: ara
+                          value: Foreigner
+                        - language: eng
+                          value: Foreigner
+                      addressLine1:
+                        - language: ara
+                          value: '#991, 47 Street, 6 block'
+                        - language: eng
+                          value: '#٩٩١، ٤٧ سترِِت، ٦ بلُكك'
+                      phone: '9395910872'
+                      email: manojvsp12@gmail.com
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      fullName:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      dateOfBirth:
+                        type: string
+                      gender:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      region:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      province:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      city:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      zone:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      postalCode:
+                        type: string
+                      residenceStatus:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      addressLine1:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            value:
+                              type: string
+                      phone:
+                        type: string
+                      email:
+                        type: string
+                  errors:
+                    type: 'null'
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.identity.info
+                    version: '1.0'
+                    responsetime: '2022-06-14T08:18:16.563Z'
+                    metadata: null
+                    response:
+                      fullName:
+                        - language: ara
+                          value: Manoj_ara
+                        - language: eng
+                          value: Manoj_eng
+                      dateOfBirth: 1972/05/07
+                      gender:
+                        - language: eng
+                          value: Male
+                      region:
+                        - language: eng
+                          value: RSK
+                      province:
+                        - language: ara
+                          value: KTA
+                        - language: eng
+                          value: KTA
+                      city:
+                        - language: eng
+                          value: KNT
+                        - language: ara
+                          value: KNT
+                      zone:
+                        - language: eng
+                          value: BNMR
+                      postalCode: '14022'
+                      residenceStatus:
+                        - language: ara
+                          value: Foreigner
+                        - language: eng
+                          value: Foreigner
+                      addressLine1:
+                        - language: ara
+                          value: '#991, 47 Street, 6 block'
+                        - language: eng
+                          value: '#٩٩١، ٤٧ سترِِت، ٦ بلُكك'
+                      phone: '9395910872'
+                      email: manojvsp12@gmail.com
+                    errors: null
+                'Error: Unable to access resource':
+                  value:
+                    id: mosip.resident.identity.info
+                    version: '1.0'
+                    responsetime: '2022-07-22T15:27:10.605Z'
+                    response: null
+                    errors:
+                      errorCode: RES-SER-412
+                      message: Unable to access API resource
+      operationId: get-identity-info-type-update-demographics-personalized-card
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          required: true
+          description: Authorization token is used to validate the permissions carried by the user.
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      description: |
+        This API is to update identity/info to return the attributes in the UI-spec including photo to support preview in Download personalized card page/update demographic page / share credential page. The input is the schema type should be one of below:
+        1. update-demographics
+        2. personalized-card
+        3. share-credential
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

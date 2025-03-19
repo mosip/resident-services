@@ -1,0 +1,169 @@
+openapi: 3.1.0
+x-stoplight:
+  id: hbttmtykmso4z
+info:
+  title: API to get information about a location
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  '/proxy​/masterdata​/locations​/info​/{locationcode}​/{langcode}':
+    parameters:
+      - schema:
+          type: string
+        name: locationcode
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: langcode
+        in: path
+        required: true
+    get:
+      summary: 'proxy​/masterdata​/locations​/info​/{locationcode}​/{langcode}'
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      isActive:
+                        type: boolean
+                      createdBy:
+                        type: string
+                      createdDateTime:
+                        type: string
+                      updatedBy:
+                        type: 'null'
+                      updatedDateTime:
+                        type: 'null'
+                      isDeleted:
+                        type: boolean
+                      deletedDateTime:
+                        type: 'null'
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      hierarchyLevel:
+                        type: integer
+                      hierarchyName:
+                        type: string
+                      parentLocCode:
+                        type: 'null'
+                      langCode:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: null
+                    version: null
+                    responsetime: '2022-06-14T07:43:41.399Z'
+                    metadata: null
+                    response:
+                      isActive: true
+                      createdBy: sysadmin
+                      createdDateTime: '2022-03-16T05:50:56.999Z'
+                      updatedBy: null
+                      updatedDateTime: null
+                      isDeleted: false
+                      deletedDateTime: null
+                      code: MOR
+                      name: MyCountry
+                      hierarchyLevel: 0
+                      hierarchyName: Country
+                      parentLocCode: null
+                      langCode: eng
+                    errors: null
+              examples:
+                Success:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: string
+                    metadata: null
+                    response:
+                      isActive: true
+                      createdBy: string
+                      createdDateTime: string
+                      updatedBy: null
+                      updatedDateTime: null
+                      isDeleted: true
+                      deletedDateTime: null
+                      code: string
+                      name: string
+                      hierarchyLevel: 0
+                      hierarchyName: string
+                      parentLocCode: null
+                      langCode: string
+                    errors: null
+      operationId: get-proxy-masterdata-locations-info-locationcode-langcode
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: locationcode
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: langcode
+          required: true
+      description: This API is to get the information about location.
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

@@ -1,0 +1,69 @@
+openapi: 3.0.1
+info:
+  title: ID Repository API
+  description: API for retrieving RID by IndividualId
+  version: 1.0.0
+paths:
+  '/rid/{individualId}':
+    get:
+      summary: Get RID by IndividualId Request
+      description: Get RID by IndividualId Request
+      tags:
+        - id-repo-controller
+      parameters:
+        - name: individualId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ID_TYPE
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '400':
+          description: No Records Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdRepoAppException'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdRepoAppException'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdRepoAppException'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdRepoAppException'
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RidDto'
+        message:
+          type: string
+        status:
+          type: string
+    RidDto:
+      type: object
+    IdRepoAppException:
+      type: object

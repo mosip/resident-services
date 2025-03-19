@@ -1,0 +1,58 @@
+openapi: 3.0.1
+info:
+  title: Download Master Data API
+  description: API for downloading registration centers by hierarchy level
+  version: 1.0.0
+paths:
+  /download/registration-centers-list:
+    get:
+      summary: downloadRegistrationCentersByHierarchyLevel
+      description: Download registration centers by hierarchy level
+      parameters:
+        - name: langcode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hierarchylevel
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int16
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: time-zone-offset
+          in: header
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: locale
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEntity'
+      tags:
+        - download-master-data-controller
+components:
+  schemas:
+    ResponseEntity:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+        status:
+          type: string

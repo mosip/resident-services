@@ -642,4 +642,20 @@ public class ResidentServiceResUpdateTest {
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
+	@Test
+	public void testValidationOfFailedStatusForUpdateUin() throws ResidentServiceCheckedException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setRequestSummary("failed");
+		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		dto.setIndividualId("3527812407");
+		try {
+			residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
+		} catch (ResidentServiceException e) {
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+					((ValidationFailedException) e.getCause()).getErrorCode());
+		}
+	}
+
 }

@@ -1,0 +1,188 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 3rfd604b5po3w
+info:
+  title: Print Partner Payment Status
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /check-order-status:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response:
+                      transactionId: '1234567890'
+                      trackingId: adfs-3435-fdfg-t533
+                    errors: []
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  response:
+                    type: object
+                    properties:
+                      transactionId:
+                        type: string
+                      trackingId:
+                        type: string
+                        description: This is returned in case of the card is dispatched
+                  errors:
+                    type: array
+                    items:
+                      type: object
+              examples:
+                Order just confirmed:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response:
+                      transactionId: '1234567890'
+                      trackingId: adfs-3435-fdfg-t533
+                    errors: []
+                Card dispatched:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response:
+                      transactionId: '1234567890'
+                      trackingId: adfs-3435-fdfg-t533
+                    errors: []
+        '402':
+          description: Payment Required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-457
+                        message: Payment has failed
+              examples:
+                Payment failed:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-457
+                        message: Payment has failed
+                Payment cancelled:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-458
+                        message: Payment has been cancelled
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-459
+                        message: Technical error has occurred
+              examples:
+                Technical error:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-459
+                        message: Technical error has occurred
+                Cannot place order at the moment:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-11-08T06:49:13.830Z'
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-460
+                        message: Cannot place order at the moment
+      operationId: get-check-order-status
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: individualId
+          required: true
+          description: The UIN/VID of the Individual
+        - schema:
+            type: string
+          in: query
+          name: transactionId
+          description: The transaction ID of the payment
+          required: true
+      description: Get the card order status
+components:
+  schemas: {}

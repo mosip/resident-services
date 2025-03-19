@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info:
+  title: OpenID-Token API
+  version: '1.0'
+  summary: API to get ID Token and Access token for code in for Auth Code flow
+  description: API to get ID Token and Access token for code in for Auth Code flow
+servers:
+  - url: 'http://localhost:3000'
+  - url: 'https://dev.mosip.net'
+    description: ''
+paths:
+  /oidc/token:
+    parameters: []
+    get:
+      summary: Get ID Token and Access token for Authorization Code
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: id_token=<ID Token>; access_token=<Access Token>
+        '404':
+          description: User Not Found
+      operationId: get_oidc-tokens-for-code
+      description: Get the ID Token and Access Token for the given Authorization Code and redirect URI (Authorization Code flow in OIDC)
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: code
+          description: Authorization Code
+        - schema:
+            type: string
+          in: query
+          name: redirect_uri
+          description: The redirect URI used at login to Mosip IdP
+        - schema:
+            type: string
+          in: query
+          name: state
+          description: The state used while login using Mosip Idp
+components:
+  schemas: {}

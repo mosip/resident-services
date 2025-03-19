@@ -1,0 +1,216 @@
+openapi: 3.1.0
+info:
+  title: Update UIN
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+  - url: 'https://dev.mosip.net'
+    description: ''
+paths:
+  /update-uin:
+    parameters: []
+    patch:
+      summary: Update UIN
+      operationId: patch-update-uin
+      responses:
+        '200':
+          description: OK
+          headers:
+            eventId:
+              schema:
+                type: string
+              description: The Event ID generated for this request
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    id: mosip.resident.updateuin
+                    version: '1.0'
+                    responsetime: '2022-06-14T13:12:18.666Z'
+                    metadata: {}
+                    response:
+                      message: string
+                    errors: null
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  response:
+                    type:
+                      - object
+                      - 'null'
+                    properties:
+                      message:
+                        type: string
+                      status:
+                        type: string
+                        x-stoplight:
+                          id: ifhg1ifwkxpvg
+                  errors:
+                    type:
+                      - array
+                      - 'null'
+                    items: {}
+              examples:
+                Success:
+                  value:
+                    id: mosip.resident.updateuin
+                    version: '1.0'
+                    responsetime: '2022-06-14T13:12:18.666Z'
+                    metadata: {}
+                    response:
+                      message: Notification has been sent to the provided contact detail(s)
+                      status: Success
+                    errors: null
+                'Error: No document found for transactionId':
+                  value:
+                    id: mosip.resident.updateuin
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:34:35.775Z'
+                    metadata: {}
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-461
+                        message: 'No document found for transactionID: 1234567890'
+                'Error: Consent not accepted':
+                  value:
+                    id: mosip.resident.updateuin
+                    version: '1.0'
+                    responsetime: '2022-06-09T06:34:35.775Z'
+                    metadata: {}
+                    response: null
+                    errors:
+                      - errorCode: RES-SER-472
+                        message: Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: 'null'
+                  version:
+                    type: 'null'
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errorCode:
+                          type: string
+                        message:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:03.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+              examples:
+                Example 1:
+                  value:
+                    id: null
+                    version: null
+                    responsetime: '2022-10-07T09:22:04.631Z'
+                    metadata: null
+                    response: null
+                    errors:
+                      - errorCode: KER-ATH-401
+                        message: Authentication Failed
+      description: This API is to update the UIN. Resident Service gets the RID (AID) from the update response and stores the status in resident_transaction details with a summary of what got updated.
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization
+          description: Authorization token is used to validate the permissions carried by the user.
+          required: true
+        - schema:
+            type: string
+          in: cookie
+          name: id_token
+          description: ID token is used to verify which user has logged in.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                version:
+                  type: string
+                requesttime:
+                  type: string
+                request:
+                  type: object
+                  properties:
+                    transactionID:
+                      type: string
+                    consent:
+                      type: string
+                    identity:
+                      type: object
+                      properties:
+                        IDSchemaVersion:
+                          type: string
+                        addressLine3:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              language:
+                                type: string
+                              value:
+                                type: string
+                        email:
+                          type: string
+              x-examples:
+                Example 1:
+                  id: mosip.resident.updateuin
+                  version: '1.0'
+                  requesttime: '2022-09-02T11:19:54.449Z'
+                  request:
+                    transactionID: '1234567890'
+                    consent: Accepted
+                    identity:
+                      IDSchemaVersion: '0.1'
+                      addressLine3:
+                        - language: eng
+                          value: Sohan
+                      email: abc@gmail.com
+            examples:
+              Example 1:
+                value:
+                  id: mosip.resident.updateuin
+                  version: '1.0'
+                  requesttime: '2022-09-02T11:19:54.449Z'
+                  request:
+                    transactionID: '1234567890'
+                    consent: Accepted
+                    identity:
+                      IDSchemaVersion: '0.1'
+                      addressLine3:
+                        - language: eng
+                          value: Sohan
+                      email: abc@gmail.com
+components:
+  schemas: {}

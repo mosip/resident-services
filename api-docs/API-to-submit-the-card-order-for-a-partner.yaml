@@ -1,0 +1,150 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 73jikb8x65agt
+info:
+  title: API to submit the card order for a partner
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /resident/v1/physical-card/order:
+    get:
+      summary: resident/v1/physical-card/order
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  version:
+                    type: string
+                  responsetime:
+                    type: string
+                  metadata:
+                    type: 'null'
+                  response:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      requestId:
+                        type: string
+                  errors:
+                    type: 'null'
+                x-examples:
+                  example-1:
+                    id: string
+                    version: v1
+                    responsetime: '2022-06-23T11:48:10.359Z'
+                    metadata: null
+                    response:
+                      id: '8251649601'
+                      requestId: 7256e703-3e76-4ed3-9d4d-076708605423
+                    errors: null
+              examples:
+                example-1:
+                  value:
+                    id: string
+                    version: string
+                    responsetime: string
+                    metadata: null
+                    response:
+                      id: string
+                      requestId: string
+                    errors: null
+                Success:
+                  value:
+                    id: string
+                    version: v1
+                    responsetime: '2022-06-23T11:48:10.359Z'
+                    metadata: null
+                    response:
+                      id: '8251649601'
+                      requestId: 7256e703-3e76-4ed3-9d4d-076708605423
+                    errors: null
+        '302':
+          description: Found
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Request valid:
+                  value: redirection to Print Partner’s Order a physical card Page
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Bad request:
+                  value: {}
+      operationId: get-resident-v1-physical-card-order
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: partnerId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirectUri
+          required: true
+          description: The base64 encoded URL for Resident-UI Acknowledgement page for ordering a physical card.
+        - schema:
+            type: string
+          in: cookie
+          name: Authorization token
+          required: true
+      description: This API is to submit the physical card order to a partner
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ''
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: '1997-10-31'
+          emailVerified: true
+          signUpDate: '2019-08-24'
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1997-10-31'
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified

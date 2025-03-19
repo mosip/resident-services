@@ -1,0 +1,70 @@
+openapi: 3.0.1
+info:
+  title: Proxy Masterdata API
+  description: API for getting gender code by gender type and language code
+  version: 1.0.0
+paths:
+  '/proxy/masterdata/gendercode/{gendertype}/{langcode}':
+    get:
+      summary: getGenderCodeByGenderTypeAndLangCode
+      description: getGenderCodeByGenderTypeAndLangCode
+      tags:
+        - proxy-masterdata-controller
+      parameters:
+        - name: gendertype
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: langcode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapper'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: ''
+components:
+  schemas:
+    ResponseWrapper:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        message:
+          type: string
+        status:
+          type: string
