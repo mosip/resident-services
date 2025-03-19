@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,6 +25,13 @@ public class ResidentUtil extends AdminTestUtil {
 	private static final Logger logger = Logger.getLogger(ResidentUtil.class);
 	
 	protected static final String ESIGNET_PAYLOAD = "config/esignetPayload.json";
+	
+	public static void setLogLevel() {
+		if (ResidentConfigManager.IsDebugEnabled())
+			logger.setLevel(Level.ALL);
+		else
+			logger.setLevel(Level.ERROR);
+	}
 	
 	public static String isTestCaseValidForExecution(TestCaseDTO testCaseDTO) {
 		String testCaseName = testCaseDTO.getTestCaseName();

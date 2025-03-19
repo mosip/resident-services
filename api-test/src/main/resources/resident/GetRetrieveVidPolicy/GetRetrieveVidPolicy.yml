@@ -1,6 +1,7 @@
 GetRetrieveVidPolicy:
    Resident_GetRetrieveVidPolicy_uin_all_Valid_Smoke:
       endPoint: /resident/v1/vid/policy
+      uniqueIdentifier: TC_Resident_retrieveVIDpolicy_01      
       description: Get VID policy when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -14,6 +15,7 @@ GetRetrieveVidPolicy:
 
    Resident_GetRetrieveVidPolicy_vid_all_Valid_Smoke:
       endPoint: /resident/v1/vid/policy
+      uniqueIdentifier: TC_Resident_retrieveVIDpolicy_02      
       description: Get VID policy when logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true

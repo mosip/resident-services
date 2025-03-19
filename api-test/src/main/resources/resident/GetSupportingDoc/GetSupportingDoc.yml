@@ -1,6 +1,7 @@
 GetSupportingDoc:
    Resident_GetSupportingDoc_all_Valid_Smoke:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_SupportingDocument_01      
       description: Get supporting documents      
       role: resident
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetSupportingDoc:
 
    Resident_GetSupportingDoc_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/supporting-documents
+      uniqueIdentifier: TC_Resident_SupportingDocument_02      
       description: Get supporting documents when invalid language code is given      
       role: resident
       checkErrorsOnlyInResponse: true

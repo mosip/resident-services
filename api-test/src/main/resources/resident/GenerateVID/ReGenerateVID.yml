@@ -1,6 +1,7 @@
 ReGenerateVID:
    Resident_ReGenerateVID_All_Valid_Smoke_Perpetual_sid:
       endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_ReGenerateVID_01
       description: Regenerate perpetual VID using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -34,6 +35,7 @@ ReGenerateVID:
 }'
    Resident_ReGenerateVID_All_Valid_Smoke_Temp_VID_sid:
       endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_ReGenerateVID_02
       description: Regenerate temporary VID using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true

@@ -1,6 +1,7 @@
 DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_allValid_smoke:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_01
       description: Download nearest registration center using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -19,6 +20,7 @@ DownloadNearestRegCen:
 
    Resident_DownloadNearestRegCen_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_02
       description: Download nearest registration center using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -37,6 +39,7 @@ DownloadNearestRegCen:
 
    Resident_DownloadNearestRegCen_Invalid_Latitude_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_03
       description: Download nearest registration center using an invalid latitude
       role: resident
       checkErrorsOnlyInResponse: true
@@ -55,6 +58,7 @@ DownloadNearestRegCen:
 
    Resident_DownloadNearestRegCen_Invalid_Proximitydistance_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_04
       description: Download nearest registration center using an invalid proximitydistance
       role: resident
       checkErrorsOnlyInResponse: true
@@ -73,6 +77,7 @@ DownloadNearestRegCen:
 
    Resident_DownloadNearestRegCen_Invalid_Longitude_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_05
       description: Download nearest registration center using an invalid longitude
       role: resident
       checkErrorsOnlyInResponse: true
@@ -91,6 +96,7 @@ DownloadNearestRegCen:
 
    Resident_DownloadNearestRegCen_Invalid_All_Inputs_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
+      uniqueIdentifier: TC_Resident_DownloadNearestRegCen_06
       description: Download nearest registration center using all invalid inputs
       role: resident
       checkErrorsOnlyInResponse: true

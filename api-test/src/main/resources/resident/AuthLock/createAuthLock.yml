@@ -80,7 +80,7 @@ AuthLock:
       outputTemplate: resident/AuthLock/createAuthLockResult
       input: '{
         "transactionID": "$TRANSACTIONID$",
-        "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+        "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
         "individualIdType": "VID",
         "requesttime": "$TIMESTAMP$",
         "id": "mosip.resident.authlock",
@@ -90,7 +90,7 @@ AuthLock:
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
     "individualIdType": "VID",
     "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
     "sendOtpEndPoint": "/resident/v1/req/otp"
@@ -115,7 +115,7 @@ AuthLock:
       outputTemplate: resident/AuthLock/createAuthLockResult
       input: '{
         "transactionID": "$TRANSACTIONID$",
-        "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+        "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
         "individualIdType": "VID",
         "requesttime": "$TIMESTAMP$",
         "id": "mosip.resident.authlock",
@@ -125,7 +125,7 @@ AuthLock:
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_Smoke_sid_vid$",
+    "individualId": "$ID:Generate_Perpetual_VID_SecondTime_sid_vid$",
     "individualIdType": "VID",
     "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
     "sendOtpEndPoint": "/resident/v1/req/otp"

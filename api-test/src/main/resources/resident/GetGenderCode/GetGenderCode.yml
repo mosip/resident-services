@@ -1,6 +1,7 @@
 GetGenderCode:
    Resident_GetGenderCode_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_01      
       description: Get gendercode using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetGenderCode:
 
    Resident_GetGenderCode1_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_02      
       description: Get one gendercode using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -31,6 +33,7 @@ GetGenderCode:
 
    Resident_GetGenderCode2_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_03      
       description: Get another gendercode using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -46,6 +49,7 @@ GetGenderCode:
 
    Resident_GetGenderCode_Invalid_GenderType_Neg:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_04      
       description: Get gendercode using an invalid gendertype
       role: resident
       checkErrorsOnlyInResponse: true
@@ -68,6 +72,7 @@ GetGenderCode:
 
    Resident_GetGenderCode_Invalid_langCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_05      
       description: Get gendercode using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true

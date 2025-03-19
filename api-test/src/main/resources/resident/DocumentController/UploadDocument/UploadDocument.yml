@@ -1,6 +1,7 @@
 UploadDocument:
    Resident_UploadDocument_uin_all_Valid_Smoke_sid:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_01
       description: Upload the document using a valid UIN with all valid inputs
       role: residentNew
       restMethod: post
@@ -26,6 +27,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_all_Valid_Smoke_sid:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_02
       description: Upload the document using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: post
@@ -51,6 +53,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Large_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_03
       description: Upload the document using a valid UIN with large file
       role: residentNew
       restMethod: post
@@ -76,6 +79,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Invalid_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_04
       description: Upload the document using a valid UIN with an invalid file
       role: residentNew
       restMethod: post
@@ -101,6 +105,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Empty_docTypCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_05
       description: Upload the document using a valid UIN with an empty docTypeCode
       role: residentNew
       restMethod: post
@@ -126,6 +131,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Blank_DoccatCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_06
       description: Upload the document using a valid UIN with blank doccatCode
       role: residentNew
       restMethod: post
@@ -151,6 +157,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Invalid_LangCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_07
       description: Upload the document using a valid UIN with an invalid langCode
       role: residentNew
       restMethod: post
@@ -176,6 +183,7 @@ UploadDocument:
 
    Resident_UploadDocument_uin_Empty_langCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_08
       description: Upload the document using a valid UIN with an empty langCode
       role: residentNew
       restMethod: post
@@ -201,6 +209,7 @@ UploadDocument:
 
    Resident_UploadDocument_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_09
       description: Upload the document using an invalid token
       role: null
       restMethod: post
@@ -226,7 +235,8 @@ UploadDocument:
 
    Resident_UploadDocument_StatusCode_Empty_Token:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
-      description: Upload the document using statusCode with an empty token
+      uniqueIdentifier: TC_Resident_UploadDocument_10
+      description: Upload the document with an empty token and check statusCode
       role: 
       restMethod: post
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
@@ -244,6 +254,7 @@ UploadDocument:
       
    Resident_UploadDocument_vid_Large_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_11
       description: Upload the document using a valid VID with large file
       role: residentNewVid
       restMethod: post
@@ -269,6 +280,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_Invalid_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_12
       description: Upload the document using a valid VID with an invalid file
       role: residentNewVid
       restMethod: post
@@ -294,6 +306,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_Empty_docTypCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_13
       description: Upload the document using a valid VID with an empty docTypCode
       role: residentNewVid
       restMethod: post
@@ -319,6 +332,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_Blank_DoccatCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_14
       description: Upload the document using a valid VID with blank DoccatCode
       role: residentNewVid
       restMethod: post
@@ -344,6 +358,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_Invalid_LangCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_15
       description: Upload the document using a valid VID with an invalid langCode
       role: residentNewVid
       restMethod: post
@@ -369,6 +384,7 @@ UploadDocument:
 
    Resident_UploadDocument_vid_Empty_langCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
+      uniqueIdentifier: TC_Resident_UploadDocument_16
       description: Upload the document using a valid VID with an empty langCode
       role: residentNewVid
       restMethod: post

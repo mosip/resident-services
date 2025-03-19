@@ -33,7 +33,7 @@ import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
 import io.restassured.response.Response;
 
-public class GetWithQueryParamForDownloadCard extends AdminTestUtil implements ITest {
+public class GetWithQueryParamForDownloadCard extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(GetWithQueryParamForDownloadCard.class);
 	protected String testCaseName = "";
 	public Response response = null;

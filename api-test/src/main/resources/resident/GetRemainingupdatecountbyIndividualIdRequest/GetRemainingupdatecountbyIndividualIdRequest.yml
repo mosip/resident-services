@@ -1,6 +1,7 @@
 GetRemainingupdatecountbyIndividualIdRequest:
    Resident_GetRemainingupdatecountbyIndividualIdRequest_Valid_Smoke:
       endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_01      
       description: Get remaining update count when UIN is given in input parameters     
       role: resident
       checkErrorsOnlyInResponse: true
@@ -18,6 +19,7 @@ GetRemainingupdatecountbyIndividualIdRequest:
 
    Resident_GetRemainingupdatecountby_Invalid_IndividualIdRequest_Negative:
       endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_02      
       description: Get remaining update count when invalid UIN is used in input parameters     
       role: resident
       checkErrorsOnlyInResponse: true
@@ -32,14 +34,14 @@ GetRemainingupdatecountbyIndividualIdRequest:
       output: '{
   "errors": [
     {
-      "errorCode": "IDR-IDC-004",
-      "message": "Unknown error occurred"
+      "errorCode": "IDR-IDC-004"
     }
   ]
 }'
 
-   Resident_GetRemainingupdatecountby_StatusCode_empty_IndividualIdRequest_Negative:
+   Resident_GetRemainingupdatecountby_empty_IndividualIdRequest_Negative:
       endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_03      
       description: Get remaining update count when individualid is not given in input parameters     
       role: resident
       checkErrorsOnlyInResponse: true
@@ -51,12 +53,19 @@ GetRemainingupdatecountbyIndividualIdRequest:
 		  "idType": "UIN",
  		  "attribute_list": "fullName"
 }'
-      output: "404"
+      output: '{
+  "errors": [
+    {
+      "errorCode": "IDR-IDC-003"
+    }
+  ]
+}'
 
    Resident_GetRemainingupdatecountbyIndividualIdRequest_Invalid_Token:
       endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_04      
       description: Get remaining update count when invalid token is used
-      role: null
+      role: invalidtoken
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest
@@ -69,7 +78,7 @@ GetRemainingupdatecountbyIndividualIdRequest:
       output: '{
   "errors": [
     {
-      "errorCode": "KER-ATH-403"
+      "errorCode": "KER-ATH-401"
     }
   ]
 }'

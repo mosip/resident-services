@@ -1,6 +1,7 @@
 residentNewVid:
    Resident_GetAuthLockStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_01
       description: Get authlock status using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -14,6 +15,7 @@ residentNewVid:
 
    Resident_GetAuthLockStatus_Invalid_Token_Neg:
       endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_02
       description: Get authlock status using a valid UIN with an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
@@ -33,6 +35,7 @@ residentNewVid:
 
    Resident_GetAuthLockStatus_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_03
       description: Get authlock status using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true

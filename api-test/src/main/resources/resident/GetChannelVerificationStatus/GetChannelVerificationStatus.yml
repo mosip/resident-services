@@ -1,6 +1,7 @@
 GetChannelVerificationStatus:
    Resident_GetChannelVerificationStatus_For_Email_Valid_Smoke:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_01
       description: Get channel verification status for Email with valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -43,6 +44,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_For_Phone_all_Valid_Smoke:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_02
       description: Get channel verification status for phone with all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -85,6 +87,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Invalid_Channel:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_03
       description: Get channel verification status using an invalid channel
       role: resident
       checkErrorsOnlyInResponse: true
@@ -132,6 +135,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Invalid_Id:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_04
       description: Get channel verification status using an invalid Id
       role: resident
       checkErrorsOnlyInResponse: true
@@ -179,6 +183,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Empty_Channel_Neg:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_05
       description: Get channel verification status using an empty channel
       role: resident
       checkErrorsOnlyInResponse: true
@@ -226,6 +231,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Empty_Id_Neg:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_06
       description: Get channel verification status using an empty Id
       role: resident
       checkErrorsOnlyInResponse: true
@@ -273,6 +279,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Email_Valid_Smoke:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_07
       description: Get channel verification status using valid Email
       role: resident
       checkErrorsOnlyInResponse: true
@@ -313,6 +320,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Phone_Valid_Smoke:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_08
       description: Get channel verification status using valid phone
       role: resident
       checkErrorsOnlyInResponse: true
@@ -353,6 +361,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Email_Invalid:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_09
       description: Get channel verification status using an invalid email
       role: resident
       checkErrorsOnlyInResponse: true
@@ -399,6 +408,7 @@ GetChannelVerificationStatus:
 
    Resident_GetChannelVerificationStatus_Phone_Invalid:
       endPoint: /resident/v1/channel/verification-status/?channel={channel}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetChannelVerificationStatus_10
       description: Get channel verification status using an invalid phone
       role: resident
       checkErrorsOnlyInResponse: true

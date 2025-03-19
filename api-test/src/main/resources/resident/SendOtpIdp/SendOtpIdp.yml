@@ -1,6 +1,7 @@
 SendOtpIdp:
    Resident_ESignet_SendOtpIdp_all_Valid_Smoke:
       endPoint: /v1/idp/authorization/send-otp
+      uniqueIdentifier: TC_Resident_SendotpIDP_01      
       description: Request OTP using UIN      
       role: resident
       checkErrorsOnlyInResponse: true

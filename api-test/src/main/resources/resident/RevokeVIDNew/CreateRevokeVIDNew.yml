@@ -1,6 +1,7 @@
 RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Perp_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_01      
       description: Revoke perpetual VID when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -19,6 +20,7 @@ RevokeVIDNew:
 
    Resident_RevokeVIDNew_uin_Temp_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_02      
       description: Revoke temporary VID when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -37,6 +39,7 @@ RevokeVIDNew:
 
    Resident_RevokeVIDNew_uin_OneTimeUse_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_03      
       description: Revoke onetimeuse VID when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -54,8 +57,9 @@ RevokeVIDNew:
 }'
 
    Resident_RevokeVIDNew_StatusCode_Without_Token_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
-      description: Revoke VID without token      
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_04      
+      description: Revoke VID without token 
       role: 
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -71,7 +75,8 @@ RevokeVIDNew:
       output: "401"
 
    Resident_RevokeVIDNew_Diff_Token_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_Smoke_sid_vid$
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_05      
       description: Revoke VID when logged which does not belonged to logged in UIN    
       role: resident
       checkErrorsOnlyInResponse: true
@@ -95,6 +100,7 @@ RevokeVIDNew:
 }'
    Resident_RevokeVIDNew_Using_Vid_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_06      
       description: Revoke Onetimeuse VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -112,7 +118,8 @@ RevokeVIDNew:
 }'
 
    Resident_RevokeVIDNew_uin_Using_Vid_Invalid_User_Neg:
-      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_Smoke_sid_vid$
+      endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_07      
       description: Revoke perpetual VID when logged in using invalid VID      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -136,6 +143,7 @@ RevokeVIDNew:
 
    Resident_RevokeVIDNew_uin_Perp_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_08      
       description: Revoke perpetual VID when logged in using already revoked VID      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -159,6 +167,7 @@ RevokeVIDNew:
 
    Resident_RevokeVIDNew_uin_Temp_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_09      
       description: Revoke temporary VID when logged in using already revoked VID      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -182,6 +191,7 @@ RevokeVIDNew:
 
    Resident_RevokeVIDNew_uin_OneTimeUse_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
+      uniqueIdentifier: TC_Resident_RevokeVidnew_10      
       description: Revoke onetimeuse VID when logged in using already revoked VID      
       role: residentNew
       checkErrorsOnlyInResponse: true

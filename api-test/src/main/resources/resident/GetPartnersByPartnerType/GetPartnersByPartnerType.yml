@@ -1,6 +1,7 @@
 GetPartnersByPartnerType:
    Resident_GetPartnersByPartnerType_uin_all_Valid_Smoke_sid:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_01      
       description: Get partners by partnertype using UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetPartnersByPartnerType:
 
    Resident_GetPartnersByPartnerType_uin_Empty_PartnerType_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_02      
       description: Get partners by partnertype using UIN with an empty partnertype
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -30,6 +32,7 @@ GetPartnersByPartnerType:
 
    Resident_GetPartnersByPartnerType_Invalid_Token:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_03      
       description: Get partners by partnertype using an invalid token
       role: residen
       checkErrorsOnlyInResponse: true
@@ -50,6 +53,7 @@ GetPartnersByPartnerType:
 
    Resident_GetPartnersByPartnerType_Empty_Token_Neg:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_04      
       description: Get partners by partnertype using an empty token
       role: 
       checkErrorsOnlyInResponse: true
@@ -70,6 +74,7 @@ GetPartnersByPartnerType:
 
    Resident_GetPartnersByPartnerType_vid_all_Valid_Smoke_sid:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_05      
       description: Get partners by partnertype using VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -84,6 +89,7 @@ GetPartnersByPartnerType:
 
    Resident_GetPartnersByPartnerType_vid_Empty_PartnerType_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/partners?partnerType={partnerType}
+      uniqueIdentifier: TC_Resident_GetPartnerbyPartnerType_06      
       description: Get partners by partnertype using VID with an empty partnertype
       role: residentNewVid
       checkErrorsOnlyInResponse: true

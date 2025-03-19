@@ -1,6 +1,7 @@
 SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_All_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_01      
       description: Request otp to given userid when logged in using UIN      
       role: residentNew
       restMethod: post
@@ -18,6 +19,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_All_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_02      
       description: Request otp to given userid when logged in using VID     
       role: residentNewVid
       restMethod: post
@@ -34,6 +36,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Invalid_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_03      
       description: Request otp to given invalid userid when logged in using UIN      
       role: residentNew
       restMethod: post
@@ -55,6 +58,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Empty_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_04      
       description: Request otp when userid value is empty      
       role: residentNew
       restMethod: post
@@ -76,6 +80,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_UserId_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_05      
       description: Request otp when userid is removed from request       
       role: residentNew
       restMethod: post
@@ -97,6 +102,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_06      
       description: Request otp to given userid when invalid transactionid is given      
       role: residentNew
       restMethod: post
@@ -118,6 +124,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_07      
       description: Request otp to given userid when transactionid value is empty     
       role: residentNew
       restMethod: post
@@ -139,6 +146,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_08      
       description: Request otp to given userid when transactionid is removed from request      
       role: residentNew
       restMethod: post
@@ -160,6 +168,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_Invalid_Token_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_09      
       description: Request otp to given userid when invalid token is used      
       role: resident
       restMethod: post
@@ -181,6 +190,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Invalid_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_10      
       description: Request otp to given userid when invalid requesttime is given      
       role: residentNew
       restMethod: post
@@ -202,6 +212,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_uin_Empty_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_11      
       description: Request otp to given userid when requestime value is empty      
       role: residentNew
       restMethod: post
@@ -223,6 +234,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Invalid_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_12      
       description: Request otp when invalid userid is given and logged in using VID     
       role: residentNewVid
       restMethod: post
@@ -244,6 +256,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_Vid_Empty_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_13      
       description: Request otp when userid values is empty and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -265,6 +278,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_UserId_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_14      
       description: Request otp when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -286,6 +300,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_15      
       description: Request otp when invalid transactionid is given and logged in uisng VID      
       role: residentNewVid
       restMethod: post
@@ -307,6 +322,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_16      
       description: Request otp to given userid when transcation id is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -328,6 +344,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_17      
       description: Request otp to given userid when transaction id is removed and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -349,6 +366,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Invalid_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_18      
       description: Request otp to given userid when invalid requesttime is given and logged in using VID      
       role: residentNewVid
       restMethod: post
@@ -370,6 +388,7 @@ SendOtpForContactDet:
 
    Resident_SendOtpForContactDet_vid_Empty_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
+      uniqueIdentifier: TC_Resident_SendotpforContact_19      
       description: Request otp to given userid when requesttime is given as empty and logged in using VID      
       role: residentNewVid
       restMethod: post

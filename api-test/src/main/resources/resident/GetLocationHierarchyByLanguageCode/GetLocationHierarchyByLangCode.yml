@@ -1,6 +1,7 @@
 GetLocationHierarchyByLanguageCode:
    Resident_GetLocationHierarchyByLanguageCode_All_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      uniqueIdentifier: TC_Resident_GetLocationHierarchy_01      
       description: Get location hierarchy by language code using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -16,6 +17,7 @@ GetLocationHierarchyByLanguageCode:
 
    Resident_GetLocationHierarchyByLanguageCode_InValid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      uniqueIdentifier: TC_Resident_GetLocationHierarchy_02      
       description: Get location hierarchy by language code using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -34,22 +36,17 @@ GetLocationHierarchyByLanguageCode:
   ]
 }'
 
-   Resident_GetLocationHierarchyByLanguageCode_Empty_LangCode_Neg:
+   Resident_GetLocationHierarchyByLanguageCode_Empty_LangCode_Pos:
       endPoint: /resident/v1/proxy/masterdata/locationHierarchyLevels/{langCode}
+      uniqueIdentifier: TC_Resident_GetLocationHierarchy_03      
       description: Get location hierarchy by language code using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetLocationHierarchyByLanguageCode/getLocationHierarchyByLangCode
-      outputTemplate: resident/error
+      outputTemplate: resident/GetLocationHierarchyByLanguageCode/getLocationHierarchyByLangCodeResult
       input: '{
       "langCode":""
 }'
       output: '{
-      "errors": [
-  {
-    "errorCode": "RES-SER-418",
-    "message": "$IGNORE$"
-  }
-]
 }'

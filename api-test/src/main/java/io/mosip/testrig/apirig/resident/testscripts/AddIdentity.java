@@ -40,7 +40,7 @@ import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.RestClient;
 import io.restassured.response.Response;
 
-public class AddIdentity extends AdminTestUtil implements ITest {
+public class AddIdentity extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(AddIdentity.class);
 	protected String testCaseName = "";
 	public Response response = null;
@@ -111,7 +111,8 @@ public class AddIdentity extends AdminTestUtil implements ITest {
 		inputJson = inputJson.replace("$RID$", genRid);
 		String phoneNumber = "";
 		String email = testCaseName +"@mosip.net";
-		if (inputJson.contains("$PHONENUMBERFORIDENTITY$")) {			
+		if (inputJson.contains("$PHONENUMBERFORIDENTITY$")) {
+			
 			if (!phoneSchemaRegex.isEmpty())
 				try {
 					phoneNumber = genStringAsperRegex(phoneSchemaRegex);
@@ -168,7 +169,7 @@ public class AddIdentity extends AdminTestUtil implements ITest {
 
 		try {
 			logger.info(
-					"waiting for " + properties.getProperty("Delaytime") + " mili secs after UIN Generation In IDREPO"); //
+					"waiting for " + properties.getProperty("Delaytime") + " mili secs after UIN Generation In IDREPO");
 			Thread.sleep(Long.parseLong(properties.getProperty("Delaytime")));
 		} catch (Exception e) {
 			logger.error("Exception : " + e.getMessage());

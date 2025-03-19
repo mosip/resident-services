@@ -1,6 +1,7 @@
 GetRegCenterByLangCodeAndHierarchyLevel:
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_01      
       description: Get registration center by language code and hierarchy level using all valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
@@ -18,6 +19,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_Invalid_HierarchyLevel:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_02      
       description: Get registration center by language code and hierarchy level using an invalid hierrachylevel
       role: resident
       checkErrorsOnlyInResponse: true
@@ -40,6 +42,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_Invalid_Name:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_03      
       description: Get registration center by language code and hierarchy level using an invalid name
       role: resident
       checkErrorsOnlyInResponse: true
@@ -62,6 +65,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_04      
       description: Get registration center by language code and hierarchy level using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -84,6 +88,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_RandomVal_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_05      
       description: Get registration center by language code and hierarchy level using random value langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -106,6 +111,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_RandomVal_Level_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_06      
       description: Get registration center by language code and hierarchy level using random value level
       role: resident
       checkErrorsOnlyInResponse: true
@@ -128,6 +134,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_RandomVal_Name_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_07      
       description: Get registration center by language code and hierarchy level using random value name
       role: resident
       checkErrorsOnlyInResponse: true
@@ -150,6 +157,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_StatusCode_Empty_LangCode_MandatoryFields_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_08      
       description: Get registration center by language code and hierarchy level statusCode using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
@@ -165,6 +173,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_StatusCode_Empty_Level_MandatoryFields_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_09      
       description: Get registration center by language code and hierarchy level statusCode using an empty level
       role: resident
       checkErrorsOnlyInResponse: true
@@ -180,6 +189,7 @@ GetRegCenterByLangCodeAndHierarchyLevel:
 
    Resident_GetRegCenterByLangCodeAndHierarchyLevel_Empty_Name_MandatoryFields_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names?name={name}
+      uniqueIdentifier: TC_Resident_GetRegistrationbyLangcode&hierarchylevel_10      
       description: Get registration center by language code and hierarchy level using an empty name
       role: resident
       checkErrorsOnlyInResponse: true

@@ -1,6 +1,7 @@
 GenerateToken:
    Resident_ESignet_GenerateToken_UIN_Cookie_Valid_Smoke_sid:
       endPoint: $GETENDPOINTFROMRESIDENTACTUATOR$
+      uniqueIdentifier: Dependent_ESignet_GenerateToken_01
       description: Generate esignet authorization token using a valid UIN with cookie
       role: resident
       validityCheckRequired: true
@@ -21,6 +22,7 @@ GenerateToken:
 
    Resident_ESignet_GenerateToken_Vid_Cookie_Valid_Smoke_sid:
       endPoint: $GETENDPOINTFROMRESIDENTACTUATOR$
+      uniqueIdentifier: Dependent_ESignet_GenerateToken_02
       description: Generate esignet authorization token using a valid VID with cookie
       role: resident
       validityCheckRequired: true

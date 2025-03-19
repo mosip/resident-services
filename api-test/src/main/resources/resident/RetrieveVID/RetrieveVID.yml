@@ -1,6 +1,7 @@
 RetrieveVID:
    Resident_RetrieveVID_uin_all_Valid_Smoke:
       endPoint: /resident/v1/vids
+      uniqueIdentifier: TC_Resident_RetrieveVid_01      
       description: Retrieve VIDs when logged using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -15,6 +16,7 @@ RetrieveVID:
 
    Resident_RetrieveVID_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/vids
+      uniqueIdentifier: TC_Resident_RetrieveVid_02      
       description: Retrieve VIDs when logged using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -28,6 +30,7 @@ RetrieveVID:
 
    Resident_RetrieveVID_Invalid_Token_Neg:
       endPoint: /resident/v1/vids
+      uniqueIdentifier: TC_Resident_RetrieveVid_03      
       description: Retrieve VIDs when invalid token is used      
       role: resident
       checkErrorsOnlyInResponse: true

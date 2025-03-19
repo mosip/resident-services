@@ -1,6 +1,7 @@
 GetProfile:
    Resident_GetProfile_uin_all_Valid_Smoke:
       endPoint: /resident/v1/profile
+      uniqueIdentifier: TC_Resident_GetProfile_01      
       description: Get profile using a UIN with valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
@@ -15,6 +16,7 @@ GetProfile:
 
    Resident_GetProfile_Vid_Valid_Smoke:
       endPoint: /resident/v1/profile
+      uniqueIdentifier: TC_Resident_GetProfile_02      
       description: Get profile using a VID with valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -29,6 +31,7 @@ GetProfile:
 
    Resident_GetProfile_Invalid_User_Neg:
       endPoint: /resident/v1/profile
+      uniqueIdentifier: TC_Resident_GetProfile_03      
       description: Get profile using an invalid user
       role: resident
       checkErrorsOnlyInResponse: true
