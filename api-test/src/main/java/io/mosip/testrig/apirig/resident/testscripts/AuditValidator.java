@@ -81,7 +81,6 @@ public class AuditValidator extends ResidentUtil implements ITest {
 		Map<String, List<OutputValidationDto>> objMap = new HashMap<>();
 		List<OutputValidationDto> objList = new ArrayList<>();
 		OutputValidationDto objOpDto = new OutputValidationDto();
-		ResidentUtil.ResidentAuditCount = 0;
 		int BeforeAuditCount = ResidentUtil.ResidentAuditCount;
 
 		if (response.size() > 0) {
