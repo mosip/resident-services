@@ -23,7 +23,7 @@ import io.restassured.response.Response;
 public class ResidentUtil extends AdminTestUtil {
 
 	private static final Logger logger = Logger.getLogger(ResidentUtil.class);
-	
+	protected static int ResidentAuditCount = 0;
 	protected static final String ESIGNET_PAYLOAD = "config/esignetPayload.json";
 	
 	public static void setLogLevel() {
