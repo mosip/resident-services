@@ -326,11 +326,6 @@
             <artifactId>kernel-auth-adapter</artifactId>
             <version>${kernel-auth-adpater.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.mosip.kernel</groupId>-->
-<!--            <artifactId>kernel-ref-idobjectvalidator</artifactId>-->
-<!--            <version>${kernel-ref-idobjectvalidator.version}</version>-->
-<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>
