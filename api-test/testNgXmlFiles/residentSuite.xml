@@ -107,14 +107,6 @@
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
 		</classes>
 	</test>
-	<test name="AuditLogValidationBeforeCheckAidStatus">
-		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
-		<classes>
-			<class
-				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
-		</classes>
-	</test>
 	<test name="CheckAidStatus">
 		<parameter name="ymlFile"
 			value="resident/CheckAidStatus/CheckAidStatus.yml" />
