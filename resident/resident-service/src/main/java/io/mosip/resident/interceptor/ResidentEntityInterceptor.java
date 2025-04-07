@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import io.mosip.resident.entity.ResidentGrievanceEntity;
 import org.apache.commons.codec.binary.Base64;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
@@ -52,6 +53,9 @@ public class ResidentEntityInterceptor implements Interceptor, Serializable {
 			if (entity instanceof ResidentTransactionEntity) {
 				List<String> propertyNamesList = Arrays.asList(propertyNames);
 				encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
+			} else if(entity instanceof ResidentGrievanceEntity) {
+				List<String> propertyNamesList = Arrays.asList(propertyNames);
+				encryptDataOnSave(id, state, propertyNamesList, types, (ResidentGrievanceEntity) entity);
 			}
 		} catch (ResidentServiceException e) {
 			logger.error(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
