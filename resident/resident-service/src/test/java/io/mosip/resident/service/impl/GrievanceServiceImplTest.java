@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import io.mosip.resident.util.AvailableClaimUtility;
 import io.mosip.resident.util.AvailableClaimValueUtility;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,9 @@ public class GrievanceServiceImplTest {
 
     @Mock
     private AvailableClaimValueUtility availableClaimValueUtility;
+
+    @Mock
+    private Utility utility;
     
     private MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO;
 
