@@ -2,10 +2,12 @@ package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.UUID;
 
 import io.mosip.resident.util.AvailableClaimValueUtility;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,9 @@ public class GrievanceServiceImpl implements GrievanceService {
     @Autowired
     private AvailableClaimValueUtility availableClaimValueUtility;
 
+    @Autowired
+    private Utility utility;
+
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
     	logger.debug("GrievanceServiceImpl::getGrievanceTicket()::entry");
@@ -67,15 +72,15 @@ public class GrievanceServiceImpl implements GrievanceService {
         return responseWrapper;
     }
 
-    private void insertDataInGrievanceTable(String ticketId, MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) {
+    private void insertDataInGrievanceTable(String ticketId, MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws NoSuchAlgorithmException {
         ResidentGrievanceEntity residentGrievanceEntity = new ResidentGrievanceEntity();
         residentGrievanceEntity.setId(ticketId);
         residentGrievanceEntity.setEventId(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
         residentGrievanceEntity.setName(grievanceRequestDTOMainRequestDTO.getRequest().getName());
-        residentGrievanceEntity.setEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId());
-        residentGrievanceEntity.setAlternateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId());
-        residentGrievanceEntity.setPhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo());
-        residentGrievanceEntity.setAlternatePhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo());
+        residentGrievanceEntity.setEmailId(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId()));
+        residentGrievanceEntity.setAlternateEmailId(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId()));
+        residentGrievanceEntity.setPhoneNo(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo()));
+        residentGrievanceEntity.setAlternatePhoneNo(utility.getRefIdHash(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo()));
         residentGrievanceEntity.setMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
         residentGrievanceEntity.setStatus(SUCCESS);
         residentGrievanceEntity.setCrBy(this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID));

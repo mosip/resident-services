@@ -606,8 +606,8 @@ public class Utility {
 				timeZoneOffset, locale);
 	}
 
-	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
-		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	public String getRefIdHash(String value) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(value.getBytes());
 	}
 
 	private String formatDateTimeForPattern(LocalDateTime localDateTime, String locale, String defaultDateTimePattern, int timeZoneOffset) {
