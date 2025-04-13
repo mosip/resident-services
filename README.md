@@ -4,7 +4,7 @@
 
 # Resident Services
 ## Overview
-This repository contains the source code and design documents for MOSIP Resident Service. For an overview please refer [here](https://docs.mosip.io/1.2.0/modules/resident-services). This module exposes API endpoints for Resident UI (refer [Resident UI GitHub repo](https://github.com/mosip/resident-ui/blob/master/README.md)).
+This repository contains the source code and design documents for MOSIP Resident Service. For an overview please refer [here](https://docs.mosip.io/1.3.0/modules/resident-services). This module exposes API endpoints for Resident UI (refer [Resident UI GitHub repo](https://github.com/mosip/resident-ui/blob/master/README.md)).
 
 ## Database
 See [DB Scripts](db_scripts)
