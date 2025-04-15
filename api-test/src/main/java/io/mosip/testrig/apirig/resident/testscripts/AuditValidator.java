@@ -54,7 +54,7 @@ public class AuditValidator extends ResidentUtil implements ITest {
 			logger.setLevel(Level.ERROR);
 	}
 
-	/**
+	/*
 	 * Data provider class provides test case list
 	 * 
 	 * @return object of data provider
@@ -102,5 +102,26 @@ public class AuditValidator extends ResidentUtil implements ITest {
 
 		if (!OutputValidationUtil.publishOutputResult(objMap))
 			throw new AdminTestException("Failed at output validation");
+	}
+
+	/*
+	 * The method set current test name to result
+	 * 
+	 * @param result
+	 */
+	@AfterMethod(alwaysRun = true)
+	public void setResultTestName(ITestResult result) {
+
+		try {
+			Field method = TestResult.class.getDeclaredField("m_method");
+			method.setAccessible(true);
+			method.set(result, result.getMethod().clone());
+			BaseTestMethod baseTestMethod = (BaseTestMethod) result.getMethod();
+			Field f = baseTestMethod.getClass().getSuperclass().getDeclaredField("m_methodName");
+			f.setAccessible(true);
+			f.set(baseTestMethod, testCaseName);
+		} catch (Exception e) {
+			Reporter.log("Exception : " + e.getMessage());
+		}
 	}
 }
