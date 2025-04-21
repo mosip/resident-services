@@ -22,9 +22,11 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 
+import java.security.NoSuchAlgorithmException;
+
 /**
  * This class is used to create service class test  for grievance API.
- * @Author Kamesh Shekhar Prasad
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -66,13 +68,13 @@ public class GrievanceServiceImplTest {
     }
 
     @Test
-    public void testGetGrievanceTicket() throws ApisResourceAccessException {
+    public void testGetGrievanceTicket() throws ApisResourceAccessException, NoSuchAlgorithmException {
         ResponseWrapper<Object> actualResult = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetGrievanceTicketFailed() throws ApisResourceAccessException {
+    public void testGetGrievanceTicketFailed() throws ApisResourceAccessException, NoSuchAlgorithmException {
         Mockito.when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
         ResponseWrapper<Object> actualResult = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
