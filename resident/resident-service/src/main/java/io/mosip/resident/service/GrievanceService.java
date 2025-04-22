@@ -13,5 +13,5 @@ import io.mosip.resident.exception.ApisResourceAccessException;
  * @Author Kamesh Shekhar Prasad
  */
 public interface GrievanceService {
-    ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws IOException, ApisResourceAccessException, NoSuchAlgorithmException;
+    ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws IOException, ApisResourceAccessException, NoSuchAlgorithmException, io.mosip.resident.exception.NoSuchAlgorithmException;
 }

@@ -139,7 +139,8 @@ public enum ResidentErrorCode {
 	NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET("RES-SER-524", " Not allowed to update UIN as previous packet is pending. To proceed further please discard it."),
 	NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST("RES-SER-525", "  Not allowed to update UIN as previous packet is pending and it cannot be cancelled."),
 	UPDATE_COUNT_LIMIT_EXCEEDED("RES-SER-526", "Update count limit for the attributes exceeded:- %s"),
-	SAME_ATTRIBUTE_ALREADY_PRESENT("RES-SER-527", "Same data already present for Attribute:- %s");
+	SAME_ATTRIBUTE_ALREADY_PRESENT("RES-SER-527", "Same data already present for Attribute:- %s"),
+	NO_SUCH_ALGORITHM_EXCEPTION("RES-SER-528", "No such algorithm exception"),;
 
 	private final String errorCode;
 	private final String errorMessage;
