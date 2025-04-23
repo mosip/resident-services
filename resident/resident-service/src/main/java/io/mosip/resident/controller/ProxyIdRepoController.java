@@ -115,6 +115,7 @@ public class ProxyIdRepoController {
 	public ResponseEntity<ResponseWrapper<DraftResidentResponseDto>> getPendingDrafts(@PathVariable String langCode) {
 		logger.debug("ProxyIdRepoController::getPendingDrafts()::entry");
 		try {
+			requestValidator.validateLanguageCode(langCode);
 			ResponseWrapper<DraftResidentResponseDto> responseWrapper = pendingDrafts
 					.getPendingDrafts(langCode);
 			auditUtil.setAuditRequestDto(GET_PENDING_DRAFT_SUCCESS);
