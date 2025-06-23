@@ -16,7 +16,7 @@ OAuthDetailsRequest:
       	"display": "popup",
 	    "prompt": "login",
 	    "acrValues": "mosip:idp:acr:generated-code",
-	    "nonce": "973eieljzng",
+	    "nonce": "$UNIQUENONCEVALUEFORESIGNET$",
 	    "state": "$RANDOMUUID$",
 	    "claimsLocales": "en",
 	    "userinfo": "$CLAIMSFROMCONFIG$"
@@ -42,7 +42,7 @@ OAuthDetailsRequest:
       	"display": "popup",
 	    "prompt": "login",
 	    "acrValues": "mosip:idp:acr:generated-code",
-	    "nonce": "973eieljzng",
+	    "nonce": "$UNIQUENONCEVALUEFORESIGNET$",
 	    "state": "$RANDOMUUID$",
 	    "claimsLocales": "en",
 	    "userinfo": "$CLAIMSFROMCONFIG$"
