@@ -1,0 +1,113 @@
+DownloadUinCardByEventId:
+   Resident_DownloadUinCardByEventId_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_01
+      description: Download UIN card by eventId using a valid UIN with all valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+        
+}'
+
+   Resident_DownloadUinCardByEventId_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_02
+      description: Download UIN card by eventId using a valid VID with all valid inputs
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+        
+}'
+
+   Resident_DownloadUinCardByEventId_uin_Invalid_EventId_Neg:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_03
+      description: Download UIN card by eventId using a valid UIN with an invalid eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "SDSD#$#"
+}'
+      output: '{
+        
+}'
+
+   Resident_DownloadUinCardByEventId_vid_Invalid_EventId_Neg:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_04
+      description: Download UIN card by eventId using a valid VID with an invalid eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "SDSD#$#"
+}'
+      output: '{
+        "errors": {
+    "errorCode": "RES-SER-412",
+    "message": "$IGNORE$"
+  }
+}'
+
+   Resident_DownloadUinCardByEventId_uin_Without_Token_Neg:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_05
+      description: Download UIN card by eventId using a valid UIN without token
+      role:
+      validityCheckRequired: true
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "djnskdj"
+}'
+      output: '{
+      [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+        
+}'
+
+   Resident_DownloadUinCardByEventId_uin_Diff_User_Neg:
+      endPoint: /resident/v1/download-card/event/{eventId}
+      uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_06
+      description: Download UIN card by eventId using a valid UIN with different user
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: get
+      inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+         [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

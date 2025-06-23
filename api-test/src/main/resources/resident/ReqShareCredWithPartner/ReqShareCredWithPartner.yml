@@ -1,0 +1,362 @@
+ReqShareCredWithPartner:
+   Resident_ReqShareCredWithPartner_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_01      
+      description: Request credential to share with partner      
+      role: residentNew
+      restMethod: post
+      auditLogCheck: true
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": "string",
+	        "consent" : "Accepted",
+	        "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+            "requesttime": "$TIMESTAMP$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_Invalid__AccessToken_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_02      
+      description: Request credential to share with partner with invalid token      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "string",
+	        "consent" : "Accepted",
+	        "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+            "requesttime": "$TIMESTAMP$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "KER-ATH-401",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_uin_Empty_Purpose_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_03      
+      description: Request credential to share with partner when logged in using UIN and purpose is empty      
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "Missing input Parameter- "
+    }
+  ],
+   	   "status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_uin_Invalid_Space_Purpose_Pos:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_04      
+      description: Request credential to share with partner when logged in using UIN and purpose is given with only spaces    
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": " string",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_uin_AlphaNumeric_Value_Purpose_Pos:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_05      
+      description: Request credential to share with partner when logged in using UIN and purpose is given as alphanumeric values      
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": "asgdf12j",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+   Resident_ReqShareCredWithPartner_uin_Invalid_Purpose_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_06      
+      description: Request credential to share with partner when logged in using UIN and purpose is given with invalid value      
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "a12$%",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-515",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_uin_Empty_Consent_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_07      
+      description: Request credential to share with partner when logged in using UIN and consent is given empty     
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "string",
+	        "consent" : "",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-461",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_uin_Input_Consent_Absent_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_08      
+      description: Request credential to share with partner when logged in using UIN and consent value is not given      
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "string",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_uin_all_Valid_Smoke_sid_partnerID$",
+            "consent" : "$REMOVE$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-461",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_09      
+      description: Request credential to share with partner when logged in using VID      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": "string",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_vid_Empty_Purpose_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_10      
+      description: Request credential to share with partner when logged in using VID and purpose is given empty      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "",
+	        "consent" : "Accepted",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "Missing input Parameter- "
+    }
+  ],
+   	   "status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_vid_Invalid_Space_Purpose:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_11      
+      description: Request credential to share with partner when logged in using VID and purpose is given with only spaces      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": " string",
+	        "consent" : "Accepted",
+	        "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "requesttime": "$TIMESTAMP$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+
+   Resident_ReqShareCredWithPartner_Vid_AlphaNumeric_Value_Purpose_Pos:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_12      
+      description: Request credential to share with partner when logged in using VID and purpose is given as alphanumeric values      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
+      input: '{
+	        "purpose": "asgdf12j",
+	        "consent" : "Accepted",
+	        "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "requesttime": "$TIMESTAMP$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"status": "Success"
+}'
+   Resident_ReqShareCredWithPartner_Vid_Invalid_Purpose_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_13      
+      description: Request credential to share with partner when logged in using VID and purpose value is given invalid      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "a12$%",
+	        "consent" : "Accepted",
+	        "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "requesttime": "$TIMESTAMP$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-515",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_Vid_Empty_Consent_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_14      
+      description: Request credential to share with partner when logged in using VID and consent is given empty      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "string",
+	        "consent" : "",
+            "requesttime": "$TIMESTAMP$",
+            "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+               "attributeName" : "dateOfBirth",
+               "format" : "YYYY",
+               "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-461",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+
+   Resident_ReqShareCredWithPartner_vid_Input_Consent_Absent_Neg:
+      endPoint: /resident/v1/share-credential
+      uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_15      
+      description: Request credential to share with partner when logged in using VID and consent is removed from request      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
+      outputTemplate: resident/error
+      input: '{
+	        "purpose": "string",
+            "requesttime": "$TIMESTAMP$",
+            "consent" : "$REMOVE$",
+            "partnerId": "$ID:GetPartnersByPartnerType_vid_all_Valid_Smoke_sid_partnerID$",
+            "attributeName" : "dateOfBirth",
+            "format" : "YYYY",
+            "masked" : true
+}'
+      output: '{
+   		"errors": [
+        {
+            "errorCode": "RES-SER-461",
+            "message": "$IGNORE$"
+        }
+    ]
+}'
+

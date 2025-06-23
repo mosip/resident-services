@@ -1,0 +1,294 @@
+DownloadUinCard:
+   Resident_DownloadUinCard_all_Valid_Smoke:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_01
+      description: Download UIN card using all valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      auditLogCheck: true
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+}
+}'
+
+      output: '{
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_With_Invalid_OTP_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_02
+      description: Download UIN card with an invalid OTP
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "198365@@eeG",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+				"errorCode": "RES-SER-457",
+		        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Invalid_TransactionID_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_03
+      description: Download UIN card using an invalid transactionId
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "213$@As",
+          "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+				"errorCode": "RES-SER-457",
+		        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Empty_TransactionID_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_04
+      description: Download UIN card using an empty transactionId
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "",
+          "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+				"errorCode": "RES-SER-457",
+		        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Invalid_Otp_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_05
+      description: Download UIN card using an invalid OTP
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "123456",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+					"errorCode": "RES-SER-410",
+			        "message": "Invalid input parameter - otp"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Empty_Otp_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_06
+      description: Download UIN card using an empty OTP
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "",
+          "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+					"errorCode": "RES-SER-410",
+			        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Invalid_IndividualID_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_07
+      description: Download UIN card using an invalid individualId
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+          "individualId": "Asad#@11",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+					"errorCode": "RES-SER-410",
+			        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_DownloadUinCard_Empty_IndividualID_Neg:
+      endPoint: /resident/v1/download-card
+      uniqueIdentifier: TC_Resident_DownloadUinCard_08
+      description: Download UIN card using an empty individualId
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/DownloadUinCard/DownloadUinCard
+      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      input: '{
+      	 "transactionId": "$TRANSACTIONID$",
+          "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+          "individualId": "",
+          "requesttime": "$TIMESTAMP$",
+	      "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+
+      output: '{
+	           "errors": [{
+					"errorCode": "RES-SER-410",
+			        "message": "$IGNORE$"
+			}],
+                "sendOtpResp":{
+			        "maskedMobile": "$IGNORE$",
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+			        "maskedEmail": "$IGNORE$"
+    }
+}'
+   

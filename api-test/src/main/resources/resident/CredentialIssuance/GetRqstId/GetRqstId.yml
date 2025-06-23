@@ -1,0 +1,21 @@
+GetRqstId:
+   Resident_GetRqstId_All_Valid_Smoke:
+      endPoint: /v1/credentialrequest/getRequestIds?direction=ASC&orderBy=updateDateTime&pageNumber=0&pageSize=1&statusCode=FAILED
+      uniqueIdentifier: TC_Resident_GetRqstId_01
+      description: Get requestId using all valid inputs
+      role: resident
+      restMethod: get
+      inputTemplate: resident/CredentialIssuance/GetRqstId/getRqstId
+      outputTemplate: resident/CredentialIssuance/GetRqstId/getRqstIdResult
+      input: '{
+		"direction": "ASC",
+		"effectivedtimes": "$TIMESTAMP$",
+		"orderBy": "updateDateTime",
+		"pageNumber": "0",
+		"pageSize": "1",
+		"statusCode": "FAILED"
+	}'
+      output: '{
+        "pageNo": "0",
+        "pageSize": "1"
+    }'

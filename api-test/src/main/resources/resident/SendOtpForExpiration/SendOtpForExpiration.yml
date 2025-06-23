@@ -1,0 +1,76 @@
+SendOtpForExpiration:
+   Resident_SendOtpForExpiration_Valid_UIN_All_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_SendotpforExpiration_01      
+      description: Request Otp using UIN      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOtpForExpiration/SendOtpForExpiration
+      outputTemplate: resident/SendOtpForExpiration/SendOtpForExpirationResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_UIN$"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "$IGNORE$"
+}'
+
+   Resident_SendOtpForExpiration_using_PerpetualVid_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_SendotpforExpiration_02      
+      description: Request Otp using perpetual VID      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOtpForExpiration/SendOtpForExpiration
+      outputTemplate: resident/SendOtpForExpiration/SendOtpForExpirationResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:GenerateVID_Perpetual_ForEotp_Scen_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "$IGNORE$"
+}'
+
+   Resident_SendOtpForExpiration_using_TempVid_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_SendotpforExpiration_03      
+      description: Request Otp using temporary VID     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOtpForExpiration/SendOtpForExpiration
+      outputTemplate: resident/SendOtpForExpiration/SendOtpForExpirationResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:GenerateVID_Temporary_1_ForEotp_Scen_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "$IGNORE$"
+}'
+
+   Resident_SendOtpForExpiration_using_OneTimeUseVid_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_SendotpforExpiration_04      
+      description: Request Otp using onetimeuse VID      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOtpForExpiration/SendOtpForExpiration
+      outputTemplate: resident/SendOtpForExpiration/SendOtpForExpirationResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:GenerateVID_Onetimeuse_ForEotp_Scen_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "$IGNORE$"
+}'

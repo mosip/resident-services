@@ -1,0 +1,42 @@
+GenerateToken:
+   Resident_ESignet_GenerateToken_UIN_Cookie_Valid_Smoke_sid:
+      endPoint: $GETENDPOINTFROMRESIDENTACTUATOR$
+      uniqueIdentifier: Dependent_ESignet_GenerateToken_01
+      description: Generate esignet authorization token using a valid UIN with cookie
+      role: resident
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/GenerateToken/GenerateToken
+      outputTemplate: resident/GenerateToken/GenerateTokenResult
+      input: '{
+		  "grant_type": "authorization_code",
+		  "code": "$ID:ESignet_AuthorizationCode_uin_All_Valid_Smoke_sid_code$",
+		  "client_id": "$OIDCCLIENT$",
+		  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+		  "client_assertion": "$ID:SignJWT_all_Valid_Smoke_sid_jwtSignedData$",
+		  "redirect_uri": "$ID:ESignet_AuthorizationCode_uin_All_Valid_Smoke_sid_redirectUri$"
+}'
+      output: '{
+   		"token_type": "Bearer" 
+}'
+
+   Resident_ESignet_GenerateToken_Vid_Cookie_Valid_Smoke_sid:
+      endPoint: $GETENDPOINTFROMRESIDENTACTUATOR$
+      uniqueIdentifier: Dependent_ESignet_GenerateToken_02
+      description: Generate esignet authorization token using a valid VID with cookie
+      role: resident
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/GenerateToken/GenerateToken
+      outputTemplate: resident/GenerateToken/GenerateTokenResult
+      input: '{
+		  "grant_type": "authorization_code",
+		  "code": "$ID:ESignet_AuthorizationCode_Vid_All_Valid_Smoke_sid_code$",
+		  "client_id": "$OIDCCLIENT$",
+		  "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+		  "client_assertion": "$ID:SignJWT_all_Valid_Smoke_sid_jwtSignedData$",
+		  "redirect_uri": "$ID:ESignet_AuthorizationCode_Vid_All_Valid_Smoke_sid_redirectUri$"
+}'
+      output: '{
+   		"token_type": "Bearer" 
+}'

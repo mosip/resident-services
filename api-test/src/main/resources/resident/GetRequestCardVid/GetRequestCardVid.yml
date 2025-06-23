@@ -1,0 +1,131 @@
+GetRequestCardVid:
+   Resident_GetRequestCardVid_uin_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_01      
+      description: Request card using temporary VID when logged in using UIN      
+      role: residentNew
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/GetRequestCardVid/GetRequestCardVidResult
+      input: '{
+      	"VID": "$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+        "status": "Success"
+}'
+
+   Resident_GetRequestCardVid_uin_Invalid_User_Neg:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_02      
+      description: Request card using VID when logged in using invalid UIN
+      role: null
+      validityCheckRequired: true
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/error
+      input: '{
+      	"VID": "$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetRequestCardVid_uin_Invalid_Vid_Neg:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_03      
+      description: Request card using invalid VID when logged in using UIN      
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/error
+      input: '{
+      	"VID": "$#@#$$@"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetRequestCardVid_uin_Invalid_UserVid_Neg:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_04      
+      description: Request card using invalid VID when logged in using UIN      
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/error
+      input: '{
+      	"VID": "3472301371804193"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-474"
+    }
+  ]
+}'
+
+   Resident_GetRequestCardVid_vid_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_05      
+      description: Request card using Onetimeuse VID when logged in using VID      
+      role: residentNewVid
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/GetRequestCardVid/GetRequestCardVidResult
+      input: '{
+      	"VID": "$ID:GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+        "status": "Success"
+}'
+
+   Resident_GetRequestCardVid_vid_Invalid_Vid_Neg:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_06      
+      description: Request card using invalid VID when logged in using VID      
+      role: residentNewVid
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/error
+      input: '{
+      	"VID": "$#@#$$@"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetRequestCardVid_vid_Invalid_UserVid_Neg:
+      endPoint: /resident/v1/request-card/vid/{VID}
+      uniqueIdentifier: TC_Resident_GetCardUsingVID_07      
+      description: Request card using VID when logged in using invalid VID      
+      role: residentNewVid
+      restMethod: get
+      inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
+      outputTemplate: resident/error
+      input: '{
+      	"VID": "3472301371804193"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-474",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

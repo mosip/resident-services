@@ -1,0 +1,18 @@
+SendOtpIdp:
+   Resident_ESignet_SendOtpIdp_all_Valid_Smoke:
+      endPoint: /v1/idp/authorization/send-otp
+      uniqueIdentifier: TC_Resident_SendotpIDP_01      
+      description: Request OTP using UIN      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOtpIdp/SendOtpIdp
+      outputTemplate: resident/SendOtpIdp/SendOtpIdpResult
+      input: '{
+      	"requestTime": "$TIMESTAMP$",
+      	"transactionId": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_transactionId$",
+	    "individualId": "8430935083",
+	    "otpChannels": [{channel: "email"}]
+}'
+      output: '{
+}'

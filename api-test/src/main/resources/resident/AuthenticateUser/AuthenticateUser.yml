@@ -1,0 +1,70 @@
+AuthenticateUser:
+   Resident_ESignet_AuthenticateUserIDP_uin_Otp_Valid_Smoke:
+      endPoint: /v1/esignet/authorization/authenticate
+      uniqueIdentifier: Dependent_ESignet_AuthenticateUserIDP_01
+      description: Authenticate a user using their UIN and a valid OTP in the eSignet authentication process
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/AuthenticateUser/AuthenticateUser
+      outputTemplate: resident/AuthenticateUser/AuthenticateUserResult
+      input: '{
+        "encodedHash": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_encodedResp$",
+      	"requestTime": "$TIMESTAMP$",
+      	"transactionId": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_transactionId$",
+      	"individualId": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_UIN$",
+      	"authFactorType" : "OTP",
+      	"challenge" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$",
+        "sendOtp":{
+            "encodedHash": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_encodedResp$",
+		    "requestTime": "$TIMESTAMP$",
+		    "transactionId": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_transactionId$",
+			"individualId": "$ID:AddIdentity_Esignet_Integ_smoke_Pos_UIN$",
+		    "otpChannels": [{channel: "email"},{channel: "phone"}],
+		    "sendOtpReqTemplate": "resident/SendOtpIdp/SendOtpIdp",
+		    "sendOtpEndPoint": "/v1/esignet/authorization/send-otp"
+    }
+}'
+      output: '{
+  "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/SendOtpIdp/SendOtpIdpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_ESignet_AuthenticateUserIDP_vid_Otp_Valid_Smoke:
+      endPoint: /v1/esignet/authorization/authenticate
+      uniqueIdentifier: Dependent_ESignet_AuthenticateUserIDP_02
+      description: Authenticate a user using their VID and a valid OTP in the eSignet authentication process
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/AuthenticateUser/AuthenticateUser
+      outputTemplate: resident/AuthenticateUser/AuthenticateUserResult
+      input: '{
+        "encodedHash": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_encodedResp$",
+      	"requestTime": "$TIMESTAMP$",
+      	"transactionId": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_transactionId$",
+      	"individualId": "$ID:GenerateVID_Perpetual_Esignet_Integ_Valid_Smoke_sid_vid$",
+      	"authFactorType" : "OTP",
+      	"challenge" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$",
+        "sendOtp":{
+            "encodedHash": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_encodedResp$",
+		    "requestTime": "$TIMESTAMP$",
+		    "transactionId": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_transactionId$",
+			"individualId": "$ID:GenerateVID_Perpetual_Esignet_Integ_Valid_Smoke_sid_vid$",
+		    "otpChannels": [{channel: "email"},{channel: "phone"}],
+		    "sendOtpReqTemplate": "resident/SendOtpIdp/SendOtpIdp",
+		    "sendOtpEndPoint": "/v1/esignet/authorization/send-otp"
+    }
+}'
+      output: '{
+  "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/SendOtpIdp/SendOtpIdpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'

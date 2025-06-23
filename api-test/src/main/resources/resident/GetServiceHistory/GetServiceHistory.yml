@@ -1,0 +1,2248 @@
+GetServiceHistory:
+   Resident_GetServiceHistory_uin_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_01      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_02      
+      description: Get service history when logged in using UIN and invalid language code is given     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "hinn",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_StatusCode_Missing_Langcode_Neg:
+      endPoint: /resident/v1/service-history
+      uniqueIdentifier: TC_Resident_GetserviceHistory_03      
+      description: Get service history when logged in using UIN and language code value is given as empty      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$REMOVE$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: "404"
+
+   Resident_GetServiceHistory_uin_1_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_04      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_2_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_05      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_3_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_06      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_UPDATE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_4_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_07      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "ID_MANAGEMENT_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_5_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_08      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_SHARE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Date_Specified_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_09      
+      description: Get service history when logged in using UIN and from date is specified      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_10      
+      description: Get service history when logged in using UIN and invalid from date is specified      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_From_To_Date_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_11      
+      description: Get service history when logged in using UIN and to date is specified      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "2022-12-06",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Empty_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_12      
+      description: Get service history when logged in using UIN and from date value is passed as empty      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Empty_ToDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_13      
+      description: Get service history when logged in using UIN and to date value is passed as empty      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_pageIndex_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_14      
+      description: Get service history when logged in using UIN and invalid pageIndex value is given      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "sdjv$#",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Valid_pageIndex_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_15      
+      description: Get service history when logged in using UIN and valid pageIndex value     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "0",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Negative_PageFetch_Value_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_16      
+      description: Get service history when logged in using UIN and negative value is given in pageSize      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "-1",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_Random_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_17      
+      description: Get service history when logged in using UIN and invalid random value is given as pageFetch value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "sdsd#$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_18      
+      description: Get service history when logged in using UIN and invalid pageFetch value is given   
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "0",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Multiple_ServiceType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_19      
+      description: Get service history when logged in using UIN and multiple service types is given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST,SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_ASC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_20      
+      description: Get service history when logged in using UIN and sort type is given as ASC      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ASC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_DESC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_21      
+      description: Get service history when logged in using UIN and sort type is given as DESC      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "DESC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Empty_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_22      
+      description: Get service history when logged in using UIN and sort type is not given in input parameter      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_23      
+      description: Get service history when logged in using UIN and invalid value is given as sort type        
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ssd$#$#",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_SearchText_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_24      
+      description: Get service history when logged in using UIN and valid value is given in search text      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "1"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_0_SearchText_Pos:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_25      
+      description: Get service history when logged in using UIN and value '0' is given in search text      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "0"
+}'
+      output: '{
+      	
+}'
+
+   Resident_GetServiceHistory_uin_SearchText_Random_Pos:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_26      
+      description: Get service history when logged in using UIN and random value is given in search text field      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "sdsd##"
+}'
+      output: '{
+      	
+}'
+
+   Resident_GetServiceHistory_uin_StatusFilter_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_27      
+      description: Get service history when logged in using UIN and valid status filter values are given in input parameters     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SUCCESS,IN_PROGRESS,FAILED",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_StatusFilter_Invalid_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_28      
+      description: Get service history when logged in using UIN and invalid value is given as status filter values      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SD$#$%",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_Invalid_Token:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_29      
+      description: Get service history when invalid token is used     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "KER-ATH-401",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_30      
+      description: Get service history when logged in using UIN     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_31      
+      description: Get service history when logged in using UIN and invalid language code is given      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "hinn",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_StatusCode_Missing_Langcode_Neg:
+      endPoint: /resident/v1/service-history
+      uniqueIdentifier: TC_Resident_GetserviceHistory_32      
+      description: Get service history when logged in using UIN and language code is not given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$REMOVE$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: "404"
+
+   Resident_GetServiceHistory_uin_1_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_33      
+      description: Get service history when logged in using UIN       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_2_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_34      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_3_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_35      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_UPDATE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_4_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_36      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "ID_MANAGEMENT_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_5_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_37      
+      description: Get service history when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_SHARE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Date_Specified_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_38      
+      description: Get service history when logged in using UIN and valid from date is specified       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_39      
+      description: Get service history when logged in using UIN and invalid from date is specified      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_From_To_Date_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_40      
+      description: Get service history when logged in using UIN and invalid from and to date is specified      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "2022-12-06",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Empty_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_41      
+      description: Get service history when logged in using UIN and from date is not given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Empty_ToDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_42      
+      description: Get service history when logged in using UIN and to date value is not given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_pageIndex_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_43
+      description: Get service history when logged in using UIN and invalid page index is given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "sdjv$#",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Valid_pageIndex_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_44      
+      description: Get service history when logged in using UIN and valid pageIndex values are given      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "0",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Negative_PageFetch_Value_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_45      
+      description: Get service history when logged in using UIN and negative value is given in page fetch       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "-1",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_Random_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_46      
+      description: Get service history when logged in using UIN and page fetch value is given as invalid/random value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "sdsd#$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_47      
+      description: Get service history when logged in using UIN and page fetch value is given as invalid value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "0",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Multiple_ServiceType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_48      
+      description: Get service history when logged in UIN and multiple service type is given input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST,SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_ASC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_49      
+      description: Get service history when logged in UIN and when sort type is given as ASC      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ASC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_DESC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_50      
+      description: Get service history when logged in UIN and when sort type is given as ASC      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "DESC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_Empty_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_51      
+      description: Get service history when logged in UIN and when sort type value is not given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_Invalid_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_52      
+      description: Get service history when logged in UIN and when invalid sort type value is given in input parameters      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ssd$#$#",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_uin_SearchText_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_53      
+      description: Get service history when logged in UIN and when search text is given with valid values      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "1"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_0_SearchText_Pos:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_54      
+      description: Get service history when logged in UIN and when search text value is given as '0'      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "0"
+}'
+      output: '{
+      	
+}'
+
+   Resident_GetServiceHistory_uin_SearchText_Random_Pos:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_55      
+      description: Get service history when logged in UIN and random value is given in search text field      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "sdsd##"
+}'
+      output: '{
+      	
+}'
+
+   Resident_GetServiceHistory_uin_StatusFilter_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_56      
+      description: Get service history when logged in UIN and valid values given in status filter       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SUCCESS,IN_PROGRESS,FAILED",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_uin_StatusFilter_Invalid_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_57      
+      description: Get service history when logged in UIN and invalid values given in status filter field      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SD$#$%",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+   Resident_GetServiceHistory_vid_all_Valid_Smoke_sid:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_58      
+      description: Get service history when logged in using valid VID   
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_59      
+      description: Get service history when logged in using VID and invalid language code is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "hinn",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_StatusCode_Missing_Langcode_Neg:
+      endPoint: /resident/v1/service-history
+      uniqueIdentifier: TC_Resident_GetserviceHistory_60      
+      description: Get service history when logged in using valid VID and language code is not given in input parameters      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$REMOVE$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: "404"
+
+   Resident_GetServiceHistory_vid_1_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_61      
+      description: Get service history when logged in using valid VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_2_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_62      
+      description: Get service history when logged in using valid VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_3_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_63      
+      description: Get service history when logged in using valid VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_UPDATE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_4_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_64      
+      description: Get service history when logged in using valid VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "ID_MANAGEMENT_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_5_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_65      
+      description: Get service history when logged in using valid VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "DATA_SHARE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_Date_Specified_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_66      
+      description: Get service history when logged in using valid VID and from date is specified      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_67      
+      description: Get service history when logged in using valid VID and invalid from date is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_From_To_Date_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_68      
+      description: Get service history when logged in using valid VID and invalid from and to date is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2035-12-07",
+	    "toDate": "2022-12-06",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Empty_FromDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_69      
+      description: Get service history when logged in using valid VID and from date is not given  in input parameter      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "",
+	    "toDate": "$DATESTAMP$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Empty_ToDate_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?fromDate={fromDate}&toDate={toDate}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_70      
+      description: Get service history when logged in using valid VID and to date is not given in input parameter      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "2022-12-07",
+	    "toDate": "",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_pageIndex_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_71      
+      description: Get service history when logged in using valid VID and invalid page index is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "sdjv$#",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Valid_pageIndex_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?pageIndex={pageIndex}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_72      
+      description: Get service history when logged in using valid VID and valid page index is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "0",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Negative_PageFetch_Value_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_73      
+      description: Get service history when logged in using valid VID and negative value is given for page fetch      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "-1",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_Random_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_74      
+      description: Get service history when logged in using valid VID and invalid/random value is given in page fetch      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "sdsd#$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_PageFetch_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?pageSize={pageSize}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_75      
+      description: Get service history when logged in using valid VID and invalid value is given in page fetch      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "0",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-447",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Multiple_ServiceType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?serviceType={serviceType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_76      
+      description: Get service history when logged in using valid VID and multiple values are given in service type field      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "AUTHENTICATION_REQUEST,SERVICE_REQUEST",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_ASC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_77      
+      description: Get service history when logged in using valid VID and sort type value is given as ASC      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ASC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_DESC_SortType_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_78      
+      description: Get service history when logged in using valid VID and sort type value is given as DESC      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "DESC",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_Empty_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_79      
+      description: Get service history when logged in using valid VID and sort type value is not given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_Invalid_SortType_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?sortType={sortType}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_80      
+      description: Get service history when logged in using valid VID and invalid sort type value is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "ssd$#$#",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+
+   Resident_GetServiceHistory_vid_SearchText_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_81      
+      description: Get service history when logged in using valid VID and valid search text is given
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "1"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_0_SearchText_Pos:
+      endPoint: /resident/v1/service-history/{langcode}?searchText={searchText}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_82      
+      description: Get service history when logged in using valid VID and search text is given as '0'      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "0"
+}'
+      output: '{
+      	
+}'
+
+
+
+   Resident_GetServiceHistory_vid_StatusFilter_Valid_Smoke:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_83      
+      description: Get service history when logged in using valid VID and valid status filter is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SUCCESS,IN_PROGRESS,FAILED",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetServiceHistory_vid_StatusFilter_Invalid_Neg:
+      endPoint: /resident/v1/service-history/{langcode}?statusFilter={statusFilter}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_84      
+      description: Get service history when logged in using valid VID and invalid status filter is given      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "SD$#$%",
+	    "searchText": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+  ]
+}'
+   Resident_GetServiceHistory_StatusCode_Empty_Token:
+      endPoint: /resident/v1/service-history/{langcode}
+      uniqueIdentifier: TC_Resident_GetserviceHistory_85      
+      description: Get service history when logged in using valid VID and token is not given      
+      role:
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetServiceHistory/GetServiceHistory
+      outputTemplate: resident/error
+      input: '{
+      	"langcode": "$1STLANG$",
+      	"pageIndex": "$REMOVE$",
+	    "pageSize": "$REMOVE$",
+	    "fromDate": "$REMOVE$",
+	    "toDate": "$REMOVE$",
+	    "sortType": "$REMOVE$",
+	    "serviceType": "$REMOVE$",
+	    "statusFilter": "$REMOVE$",
+	    "searchText": "$REMOVE$"
+}'
+      output: "401"

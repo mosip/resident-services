@@ -1,0 +1,439 @@
+TranslitrateData:
+   Resident_TranslitrateData_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_01      
+      description: Transliterate data for the language given when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/TranslitrateData/TranslitrateDataResult
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+        
+}'
+
+   Resident_TranslitrateData_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_02      
+      description: Transliterate data for the language given when logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/TranslitrateData/TranslitrateDataResult
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+        
+}'
+
+   Resident_TranslitrateData_uin_Same_Lang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_03      
+      description: Transliterate data, where from and to language is given same and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$1STLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Invalid_UserToken_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_04      
+      description: Transliterate data when user token is invalid      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Invalid_Token_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_05      
+      description: Transliterate data when token is invalid     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_StatusCode_Empty_Token_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_06      
+      description: Transliterate data when token is empty      
+      role: 
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: "401"
+
+   Resident_TranslitrateData_uin_Invalid_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_07      
+      description: Transliterate data when from language is given invalid and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "hinnn",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Missing_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_08      
+      description: Transliterate data when from language is removed from request and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$REMOVE$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Empty_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_09      
+      description: Transliterate data when from language is given empty and logged in using UIN     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Invalid_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_10      
+      description: Transliterate data when to language is given invalid and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "Hinnn"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Missing_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_11      
+      description: Transliterate data when to language is removed from request and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_uin_Empty_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_12      
+      description: Transliterate data when from language is given empty and logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": ""
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Same_Lang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_13      
+      description: Transliterate data when from and to language is given same and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$1STLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Invalid_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_14      
+      description: Transliterate data when from language is given invalid and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "hinnn",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Missing_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_15      
+      description: Transliterate data when from language is missing and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$REMOVE$",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Empty_FromLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_16      
+      description: Transliterate data when from language is given empty and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "",
+	    "to_field_lang": "$2NDLANG$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Invalid_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_17      
+      description: Transliterate data when to language is given invalid and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "Hinnn"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Missing_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_18      
+      description: Transliterate data when to language is removed from request and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_TranslitrateData_vid_Empty_ToLang_Neg:
+      endPoint: /resident/v1/transliteration/transliterate
+      uniqueIdentifier: TC_Resident_Translitrate_19      
+      description: Transliterate data when to language is given empty and logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/TranslitrateData/TranslitrateData
+      outputTemplate: resident/error
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "from_field_value": "j",
+	    "from_field_lang": "$1STLANG$",
+	    "to_field_lang": ""
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

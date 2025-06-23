@@ -1,0 +1,84 @@
+GetRemainingupdatecountbyIndividualIdRequest:
+   Resident_GetRemainingupdatecountbyIndividualIdRequest_Valid_Smoke:
+      endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_01      
+      description: Get remaining update count when UIN is given in input parameters     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest
+      outputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequestResult
+      input: '{
+		  "individualId": "$ID:AddIdentity_UpdateCount_smoke_Pos_UIN$",
+		  "idType": "UIN",
+ 		  "attribute_list": "fullName"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetRemainingupdatecountby_Invalid_IndividualIdRequest_Negative:
+      endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_02      
+      description: Get remaining update count when invalid UIN is used in input parameters     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest
+      outputTemplate: resident/error
+      input: '{
+		  "individualId": "$123ds",
+		  "idType": "UIN",
+ 		  "attribute_list": "fullName"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "IDR-IDC-004"
+    }
+  ]
+}'
+
+   Resident_GetRemainingupdatecountby_empty_IndividualIdRequest_Negative:
+      endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_03      
+      description: Get remaining update count when individualid is not given in input parameters     
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest
+      outputTemplate: resident/error
+      input: '{
+		  "individualId": "",
+		  "idType": "UIN",
+ 		  "attribute_list": "fullName"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "IDR-IDC-003"
+    }
+  ]
+}'
+
+   Resident_GetRemainingupdatecountbyIndividualIdRequest_Invalid_Token:
+      endPoint: /idrepository/v1/identity/{individualId}/update-counts?idType={idType}&attribute_list={attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_04      
+      description: Get remaining update count when invalid token is used
+      role: invalidtoken
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest
+      outputTemplate: resident/error
+      input: '{
+		  "individualId": "$ID:AddIdentity_UpdateCount_smoke_Pos_UIN$",
+		  "idType": "UIN",
+ 		  "attribute_list": "fullName"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "KER-ATH-401"
+    }
+  ]
+}'

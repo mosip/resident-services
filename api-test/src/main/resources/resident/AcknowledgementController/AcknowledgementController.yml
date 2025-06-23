@@ -1,0 +1,256 @@
+GetAcknowledgementController:
+   Resident_GetAuthorizationtoken_uin_Valid_Smoke:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_01
+      description: The resident is trying to get an authorization token by using a valid UIN
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_Valid_Smoke:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_02
+      description: The resident is trying to get an authorization token by using a valid VID
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_Invalid_languageCode_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_03
+      description: Resident is trying to get an authorization token by using valid UIN with an invalid language code
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "ar$!22",
+		  "eventId":  "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_Invalid_eventId_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_04
+      description: Resident is trying to get an authorization token by using valid UIN with an invalid eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$df44"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_Empty_languageCode_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_05
+      description: Resident is trying to get an authorization token by using valid UIN with an empty language code
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "",
+		  "eventId":  "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_spaceVal_languagecode_Neg:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_06
+      description: Resident is trying to get an authorization token by using valid UIN with a space value for the language code
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": " ",
+		  "eventId":  "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_SpaceVal_enentId_Neg:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_07
+      description: Resident is trying to get an authorization token by using valid UIN with a space value for the eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  " "
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_Empty_eventId_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_08
+      description: Resident is trying to get an authorization token by using valid UIN with an empty eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  ""
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_uin_Invalid_Role_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_09
+      description: Resident is trying to get an authorization token by using valid UIN with an invalid role
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_Invalid_languageCode_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_10
+      description: Resident is trying to get an authorization token by using valid VID with an invalid language code
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "ar$!22",
+		  "eventId":  "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_Invalid_eventId_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_11
+      description: Resident is trying to get an authorization token by using valid VID with an invalid eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  "$df44"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_Empty_languageCode_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_12
+      description: Resident is trying to get an authorization token by using valid VID with an empty language code
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "",
+		  "eventId":  "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_Empty_eventId_Negative:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_13
+      description: Resident is trying to get an authorization token by using valid VID with an empty eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/error
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  ""
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_SpaceVal_languageCode_Neg:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_14
+      description: Resident is trying to get an authorization token by using valid VID with a space value for the language code
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": " ",
+		  "eventId":  "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetAuthorizationtoken_vid_SpaceVal_eventId_Neg:
+      endPoint: /resident/v1/ack/download/pdf/event/{eventId}/language/{languageCode}
+      uniqueIdentifier: TC_Resident_GetAuthorizationtoken_15
+      description: Resident is trying to get an authorization token by using valid VID with a space value for the eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/AcknowledgementController/AcknowledgementController
+      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      input: '{
+		  "languageCode": "$1STLANG$",
+		  "eventId":  " "
+}'
+      output: '{
+   		
+}'
+

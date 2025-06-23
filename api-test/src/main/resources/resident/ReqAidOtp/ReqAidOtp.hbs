@@ -1,0 +1,15 @@
+{
+  "id": "mosip.identity.otp.internal",
+  "version": "1.0",
+  "transactionId": "{{transactionId}}",
+  "requestTime": "{{requestTime}}",
+  "individualId": "{{individualId}}",
+  "otpChannel": [
+    {{#each otpChannel}}
+            "{{channel}}"
+          {{#unless @last}},{{/unless}}
+      	{{/each}}
+  ],
+  "metadata": {},
+  "aid": "{{aid}}"
+}

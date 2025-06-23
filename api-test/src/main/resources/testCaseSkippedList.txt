@@ -1,0 +1,14 @@
+##### JIRA number;testcase 
+#MOSIP-12345------Test_Case_Name
+MOSIP-41858------Resident_GetRemainingupdatecountby_empty_IndividualIdRequest_Negative
+MOSIP-41858------Resident_PrintUin_All_Valid_Smoke
+MOSIP-41858------Resident_RequestCredentials_euin_VID_CheckVidIs_REVOKED_Neg
+MOSIP-41858------Resident_SendOTP_RevokedVID_Invalid
+MOSIP-41858------Resident_GetPendingDrafts__Invalid_langCode_eng_Smoke_Neg
+MOSIP-41859------Resident_GetChannelVerificationStatus_For_Phone_all_Valid_Smoke
+MOSIP-41859------Resident_GetChannelVerificationStatus_Phone_Valid_Smoke
+MOSIP-41859------Resident_Generate_Perpetual_VID_Phone_Valid_Smoke_sid
+MOSIP-41859------Resident_AuthHistory_With_UIN_Phone_smoke_Pos
+MOSIP-41859------Resident_AuthLock_Valid_UIN_Phone_All
+MOSIP-41859------Resident_AuthUnLock_Valid_UIN_PhoneChannel_Pos
+MOSIP-41859------Resident_RequestCredentials_Phone_Channel_Pos

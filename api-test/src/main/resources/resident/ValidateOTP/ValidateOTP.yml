@@ -1,0 +1,224 @@
+SendOTP:
+   Resident_SendOTP_Valid_UIN_All_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_01      
+      description: Request OTP using UIN       
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "XXsXXeXXaXXoXXtXXn@gmail.com"
+    }'
+   Resident_SendOTP_Valid_UIN_Phone_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_02      
+      description: Request OTP using UIN when otp channel is given as only phone      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP2
+      outputTemplate: resident/SendOTP/createSendOTPResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "otpChannel": "[\"PHONE\"]",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "$IGNORE$"
+    }'
+   Resident_SendOTP_Valid_UIN_Email_Smoke:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_03      
+      description: Request OTP using UIN when otp channel is given as only Email      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP2
+      outputTemplate: resident/SendOTP/createSendOTPResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "otpChannel": "[\"EMAIL\"]",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+        "maskedMobile": "$IGNORE$",
+        "maskedEmail": "XXsXXeXXaXXoXXtXXn@gmail.com"
+    }'
+   Resident_SendOTP_RevokedVID_Invalid:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_04      
+      description: Request OTP using Revoked VID      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:GenerateVID_All_Valid_Smoke_Perpetual_sid_vid$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+      "errorCode": "IDA-MLC-018",
+      "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_Valid_UIN_Invalid_empty_otpChannel:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_05      
+      description: Request OTP using UIN when otp channel is empty array      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP2
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "otpChannel": "[]",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+      "errorCode": "IDA-OTA-008",
+      "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_individualId:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_06      
+      description: Request OTP using invalid individualId      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "asfvgaf",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009",
+         "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_Missing_individualId:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_07      
+      description: Request OTP when individualId is removed from request      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$REMOVE$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009",
+         "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_Empty_transactionID:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_07      
+      description: Request OTP when transcationId is given empty      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-006",
+         "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_transactionID:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_09      
+      description: Request OTP when invalid transcationId is given      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "asdveve",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009",
+         "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_Missing_transactionID:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_10      
+      description: Request OTP when transcationId is removed from request      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult2
+      input: '{
+    "transactionID": "$REMOVE$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "RES-SER-425",
+         "message": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_Empty_requestTime:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_11      
+      description: Request OTP when requesttime is given empty      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-006",
+         "errorMessage": "$IGNORE$"
+    }'
+   Resident_SendOTP_InValid_requestTime:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_RequestOtp_12      
+      description: Request OTP when invalid requesttime is given      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult2
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "asvfv",
+    "individualId": "$ID:AddIdentity_withValidParameters_smoke_Pos_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "RES-SER-425",
+         "message": "$IGNORE$"
+    }'

@@ -1,0 +1,342 @@
+GetOrderStatus:
+   Resident_GetOrderStatus_0_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_01      
+      description: Get order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567890",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567890"
+}'
+   Resident_GetOrderStatus_1_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_02      
+      description: Get 1st order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567891",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567891"
+}'
+   Resident_GetOrderStatus_2_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_03      
+      description: Get 2nd order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567892",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567892"
+}'
+   Resident_GetOrderStatus_3_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_04      
+      description: Get 3rd order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567893",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567893"
+}'
+   Resident_GetOrderStatus_4_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_05      
+      description: Get 4th order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567894",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567894"
+}'
+   Resident_GetOrderStatus_5_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_06      
+      description: Get 5th order status using UIN with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567895",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+      	"transactionId": "1234567895"
+}'
+   Resident_GetOrderStatus_6_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_07      
+      description: Get 6th order status using UIN with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567896",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-475",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_7_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_08      
+      description: Get 7th order status using UIN with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567897",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-476",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_8_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_09      
+      description: Get 8th order status using UIN with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567898",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-477",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_9_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_10      
+      description: Get 9th order status using UIN with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567899",
+		"individualId": "$ID:AddIdentity_OrdrSts_Valid_smoke_Pos_UIN$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-478",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_GetOrderStatus_Vid_0_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_11      
+      description: Get order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567890",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567890"
+}'
+   Resident_GetOrderStatus_Vid_1_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_12      
+      description: Get 1st order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567891",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567891"
+}'
+   Resident_GetOrderStatus_Vid_2_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_13      
+      description: Get 2nd order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567892",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567892"
+}'
+   Resident_GetOrderStatus_Vid_3_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_14      
+      description: Get 3rd order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567893",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567893"
+}'
+   Resident_GetOrderStatus_Vid_4_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_15      
+      description: Get 4th order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567894",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567894"
+}'
+   Resident_GetOrderStatus_Vid_5_Valid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_16      
+      description: Get 5th order status using VID with valid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/GetOrderStatus/GetOrderStatusResult
+      input: '{
+      	"transactionId": "1234567895",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+      	"transactionId": "1234567895"
+}'
+   Resident_GetOrderStatus_Vid_6_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_17      
+      description: Get 6th order status using VID with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567896",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-475",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_Vid_7_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_18
+      description: Get 7th order status using VID with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567897",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-476",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_Vid_8_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_19      
+      description: Get 8th order status using VID with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567898",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-477",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+   Resident_GetOrderStatus_Vid_9_Invalid_TransactionID_Smoke:
+      endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
+      uniqueIdentifier: TC_Resident_GetOrderStatus_20      
+      description: Get 9th order status using VID with an invalid transactionId
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetOrderStatus/GetOrderStatus
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567899",
+		"individualId": "$ID:Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid_vid$"
+}'
+      output: '{
+		  "errors": [
+		    {
+		      "errorCode": "RES-SER-478",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'

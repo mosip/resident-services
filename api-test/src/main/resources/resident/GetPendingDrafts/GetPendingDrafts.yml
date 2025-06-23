@@ -1,0 +1,34 @@
+GetPendingDrafts:
+   Resident_GetPendingDrafts_Valid_langCode_eng_Smoke:
+      endPoint: /resident/v1/identity/get-pending-drafts/{langcode}
+      uniqueIdentifier: TC_Resident_GetPendingDrafts_01
+      description: Get Pending drafts list with valid data
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetPendingDrafts/GetPendingDrafts
+      outputTemplate: resident/GetPendingDrafts/GetPendingDraftsResult
+      input: '{
+      "langcode":"$1STLANG$"
+}'
+      output: '{
+}'
+   Resident_GetPendingDrafts__Invalid_langCode_eng_Smoke_Neg:
+      endPoint: /resident/v1/identity/get-pending-drafts/{langcode}
+      uniqueIdentifier: TC_Resident_GetPendingDrafts_02
+      description: Get Pending drafts list with invalid langCode
+      role: residentNew
+      restMethod: get
+      inputTemplate: resident/GetPendingDrafts/GetPendingDrafts
+      outputTemplate: resident/error
+      input: '{
+      "langcode":"@#@$@$"
+}'
+      output: '{
+   "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

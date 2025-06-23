@@ -1,0 +1,89 @@
+GetValidDocumentByLangCode:
+   Resident_GetValidDocumentByLangCode_All_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      uniqueIdentifier: TC_Resident_GetvalidDocument_01      
+      description: Get valid documents for given language code      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCodeResult
+      input: '{
+      "langCode": "$1STLANG$"
+}'
+      output: '{
+}'
+
+
+
+   Resident_GetValidDocumentByLangCode_Invalid_LangCode:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      uniqueIdentifier: TC_Resident_GetvalidDocument_02      
+      description: Get valid documents by giving invalid language code      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": "engg"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetValidDocumentByLangCode_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      uniqueIdentifier: TC_Resident_GetvalidDocument_03      
+      description: Get valid documents for given language code      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCodeResult
+      input: '{
+      "langCode": "$1STLANG$"
+}'
+      output: '{
+
+}'
+
+   Resident_GetValidDocumentByLangCode_StatusCode_Empty_Invalid_Neg:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      uniqueIdentifier: TC_Resident_GetvalidDocument_04      
+      description: Get valid documents by not giving language code in input parameters      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": ""
+}'
+      output: "404"
+
+   Resident_GetValidDocumentByLangCode_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/proxy/masterdata/validdocuments/{langCode}
+      uniqueIdentifier: TC_Resident_GetvalidDocument_05      
+      description: Get valid documents by giving invalid language code is given in input parameters      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidDocumentByLangCode/getValidDocumentByLangCode
+      outputTemplate: resident/error
+      input: '{
+      "langCode": "ttt"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

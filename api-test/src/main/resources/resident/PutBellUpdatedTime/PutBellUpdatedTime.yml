@@ -1,0 +1,46 @@
+PutBellUpdatedTime:
+   Resident_PutBellUpdatedTime_uin_StatusCode_all_Valid_Smoke:
+      endPoint: /resident/v1/bell/updatedttime
+      uniqueIdentifier: TC_Resident_BellUpdatedTime_01      
+      description: Bell updated time when logged in using UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: put
+      inputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTime
+      outputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTimeResult
+      input: '{
+}'
+      output: "200"
+      
+   Resident_PutBellUpdatedTime_vid_StatusCode_all_Valid_Smoke:
+      endPoint: /resident/v1/bell/updatedttime
+      uniqueIdentifier: TC_Resident_BellUpdatedTime_02      
+      description: Bell updated time when logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: put
+      inputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTime
+      outputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTimeResult
+      input: '{
+}'
+      output: "200"
+      
+   Resident_PutBellUpdatedTime_Invalid_Token:
+      endPoint: /resident/v1/bell/updatedttime
+      uniqueIdentifier: TC_Resident_BellUpdatedTime_03      
+      description: Bell updated time when invalid token is given to login      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: put
+      inputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTime
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]   
+}'

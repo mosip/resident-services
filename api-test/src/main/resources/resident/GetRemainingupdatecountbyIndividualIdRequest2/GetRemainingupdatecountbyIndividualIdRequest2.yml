@@ -1,0 +1,56 @@
+GetRemainingupdatecountbyIndividualIdRequest2:
+   Resident_GetRemainingupdatecountbyIndividualIdRequest2_uin_Valid_Smoke:
+      endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_05      
+      description: Get remaining update count for UIN       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2
+      outputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2Result
+      input: '{
+      "filter_attribute_list": "fullName"
+		  
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetRemainingupdatecountbyIndividualIdRequest2_vid_Valid_Smoke:
+      endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_06      
+      description: Get remaining update count for VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2
+      outputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2Result
+      input: '{
+      "filter_attribute_list": "fullName"
+		  
+}'
+      output: '{
+   		
+}'
+
+   Resident_GetRemainingupdatecountbyIndividualIdRequest2_Invalid_Token:
+      endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
+      uniqueIdentifier: TC_Resident_GetRemainingupdatecount_07      
+      description: Get remaining update count when invalid token is used      
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2
+      outputTemplate: resident/error
+      input: '{
+		  "filter_attribute_list": "fullName"
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+   		
+}'

@@ -1,0 +1,84 @@
+UnPinStatus:
+   Resident_UnPinStatus_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/unpinned/{eventId}
+      uniqueIdentifier: TC_Resident_UnpinStatus_01      
+      description: Unpin status for given eventid when logged using UIN     
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/UnPinStatus/UnPinStatus
+      outputTemplate: resident/UnPinStatus/UnPinStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+      		"status": "200"
+}'
+
+   Resident_UnPinStatus_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/unpinned/{eventId}
+      uniqueIdentifier: TC_Resident_UnpinStatus_02      
+      description: Unpin status for given eventid when logged using VID      
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/UnPinStatus/UnPinStatus
+      outputTemplate: resident/UnPinStatus/UnPinStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$"
+}'
+      output: '{
+      		"status": "200"
+}'
+
+   Resident_UnPinStatus_uin_Invalid_Input_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      uniqueIdentifier: TC_Resident_UnpinStatus_03      
+      description: Unpin status for invalid eventid when logged using UIN    
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/UnPinStatus/UnPinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$@kk$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_UnPinStatus_vid_Invalid_Input_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      uniqueIdentifier: TC_Resident_UnpinStatus_04      
+      description: Unpin status for invalid eventid when logged using VID       
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/UnPinStatus/UnPinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$@kk$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_UnPinStatus_uin_StatusCode_Invalid_Token_Neg:
+      endPoint: /resident/v1/pinned/{eventId}
+      uniqueIdentifier: TC_Resident_UnpinStatus_05      
+      description: Unpin status for eventid when logged using UIN with invalid token     
+      role: invalid
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/UnPinStatus/UnPinStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$"
+}'
+      output: "401"

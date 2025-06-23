@@ -1,0 +1,261 @@
+CheckAidStatus:
+   Resident_CheckAidStatus_all_Valid_Smoke:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_01
+      description: Check the status of the AID using valid data
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/CheckAidStatus/CheckAidStatusResult
+      input: '{
+      	"requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+    "sendOtp":{
+    "transactionId": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+    }
+}'
+      output: '{
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_Aid_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_02
+      description: Check the status of the AID by using an invalid AID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "123444sasa$%",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+    "sendOtp":{
+    "transactionId": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_TransactionID_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_03
+      description: Check the status of the AID using an invalid transactionID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "213$@As",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_Otp_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_04
+      description: Check the status of the AID using an invalid OTP
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "123456",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-422",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_Aid_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_05
+      description: Check the status of the AID using an empty AID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "aid": "",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_TransactionID_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_06
+      description: Check the status of the AID using an empty transaction ID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_Otp_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_07
+      description: Check the status of the AID using an empty otp
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error 
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410",
+	      "message": "$IGNORE$"
+	    }
+  ],
+        "sendOtpResp":{
+        "maskedMobile": "$IGNORE$",
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
+        "maskedEmail": "$IGNORE$"
+    }
+
+}'
