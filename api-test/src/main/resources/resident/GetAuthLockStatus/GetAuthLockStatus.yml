@@ -1,0 +1,48 @@
+residentNewVid:
+   Resident_GetAuthLockStatus_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_01
+      description: Get authlock status using a valid UIN with all valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetAuthLockStatus/getAuthLockStatus
+      outputTemplate: resident/GetAuthLockStatus/getAuthLockStatusResult
+      input: '{
+}'
+      output: '{
+}'
+
+   Resident_GetAuthLockStatus_Invalid_Token_Neg:
+      endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_02
+      description: Get authlock status using a valid UIN with an invalid token
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetAuthLockStatus/getAuthLockStatus
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "KER-ATH-401",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_GetAuthLockStatus_Vid_all_Valid_Smoke:
+      endPoint: /resident/v1/auth-lock-status
+      uniqueIdentifier: TC_Resident_GetAuthLockStatus_03
+      description: Get authlock status using a valid VID with all valid inputs
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetAuthLockStatus/getAuthLockStatus
+      outputTemplate: resident/GetAuthLockStatus/getAuthLockStatusResult
+      input: '{
+}'
+      output: '{
+}'

@@ -1,0 +1,1078 @@
+AuthLockNew:
+   Resident_AuthLockNew_Demo_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_01
+      description: Lock the demo authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "demo",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Otp_Phone_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_02
+      description: Lock the otp-phone authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "otp-phone",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Otp_Email_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_03
+      description: Lock the otp-email authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "otp-email",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Face_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_04
+      description: Lock the bio-face authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FACE",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Iris_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_05
+      description: Lock the bio-iris authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-IRIS",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Finger_Valid_UIN_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_06
+      description: Lock the bio-finger authentication type using valid UIN
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_uin_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_07
+      description: Lock the authentication type using valid UIN and an invalid requesttime
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "T@345IMP",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Invalid_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_08
+      description: Lock the authentication type using valid UIN and an invalid Id
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mothlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Invalid_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_09
+      description: Lock the authentication type using valid UIN and an invalid version
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "@333#1",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Invalid_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_10
+      description: Lock the authentication type using valid UIN and an invalid authtype
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-Fing@@",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_uin_Invalid_Locked_Status_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_11
+      description: Lock the authentication type using valid UIN and an invalid locked status
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "tr$@s",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-418",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_uin_Invalid_Secs_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_12
+      description: Lock the authentication type using valid UIN with an invalid unlockforseconds
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "@#$"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-418",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_uin_Empty_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_13
+      description: Lock the authentication type using valid UIN with an empty requesttime
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Empty_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_14
+      description: Lock the authentication type using valid UIN with an empty Id
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+  }'
+
+   Resident_AuthLockNew_uin_Empty_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_15
+      description: Lock the authentication type using valid UIN with an empty version
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Empty_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_16
+      description: Lock the authentication type using valid UIN with an empty authtype
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "Invalid Input Parameter- authTypes"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_uin_Empty_Locked_Status_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_17
+      description: Lock the authentication type using valid UIN with an empty locked status
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_uin_Empty_Secs_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_18
+      description: Lock the authentication type using valid UIN with an empty unlockforseconds
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": ""
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_uin_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_19
+      description: Lock the authentication type using valid UIN with missing requesttime
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$REMOVE$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Missing_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_20
+      description: Lock the authentication type using valid UIN with missing Id
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "$REMOVE$",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Missing_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_21
+      description: Lock the authentication type using valid UIN with missing version
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "$REMOVE$",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_uin_Missing_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_22
+      description: Lock the authentication type using valid UIN with missing authtype
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "$REMOVE$",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "Invalid Input Parameter- authTypes"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_uin_Missing_Locked_Status_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_23
+      description: Lock the authentication type using valid UIN with missing locked status
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "$REMOVE$",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_uin_Missing_Secs_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_24
+      description: Lock the authentication type using valid UIN with missing unlockforseconds
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "$REMOVE$"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_StatusCode_Invalid_Token_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_25
+      description: Lock the authentication type using valid statuscode and an invalid token
+      role: invalid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: "401"
+      
+   Resident_AuthLockNew_Demo_Valid_Vid_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_26
+      description: Lock the demo authentication type using valid VID
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "demo",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Face_Valid_Vid_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_27
+      description: Lock the face authentication type using valid VID
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FACE",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Iris_Valid_Vid_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_28
+      description: Lock the iris authentication type using a valid VID
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-IRIS",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_Finger_Valid_Vid_All:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_29
+      description: Lock the finger authentication type using a valid VID
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_vid_Invalid_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_30
+      description: Lock the authentication type using valid VID with an invalid requesttime
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "T@345IMP",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Invalid_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_31
+      description: Lock the authentication type using valid VID with an invalid Id
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mothlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Invalid_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_32
+      description: Lock the authentication type using valid VID with an invalid version
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "@333#1",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Invalid_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_33
+      description: Lock the authentication type using valid VID with an invalid authtype
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-Fing@@",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_vid_Invalid_Locked_Status_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_34
+      description: Lock the authentication type using valid VID with an invalid lockedstatus
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "tr$@s",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-418",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_vid_Invalid_Secs_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_35
+      description: Lock the authentication type using valid VID with an invalid unlockforseconds
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "@#$"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-418",
+		      "message": "$IGNORE$"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_vid_Empty_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_36
+      description: Lock the authentication type using valid VID with an empty requesttime
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Empty_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_37
+      description: Lock the authentication type using valid VID with an empty Id
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+  }'
+
+   Resident_AuthLockNew_vid_Empty_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_38
+      description: Lock the authentication type using valid VID with an empty version
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Empty_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_39
+      description: Lock the authentication type using valid VID with an empty authtype
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "Invalid Input Parameter- authTypes"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_vid_Empty_Locked_Status_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_40
+      description: Lock the authentication type using valid VID with an empty lockedstatus
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_vid_Empty_Secs_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_41
+      description: Lock the authentication type using valid VID with an empty unlockforseconds
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": ""
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_vid_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_42
+      description: Lock the authentication type using valid VID with missing requesttime
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$REMOVE$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Missing_Id_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_43
+      description: Lock the authentication type using valid VID with missing Id
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "$REMOVE$",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Missing_Version_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_44
+      description: Lock the authentication type using valid VID with missing version
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "$REMOVE$",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_AuthLockNew_vid_Missing_AuthType_Neg:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_45
+      description: Lock the authentication type using valid VID with missing authtype
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "$REMOVE$",
+        "locked": "true",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"errors": [
+		    {
+		      "errorCode": "RES-SER-410",
+		      "message": "Invalid Input Parameter- authTypes"
+		    }
+		  ]
+}'
+
+   Resident_AuthLockNew_vid_Missing_Locked_Status_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_46
+      description: Lock the authentication type using valid VID with missing lockedstatus
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "$REMOVE$",
+        "unlockForSeconds": "null"
+    }'
+      output: '{
+  		"status": "Success"
+}'
+
+   Resident_AuthLockNew_vid_Missing_Secs_Pos:
+      endPoint: /resident/v1/auth-lock-unlock
+      uniqueIdentifier: TC_Resident_AuthLockNew_47
+      description: Lock the authentication type using valid VID with missing unlockforseconds
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/AuthLockNew/CreateAuthLockNew
+      outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.auth.lock.unlock",
+        "version": "1.0",
+        "authType": "bio-FINGER",
+        "locked": "true",
+        "unlockForSeconds": "$REMOVE$"
+    }'
+      output: '{
+  		"status": "Success"
+}'

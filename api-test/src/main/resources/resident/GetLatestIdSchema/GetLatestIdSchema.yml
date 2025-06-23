@@ -1,0 +1,40 @@
+GetLatestIdSchema:
+   Resident_GetLatestIdSchema_all_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/idschema/latest?schemaVersion={schemaVersion}&domain={domain}&type={type}
+      uniqueIdentifier: TC_Resident_GetLastSchema_01      
+      description: Get latest Idschema using all valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetLatestIdSchema/getLatestIdSchema
+      outputTemplate: resident/GetLatestIdSchema/getLatestIdSchemaResult
+      input: '{
+      	"schemaVersion":"0.100",
+		"domain":"",
+		"type":""
+}'
+      output: '{
+}'
+
+   Resident_GetLatestIdSchema_Invalid_Schema_Version:
+      endPoint: /resident/v1/proxy/masterdata/idschema/latest?schemaVersion={schemaVersion}&domain={domain}&type={type}
+      uniqueIdentifier: TC_Resident_GetLastSchema_02      
+      description: Get latest Idschema using an invalid schema version
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetLatestIdSchema/getLatestIdSchema
+      outputTemplate: resident/error
+      input: '{
+      	"schemaVersion":"tt",
+		"domain":"",
+		"type":""
+}'
+      output: '{
+      "errors": [
+	    {
+	      "errorCode": "RES-SER-418",
+	      "message": "$IGNORE$"
+	    }
+  ]
+}'

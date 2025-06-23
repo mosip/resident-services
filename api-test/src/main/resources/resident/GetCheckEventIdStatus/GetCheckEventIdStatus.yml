@@ -1,0 +1,122 @@
+GetCheckEventIdStatus:
+   Resident_GetCheckEventIdStatus_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_01      
+      description: Get check eventId status using a valid UIN with all valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$",
+		"langCode": "$1STLANG$"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetCheckEventIdStatus_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_02      
+      description: Get check eventId status using a valid VID with all valid inputs
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$",
+		"langCode": "$1STLANG$"
+}'
+      output: '{
+        
+}'
+
+   Resident_GetCheckEventIdStatus_uin_Invalid_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_03      
+      description: Get check eventId status using a valid UIN with an invalid eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "164161sdsd##",
+		"langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_Invalid_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_04      
+      description: Get check eventId status using a valid VID with an invalid eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "164161sdsd##",
+		"langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_uin_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_05      
+      description: Get check eventId status using a valid UIN with an invalid langcode
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$",
+		"langCode": "hinn"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_Invalid_LangCode_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_06      
+      description: Get check eventId status using a valid VID with an invalid langcode
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+      	"eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$",
+		"langCode": "hinn"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

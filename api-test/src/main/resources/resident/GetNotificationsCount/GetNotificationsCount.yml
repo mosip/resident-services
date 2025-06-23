@@ -1,0 +1,70 @@
+GetNotificationsCount:
+   Resident_GetNotificationsCount_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_01      
+      description: Get notifications count of VID using all valid inputs
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      input: '{
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotificationsCount_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_02      
+      description: Get notifications count of UIN using all valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      input: '{
+}'
+      output: '{
+        
+}'
+
+   Resident_GetNotificationsCount_uin_InvalidToken_Neg:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_03      
+      description: Get notifications count of VID using an invalid token
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "KER-ATH-401"
+    }
+  ]
+        
+}'
+
+   Resident_GetNotificationsCount_vid_InvalidToken_Neg:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_04      
+      description: Get notifications count of VID using an invalid token
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "KER-ATH-401"
+    }
+  ]
+        
+}'

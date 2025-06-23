@@ -1,0 +1,41 @@
+AuthorizationCode:
+   Resident_ESignet_AuthorizationCode_uin_All_Valid_Smoke_sid:
+      endPoint: /v1/esignet/authorization/auth-code
+      uniqueIdentifier: Dependent_ESignet_AuthorizationCode_01
+      description: Generate the ESignet authorization code using UIN with valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/AuthorizationCode/AuthorizationCode
+      outputTemplate: resident/AuthorizationCode/AuthorizationCodeResult
+      input: '{
+        "encodedHash": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_encodedResp$",
+      	"requestTime": "$TIMESTAMP$",
+      	"transactionId": "$ID:ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid_transactionId$",
+      	"acceptedClaims": [{claim: "name"},{claim: "phone_number"},{claim: "email"},{claim: "picture"},{claim: "individual_id"}],
+      	"permittedAuthorizeScopes": [{scope: "Manage-Identity-Data"},{scope: "Manage-VID"},{scope: "Manage-Authentication"},{scope: "Manage-Service-Requests"},{scope: "Manage-Credentials"}]
+}'
+      output: '{
+}'
+
+   Resident_ESignet_AuthorizationCode_Vid_All_Valid_Smoke_sid:
+      endPoint: /v1/esignet/authorization/auth-code
+      uniqueIdentifier: Dependent_ESignet_AuthorizationCode_01
+      description: Generate the ESignet authorization code using VID with valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/AuthorizationCode/AuthorizationCode
+      outputTemplate: resident/AuthorizationCode/AuthorizationCodeResult
+      input: '{
+        "encodedHash": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_encodedResp$",
+      	"requestTime": "$TIMESTAMP$",
+      	"transactionId": "$ID:ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid_transactionId$",
+      	"acceptedClaims": [{claim: "name"},{claim: "phone_number"},{claim: "email"},{claim: "picture"},{claim: "individual_id"}],
+      	"permittedAuthorizeScopes": [{scope: "Manage-Identity-Data"},{scope: "Manage-VID"},{scope: "Manage-Authentication"},{scope: "Manage-Service-Requests"},{scope: "Manage-Credentials"}]
+      	
+}'
+      output: '{
+}'

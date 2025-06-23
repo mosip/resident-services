@@ -1,0 +1,93 @@
+GetGenderCode:
+   Resident_GetGenderCode_all_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_01      
+      description: Get gendercode using all valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetGenderCode/GetGenderCode
+      outputTemplate: resident/GetGenderCode/GetGenderCodeResult
+      input: '{
+      "gendertype": "male",
+      "langcode":"$1STLANG$"
+}'
+      output: '{
+}'
+
+   Resident_GetGenderCode1_all_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_02      
+      description: Get one gendercode using all valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetGenderCode/GetGenderCode
+      outputTemplate: resident/GetGenderCode/GetGenderCodeResult
+      input: '{
+      "gendertype": "female",
+      "langcode":"$1STLANG$"
+}'
+      output: '{
+}'
+
+   Resident_GetGenderCode2_all_Valid_Smoke:
+      endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_03      
+      description: Get another gendercode using all valid inputs
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetGenderCode/GetGenderCode
+      outputTemplate: resident/GetGenderCode/GetGenderCodeResult
+      input: '{
+      "gendertype": "others",
+      "langcode":"$1STLANG$"
+}'
+      output: '{
+}'
+
+   Resident_GetGenderCode_Invalid_GenderType_Neg:
+      endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_04      
+      description: Get gendercode using an invalid gendertype
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetGenderCode/GetGenderCode
+      outputTemplate: resident/error
+      input: '{
+      "gendertype": "$gyt=",
+      "langcode":"$1STLANG$"
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+      
+}'
+
+   Resident_GetGenderCode_Invalid_langCode_Neg:
+      endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
+      uniqueIdentifier: TC_Resident_GetGenderCode_05      
+      description: Get gendercode using an invalid langcode
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetGenderCode/GetGenderCode
+      outputTemplate: resident/error
+      input: '{
+      "gendertype": "other",
+      "langcode":"$Yhy= "
+}'
+      output: '{
+       "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

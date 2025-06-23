@@ -1,0 +1,427 @@
+GrievanceTicket:
+   Resident_GrievanceTicket_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_01      
+      description: Log Grievance ticket when logged using UIN    
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/GrievanceTicket/GrievanceTicketResult
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "$REMOVE$", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "$REMOVE$", 
+	    "message" : "Share"
+}'
+      output: '{
+        
+}'
+
+   Resident_GrievanceTicket_uin_InvalidUser_Token_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_02      
+      description: Log Grievance ticket when logged using UIN with invalid token 
+      role: resident
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "residentautomation@gmail.com", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_StatusCode_Invalid_Token_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_03      
+      description: Log Grievance ticket when logged in using UIN with invalid token      
+      role: invalid
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "residentautomation@gmail.com", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: "401"
+
+   Resident_GrievanceTicket_uin_StatusCode_Empty_Token_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_04      
+      description: Log Grievance ticket when logged in using UIN without token      
+      role: 
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "gdbfgdh", 
+	    "name" : "FR",
+	    "emailId" : "residentautomation@gmail.com", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: "401"
+
+   Resident_GrievanceTicket_uin_Invalid_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_05      
+      description: Log Grievance ticket when logged in using UIN with invalid EID      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "skhdbssk#$@", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_Diff_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_06      
+      description: Log Grievance ticket when logged in using UIN with EID taken from other UIN      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "21683123465", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_Missing_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_07      
+      description: Log Grievance ticket when logged in using UIN without EID value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$REMOVE$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_Empty_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_08      
+      description: Log Grievance ticket when logged in using UIN with empty EID value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_Empty_Msg_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_09      
+      description: Log Grievance ticket when logged in using UIN with empty message      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : ""
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_Missing_Msg_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_10      
+      description: Log Grievance ticket when logged in using UIN without message value      
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "$REMOVE$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_uin_OverRange_Msg_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_11      
+      description: Log Grievance ticket when logged in using UIN with message is given more than limited characters       
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "NYikr3XZNUAYRaljrkcmojb3tuXF1qaCqbcGnq75S5qNkOdBFvqmTXlbGBSNHy6hvn6uajoe5ZPVj568FsIaJMusAqdnN7MmSCVPa4PppA0yzpKq7NyOh1MIRDSoVH9Y8FvGui1sOj9hCYKSYRJBhichjNaxRrJFzfGyE7Xa1DeutPcHhWEhSHf2nvalGI4naB7TyqxC5YPjO45RSM9iYnqix3LmqQtaCRmQAgSjdz9Zrx6J0aMpaAL0qvWQcP0VVFMQcsqqPddOLuTBFkZrXL37MvePWYWVtrQ6JBvDlaOEDjAZ6PIAaXRZNlO6zVe3GHh6UFqOi6Rctt1KyoaPTd5yfn14TTrLSKkg3SKekALXK1LNF0zhD8evv4EVzVRd0yZ79tvUMpNwVGA81Qx0mdK2Wipp9fqfoS9ziZWasJn4CcFeQI6fYRZCNKyYnJz0q8GXSKlcMvdyluE0RVs8ZAdzvamWzJWny7pS6AbW4pcpkb9fl9F1KkU25Rsw1htcK5PWXMfTqeaDXB4tryiYQwezwyqSwT2isYdZdg3kDVjcKFG6G9aBouimGnYCh4msuycgBvAJ1rMJEHetVsxAZmR1dJAFmH8XhHuCOBCqS6C99Ghj0jcYmAcFTOExkj4a7f8s8Qj6TYkfHocIkJ3SjxW4JnMF9fvMoLm27348iRZPi1zChmndky2Xa1Rt8wtHg9JRn7F5o7MUWFcd3dOIHZVNMMNlxFl6jvpivWkW1t1dJZLpn2dLxlMCQZ4jybKxvcrOAct3sgt4c4YFL0P2oIAsTVfthhzbNMkYeKIne9eM2a6ecX21RPS8ynyR9h9537QiCA43WcyXujoxmPZGrosbPHWQsjBEgxDn7jahN4k4JcFrcT8YUkmVhNPWJcsu3ZXalNjcnViktVopCTiW2ZD1NDezVPv0Z3gC3hdGomi3Utyekg5SbVjZ20UAeIlU5yMKlvLZWje2AZACRXlhZ9F0MkA5DhPGlpFuKhiKVpqlsWVcfq1iDtoj8KUMSWyVfdsggshsh"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_12      
+      description: Log Grievance ticket when logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/GrievanceTicket/GrievanceTicketResult
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "$REMOVE$", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "$REMOVE$", 
+	    "message" : "Share"
+}'
+      output: '{
+        
+}'
+
+   Resident_GrievanceTicket_vid_Invalid_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_13      
+      description: Log Grievance ticket when logged in using VID and given invalid EID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "skhdbssk#$@", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_vid_Diff_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_14      
+      description: Log Grievance ticket when logged in using VID and given EID belongs to different VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "21683123465", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_vid_Missing_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_15      
+      description: Log Grievance ticket when logged in using VID and EID is removed from request      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "$REMOVE$", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GrievanceTicket_vid_Empty_Eid_Neg:
+      endPoint: /resident/v1/grievance/ticket
+      uniqueIdentifier: TC_Resident_GrievanceTicket_16      
+      description: Log Grievance ticket when logged in using VID and empty value is given for EID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GrievanceTicket/GrievanceTicket
+      outputTemplate: resident/error
+      input: '{
+		"requesttime": "$TIMESTAMP$",
+	    "eventId" : "", 
+	    "name" : "FR",
+	    "emailId" : "$ID:AddIdentity_Esignet_Integ_Vid_smoke_Pos_EMAIL$", 
+	    "alternateEmailId" : "null", 
+	    "phoneNo" : "9876543210", 
+	    "alternatePhoneNo" : "null", 
+	    "message" : "Share"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-414",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

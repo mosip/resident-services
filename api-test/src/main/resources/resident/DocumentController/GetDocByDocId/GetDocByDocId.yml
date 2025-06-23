@@ -1,0 +1,145 @@
+GetDocByDocId:
+   Resident_GetDocByDocId_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_01
+      description: Get the document by docId using a valid UIN with all valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocIdResult
+      input: '{
+      	"transactionId": "1234567889",
+		"docId": "$ID:UploadDocument_uin_all_Valid_Smoke_sid_docId$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetDocByDocId_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_02
+      description: Get the document by docId using a valid VID with all valid inputs
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocIdResult
+      input: '{
+      	"transactionId": "1234567789",
+		"docId": "$ID:UploadDocument_vid_all_Valid_Smoke_sid_docId$"
+}'
+      output: '{
+      
+}'
+
+   Resident_GetDocByDocId_uin_Invalid_TransactionId:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_03
+      description: Get the document by docId using a valid UIN with an invalid transactionId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "jhgf4324",
+		"docId": "$ID:UploadDocument_uin_all_Valid_Smoke_sid_docId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionId"
+    }
+  ]
+}'
+
+   Resident_GetDocByDocId_uin_Invalid_docId:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_04
+      description: Get the document by docId using a valid UIN with an invalid docId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567889",
+		"docId": "jhgf4324"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- documentId"
+    }
+  ]
+}'
+
+   Resident_GetDocByDocId_uin_Invalid_Token:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_05
+      description: Get the document by docId using a valid UIN with an invalid token
+      role: null
+      checkErrorsOnlyInResponse: true
+      validityCheckRequired: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567889",
+		"docId": "$ID:UploadDocument_uin_all_Valid_Smoke_sid_docId$"
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "Authentication Failed"
+    }
+  ]
+}'
+
+   Resident_GetDocByDocId_vid_Invalid_TransactionId:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_06
+      description: Get the document by docId using a valid VID with an invalid transactionId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "jhgf4324",
+		"docId": "$ID:UploadDocument_vid_all_Valid_Smoke_sid_docId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- transactionId"
+    }
+  ]
+}'
+
+   Resident_GetDocByDocId_vid_Invalid_docId:
+      endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
+      uniqueIdentifier: TC_Resident_GetDocByDocId_07
+      description: Get the document by docId using a valid VID with an invalid docId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "1234567889",
+		"docId": "jhgf4324"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "Invalid Input Parameter- documentId"
+    }
+  ]
+}'

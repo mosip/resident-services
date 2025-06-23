@@ -1,0 +1,70 @@
+GetValidateToken:
+   Resident_GetValidateToken_uin_all_Valid_Smoke:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      uniqueIdentifier: TC_Resident_GetvalidateToken_01      
+      description: Get validate token when logged in using UIN     
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      auditLogCheck: true
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/GetValidateToken/getValidateTokenResult
+      input: '{
+}'
+      output: '{
+}'
+
+   Resident_GetValidateToken_vid_all_Valid_Smoke:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      uniqueIdentifier: TC_Resident_GetvalidateToken_02      
+      description: Get validate token when logged in using VID      
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/GetValidateToken/getValidateTokenResult
+      input: '{
+}'
+      output: '{
+}'
+
+
+   Resident_GetValidateToken_Invalid_Token:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      uniqueIdentifier: TC_Resident_GetvalidateToken_03      
+      description: Get validate token      
+      role: invalid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GetValidateToken_Empty_Token_Neg:
+      endPoint: /resident/v1/authorize/admin/validateToken
+      uniqueIdentifier: TC_Resident_GetvalidateToken_04      
+      description: Get validate token when token is not given     
+      role: 
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      inputTemplate: resident/GetValidateToken/getValidateToken
+      outputTemplate: resident/error
+      input: '{
+}'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

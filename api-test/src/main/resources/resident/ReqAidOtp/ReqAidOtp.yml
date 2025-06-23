@@ -1,0 +1,142 @@
+ReqAidOtp:
+   Resident_ReqAidOtp_all_Valid_Smoke:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_01
+      description: Request otp using UIN      
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      auditLogCheck: true
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/ReqAidOtp/ReqAidOtpResult
+      input: '{
+      	"transactionId": "$TRANSACTIONID$",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		"otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+	    "maskedMobile": "$IGNORE$",
+	    "maskedEmail": "$IGNORE$"
+}'
+
+   Resident_ReqAidOtp_Invalid_IndividualId_Neg:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_02      
+      description: Request otp using invalid individualID      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "$TRANSACTIONID$",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "@$$#$#",
+		"otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_ReqAidOtp_Empty_IndividualId_Neg:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_03      
+      description: Request otp when individualId value is empty      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "$TRANSACTIONID$",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "",
+		"otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_ReqAidOtp_Invalid_TransactionID_Neg:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_04      
+      description: Request otp bu giving invalid transcationId      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "@#$###$",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		"otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_ReqAidOtp_Empty_TransactionID_Neg:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_05      
+      description: Request otp when transcationId is empty      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		"otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_ReqAidOtp_Invalid_OtpChannel_Neg:
+      endPoint: /resident/v1/individualId/otp
+      uniqueIdentifier: TC_Resident_ReqAID_06      
+      description: Request otp with invalid otpChannel      
+      role: resident
+      restMethod: post
+      inputTemplate: resident/ReqAidOtp/ReqAidOtp
+      outputTemplate: resident/error
+      input: '{
+      	"transactionId": "$TRANSACTIONID$",
+		"requestTime": "$TIMESTAMP$",
+		"individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		"otpChannel": [{channel: "@##$$#"}],
+		"aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "IDA-MLC-009",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

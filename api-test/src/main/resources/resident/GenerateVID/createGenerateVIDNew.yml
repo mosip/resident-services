@@ -1,0 +1,609 @@
+GenerateVIDNew:
+   Resident_GenerateVID_uin_Temporary_VID_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_94
+      description: Generate temporary VID using a UIN with valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Temporary"
+    }'
+      output: '{
+}'
+
+   Resident_GenerateVID_uin_Temporary_VID2_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_95
+      description: Generate second temporary VID using a UIN with valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Temporary"
+    }'
+      output: '{
+}'
+
+   Resident_GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_96
+      description: Generate Onetimeuse VID using a UIN with valid inputs
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Onetimeuse"
+    }'
+      output: '{
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Phone_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_97
+      description: Generate perpetual VID using a valid UIN and phone
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNewAsPhone
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Email_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_98
+      description: Generate perpetual VID using a valid UIN and Email 
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNewAsEmail
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+	    "maskedPhone": "$IGNORE$"
+}'
+
+   Resident_Generate_Perpetual_VID_BothChannel_uin_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_99
+      description: Generate perpetual VID using a valid UIN and both channel
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_requesttime_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_101
+      description: Generate perpetual VID using a valid UIN with an empty requesttime
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_Id_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_102
+      description: Generate perpetual VID using a valid UIN with an empty Id
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_version_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_103
+      description: Generate perpetual VID using a valid UIN with an empty version
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_vidType_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_104
+      description: Generate perpetual VID using a valid UIN with an empty vidtype
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": ""
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+
+
+   Resident_Generate_Perpetual_VID_uin_requesttime_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_105
+      description: Generate perpetual VID using a valid UIN with an invalid requesttime
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "23553265",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Id_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_106
+      description: Generate perpetual VID using a valid UIN with an invalid Id
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "khdfnsld",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_version_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_107
+      description: Generate perpetual VID using a valid UIN with an invalid version
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "tt",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_vidType_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_108
+      description: Generate perpetual VID using a valid UIN with an invalid vidtype
+      role: residentNew
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "sdfsdf"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-418",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_109
+      description: Generate perpetual VID using valid UIN and token
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+}'
+
+   Resident_GenerateVID_Perpetual_Invalid_Token:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_110
+      description: Generate perpetual VID using valid UIN and an invalid token
+      role: resident
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      	"errors": [
+    {
+      "errorCode": "KER-ATH-401",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_111
+      description: Generate Onetimeuse VID using a valid VID
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Onetimeuse"
+    }'
+      output: '{
+}'
+
+   Resident_Generate_Perpetual_VID_TransID_uin_Invalid:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_112
+      description: Generate perpetual VID using a valid UIN with an invalid transactionId
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-513",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_EmptyChannel_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_113
+      description: Generate perpetual VID using valid UIN with an empty channel
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNewAsEmpty
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-513",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_Empty_TransID_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_114
+      description: Generate perpetual VID using a valid UIN with an empty transactionId
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-513",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_requesttime_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_115
+      description: Generate perpetual VID using a valid UIN with an empty requesttime
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_Id_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_116
+      description: Generate perpetual VID using a valid UIN with an empty Id
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_version_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_117
+      description: Generate perpetual VID using a valid UIN with an empty version
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Empty_vidType_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_118
+      description: Generate perpetual VID using a valid UIN with an empty vidtype
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": ""
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-406",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+
+
+   Resident_Generate_Perpetual_VID_uin_requesttime_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_119
+      description: Generate perpetual VID using a valid UIN with an invalid requesttime
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "23553265",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_Id_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_120
+      description: Generate perpetual VID using a valid UIN with an invalid Id
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "khdfnsld",
+        "version": "1.0",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_version_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_121
+      description: Generate perpetual VID using a valid UIN with an invalid version
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "tt",
+        "vidType": "Perpetual"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-410",
+      "message": "$IGNORE$"
+    }
+  ]
+}'
+
+   Resident_Generate_Perpetual_VID_uin_vidType_Invalid_Neg:
+      endPoint: /resident/v1/generate-vid
+      uniqueIdentifier: TC_Resident_GenerateVID_122
+      description: Generate perpetual VID using a valid UIN with an invalid vidtype
+      role: residentNewVid
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVIDNew
+      outputTemplate: resident/error
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid.generate",
+        "version": "1.0",
+        "vidType": "sdfsdf"
+    }'
+      output: '{
+      "errors": [
+    {
+      "errorCode": "RES-SER-406",
+      "message": "$IGNORE$"
+    }
+  ]
+}'

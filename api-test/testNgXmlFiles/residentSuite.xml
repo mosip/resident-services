@@ -1,0 +1,948 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Resident API Test">
+	<!-- Passing Group as parmeter unsing "testType" Possible Groups are: smoke 
+		regression smokeAndRegression -->
+	<listeners>
+		<listener class-name="io.mosip.testrig.apirig.report.EmailableReport" />
+	</listeners>
+
+
+	<test name="GenerateVID">
+		<parameter name="ymlFile"
+			value="resident/GenerateVID/createGenerateVID.yml" />
+		<parameter name="idKeyName" value="vid" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="GetOrderStatus">
+		<parameter name="ymlFile"
+			value="resident/GetOrderStatus/GetOrderStatus.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="SendOtpForExpiration">
+		<parameter name="ymlFile"
+			value="resident/SendOtpForExpiration/SendOtpForExpiration.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="RevokeVID">
+		<parameter name="ymlFile"
+			value="resident/RevokeVID/createRevokeVID.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PatchWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeUpdateUIN">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="UpdateUIN">
+		<parameter name="ymlFile"
+			value="resident/UpdateUIN/UpdateUIN.yml" />
+		<parameter name="idKeyName" value="registrationId" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterUpdateUIN">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetRidByIndividualId">
+		<parameter name="ymlFile"
+			value="resident/GetRidByIndividualId/GetRidByIndividualId.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetRemainingupdatecountbyIndividualIdRequest">
+		<parameter name="ymlFile"
+			value="resident/GetRemainingupdatecountbyIndividualIdRequest/GetRemainingupdatecountbyIndividualIdRequest.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeReqAidOtp">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="ReqAidOtp">
+		<parameter name="ymlFile"
+			value="resident/ReqAidOtp/ReqAidOtp.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterReqAidOtp">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="CheckAidStatus">
+		<parameter name="ymlFile"
+			value="resident/CheckAidStatus/CheckAidStatus.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterCheckAidStatus">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="DownloadUinCard">
+		<parameter name="ymlFile"
+			value="resident/DownloadUinCard/DownloadUinCard.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerateAndPdfDownload" />
+		</classes>
+	</test>
+	<test name="AuthHistory">
+		<parameter name="ymlFile"
+			value="resident/AuthHistory/AuthHistory.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="PrintUin">
+		<parameter name="ymlFile"
+			value="resident/PRINTUIN/createPrintUin.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="RidCheckStatus">
+		<parameter name="ymlFile"
+			value="resident/RidCheckStatus/createRidCheckStatus.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="ValidateExpiredOTP">
+		<parameter name="ymlFile"
+			value="resident/ValidateExpiredOTP/ValidateExpiredOTP.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+
+	<test name="AuthLock">
+		<parameter name="ymlFile"
+			value="resident/AuthLock/createAuthLock.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="AuthUnLock">
+		<parameter name="ymlFile"
+			value="resident/AuthUnLock/createAuthUnLock.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="RequestCredentials">
+		<parameter name="ymlFile"
+			value="resident/CredentialIssuance/RequestCredentials/ReqCredential.yml" />
+		<parameter name="idKeyName" value="requestId" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="CredentialCheckStatus">
+		<parameter name="ymlFile"
+			value="resident/CredentialIssuance/CredentialCheckStatus/CredentialCheckStatus.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="ReGenerateVID">
+		<parameter name="ymlFile"
+			value="resident/GenerateVID/ReGenerateVID.yml" />
+		<parameter name="idKeyName" value="vid" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<!-- Please don't uncomment this CancelCredential until we fix it-->
+	<!--	<test name="CancelCredential">
+		<parameter name="ymlFile"
+			value="resident/CredentialIssuance/CancellCredential/CancellCredential.yml" />
+		<classes>
+			<class name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>-->
+	<test name="SendOTP">
+		<parameter name="ymlFile"
+			value="resident/SendOTP/SendOTP.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="GetCredentialTypes">
+		<parameter name="ymlFile"
+			value="resident/CredentialIssuance/GetCredentialTypes/GetCredentialTypes.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="DownloadWithReqid">
+		<parameter name="ymlFile"
+			value="resident/CredentialIssuance/DownloadWithReqid/DownloadWithReqid.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="GetUiProperties">
+		<parameter name="ymlFile"
+			value="resident/GetUiProperties/GetUiProperties.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetLocationHierarchyByLanguageCode">
+		<parameter name="ymlFile"
+			value="resident/GetLocationHierarchyByLanguageCode/GetLocationHierarchyByLangCode.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetValidDocumentByLangCode">
+		<parameter name="ymlFile"
+			value="resident/GetValidDocumentByLangCode/GetValidDocumentByLangCode.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetImmediateChildrenByLocCodeAndLangCode">
+		<parameter name="ymlFile"
+			value="resident/GetImmediateChildrenByLocCodeAndLangCode/GetImmediateChildrenByLocCodeAndLangCode.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetCoordinateSpecificRegistrationCenters">
+		<parameter name="ymlFile"
+			value="resident/GetCoordinateSpecificRegistrationCenters/GetCoordinateSpecificRegistrationCenters.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetRegistrationCenterWorkingDays">
+		<parameter name="ymlFile"
+			value="resident/GetRegistrationCenterWorkingDays/GetRegistrationCenterWorkingDays.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetLocationDetailsByLocCodeAndLangCode">
+		<parameter name="ymlFile"
+			value="resident/GetLocationDetailsByLocCodeAndLangCode/GetLocationDetailsByLocCodeAndLangCode.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetResidentValidDocuments">
+		<parameter name="ymlFile"
+			value="resident/GetResidentValidDocuments/GetResidentValidDocuments.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetLatestIdSchema">
+		<parameter name="ymlFile"
+			value="resident/GetLatestIdSchema/GetLatestIdSchema.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetRegCenterByLangCodeAndHierarchyLevel">
+		<parameter name="ymlFile"
+			value="resident/GetRegCenterByLangCodeAndHierarchyLevel/GetRegCenterByLangCodeAndHierarchyLevel.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetRegistrationCenterByHierarchyLevelAndTextPaginated">
+		<parameter name="ymlFile"
+			value="resident/GetRegistrationCenterByHierarchyLevelAndTextPaginated/GetRegistrationCenterByHierarchyLevelAndTextPaginated.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetChannelVerificationStatus">
+		<parameter name="ymlFile"
+			value="resident/GetChannelVerificationStatus/GetChannelVerificationStatus.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="OAuthDetailsRequest">
+		<parameter name="ymlFile"
+			value="resident/OAuthDetailsRequest/OAuthDetailsRequest.yml" />
+		<parameter name="idKeyName" value="transactionId,encodedResp" />
+		<parameter name="prerequisite" value="Yes" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenId" />
+		</classes>
+	</test>
+	<test name="AuthenticateUser">
+		<parameter name="ymlFile"
+			value="resident/AuthenticateUser/AuthenticateUser.yml" />
+		<parameter name="prerequisite" value="Yes" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithAutogenIdWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="AuthorizationCode">
+		<parameter name="ymlFile"
+			value="resident/AuthorizationCode/AuthorizationCode.yml" />
+		<parameter name="idKeyName" value="code,state,redirectUri" />
+		<parameter name="prerequisite" value="Yes" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenId" />
+		</classes>
+	</test>
+	<test name="SignJWT">
+		<parameter name="ymlFile"
+			value="resident/SignJWT/SignJWT.yml" />
+		<parameter name="idKeyName" value="jwtSignedData" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenId" />
+		</classes>
+	</test>
+	<test name="GenerateToken">
+		<parameter name="ymlFile"
+			value="resident/GenerateToken/GenerateToken.yml" />
+		<parameter name="idKeyName" value="access_token" />
+		<parameter name="prerequisite" value="Yes" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenIdForUrlEncoded" />
+		</classes>
+	</test>
+	<test name="GetRemainingupdatecountbyIndividualIdRequest2">
+		<parameter name="ymlFile"
+			value="resident/GetRemainingupdatecountbyIndividualIdRequest2/GetRemainingupdatecountbyIndividualIdRequest2.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="PersonalizedCard">
+		<parameter name="ymlFile"
+			value="resident/PersonalizedCard/PersonalizedCard.yml" />
+		<parameter name="idKeyName" value="access_token" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithPdfDownload" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeGetPartnersByPartnerType">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetPartnersByPartnerType">
+		<parameter name="ymlFile"
+			value="resident/GetPartnersByPartnerType/GetPartnersByPartnerType.yml" />
+		<parameter name="idKeyName" value="partnerID" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForAutoGenId" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterGetPartnersByPartnerType">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="ReqShareCredWithPartner">
+		<parameter name="ymlFile"
+			value="resident/ReqShareCredWithPartner/ReqShareCredWithPartner.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterReqShareCredWithPartner">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetIdentityMapping">
+		<parameter name="ymlFile"
+			value="resident/GetIdentityMapping/GetIdentityMapping.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetSupportingDoc">
+		<parameter name="ymlFile"
+			value="resident/GetSupportingDoc/GetSupportingDoc.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithQueryParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="GetInputAttributeValues">
+		<parameter name="ymlFile"
+			value="resident/GetInputAttributeValues/GetInputAttributeValues.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<!-- Please don't uncomment this GetProfile until we fix it-->
+	<!--	<test name="GetProfile">
+		<parameter name="ymlFile"
+			value="resident/GetProfile/GetProfile.yml" />
+			<parameter name="sendEsignetToken"	value="true" />
+		<classes>
+			<class name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>-->
+	<test name="GetLastClickNotification">
+		<parameter name="ymlFile"
+			value="resident/GetLastClickNotification/GetLastClickNotification.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="PutBellUpdatedTime">
+		<parameter name="ymlFile"
+			value="resident/PutBellUpdatedTime/PutBellUpdatedTime.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class name="io.mosip.testrig.apirig.resident.testscripts.SimplePut" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeDownloadNearestRegCen">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="DownloadNearestRegCen">
+		<parameter name="ymlFile"
+			value="resident/DownloadNearestRegCen/DownloadNearestRegCen.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithQueryParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterDownloadNearestRegCen">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="DownloadRegCenterDetails">
+		<parameter name="ymlFile"
+			value="resident/DownloadRegCenterDetails/DownloadRegCenterDetails.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithQueryParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="GetAllTemplateBylangCodeAndTemplateTypeCode">
+		<parameter name="ymlFile"
+			value="resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeAuditLog">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="AuditLog">
+		<parameter name="ymlFile"
+			value="resident/AuditLog/AuditLog.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterAuditLog">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetValidateToken">
+		<parameter name="ymlFile"
+			value="resident/GetValidateToken/GetValidateToken.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterGetValidateToken">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="AuthLockNew">
+		<parameter name="ymlFile"
+			value="resident/AuthLockNew/CreateAuthLockNew.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="GetAuthLockStatus">
+		<parameter name="ymlFile"
+			value="resident/GetAuthLockStatus/GetAuthLockStatus.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuthUnlockNew">
+		<parameter name="ymlFile"
+			value="resident/AuthUnlockNew/CreateAuthUnlockNew.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="GenerateVIDNew">
+		<parameter name="ymlFile"
+			value="resident/GenerateVID/createGenerateVIDNew.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<parameter name="idKeyName" value="vid" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenId" />
+		</classes>
+	</test>
+	<test name="GetRequestCardVid">
+		<parameter name="ymlFile"
+			value="resident/GetRequestCardVid/GetRequestCardVid.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<parameter name="idKeyName" value="eventId" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForAutoGenId" />
+		</classes>
+	</test>
+	<test name="GetRetrieveVidPolicy">
+		<parameter name="ymlFile"
+			value="resident/GetRetrieveVidPolicy/GetRetrieveVidPolicy.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeRetrieveVID">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="RetrieveVID">
+		<parameter name="ymlFile"
+			value="resident/RetrieveVID/RetrieveVID.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterRetrieveVID">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetServiceHistory">
+		<parameter name="ymlFile"
+			value="resident/GetServiceHistory/GetServiceHistory.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<parameter name="idKeyName" value="eventId" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForAutoGenId" />
+		</classes>
+	</test>
+	<test name="AcknowledgementController">
+		<parameter name="ymlFile"
+			value="resident/AcknowledgementController/AcknowledgementController.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="GetNotifications">
+		<parameter name="ymlFile"
+			value="resident/GetNotifications/GetNotifications.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetNotificationsCount">
+		<parameter name="ymlFile"
+			value="resident/GetNotificationsCount/GetNotificationsCount.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeGrievanceTicket">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GrievanceTicket">
+		<parameter name="ymlFile"
+			value="resident/GrievanceTicket/GrievanceTicket.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterGrievanceTicket">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="DownloadServiceHistory">
+		<parameter name="ymlFile"
+			value="resident/DownloadServiceHistory/DownloadServiceHistory.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithQueryParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeDownloadUinCardByEventId">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="DownloadUinCardByEventId">
+		<parameter name="ymlFile"
+			value="resident/DownloadUinCardByEventId/DownloadUinCardByEventId.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForDownloadCard" />
+		</classes>
+	</test>
+		<test name="AuditLogValidationAfterDownloadUinCardByEventId">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="GetCheckEventIdStatus">
+		<parameter name="ymlFile"
+			value="resident/GetCheckEventIdStatus/GetCheckEventIdStatus.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="PinStatus">
+		<parameter name="ymlFile"
+			value="resident/PinStatus/PinStatus.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithOnlyPathParam" />
+		</classes>
+	</test>
+	<test name="UnPinStatus">
+		<parameter name="ymlFile"
+			value="resident/UnPinStatus/UnPinStatus.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithOnlyPathParam" />
+		</classes>
+	</test>
+	<test name="RevokeVIDNew">
+		<parameter name="ymlFile"
+			value="resident/RevokeVIDNew/CreateRevokeVIDNew.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatch" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationBeforeUploadDocument">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="UploadDocument">
+		<parameter name="ymlFile"
+			value="resident/DocumentController/UploadDocument/UploadDocument.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<parameter name="idKeyName" value="docId" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithParamAndFile" />
+		</classes>
+	</test>
+	<test name="AuditLogValidationAfterUploadDocument">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
+	<test name="UpdateUINNew">
+		<parameter name="ymlFile"
+			value="resident/UpdateUINNew/UpdateUINNew.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatch" />
+		</classes>
+	</test>
+	<test name="GetDocByTransId">
+		<parameter name="ymlFile"
+			value="resident/DocumentController/GetDocByTransId/GetDocByTransId.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetDocByDocId">
+		<parameter name="ymlFile"
+			value="resident/DocumentController/GetDocByDocId/GetDocByDocId.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="DeleteDoc">
+		<parameter name="ymlFile"
+			value="resident/DocumentController/DeleteDoc/DeleteDoc.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.DeleteWithParam" />
+		</classes>
+	</test>
+	<test name="TranslitrateData">
+		<parameter name="ymlFile"
+			value="resident/TranslitrateData/TranslitrateData.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="DownloadSupportingDocs">
+		<parameter name="ymlFile"
+			value="resident/DownloadSupportingDocs/DownloadSupportingDocs.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithQueryParamForDownloadCard" />
+		</classes>
+	</test>
+	<test name="GetDocumentTypes">
+		<parameter name="ymlFile"
+			value="resident/GetDocumentTypes/GetDocumentTypes.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<test name="GetGenderCode">
+		<parameter name="ymlFile"
+			value="resident/GetGenderCode/GetGenderCode.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+		</classes>
+	</test>
+	<!-- Keep the below 4 API's (SendOtpForContactDet, UpdateContactDetails,
+	SendOtpToUserId, ValidateWithUserIdOtp)
+	 at the bottom of the suite always. Because, Below we are updating the mail id
+	of the UIN.
+	 Keeping it atlast will not impact any otp API's -->
+
+	<test name="SendOtpForContactDet">
+		<parameter name="ymlFile"
+			value="resident/SendOtpForContactDet/SendOtpForContactDet.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="UpdateContactDetails">
+		<parameter name="ymlFile"
+			value="resident/UpdateContactDetails/UpdateContactDetails.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="SendOtpToUserId">
+		<parameter name="ymlFile"
+			value="resident/SendOtpToUserId/SendOtpToUserId.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="ValidateWithUserIdOtp">
+		<parameter name="ymlFile"
+			value="resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
+		</classes>
+	</test>
+	<test name="GetPendingDrafts">
+		<parameter name="ymlFile"
+			value="resident/GetPendingDrafts/GetPendingDrafts.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
+			<parameter name="sendEsignetToken" value="true" />
+		</classes>
+	</test>
+</suite>
