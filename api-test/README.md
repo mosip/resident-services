@@ -59,6 +59,7 @@ You can access the test automation code using either of the following methods:
    ```sh
    git clone https://github.com/mosip/resident-services
    ```
+---
 
 ## Update the property file
 1. Navigate to the resident.properties file located at:
@@ -67,8 +68,6 @@ You can access the test automation code using either of the following methods:
 3. Update the client secret values and other required credentials as per your environment
 
 ---
-
-
 
 ## Build Test Automation Code
 
