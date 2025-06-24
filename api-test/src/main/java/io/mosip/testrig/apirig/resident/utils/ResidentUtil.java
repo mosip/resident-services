@@ -1,6 +1,7 @@
 package io.mosip.testrig.apirig.resident.utils;
 
 import java.time.Instant;
+import java.util.Calendar;
 
 import javax.ws.rs.core.MediaType;
 
@@ -95,6 +96,11 @@ public class ResidentUtil extends AdminTestUtil {
 		if (jsonString.contains("$OIDCCLIENT$")) {
 			jsonString = replaceKeywordValue(jsonString, "$OIDCCLIENT$",
 					getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES, "mosip.iam.module.clientID"));
+		}
+		
+		if (jsonString.contains("$UNIQUENONCEVALUEFORESIGNET$")) {
+			jsonString = replaceKeywordValue(jsonString, "$UNIQUENONCEVALUEFORESIGNET$",
+					String.valueOf(Calendar.getInstance().getTimeInMillis()));
 		}
 		
 		if (jsonString.contains("$IDPCLIENTPAYLOAD$")) {
