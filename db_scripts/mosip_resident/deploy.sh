@@ -2,6 +2,8 @@
 set -e
 properties_file="$1"
 echo `date "+%m/%d/%Y %H:%M:%S"` ": $properties_file"
+echo "Loaded SCHEMA_NAME: $SCHEMA_NAME"
+
 
 if [ -f "$properties_file" ]; then
     echo `date "+%m/%d/%Y %H:%M:%S"` ": Property file \"$properties_file\" found."
@@ -13,7 +15,7 @@ else
     echo `date "+%m/%d/%Y %H:%M:%S"` ": Property file not found, Pass property file name as argument."
     exit 1
 fi
-
+echo "Loaded SCHEMA_NAME: $SCHEMA_NAME"
 ## Terminate existing connections
 echo "Terminating active connections" 
 CONN=$(PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
