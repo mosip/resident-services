@@ -1,5 +1,5 @@
 -- -------------------------------------------------------------------------------------------------
--- Database Name: mosip_resident
+-- Database Name: :mosip_db_name
 -- Release Version 	: 1.2.1
 -- Purpose    		: Database scripts for Resident Service DB.       
 -- Create By   		: Manoj SP
@@ -7,22 +7,22 @@
 -- 
 -- Modified Date        Modified By         Comments / Remarks
 -- --------------------------------------------------------------------------------------------------
--- April-2022			Manoj SP	    Granting usage access to residentuser scripts added.
+-- April-2022			Manoj SP	    Granting usage access to :resident_user_name scripts added.
 -----------------------------------------------------------------------------------------------------
-\c mosip_resident 
+\c :mosip_db_name 
 
 GRANT CONNECT
-   ON DATABASE mosip_resident
-   TO residentuser;
+   ON DATABASE :mosip_db_name
+   TO :resident_user_name;
 
 GRANT USAGE
-   ON SCHEMA resident
-   TO residentuser;
+   ON SCHEMA :schema_name
+   TO :resident_user_name;
 
 GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
-   ON ALL TABLES IN SCHEMA resident
-   TO residentuser;
+   ON ALL TABLES IN SCHEMA :schema_name
+   TO :resident_user_name;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA resident 
-	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO residentuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA :schema_name 
+	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :resident_user_name;
 -----------------------------------------------------------------------------------------------------

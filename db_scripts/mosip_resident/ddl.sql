@@ -11,7 +11,7 @@
 -- April-2022           Kamesh Shekhar Prasad   Creation of resident_transaction table.
 -----------------------------------------------------------------------------------------------------
 
-\c mosip_resident
+\c :mosip_db_name
 
 \ir ddl/otp_transaction.sql
 \ir ddl/resident_transaction.sql

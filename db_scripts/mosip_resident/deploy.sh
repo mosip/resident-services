@@ -22,21 +22,44 @@ echo "Terminated connections"
 
 ## Drop db and role
 echo "Dropping DB"
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f drop_db.sql 
+PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
+  -v mosip_db_name=\'$MOSIP_DB_NAME\' \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
+  --dbname=$DEFAULT_DB_NAME -f drop_db.sql
+ 
 echo "Dropping user"
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f drop_role.sql 
+PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
+  -v resident_user_name=\'$RESIDENT_USER_NAME\' \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
+  --dbname=$DEFAULT_DB_NAME -f drop_role.sql
 
-## Create users
 echo `date "+%m/%d/%Y %H:%M:%S"` ": Creating database users" 
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f role_dbuser.sql -v dbuserpwd=\'$DBUSER_PWD\' 
+PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
+  -v resident_user_name=\'$RESIDENT_USER_NAME\' \
+  -v dbuserpwd=\'$DBUSER_PWD\' \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
+  --dbname=$DEFAULT_DB_NAME -f role_dbuser.sql
 
 ## Create DB
 echo "Creating DB"
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f db.sql 
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f ddl.sql 
+PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME \
+  -v mosip_db_name=\'$MOSIP_DB_NAME\' \
+  -v db_user=\'$DB_USER\' \
+  -f db.sql
+ 
+PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 \
+  -v mosip_db_name=\'$MOSIP_DB_NAME\' \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f ddl.sql
 
 ## Grants
-PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -f grants.sql 
+PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
+  -v mosip_db_name=\'$MOSIP_DB_NAME\' \
+  -v resident_user_name=\'$RESIDENT_USER_NAME\' \
+  -v schema_name=\'$SCHEMA_NAME\' \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
+  --dbname=$DEFAULT_DB_NAME -f grants.sql
+
 
 ## Populate tables
 if [ ${DML_FLAG} == 1 ]
