@@ -55,13 +55,13 @@ PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
     --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
     --dbname=$DEFAULT_DB_NAME -f ddl.sql
 
-## Grants
 PGPASSWORD=$SU_USER_PWD psql --set=ON_ERROR_STOP=1 \
-    -v mosip_db_name=$MOSIP_DB_NAME \
-    -v resident_user_name=$RESIDENT_USER_NAME \
-    -v schema_name=$SCHEMA_NAME \
-    --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
-    --dbname=$DEFAULT_DB_NAME -f grants.sql
+  -v mosip_db_name=$MOSIP_DB_NAME \
+  -v resident_user_name=$RESIDENT_USER_NAME \
+  -v schema_name=$SCHEMA_NAME \
+  --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT \
+  --dbname=$DEFAULT_DB_NAME -f grants.sql
+
 
 ## Populate tables
 if [ "$DML_FLAG" == "1" ]; then

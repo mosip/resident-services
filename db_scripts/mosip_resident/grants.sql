@@ -9,20 +9,22 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	    Granting usage access to :resident_user_name scripts added.
 -----------------------------------------------------------------------------------------------------
-\c :mosip_db_name 
+-- Switch to the target DB
+\c :mosip_db_name
 
-GRANT CONNECT
-   ON DATABASE :mosip_db_name
-   TO :resident_user_name;
+-- Grant CONNECT on the DB to the user
+GRANT CONNECT ON DATABASE :"mosip_db_name" TO :"resident_user_name";
 
-GRANT USAGE
-   ON SCHEMA :schema_name
-   TO :resident_user_name;
+-- Allow user to use the schema
+GRANT USAGE ON SCHEMA :"schema_name" TO :"resident_user_name";
 
-GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
-   ON ALL TABLES IN SCHEMA :schema_name
-   TO :resident_user_name;
+-- Grant privileges on all tables in the schema
+GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES
+  ON ALL TABLES IN SCHEMA :"schema_name"
+  TO :"resident_user_name";
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA :schema_name 
-	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :resident_user_name;
+-- Set default privileges for future tables created in this schema
+ALTER DEFAULT PRIVILEGES IN SCHEMA :"schema_name"
+  GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON TABLES TO :"resident_user_name";
+
 -----------------------------------------------------------------------------------------------------
