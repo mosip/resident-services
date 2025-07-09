@@ -6,15 +6,17 @@ echo "Loaded SCHEMA_NAME: $SCHEMA_NAME"
 
 
 if [ -f "$properties_file" ]; then
-    echo `date "+%m/%d/%Y %H:%M:%S"` ": Property file \"$properties_file\" found."
+    echo "$(date "+%m/%d/%Y %H:%M:%S") : Property file \"$properties_file\" found."
     while IFS='=' read -r key value; do
-        key=$(echo $key | tr '.' '_')
-        eval ${key}=\${value}
-    done < "$properties_file"
+        key=$(echo "$key" | tr '.' '_' | xargs)
+        value=$(echo "$value" | xargs)
+        eval "${key}='${value}'"
+    done < <(grep -v '^\s*#' "$properties_file" | grep '=')
 else
-    echo `date "+%m/%d/%Y %H:%M:%S"` ": Property file not found, Pass property file name as argument."
+    echo "$(date "+%m/%d/%Y %H:%M:%S") : Property file not found, Pass property file name as argument."
     exit 1
 fi
+
 echo "Loaded SCHEMA_NAME: $SCHEMA_NAME"
 ## Terminate existing connections
 echo "Terminating active connections" 
