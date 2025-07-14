@@ -13,16 +13,16 @@
 
 GRANT CONNECT
    ON DATABASE :mosipdbname
-   TO :defaultdbname;
+   TO :dbuname;
 
 GRANT USAGE
    ON SCHEMA resident
-   TO :defaultdbname;
+   TO :dbuname;
 
 GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
    ON ALL TABLES IN SCHEMA resident
-   TO :defaultdbname;
+   TO :dbuname;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA resident 
-	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :defaultdbname;
+	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :dbuname;
 -----------------------------------------------------------------------------------------------------

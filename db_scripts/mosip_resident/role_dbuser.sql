@@ -9,7 +9,7 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	    create residentuser role scripts added.
 -----------------------------------------------------------------------------------------------------
-CREATE ROLE :defaultdbname WITH 
+CREATE ROLE :dbuname WITH 
 	INHERIT
 	LOGIN
 	PASSWORD :dbuserpwd;
