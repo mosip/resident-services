@@ -47,4 +47,4 @@ COMMENT ON COLUMN resident.otp_transaction.del_dtimes IS 'Date and Timestamp whe
 -----------------------------------------------------------------------------------------------------
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.otp_transaction
-   TO residentuser;
+   TO :defaultdbname;
