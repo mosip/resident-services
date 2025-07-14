@@ -9,10 +9,10 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	    Granting usage access to residentuser scripts added.
 -----------------------------------------------------------------------------------------------------
-\c mosip_resident 
+\c :mosipdbname 
 
 GRANT CONNECT
-   ON DATABASE mosip_resident
+   ON DATABASE :mosipdbname
    TO residentuser;
 
 GRANT USAGE
