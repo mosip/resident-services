@@ -1,0 +1,875 @@
+{
+    "TC_Resident_GetCardUsingVID_02": [],
+    "TC_Resident_AuthUnLock_50": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_GetCardUsingVID_01": [],
+    "TC_Resident_GetCardUsingVID_05": [],
+    "TC_Resident_AuthUnLock_44": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthUnLock_45": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthUnLock_46": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthUnLock_47": ["Dependent_Idrepo_AddIdentity_23"],
+    "TC_Resident_AuthUnLock_40": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_41": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_42": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_43": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_48": ["Dependent_Idrepo_AddIdentity_23"],
+    "TC_Resident_AuthUnLock_49": ["Dependent_Idrepo_AddIdentity_23"],
+    "TC_Resident_GetAuthorizationtoken_05": [],
+    "TC_Resident_GetAuthorizationtoken_06": [],
+    "TC_Resident_GetAuthorizationtoken_01": [],
+    "TC_Resident_GetAuthorizationtoken_02": [],
+    "TC_Resident_GetAuthorizationtoken_03": [],
+    "TC_Resident_GetAuthorizationtoken_09": [],
+    "TC_Resident_GetAuthorizationtoken_10": [],
+    "TC_Resident_GetAuthorizationtoken_12": [],
+    "TC_Resident_GetAuthorizationtoken_14": [],
+    "TC_Resident_AuthUnLock_11": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_ShareCredentialWithPartner_09": [],
+    "TC_Resident_AuthUnLock_12": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_ShareCredentialWithPartner_08": [],
+    "TC_Resident_AuthUnLock_13": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthUnLock_14": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_05": [],
+    "TC_Resident_ShareCredentialWithPartner_04": [],
+    "TC_Resident_ShareCredentialWithPartner_07": [],
+    "TC_Resident_AuthUnLock_10": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_06": [],
+    "TC_Resident_AuthUnLock_19": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_01": [],
+    "TC_Resident_ShareCredentialWithPartner_03": [],
+    "TC_Resident_ShareCredentialWithPartner_02": [],
+    "TC_Resident_AuthUnLock_15": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_AuthUnLock_16": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_17": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthUnLock_18": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GetChannelVerificationStatus_10": ["Dependent_Idrepo_AddIdentity_05"],
+    "TC_Resident_AuthUnLock_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_02": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthUnLock_03": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_15": [],
+    "TC_Resident_AuthUnLock_08": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_ShareCredentialWithPartner_12": [],
+    "TC_Resident_AuthUnLock_09": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_11": [],
+    "TC_Resident_ShareCredentialWithPartner_14": [],
+    "TC_Resident_ShareCredentialWithPartner_13": [],
+    "TC_Resident_AuthUnLock_04": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_AuthUnLock_05": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_06": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_ShareCredentialWithPartner_10": [],
+    "TC_Resident_AuthUnLock_07": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_ReqAID_06": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_ReqAID_01": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_ReqAID_02": ["TC_Resident_UpdateUIN_01"],
+    "TC_Resident_ReqAID_03": ["TC_Resident_UpdateUIN_01"],
+    "TC_Resident_ReqAID_04": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_ReqAID_05": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_AuthUnLock_33": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_34": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_35": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_36": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_30": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_31": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_32": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_07": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_06": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_09": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_GetChannelVerificationStatus_08": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_37": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_03": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_38": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GetChannelVerificationStatus_02": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_39": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_05": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetChannelVerificationStatus_04": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_22": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_23": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthUnLock_24": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthUnLock_25": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthUnLock_20": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthUnLock_21": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_AuthUnLock_26": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthUnLock_27": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthUnLock_28": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthUnLock_29": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_UpdateUINNew_22": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_21": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_24": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_23": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_ValidateExpiredOtp_01": ["Dependent_Idrepo_AddIdentity_18"],
+    "TC_Resident_UpdateUINNew_25": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_ValidateExpiredOtp_02": [
+        "TC_Resident_GenerateVID_70",
+        "Dependent_Idrepo_AddIdentity_19"
+    ],
+    "TC_Resident_ValidateExpiredOtp_03": [
+        "TC_Resident_GenerateVID_71",
+        "Dependent_Idrepo_AddIdentity_20"
+    ],
+    "TC_Resident_ValidateExpiredOtp_04": [
+        "Dependent_Idrepo_AddIdentity_21",
+        "TC_Resident_GenerateVID_75"
+    ],
+    "TC_Resident_CredentialsStatus_03": ["TC_Resident_RequestCredentials_12"],
+    "TC_Resident_CredentialsStatus_02": ["TC_Resident_RequestCredentials_11"],
+    "TC_Resident_CredentialsStatus_01": ["TC_Resident_RequestCredentials_10"],
+    "TC_Resident_CredentialsStatus_06": ["TC_Resident_RequestCredentials_03"],
+    "TC_Resident_CredentialsStatus_05": ["TC_Resident_RequestCredentials_02"],
+    "TC_Resident_CredentialsStatus_04": ["TC_Resident_RequestCredentials_01"],
+    "TC_Resident_GetRemainingupdatecount_01": ["Dependent_Idrepo_AddIdentity_17"],
+    "TC_Resident_GetRemainingupdatecount_04": ["Dependent_Idrepo_AddIdentity_17"],
+    "TC_Resident_UpdateUINNew_20": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_11": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_10": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_13": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_12": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_15": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_14": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_17": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_16": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_19": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_18": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_GetEventIdStatus_05": [],
+    "TC_Resident_DownloadUinCardByEventId_06": [],
+    "TC_Resident_GetEventIdStatus_06": [],
+    "TC_Resident_UpdateUINNew_04": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_UpdateUINNew_03": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_GetEventIdStatus_01": [],
+    "TC_Resident_UpdateUINNew_06": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_GetEventIdStatus_02": [],
+    "TC_Resident_UpdateUINNew_05": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_08": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_07": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_UpdateUINNew_09": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_DownloadUinCardByEventId_01": [],
+    "TC_Resident_DownloadUinCardByEventId_02": [],
+    "TC_Resident_DownloadCredential_10": ["TC_Resident_RequestCredentials_10"],
+    "TC_Resident_DeleteDoc_09": [],
+    "TC_Resident_DeleteDoc_02": [],
+    "TC_Resident_DeleteDoc_01": [],
+    "TC_Resident_DownloadUinCard_08": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_DownloadUinCard_07": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_DownloadUinCard_06": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_DownloadUinCard_05": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_DeleteDoc_04": [],
+    "TC_Resident_DownloadUinCard_04": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_DeleteDoc_03": [],
+    "TC_Resident_DownloadCredential_01": ["TC_Resident_RequestCredentials_10"],
+    "TC_Resident_DownloadCredential_02": ["TC_Resident_RequestCredentials_12"],
+    "TC_Resident_DownloadCredential_03": ["TC_Resident_RequestCredentials_11"],
+    "TC_Resident_DownloadCredential_04": ["TC_Resident_RequestCredentials_01"],
+    "TC_Resident_DownloadCredential_05": ["TC_Resident_RequestCredentials_02"],
+    "TC_Resident_DownloadCredential_06": ["TC_Resident_RequestCredentials_03"],
+    "TC_Resident_GenerateVID_07": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_RevokeVid_31": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_60"
+    ],
+    "TC_Resident_CheckAidStatus_06": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_GenerateVID_06": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_RevokeVid_30": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56"
+    ],
+    "TC_Resident_CheckAidStatus_07": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_GenerateVID_09": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_GenerateVID_08": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_GenerateVID_03": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_GenerateVID_02": ["Dependent_Idrepo_AddIdentity_02"],
+    "TC_Resident_GenerateVID_05": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_04": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_01": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RevokeVid_24": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_58",
+        "TC_Resident_GenerateVID_57"
+    ],
+    "TC_Resident_RevokeVid_23": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_RevokeVid_26": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_RevokeVid_25": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_60",
+        "TC_Resident_GenerateVID_58"
+    ],
+    "TC_Resident_GenerateVID_18": ["Dependent_Idrepo_AddIdentity_05"],
+    "TC_Resident_RevokeVid_20": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_17": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "Dependent_Idrepo_AddIdentity_05"
+    ],
+    "TC_Resident_RevokeVid_22": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_19": ["Dependent_Idrepo_AddIdentity_05"],
+    "TC_Resident_RevokeVid_21": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_14": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_GenerateVID_13": [
+        "TC_Resident_GenerateVID_07",
+        "Dependent_Idrepo_AddIdentity_07"
+    ],
+    "TC_Resident_GenerateVID_16": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "Dependent_Idrepo_AddIdentity_04"
+    ],
+    "TC_Resident_DeleteDoc_11": [],
+    "TC_Resident_GenerateVID_15": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_DeleteDoc_10": [],
+    "TC_Resident_GenerateVID_10": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RevokeVid_28": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_59"
+    ],
+    "TC_Resident_RevokeVid_27": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_60"
+    ],
+    "TC_Resident_GenerateVID_12": [
+        "TC_Resident_GenerateVID_06",
+        "Dependent_Idrepo_AddIdentity_09"
+    ],
+    "TC_Resident_GenerateVID_11": [
+        "TC_Resident_GenerateVID_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RevokeVid_29": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_CheckAidStatus_02": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_CheckAidStatus_03": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_CheckAidStatus_04": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_CheckAidStatus_05": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_CheckAidStatus_01": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RevokeVid_13": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_02": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_RevokeVid_12": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVid_15": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_04": ["TC_Resident_GenerateVID_86"],
+    "TC_Resident_RevokeVid_14": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_03": ["TC_Resident_GenerateVID_78"],
+    "TC_Resident_GenerateVID_29": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_09"
+    ],
+    "TC_Resident_GenerateVID_28": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RevokeVid_11": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_RevokeVid_10": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_25": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_GenerateVID_24": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_GenerateVID_27": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_GenerateVID_26": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_GenerateVID_21": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_RevokeVid_17": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_20": ["Dependent_Idrepo_AddIdentity_05"],
+    "TC_Resident_RevokeVid_16": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_23": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_RevokeVid_19": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_22": ["Dependent_Idrepo_AddIdentity_06"],
+    "TC_Resident_RevokeVid_18": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_30": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_10"
+    ],
+    "TC_Resident_RevokeVid_02": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56"
+    ],
+    "TC_Resident_Sendotp_13": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVid_01": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_12": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVid_04": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_Sendotp_15": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVid_03": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_60"
+    ],
+    "TC_Resident_Sendotp_14": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GenerateVID_39": [
+        "TC_Resident_GenerateVID_13",
+        "Dependent_Idrepo_AddIdentity_07"
+    ],
+    "TC_Resident_GenerateVID_36": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_10"
+    ],
+    "TC_Resident_GenerateVID_35": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_09"
+    ],
+    "TC_Resident_GenerateVID_38": [
+        "TC_Resident_GenerateVID_12",
+        "Dependent_Idrepo_AddIdentity_09"
+    ],
+    "TC_Resident_GenerateVID_37": [
+        "Dependent_Idrepo_AddIdentity_08",
+        "TC_Resident_GenerateVID_11"
+    ],
+    "TC_Resident_GenerateVID_32": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_09"
+    ],
+    "TC_Resident_RevokeVid_06": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_31": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RevokeVid_05": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_56",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_34": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RevokeVid_08": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_GenerateVID_33": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_10"
+    ],
+    "TC_Resident_RevokeVid_07": [
+        "Dependent_Idrepo_AddIdentity_13",
+        "TC_Resident_GenerateVID_55"
+    ],
+    "TC_Resident_RequestCredentials_03": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_04": ["TC_Resident_GenerateVID_08"],
+    "TC_Resident_GenerateVID_41": [
+        "TC_Resident_GenerateVID_38",
+        "Dependent_Idrepo_AddIdentity_09"
+    ],
+    "TC_Resident_RequestCredentials_01": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GenerateVID_40": [
+        "TC_Resident_GenerateVID_37",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RequestCredentials_02": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_Sendotp_09": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RequestCredentials_09": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_07": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_Sendotp_06": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RequestCredentials_08": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_Sendotp_05": ["TC_Resident_GenerateVID_86"],
+    "TC_Resident_RequestCredentials_05": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_Sendotp_08": ["TC_Resident_GenerateVID_08"],
+    "TC_Resident_RequestCredentials_06": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_Sendotp_07": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_Sendotp_20": ["TC_Resident_GenerateVID_91"],
+    "TC_Resident_RevokeVidnew_02": [],
+    "TC_Resident_RevokeVidnew_01": [],
+    "TC_Resident_RevokeVidnew_04": ["TC_Resident_GenerateVID_62"],
+    "TC_Resident_RevokeVidnew_03": [],
+    "TC_Resident_GenerateVID_47": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_46": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_49": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_48": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_43": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_42": [
+        "TC_Resident_GenerateVID_39",
+        "Dependent_Idrepo_AddIdentity_07"
+    ],
+    "TC_Resident_GenerateVID_45": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_GenerateVID_44": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_UpdateUIN_14": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_GenerateVID_50": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_UpdateUIN_13": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_14": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_UpdateUIN_12": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_15": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_GenerateVID_52": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_UpdateUIN_11": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_12": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_GenerateVID_51": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_UpdateUIN_10": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_13": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_10": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RequestCredentials_11": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RevokeVidnew_06": [],
+    "TC_Resident_RevokeVidnew_05": ["TC_Resident_GenerateVID_62"],
+    "TC_Resident_RevokeVidnew_08": [],
+    "TC_Resident_RevokeVidnew_07": ["TC_Resident_GenerateVID_77"],
+    "TC_Resident_RequestCredentials_18": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_19": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_Sendotp_16": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVidnew_09": [],
+    "TC_Resident_RequestCredentials_16": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_Sendotp_19": ["TC_Resident_GenerateVID_91"],
+    "TC_Resident_RequestCredentials_17": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_Sendotp_18": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_RevokeVidnew_10": [],
+    "TC_Resident_AuthLock_37": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_AuthLock_36": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_GenerateVID_58": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_GenerateVID_57": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_GenerateVID_59": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_GenerateVID_54": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_GenerateVID_53": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_GenerateVID_56": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_GenerateVID_55": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_GenerateVID_61": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_DownloadUinCard_03": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RequestCredentials_25": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_GenerateVID_60": ["Dependent_Idrepo_AddIdentity_13"],
+    "TC_Resident_DownloadUinCard_02": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RequestCredentials_26": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GenerateVID_63": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_DownloadUinCard_01": [
+        "TC_Resident_UpdateUIN_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
+    "TC_Resident_RequestCredentials_23": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GenerateVID_62": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_RequestCredentials_24": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_21": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_22": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RequestCredentials_20": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_AuthLock_35": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthLock_34": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthLock_33": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthLock_32": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_AuthLock_31": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_RequestCredentials_29": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthLock_30": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_RequestCredentials_27": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RequestCredentials_28": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthLock_29": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_AuthLock_28": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_AuthLock_27": ["Dependent_Idrepo_AddIdentity_10"],
+    "TC_Resident_AuthLock_26": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthLock_25": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GenerateVID_69": ["Dependent_Idrepo_AddIdentity_16"],
+    "TC_Resident_GenerateVID_68": ["Dependent_Idrepo_AddIdentity_16"],
+    "TC_Resident_GenerateVID_65": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_GenerateVID_64": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_GenerateVID_67": ["Dependent_Idrepo_AddIdentity_16"],
+    "TC_Resident_GenerateVID_66": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_GenerateVID_72": ["Dependent_Idrepo_AddIdentity_20"],
+    "TC_Resident_GenerateVID_71": ["Dependent_Idrepo_AddIdentity_20"],
+    "TC_Resident_GenerateVID_74": ["Dependent_Idrepo_AddIdentity_20"],
+    "TC_Resident_GenerateVID_73": ["Dependent_Idrepo_AddIdentity_20"],
+    "TC_Resident_GenerateVID_70": ["Dependent_Idrepo_AddIdentity_19"],
+    "TC_Resident_GrievanceTicket_15": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_GrievanceTicket_16": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_AuthLock_24": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GrievanceTicket_13": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_AuthLock_23": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GrievanceTicket_14": ["Dependent_Idrepo_AddIdentity_15"],
+    "TC_Resident_AuthLock_22": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GrievanceTicket_11": [],
+    "TC_Resident_AuthLock_21": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GrievanceTicket_12": [],
+    "TC_Resident_AuthLock_20": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GrievanceTicket_10": [],
+    "TC_Resident_AuthLock_19": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthLock_18": ["TC_Resident_GenerateVID_08"],
+    "TC_Resident_AuthLock_17": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthLock_16": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthLock_15": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_AuthLock_14": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_GenerateVID_79": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GenerateVID_76": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GenerateVID_75": ["Dependent_Idrepo_AddIdentity_21"],
+    "TC_Resident_GenerateVID_78": ["Dependent_Idrepo_AddIdentity_23"],
+    "TC_Resident_GenerateVID_77": ["Dependent_Idrepo_AddIdentity_23"],
+    "TC_Resident_GenerateVID_83": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GenerateVID_82": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GenerateVID_85": ["Dependent_Idrepo_AddIdentity_26"],
+    "TC_Resident_GrievanceTicket_08": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_GenerateVID_84": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GrievanceTicket_09": [],
+    "TC_Resident_GrievanceTicket_06": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_GrievanceTicket_07": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_GenerateVID_81": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GenerateVID_80": ["Dependent_Idrepo_AddIdentity_25"],
+    "TC_Resident_GrievanceTicket_05": ["Dependent_Idrepo_AddIdentity_14"],
+    "TC_Resident_AuthLock_13": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_GrievanceTicket_02": [],
+    "TC_Resident_AuthLock_12": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_GrievanceTicket_03": [],
+    "TC_Resident_AuthLock_11": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthLock_10": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GrievanceTicket_01": [],
+    "TC_Resident_AuthHistory_07": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthHistory_06": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthLock_09": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_AuthHistory_09": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthLock_08": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthHistory_08": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthLock_07": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthLock_06": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthLock_05": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthLock_04": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_AuthLock_03": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_AuthHistory_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GenerateVID_87": ["Dependent_Idrepo_AddIdentity_27"],
+    "TC_Resident_AuthHistory_03": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GenerateVID_86": ["Dependent_Idrepo_AddIdentity_26"],
+    "TC_Resident_AuthHistory_02": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_GenerateVID_89": ["Dependent_Idrepo_AddIdentity_27"],
+    "TC_Resident_AuthHistory_05": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GenerateVID_88": ["Dependent_Idrepo_AddIdentity_27"],
+    "TC_Resident_AuthHistory_04": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetDocByDocId_03": [],
+    "TC_Resident_GenerateVID_93": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Idrepo_dependency": [
+        "TC_Resident_GenerateVID_69",
+        "TC_Resident_GenerateVID_68",
+        "Dependent_Idrepo_AddIdentity_08",
+        "TC_Resident_GenerateVID_67"
+    ],
+    "TC_Resident_GetDocByDocId_02": [],
+    "TC_Resident_GetDocByDocId_01": [],
+    "TC_Resident_GenerateVID_90": ["Dependent_Idrepo_AddIdentity_28"],
+    "TC_Resident_GenerateVID_92": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_GenerateVID_91": ["Dependent_Idrepo_AddIdentity_29"],
+    "TC_Resident_AuthLock_02": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_AuthLock_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_GetDocByDocId_06": [],
+    "TC_Resident_GetDocByDocId_05": [],
+    "TC_Resident_AuthHistory_10": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthHistory_12": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthHistory_11": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_AuthHistory_14": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthHistory_13": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_AuthHistory_16": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_AuthHistory_15": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_ReGenerateVID_01": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_ReGenerateVID_02": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_GetOrderStatus_19": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_17": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_18": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_15": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_16": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_13": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_14": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_11": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_12": ["TC_Resident_GenerateVID_76"],
+    "TC_Resident_GetOrderStatus_10": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_08": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_09": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_06": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_07": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_04": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_05": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_02": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_03": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_GetOrderStatus_01": ["Dependent_Idrepo_AddIdentity_22"],
+    "TC_Resident_PrintUIN_16": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_Ridstatus_04": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_PrintUIN_17": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_PrintUIN_18": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_Ridstatus_01": ["TC_Resident_UpdateUIN_01"],
+    "TC_Resident_Ridstatus_08": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_Ridstatus_07": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_Ridstatus_06": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_Ridstatus_05": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_PrintUIN_10": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PrintUIN_11": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PrintUIN_12": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_PrintUIN_13": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_PrintUIN_14": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_PrintUIN_15": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_PrintUIN_05": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UnpinStatus_05": [],
+    "TC_Resident_PrintUIN_06": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_PrintUIN_07": ["Dependent_Idrepo_AddIdentity_09"],
+    "TC_Resident_PrintUIN_08": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PrintUIN_09": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_UnpinStatus_01": [],
+    "TC_Resident_UnpinStatus_02": [],
+    "TC_Resident_PinStatus_01": [],
+    "TC_Resident_PinStatus_02": [],
+    "TC_Resident_PrintUIN_01": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PinStatus_05": [],
+    "TC_Resident_PrintUIN_02": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PrintUIN_03": ["Dependent_Idrepo_AddIdentity_01"],
+    "TC_Resident_PrintUIN_04": ["Dependent_Idrepo_AddIdentity_07"],
+    "TC_Resident_RequestCredentials_36": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_37": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_34": ["TC_Resident_GenerateVID_08"],
+    "TC_Resident_RequestCredentials_35": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_32": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_33": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RequestCredentials_30": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_31": ["Dependent_Idrepo_AddIdentity_03"],
+    "TC_Resident_RequestCredentials_38": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_RequestCredentials_39": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_UpdateUIN_09": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_40": ["Dependent_Idrepo_AddIdentity_04"],
+    "TC_Resident_UpdateUIN_08": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_07": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_06": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_05": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_04": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_03": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_UpdateUIN_02": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_47": ["TC_Resident_GenerateVID_85"],
+    "TC_Resident_UpdateUIN_01": ["Dependent_Idrepo_AddIdentity_08"],
+    "TC_Resident_RequestCredentials_48": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_RequestCredentials_45": [
+        "Dependent_Idrepo_AddIdentity_25",
+        "TC_Resident_GenerateVID_79"
+    ],
+    "TC_Resident_RequestCredentials_43": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_RequestCredentials_44": [
+        "Dependent_Idrepo_AddIdentity_03",
+        "TC_Resident_GenerateVID_08"
+    ],
+    "TC_Resident_RequestCredentials_41": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_RequestCredentials_42": ["Dependent_Idrepo_AddIdentity_12"],
+    "TC_Resident_RequestCredentials_49": [
+        "Dependent_Idrepo_AddIdentity_26",
+        "TC_Resident_GenerateVID_86"
+    ],
+    "TC_Resident_RequestCredentials_50": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_RequestCredentials_51": ["Dependent_Idrepo_AddIdentity_30"],
+    "TC_Resident_SendotpforExpiration_03": ["TC_Resident_GenerateVID_71"],
+    "TC_Resident_SendotpforExpiration_04": ["TC_Resident_GenerateVID_75"],
+    "TC_Resident_SendotpforExpiration_01": ["Dependent_Idrepo_AddIdentity_18"],
+    "TC_Resident_SendotpforExpiration_02": ["TC_Resident_GenerateVID_70"],
+    "TC_Resident_GetOrderStatus_20": ["TC_Resident_GenerateVID_76"]
+}

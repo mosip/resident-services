@@ -1,6 +1,8 @@
 package io.mosip.testrig.apirig.resident.utils;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
@@ -27,6 +29,8 @@ public class ResidentUtil extends AdminTestUtil {
 	protected static int ResidentAuditCount = 0;
 	protected static final String ESIGNET_PAYLOAD = "config/esignetPayload.json";
 	
+	public static List<String> testCasesInRunScope = new ArrayList<>();
+	
 	public static void setLogLevel() {
 		if (ResidentConfigManager.IsDebugEnabled())
 			logger.setLevel(Level.ALL);
@@ -36,11 +40,17 @@ public class ResidentUtil extends AdminTestUtil {
 	
 	public static String isTestCaseValidForExecution(TestCaseDTO testCaseDTO) {
 		String testCaseName = testCaseDTO.getTestCaseName();
+		currentTestCaseName = testCaseName;
 		
 		int indexof = testCaseName.indexOf("_");
 		String modifiedTestCaseName = testCaseName.substring(indexof + 1);
 
 		addTestCaseDetailsToMap(modifiedTestCaseName, testCaseDTO.getUniqueIdentifier());
+		
+		if (!testCasesInRunScope.isEmpty()
+				&& testCasesInRunScope.contains(testCaseDTO.getUniqueIdentifier()) == false) {
+			throw new SkipException(GlobalConstants.NOT_IN_RUN_SCOPE_MESSAGE);
+		}
 		
 		if (testCaseName.contains("ESignet_")
 				&& (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET) || isCaptchaEnabled())) {
