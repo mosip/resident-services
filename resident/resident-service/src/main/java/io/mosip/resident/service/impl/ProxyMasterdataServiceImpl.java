@@ -467,6 +467,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Cacheable(value = "templateCache", key = "#languageCode + '_' + #templateTypeCode")
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
 		try {
+			logger.info("Getting all Templates %s values", templateTypeCode);
+			logger.info("Getting all Templates with %s languageCode", languageCode);
 			ResponseWrapper<?> proxyResponseWrapper = getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, templateTypeCode);
 			logger.debug(String.format("Template data from DB:- %s", proxyResponseWrapper.getResponse()));
 			Map<String, String> templateResponse = new LinkedHashMap<>(
