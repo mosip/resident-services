@@ -19,7 +19,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 @Component
 @Aspect
 @EnableAspectJAutoProxy
-@ConditionalOnProperty(value = "resident.db.logging.aspect.enabled", havingValue = "true", matchIfMissing = false)
+//@ConditionalOnProperty(value = "resident.db.logging.aspect.enabled", havingValue = "true", matchIfMissing = false)
 public class DatabaseLoggingAspect {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DatabaseLoggingAspect.class);
