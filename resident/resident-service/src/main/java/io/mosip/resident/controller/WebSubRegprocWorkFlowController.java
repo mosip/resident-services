@@ -67,6 +67,7 @@ public class WebSubRegprocWorkFlowController {
     @Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.regproc.workflow.complete.secret}", callback = "${resident.websub.callback.regproc.workflow.complete.relative.url}", topic = "${mosip.regproc.workflow.complete.topic}")
 	public void regProcWorkFlowCallback(@RequestBody WorkflowCompletedEventDTO workflowCompletedEventDTO) {
+        long startTime = System.currentTimeMillis();  // start timer
 		try {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
@@ -84,6 +85,11 @@ public class WebSubRegprocWorkFlowController {
 			throw new ResidentServiceException(ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.REG_PROC_WORK_FLOW_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
 		}
+        finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            logger.info("regProcWorkFlowCallback executed in {} ms", duration);
+        }
 	}
 
 }
