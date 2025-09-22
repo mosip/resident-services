@@ -35,7 +35,7 @@ public class RestTemplateLoggingInterceptor implements ClientHttpRequestIntercep
         ClientHttpResponse response = ex.execute(req, reqBody);
         long currentTimeAfterExecution = System.currentTimeMillis();
         long timeDiff = currentTimeAfterExecution - currentTimeBeforeExecution;
-        logger.debug("#rest-template-log#"+ ","+ req.getMethod() + ","+ req.getURI() + ","+timeDiff+"ms,"+stackTraceString);
+        logger.info("#rest-template-log#"+ ","+ req.getMethod() + ","+ req.getURI() + ","+timeDiff+"ms,"+stackTraceString);
         return response;
     }
 }

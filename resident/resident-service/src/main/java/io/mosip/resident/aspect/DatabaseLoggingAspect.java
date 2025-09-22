@@ -30,11 +30,11 @@ public class DatabaseLoggingAspect {
 
 	@Around("loggableMethods()")
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
-		logger.debug("Executing method => " + jp.getSignature());
+		logger.info("Executing method => " + jp.getSignature());
 		long beforeExecutionTime = System.currentTimeMillis();
 		Object result = jp.proceed();
 		long afterExecutionTime = System.currentTimeMillis();
-		logger.debug(
+		logger.info(
 				"Time taken by '" + jp.getSignature() + "' is " + (afterExecutionTime - beforeExecutionTime) + "ms.");
 		return result;
 	}
