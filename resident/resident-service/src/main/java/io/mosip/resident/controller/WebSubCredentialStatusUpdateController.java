@@ -69,6 +69,7 @@ public class WebSubCredentialStatusUpdateController {
     @Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.credential-status.secret}", callback = "${resident.websub.callback.credential-status.relative.url}", topic = "${resident.websub.credential-status.topic}")
 	public void credentialStatusUpdateCallback(@RequestBody Map<String, Object> eventModel) {
+        long startTime = System.currentTimeMillis();  // start timer
 		try {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
@@ -85,6 +86,10 @@ public class WebSubCredentialStatusUpdateController {
 			auditUtil.setAuditRequestDto(AuditEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_FAILURE);
 			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
-		}
+		}finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            logger.info("credentialStatusUpdateCallback executed in {} ms", duration);
+        }
 	}
 }
