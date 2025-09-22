@@ -179,8 +179,6 @@ public class Utility {
 
 	private JSONObject mappingJsonObject;
 
-    private static final ThreadLocal<Boolean> secureSessionCache = new ThreadLocal<>();
-
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
@@ -459,26 +457,10 @@ public class Utility {
 		return String.valueOf(random);
 	}
 
-    public static boolean isSecureSession() {
-        Boolean cached = secureSessionCache.get();
-        if (cached != null) {
-            return cached;
-        }
-        SecurityContext context = SecurityContextHolder.getContext();
-        if (context == null) {
-            secureSessionCache.set(false);
-            return false;
-        }
-        Authentication authentication = context.getAuthentication();
-        if (authentication == null) {
-            secureSessionCache.set(false);
-            return false;
-        }
-        Object principal = authentication.getPrincipal();
-        boolean result = principal != null && !"anonymousUser".equals(principal);
-        secureSessionCache.set(result);
-        return result;
-    }
+
+	public static boolean isSecureSession() {
+		return Optional.ofNullable(SecurityContextHolder.getContext()).map(SecurityContext::getAuthentication).map(Authentication::getPrincipal).filter(obj -> !obj.equals(ANONYMOUS_USER)).isPresent();
+	}
 
 	public String createTrackServiceRequestLink(String eventId) {
 		return trackServiceUrl + eventId;
