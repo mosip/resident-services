@@ -5,6 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.Timeout;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
 import io.mosip.idrepository.core.dto.IdResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -41,22 +48,37 @@ public class ResidentServiceRestClient {
 	/** The builder. */
 	@Autowired
 	RestTemplateBuilder builder;
+    
+    @Autowired
+    Environment environment;
 
-	private RestTemplate residentRestTemplate;
-	
-	@Autowired
-	Environment environment;
-	
-	public ResidentServiceRestClient() {
-		this(new RestTemplate());
-	}
-	
-	
-	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
-		this.residentRestTemplate = residentRestTemplate;
-	}
-	
-	public <T> T getApi(String uriStr, Class<?> responseType) throws ApisResourceAccessException {
+    private RestTemplate residentRestTemplate;
+
+    public ResidentServiceRestClient() {
+        this(createRestTemplateWithTimeout());
+    }
+
+    public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
+        this.residentRestTemplate = residentRestTemplate;
+    }
+
+    private static RestTemplate createRestTemplateWithTimeout() {
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(Timeout.ofSeconds(5))     // ✅ 5 seconds connect timeout
+                .setResponseTimeout(Timeout.ofSeconds(10))   // ✅ 10 seconds read timeout
+                .build();
+
+        CloseableHttpClient client = HttpClients.custom()
+                .setDefaultRequestConfig(config)
+                .build();
+
+        HttpComponentsClientHttpRequestFactory factory =
+                new HttpComponentsClientHttpRequestFactory(client);
+
+        return new RestTemplate(factory);
+    }
+
+    public <T> T getApi(String uriStr, Class<?> responseType) throws ApisResourceAccessException {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uriStr);
 		UriComponents uriComponent = builder.build(false).encode();
 		URI uri = uriComponent.toUri();
