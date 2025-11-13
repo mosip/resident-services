@@ -28,7 +28,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.exception.ApisResourceAccessException;
 
@@ -37,7 +37,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({ "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*" })
-@PrepareForTest({ DateUtils.class })
+@PrepareForTest({ DateUtils2.class })
 public class IdSchemaUtilTest {
 
 	@InjectMocks

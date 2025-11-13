@@ -39,7 +39,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
@@ -187,7 +187,7 @@ public class OTPManagerServiceImplTest {
     public void testValidateOtpSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
         when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds(120));
+        otpTransactionEntity.setExpiryDtimes(DateUtils2.getUTCCurrentDateTime().plusSeconds(120));
         when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertTrue(otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
@@ -196,7 +196,7 @@ public class OTPManagerServiceImplTest {
     public void testValidateOtpFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
         when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime());
+        otpTransactionEntity.setExpiryDtimes(DateUtils2.getUTCCurrentDateTime());
         when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertTrue(otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }

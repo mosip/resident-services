@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentVidRequestDto;
 import io.mosip.resident.dto.ResidentVidRequestDtoV2;
@@ -390,7 +390,7 @@ public class ResidentVidControllerTest {
 		request.setId("mosip.resident.vid");
 		request.setVersion("v1");
 
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+		request.setRequesttime(DateUtils2.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRequestDto);
 		return request;
 	}
@@ -405,7 +405,7 @@ public class ResidentVidControllerTest {
 		RequestWrapper request = new RequestWrapper();
 		request.setId("mosip.resident.vidstatus");
 		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+		request.setRequesttime(DateUtils2.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
 	}

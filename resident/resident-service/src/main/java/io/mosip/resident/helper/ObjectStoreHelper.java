@@ -31,7 +31,7 @@ import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.cryptomanager.dto.CryptomanagerRequestDto;
 import io.mosip.kernel.cryptomanager.dto.CryptomanagerResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -215,7 +215,7 @@ public class ObjectStoreHelper {
 			request.setApplicationId(applicationId);
 			request.setReferenceId(referenceId);
 			request.setData(data);
-			request.setTimeStamp(DateUtils.getUTCCurrentDateTime());
+			request.setTimeStamp(DateUtils2.getUTCCurrentDateTime());
 			RequestWrapper<CryptomanagerRequestDto> requestWrapper = new RequestWrapper<>();
 			requestWrapper.setRequest(request);
 			ResponseWrapper<Map<String, Object>> responseWrapper = restClient.postApi(

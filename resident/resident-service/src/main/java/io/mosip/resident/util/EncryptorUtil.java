@@ -21,7 +21,7 @@ import io.mosip.commons.packet.exception.ApiNotAccessibleException;
 import io.mosip.commons.packet.exception.PacketDecryptionFailureException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.CryptomanagerRequestDto;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -74,12 +74,12 @@ public class EncryptorUtil {
             sRandom.nextBytes(aad);
             cryptomanagerRequestDto.setAad(CryptoUtil.encodeToPlainBase64(aad));
             cryptomanagerRequestDto.setSalt(CryptoUtil.encodeToPlainBase64(nonce));
-            cryptomanagerRequestDto.setTimeStamp(DateUtils.getUTCCurrentDateTime());
+            cryptomanagerRequestDto.setTimeStamp(DateUtils2.getUTCCurrentDateTime());
 			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
             request.setId(DECRYPT_SERVICE_ID);
             request.setMetadata(null);
             request.setRequest(cryptomanagerRequestDto);
-            request.setRequesttime(DateUtils.getUTCCurrentDateTime());
+            request.setRequesttime(DateUtils2.getUTCCurrentDateTime());
             request.setVersion(APPLICATION_VERSION);
 
             ResponseWrapper responseDto = restClientService

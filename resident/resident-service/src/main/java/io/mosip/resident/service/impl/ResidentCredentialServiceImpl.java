@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
@@ -178,7 +178,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				credentialReqestDto = prepareCredentialRequest(dto, individualId);
 				requestDto.setId("mosip.credential.request.service.id");
 				requestDto.setRequest(credentialReqestDto);
-				requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+				requestDto.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 				requestDto.setVersion("1.0");
 				parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
 				partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
@@ -243,7 +243,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			credentialReqestDto = prepareCredentialRequest(dto, individualId);
 			requestDto.setId("mosip.credential.request.service.id");
 			requestDto.setRequest(credentialReqestDto);
-			requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+			requestDto.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 			requestDto.setVersion("1.0");			
 
 			ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
@@ -404,8 +404,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		cryptomanagerRequestDto.setData(downloadedData);
 		cryptomanagerRequestDto.setReferenceId(partnerRefId);
 		cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
-		LocalDateTime localdatetime = DateUtils.getUTCCurrentDateTime();
-		request.setRequesttime(DateUtils.formatToISOString(localdatetime));
+		LocalDateTime localdatetime = DateUtils2.getUTCCurrentDateTime();
+		request.setRequesttime(DateUtils2.formatToISOString(localdatetime));
 		cryptomanagerRequestDto.setTimeStamp(localdatetime);
 		request.setRequest(cryptomanagerRequestDto);
 		String response = residentServiceRestClient.postApi(env.getProperty(ApiName.DECRYPT_API_URL.name()),

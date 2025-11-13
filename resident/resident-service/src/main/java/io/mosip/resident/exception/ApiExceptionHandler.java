@@ -37,7 +37,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
@@ -291,7 +291,7 @@ public class ApiExceptionHandler {
 
 	private ResponseWrapper<ServiceError> getAuthFailedResponse() {
 		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+		responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
 		responseWrapper
 				.setErrors(List.of(new ServiceError(AuthErrorCode.UNAUTHORIZED.getErrorCode(),
 						AuthErrorCode.UNAUTHORIZED.getErrorMessage())));

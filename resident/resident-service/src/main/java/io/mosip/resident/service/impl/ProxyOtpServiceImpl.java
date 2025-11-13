@@ -16,7 +16,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.preregistration.core.util.GenericUtil;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -95,7 +95,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             } else
                 isSuccess = false;
 
-            response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+            response.setResponsetime(DateUtils2.getUTCCurrentDateTimeString());
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             log.error("In callsendOtp method of login service- ", ex.getResponseBodyAsString());
             if(ex instanceof HttpServerErrorException || ex instanceof HttpClientErrorException){

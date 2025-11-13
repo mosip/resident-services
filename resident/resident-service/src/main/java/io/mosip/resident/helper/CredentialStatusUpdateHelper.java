@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.TemplateType;
@@ -108,7 +108,7 @@ public class CredentialStatusUpdateHelper {
 
 	public void updateEntity(ResidentTransactionEntity txn) {
 		txn.setUpdBy(RESIDENT);
-		txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+		txn.setUpdDtimes(DateUtils2.getUTCCurrentDateTime());
 		saveEntity(txn);
 	}
 

@@ -36,7 +36,7 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
@@ -136,7 +136,7 @@ public class GrievanceControllerTest {
         response.put("ticketId", ticketId);
         responseWrapper.setResponse(response);
         responseWrapper.setId("mosip.resident.grievance.ticket.request");
-        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+        responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
         Mockito.when(grievanceService.getGrievanceTicket(any())).thenReturn(responseWrapper);
         ResponseWrapper<Object> responseWrapper1 = grievanceController.grievanceTicket(grievanceRequestDTOMainRequestDTO);
         Assert.assertEquals("mosip.resident.grievance.ticket.request", responseWrapper1.getId());
@@ -152,7 +152,7 @@ public class GrievanceControllerTest {
         response.put("ticketId", ticketId);
         responseWrapper.setResponse(response);
         responseWrapper.setId("mosip.resident.grievance.ticket.request");
-        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+        responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
         Mockito.when(grievanceService.getGrievanceTicket(any())).thenReturn(responseWrapper);
         ResponseWrapper<Object> responseWrapper1 = grievanceController.grievanceTicket(grievanceRequestDTOMainRequestDTO);
         Assert.assertEquals("mosip.resident.grievance.ticket.request", responseWrapper1.getId());

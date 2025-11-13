@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.InvalidInputException;
@@ -178,7 +178,7 @@ public class DownLoadMasterDataController {
 	 */
 	private String getCurrentDateAndTime() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss");
-		LocalDateTime now = DateUtils.getUTCCurrentDateTime();
+		LocalDateTime now = DateUtils2.getUTCCurrentDateTime();
 		return dtf.format(now);
 	}
 }

@@ -31,7 +31,7 @@ import io.mosip.commons.packet.dto.packet.DecryptResponseDto;
 import io.mosip.commons.packet.exception.PacketDecryptionFailureException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.dto.CryptomanagerRequestDto;
 
 /**
@@ -39,7 +39,7 @@ import io.mosip.resident.dto.CryptomanagerRequestDto;
  */
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({DateUtils.class})
+@PrepareForTest({DateUtils2.class})
 public class EncryptorUtilTest {
 
     @InjectMocks
@@ -70,10 +70,10 @@ public class EncryptorUtilTest {
     public void setUp() throws Exception {
         encryptAPIUrl = "http://kernel-keymanager-service/v1/keymanager/encrypt";
 
-        PowerMockito.mockStatic(DateUtils.class);
+        PowerMockito.mockStatic(DateUtils2.class);
 
-        localDateTime = DateUtils.getUTCCurrentDateTime();
-        when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
+        localDateTime = DateUtils2.getUTCCurrentDateTime();
+        when(DateUtils2.getUTCCurrentDateTime()).thenReturn(localDateTime);
         when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
     }
 
