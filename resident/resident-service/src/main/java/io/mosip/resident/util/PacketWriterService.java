@@ -6,7 +6,7 @@ import io.mosip.commons.packet.dto.packet.PacketDto;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils2;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -48,7 +48,7 @@ public class PacketWriterService {
         RequestWrapper<PacketDto> request = new RequestWrapper<>();
         request.setId(ID);
         request.setVersion(VERSION);
-        request.setRequesttime(DateUtils2.getUTCCurrentDateTime());
+        request.setRequesttime(DateUtils.getUTCCurrentDateTime());
         request.setRequest(packetDto);
 
         ResponseWrapper<List<PacketInfo>> response = (ResponseWrapper) restApi.putApi(
