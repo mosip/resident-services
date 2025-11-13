@@ -23,7 +23,7 @@ import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
@@ -213,7 +213,7 @@ public class SyncAndUploadService {
 			registrationSyncRequestDTO.setId(env.getProperty(RegistrationConstants.REG_SYNC_SERVICE_ID));
 			registrationSyncRequestDTO.setVersion(env.getProperty(RegistrationConstants.REG_SYNC_APPLICATION_VERSION));
 			registrationSyncRequestDTO
-					.setRequesttime(DateUtils.getUTCCurrentDateTimeString(env.getProperty(RegistrationConstants.DATETIME_PATTERN)));
+					.setRequesttime(DateUtils2.getUTCCurrentDateTimeString(env.getProperty(RegistrationConstants.DATETIME_PATTERN)));
 
 			syncDto.setLangCode("eng");
 			syncDto.setRegistrationId(regId);

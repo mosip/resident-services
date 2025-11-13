@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.dto.PacketGeneratorResDto;
@@ -41,7 +41,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({ JsonUtils.class, Gson.class, DateUtils.class,
+@PrepareForTest({ JsonUtils.class, Gson.class, DateUtils2.class,
         ByteArrayResource.class, GsonBuilder.class })
 public class SyncAndUploadServiceTest {
 	
@@ -76,12 +76,12 @@ public class SyncAndUploadServiceTest {
     @Before
     public void setup() throws Exception {
         registartionId = "10001100770000320200720092256";
-        creationTime = DateUtils.getCurrentDateTimeString();
+        creationTime = DateUtils2.getCurrentDateTimeString();
         regType = RegistrationType.NEW.name();
         packetZipBytes = "packet".getBytes();
 
-        PowerMockito.mockStatic(DateUtils.class);
-        PowerMockito.when(DateUtils.getUTCCurrentDateTimeString(any())).thenReturn("datetime");
+        PowerMockito.mockStatic(DateUtils2.class);
+        PowerMockito.when(DateUtils2.getUTCCurrentDateTimeString(any())).thenReturn("datetime");
 
         ReflectionTestUtils.setField(syncAndUploadService, "centerIdLength", 5);
         ReflectionTestUtils.setField(syncAndUploadService, "machineIdLength", 5);

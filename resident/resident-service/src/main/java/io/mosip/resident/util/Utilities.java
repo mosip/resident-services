@@ -6,7 +6,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
@@ -356,7 +356,7 @@ public class Utilities {
 
 		Map<String, String> auditDtos = new HashMap<>();
 		auditDtos.put("uuid", UUID.randomUUID().toString());
-		String timestamp = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+		String timestamp = DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime());
 		auditDtos.put("createdAt", timestamp);
 		auditDtos.put("eventId", "RPR_405");
 		auditDtos.put("eventName", "packet uploaded");

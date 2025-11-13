@@ -13,7 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -344,11 +344,11 @@ public class TemplateUtil {
 	}
 
 	private String getTime() {
-		return DateUtils.getUTCCurrentDateTimeString(templateTimePattern);
+		return DateUtils2.getUTCCurrentDateTimeString(templateTimePattern);
 	}
 
 	private String getDate() {
-		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
+		return DateUtils2.getUTCCurrentDateTimeString(templateDatePattern);
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForGenerateOrRevokeVid(

@@ -16,7 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 
 /**
@@ -38,7 +38,7 @@ public class LoggingFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		logger.debug("Beginning to process request at: " + DateUtils.getUTCCurrentDateTime());
+		logger.debug("Beginning to process request at: " + DateUtils2.getUTCCurrentDateTime());
 		ServletRequest requestRef;
 		if (!(request instanceof RepeatableStreamHttpServletRequest) && request instanceof HttpServletRequest) {
 			//Since it is already RepeatableStreamHttpServletRequest, we can use the same
@@ -53,7 +53,7 @@ public class LoggingFilter implements Filter {
 			requestRef = request;
 		}
 		chain.doFilter(requestRef, response);
-		logger.debug("Request processed at: " + DateUtils.getUTCCurrentDateTime());
+		logger.debug("Request processed at: " + DateUtils2.getUTCCurrentDateTime());
 	}
 
 	private void printBody(ServletRequest request) throws IOException {

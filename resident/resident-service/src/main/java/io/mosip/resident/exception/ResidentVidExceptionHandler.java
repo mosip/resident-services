@@ -18,7 +18,7 @@ import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.controller.ResidentVidController;
@@ -132,7 +132,7 @@ public class ResidentVidExceptionHandler {
 		}
 		response.setId(setId(httpServletRequest.getRequestURI()));
 		response.setVersion(env.getProperty(RESIDENT_VID_VERSION));
-		response.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		response.setResponsetime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		response.setResponse(null);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);

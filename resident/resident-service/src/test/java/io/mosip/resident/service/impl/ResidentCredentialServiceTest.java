@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
@@ -149,7 +149,7 @@ public class ResidentCredentialServiceTest {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponsetime(DateUtils2.getCurrentDateTimeString());
 		response.setResponse(residentCredentialResponseDto);
 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
@@ -164,7 +164,7 @@ public class ResidentCredentialServiceTest {
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/"
@@ -223,7 +223,7 @@ public class ResidentCredentialServiceTest {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponsetime(DateUtils2.getCurrentDateTimeString());
 		response.setResponse(residentCredentialResponseDto);
 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
@@ -238,7 +238,7 @@ public class ResidentCredentialServiceTest {
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/"
@@ -258,7 +258,7 @@ public class ResidentCredentialServiceTest {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponsetime(DateUtils2.getCurrentDateTimeString());
 		response.setResponse(residentCredentialResponseDto);
 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
@@ -273,7 +273,7 @@ public class ResidentCredentialServiceTest {
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/"
@@ -304,13 +304,13 @@ public class ResidentCredentialServiceTest {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponsetime(DateUtils2.getCurrentDateTimeString());
 		response.setResponse(residentCredentialResponseDto);
 
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
@@ -337,13 +337,13 @@ public class ResidentCredentialServiceTest {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponsetime(DateUtils2.getCurrentDateTimeString());
 		response.setResponse(residentCredentialResponseDto);
 
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any()))
@@ -365,7 +365,7 @@ public class ResidentCredentialServiceTest {
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		requestDto.setId("mosip.credential.request.service.id");
 		requestDto.setRequest(new CredentialReqestDto());
-		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 		requestDto.setVersion("1.0");
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any()))

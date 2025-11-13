@@ -59,7 +59,7 @@ import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
@@ -345,7 +345,7 @@ public class ResidentControllerTest {
 		requestWrapper.setRequest(request);
 		requestWrapper.setId(",osip.resident.reprint");
 		requestWrapper.setVersion("1.0");
-		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestWrapper.setRequesttime(DateUtils2.getUTCCurrentDateTimeString());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String requestAsString = gson.toJson(requestWrapper);

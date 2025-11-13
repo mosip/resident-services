@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.TemplateVariablesConstants;
@@ -211,7 +211,7 @@ public class ResidentVidServiceTest {
         vidGeneratorResponseDto.setVidStatus("Active");
         vidGeneratorResponseDto.setVID(vid);
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
@@ -239,7 +239,7 @@ public class ResidentVidServiceTest {
         serviceError.setErrorCode(VID_ALREADY_EXISTS_ERROR_CODE);
         serviceError.setMessage("Vid already present");
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -255,7 +255,7 @@ public class ResidentVidServiceTest {
         serviceError.setErrorCode(ERROR_CODE);
         serviceError.setMessage("Vid already present");
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -271,7 +271,7 @@ public class ResidentVidServiceTest {
         serviceError.setErrorCode(ERROR_CODE);
         serviceError.setMessage("Vid already present");
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -290,7 +290,7 @@ public class ResidentVidServiceTest {
 		ResponseWrapper<VidGeneratorResponseDto> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(dto);
 		responseWrapper.setVersion("v1");
-		responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
+		responseWrapper.setResponsetime(DateUtils2.getCurrentDateTimeString());
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
@@ -318,7 +318,7 @@ public class ResidentVidServiceTest {
         serviceError.setErrorCode(ERROR_CODE);
         serviceError.setMessage("No Record Found");
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -335,7 +335,7 @@ public class ResidentVidServiceTest {
         serviceError.setErrorCode(ERROR_CODE);
         serviceError.setMessage("No Record Found");
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -457,7 +457,7 @@ public class ResidentVidServiceTest {
         vidGeneratorResponseDto.setVidStatus("Active");
         vidGeneratorResponseDto.setVID(vid);
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
 
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
@@ -505,7 +505,7 @@ public class ResidentVidServiceTest {
         dto.setVidStatus("Deactive");
         responseWrapper.setResponse(dto);
         responseWrapper.setVersion("v1");
-        responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
+        responseWrapper.setResponsetime(DateUtils2.getCurrentDateTimeString());
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
@@ -545,7 +545,7 @@ public class ResidentVidServiceTest {
         vidGeneratorResponseDto.setVidStatus("Active");
         vidGeneratorResponseDto.setVID(vid);
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMaskedEmail(null);
@@ -588,7 +588,7 @@ public class ResidentVidServiceTest {
         vidGeneratorResponseDto.setVidStatus("Active");
         vidGeneratorResponseDto.setVID(vid);
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponsetime(DateUtils2.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMaskedEmail(null);

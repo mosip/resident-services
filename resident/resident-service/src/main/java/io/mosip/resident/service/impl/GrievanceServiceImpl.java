@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -56,7 +56,7 @@ public class GrievanceServiceImpl implements GrievanceService {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
         responseWrapper.setVersion(grievanceRequestDTOMainRequestDTO.getVersion());
-        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+        responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
         try {
             grievanceRequestDTOMainRequestDTO = fillDefaultValueFromProfile(grievanceRequestDTOMainRequestDTO);
             String ticketId = UUID.randomUUID().toString();
@@ -87,7 +87,7 @@ public class GrievanceServiceImpl implements GrievanceService {
         residentGrievanceEntity.setMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
         residentGrievanceEntity.setStatus(SUCCESS);
         residentGrievanceEntity.setCrBy(this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID));
-        residentGrievanceEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+        residentGrievanceEntity.setCrDtimes(DateUtils2.getUTCCurrentDateTime());
         residentGrievanceRepository.save(residentGrievanceEntity);
     }
 

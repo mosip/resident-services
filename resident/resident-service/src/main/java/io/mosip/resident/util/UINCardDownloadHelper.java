@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
@@ -40,7 +40,7 @@ public class UINCardDownloadHelper {
 		request.setRequest(uincardDTO);
 		request.setId(env.getProperty(PRINT_ID));
 		request.setVersion(env.getProperty(PRINT_VERSION));
-		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		request.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		byte[]	response;
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),
