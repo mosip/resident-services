@@ -28,3 +28,6 @@ CREATE INDEX idx_resident_user_actions_ida_token ON resident.resident_user_actio
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_user_actions
    TO residentuser;
+
+--PERFORMANCE INDEXES
+CREATE INDEX idx_resident_user_actions_ida_token ON resident.resident_user_actions USING btree (ida_token);

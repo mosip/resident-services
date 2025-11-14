@@ -35,3 +35,7 @@ CREATE INDEX idx_resident_session_ida_token ON resident.resident_session (ida_to
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_session
    TO residentuser;
+
+--PERFORMANCE INDEXES
+CREATE INDEX idx_resident_session_ida_token ON resident.resident_session USING btree (ida_token);
+CREATE UNIQUE INDEX pk_session_id ON resident.resident_session USING btree (session_id);

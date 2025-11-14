@@ -110,3 +110,11 @@ CREATE INDEX idx_resident_transaction_read_status ON resident.resident_transacti
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_transaction
    TO residentuser;
+
+--PERFORMANCE INDEXES
+CREATE INDEX idx_resident_transaction_credential_request_id ON resident.resident_transaction USING btree (credential_request_id);
+CREATE INDEX idx_resident_transaction_event_id ON resident.resident_transaction USING btree (event_id);
+CREATE INDEX idx_resident_transaction_read_status ON resident.resident_transaction USING btree (read_status);
+CREATE INDEX idx_resident_transaction_ref_id ON resident.resident_transaction USING btree (ref_id);
+CREATE INDEX idx_resident_transaction_request_trn_id ON resident.resident_transaction USING btree (request_trn_id);
+CREATE INDEX idx_resident_transaction_token_id ON resident.resident_transaction USING btree (token_id);
