@@ -1,11 +1,6 @@
 -- UPGRADE FOR PERFORMANCE OPTIMIZATION INDEXES
 
-CREATE UNIQUE INDEX pk_otpt_id ON resident.otp_transaction USING btree (id);
-
-CREATE UNIQUE INDEX pk_resgrev_id ON resident.resident_grievance_ticket USING btree (id);
-
 CREATE INDEX idx_resident_session_ida_token ON resident.resident_session USING btree (ida_token);
-CREATE UNIQUE INDEX pk_session_id ON resident.resident_session USING btree (session_id);
 
 CREATE INDEX idx_resident_transaction_credential_request_id ON resident.resident_transaction USING btree (credential_request_id);
 CREATE INDEX idx_resident_transaction_event_id ON resident.resident_transaction USING btree (event_id);

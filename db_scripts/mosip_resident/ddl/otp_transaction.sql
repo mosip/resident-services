@@ -48,6 +48,3 @@ COMMENT ON COLUMN resident.otp_transaction.del_dtimes IS 'Date and Timestamp whe
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.otp_transaction
    TO residentuser;
-
---PERFORMANCE INDEXES
-CREATE UNIQUE INDEX pk_otpt_id ON resident.otp_transaction USING btree (id);

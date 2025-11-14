@@ -51,6 +51,3 @@ COMMENT ON COLUMN resident.resident_grievance_ticket.del_dtimes IS 'Deleted time
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_grievance_ticket
    TO residentuser;
-
---PERFORMANCE INDEXES
-CREATE UNIQUE INDEX pk_resgrev_id ON resident.resident_grievance_ticket USING btree (id);
