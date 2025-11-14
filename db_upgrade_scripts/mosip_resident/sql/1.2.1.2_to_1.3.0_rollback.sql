@@ -2,7 +2,6 @@
 
 DROP INDEX IF EXISTS resident.idx_resident_session_ida_token;
 
-DROP INDEX IF EXISTS resident.idx_resident_transaction_read_status;
 DROP INDEX IF EXISTS resident.idx_resident_transaction_ref_id;
 DROP INDEX IF EXISTS resident.idx_resident_transaction_request_trn_id;
 DROP INDEX IF EXISTS resident.idx_resident_transaction_token_id;
