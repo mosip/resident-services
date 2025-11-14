@@ -1,1 +1,1 @@
-drop index idx_resident_transaction_aid_crdtime_desc if exists;
+DROP INDEX IF EXISTS resident.idx_resident_transaction_aid_crdtime_desc;
