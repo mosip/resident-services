@@ -1,1 +1,1 @@
-\echo 'Upgrade Queries not required for transition from $CURRENT_VERSION to $UPGRADE_VERSION'
+drop index idx_resident_transaction_aid_crdtime_desc if exists;

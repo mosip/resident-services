@@ -1,1 +1,2 @@
-\echo 'Upgrade Queries not required for transition from $CURRENT_VERSION to $UPGRADE_VERSION'
+CREATE INDEX idx_resident_transaction_aid_crdtime_desc
+    ON resident.resident_transaction (aid, cr_dtimes DESC);
