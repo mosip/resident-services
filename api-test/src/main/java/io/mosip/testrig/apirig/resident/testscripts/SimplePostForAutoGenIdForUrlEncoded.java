@@ -136,7 +136,7 @@ public class SimplePostForAutoGenIdForUrlEncoded extends ResidentUtil implements
 				String tempUrl = ResidentConfigManager.getEsignetBaseUrl();
 				String endPoint = tempUrl + testCaseDTO.getEndPoint();
 				if (testCaseDTO.getEndPoint().contains("$GETENDPOINTFROMRESIDENTACTUATOR$")
-						&& BaseTestCase.currentModule.equalsIgnoreCase("resident")) {
+						&& BaseTestCase.currentModule.toLowerCase().contains("resident")) {
 					endPoint = getValueFromActuator("mosip-config/resident-default.properties",
 							"mosip.iam.token_endpoint");
 				}

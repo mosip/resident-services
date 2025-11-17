@@ -523,7 +523,7 @@ GenerateVID:
         "id": "mosip.resident.vid",
         "version": "v1",
         "vidType": "Perpetual",
-        "otp": "$ID:AddIdentity_ValidParam_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_Positive_smoke_Pos_EMAIL$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
@@ -560,7 +560,7 @@ GenerateVID:
         "id": "mosip.resident.vid",
         "version": "v1",
         "vidType": "Perpetual",
-        "otp": "$ID:AddIdentity_ValidParam_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_Positive_PEXP_smoke_EMAIL$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
