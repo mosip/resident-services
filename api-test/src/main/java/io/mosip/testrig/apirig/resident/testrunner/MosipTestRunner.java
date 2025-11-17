@@ -83,7 +83,14 @@ public class MosipTestRunner {
 			
 			// Read timeout from properties, fallback to 120 if not set which is 2 hours with buffer timing
 			String timeoutStr = ResidentConfigManager.getproperty("watchdogTimeoutMinutes");
-			long timeoutMinutes = timeoutStr.isEmpty() ? 120 : Long.parseLong(timeoutStr);
+			long timeoutMinutes = 120; // default
+			if (timeoutStr != null && !timeoutStr.isBlank()) {
+				try {
+					timeoutMinutes = Long.parseLong(timeoutStr);
+				} catch (NumberFormatException e) {
+					LOGGER.warn("Invalid watchdogTimeoutMinutes property: " + timeoutStr + ", using default: 120");
+				}
+			}
 			watchdog = new Watchdog(timeoutMinutes * 60 * 1000L);
 			watchdog.start();
 			
