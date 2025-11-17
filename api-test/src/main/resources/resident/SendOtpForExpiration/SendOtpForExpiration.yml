@@ -11,7 +11,8 @@ SendOtpForExpiration:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_UIN$"
+    "individualId": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_UIN$",
+    "email": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_EMAIL$"
 }'
       output: '{
 }'
@@ -28,7 +29,8 @@ SendOtpForExpiration:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:GenerateVID_Perpetual_ForEotp_Scen_Valid_Smoke_sid_vid$"
+    "individualId": "$ID:GenerateVID_Perpetual_ForEotp_Scen_Valid_Smoke_sid_vid$",
+    "email": "$ID:AddIdentity_ForEotp_Scen_Vid_smoke_Pos_EMAIL$"
 }'
       output: '{
 }'
@@ -45,7 +47,8 @@ SendOtpForExpiration:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:GenerateVID_Temporary_1_ForEotp_Scen_Valid_Smoke_sid_vid$"
+    "individualId": "$ID:GenerateVID_Temporary_1_ForEotp_Scen_Valid_Smoke_sid_vid$",
+    "email": "$ID:AddIdentity_ForEotp_Temp_Vid_smoke_Pos_EMAIL$"
 }'
       output: '{
 }'
@@ -62,7 +65,8 @@ SendOtpForExpiration:
       input: '{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
-    "individualId": "$ID:GenerateVID_Onetimeuse_ForEotp_Scen_Valid_Smoke_sid_vid$"
+    "individualId": "$ID:GenerateVID_Onetimeuse_ForEotp_Scen_Valid_Smoke_sid_vid$",
+    "email": "$ID:AddIdentity_ForEotp_Onetime_Vid_smoke_Pos_EMAIL$"
 }'
       output: '{
 }'
