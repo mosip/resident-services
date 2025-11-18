@@ -10,7 +10,7 @@ SendOtpForContactDet:
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		   "userId": "residentautomation@mosip.net",
+		   "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		   "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -27,7 +27,7 @@ SendOtpForContactDet:
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		   "userId": "residentautomation@mosip.net",
+		   "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		   "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -107,7 +107,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "adhs%^"
 }'
       output: '{
@@ -128,7 +128,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": ""
 }'
       output: '{
@@ -149,7 +149,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$REMOVE$"
 }'
       output: '{
@@ -170,7 +170,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -191,7 +191,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "12323dqq",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "$TRANSACTIONID$"
 }'
       output: '{
@@ -212,7 +212,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "$TRANSACTIONID$"
 }'
       output: '{
@@ -296,7 +296,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "adhs%^"
 }'
       output: '{
@@ -317,7 +317,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": ""
 }'
       output: '{
@@ -338,7 +338,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$REMOVE$"
 }'
       output: '{
@@ -359,7 +359,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "12323dqq",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -380,7 +380,7 @@ SendOtpForContactDet:
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
