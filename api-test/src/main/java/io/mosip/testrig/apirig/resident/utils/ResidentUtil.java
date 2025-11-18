@@ -73,7 +73,7 @@ public class ResidentUtil extends AdminTestUtil {
 			throw new SkipException(GlobalConstants.KNOWN_ISSUES);
 		}
 		
-		if (BaseTestCase.currentModule.equalsIgnoreCase(GlobalConstants.RESIDENT)) {
+		if (BaseTestCase.currentModule.toLowerCase().contains(GlobalConstants.RESIDENT)) {
 			if (testCaseDTO.getRole() != null && (testCaseDTO.getRole().equalsIgnoreCase(GlobalConstants.RESIDENTNEW)
 					|| testCaseDTO.isValidityCheckRequired())) {
 				if (testCaseName.contains("uin") || testCaseName.contains("UIN") || testCaseName.contains("Uin")) {
