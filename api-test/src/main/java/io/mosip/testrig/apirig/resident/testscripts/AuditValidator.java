@@ -1,7 +1,7 @@
-
 package io.mosip.testrig.apirig.resident.testscripts;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,34 +20,23 @@ import org.testng.annotations.Test;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.TestResult;
 
+import io.mosip.testrig.apirig.dbaccess.DBManager;
 import io.mosip.testrig.apirig.dto.OutputValidationDto;
 import io.mosip.testrig.apirig.dto.TestCaseDTO;
 import io.mosip.testrig.apirig.resident.utils.ResidentConfigManager;
 import io.mosip.testrig.apirig.resident.utils.ResidentUtil;
-import io.mosip.testrig.apirig.testrunner.BaseTestCase;
 import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
-import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
-public class PostWithParamAndFile extends ResidentUtil implements ITest {
-	private static final Logger logger = Logger.getLogger(PostWithParamAndFile.class);
+public class AuditValidator extends ResidentUtil implements ITest {
+	private static final Logger logger = Logger.getLogger(AuditValidator.class);
 	protected String testCaseName = "";
-	public String idKeyName = null;
 	public Response response = null;
-	public boolean sendEsignetToken = false;
-
-	@BeforeClass
-	public static void setLogLevel() {
-		if (ResidentConfigManager.IsDebugEnabled())
-			logger.setLevel(Level.ALL);
-		else
-			logger.setLevel(Level.ERROR);
-	}
 
 	/**
 	 * get current testcaseName
@@ -57,7 +46,15 @@ public class PostWithParamAndFile extends ResidentUtil implements ITest {
 		return testCaseName;
 	}
 
-	/**
+	@BeforeClass
+	public static void setLogLevel() {
+		if (ResidentConfigManager.IsDebugEnabled())
+			logger.setLevel(Level.ALL);
+		else
+			logger.setLevel(Level.ERROR);
+	}
+
+	/*
 	 * Data provider class provides test case list
 	 * 
 	 * @return object of data provider
@@ -65,21 +62,10 @@ public class PostWithParamAndFile extends ResidentUtil implements ITest {
 	@DataProvider(name = "testcaselist")
 	public Object[] getTestCaseList(ITestContext context) {
 		String ymlFile = context.getCurrentXmlTest().getLocalParameters().get("ymlFile");
-		sendEsignetToken = context.getCurrentXmlTest().getLocalParameters().containsKey("sendEsignetToken");
-		idKeyName = context.getCurrentXmlTest().getLocalParameters().get("idKeyName");
 		logger.info("Started executing yml: " + ymlFile);
 		return getYmlTestData(ymlFile);
 	}
 
-	/**
-	 * Test method for OTP Generation execution
-	 * 
-	 * @param objTestParameters
-	 * @param testScenario
-	 * @param testcaseName
-	 * @throws AuthenticationTestException
-	 * @throws AdminTestException
-	 */
 	@Test(dataProvider = "testcaselist")
 	public void test(TestCaseDTO testCaseDTO) throws AuthenticationTestException, AdminTestException, SecurityXSSException {
 		testCaseName = testCaseDTO.getTestCaseName();
@@ -88,46 +74,44 @@ public class PostWithParamAndFile extends ResidentUtil implements ITest {
 			throw new SkipException(
 					GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
 		}
-		if (testCaseDTO.getTestCaseName().contains("VID") || testCaseDTO.getTestCaseName().contains("Vid")) {
-			if (!BaseTestCase.getSupportedIdTypesValueFromActuator().contains("VID")
-					&& !BaseTestCase.getSupportedIdTypesValueFromActuator().contains("vid")) {
-				throw new SkipException(GlobalConstants.VID_FEATURE_NOT_SUPPORTED);
+		String query = testCaseDTO.getEndPoint();
+		logger.info(query);
+		Map<String, Object> response = DBManager.executeQueryAndGetRecord(testCaseDTO.getRole(), query);
+
+		Map<String, List<OutputValidationDto>> objMap = new HashMap<>();
+		List<OutputValidationDto> objList = new ArrayList<>();
+		OutputValidationDto objOpDto = new OutputValidationDto();
+		int BeforeAuditCount = ResidentUtil.ResidentAuditCount;
+
+		if (response.size() > 0) {
+			ResidentUtil.ResidentAuditCount = ((Number) response.get("count")).intValue();
+
+			if (ResidentUtil.ResidentAuditCount > BeforeAuditCount) {
+				objOpDto.setStatus("PASS");
+
+			} else {
+				objOpDto.setStatus(GlobalConstants.FAIL_STRING);
 			}
-		}
 
-		String inputJson = getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate());
-
-		response = postWithParamAndFile(ApplnURI + testCaseDTO.getEndPoint(), inputJson, testCaseDTO.getRole(),
-				testCaseDTO.getTestCaseName(), idKeyName, sendEsignetToken);
-
-		Map<String, List<OutputValidationDto>> ouputValid = null;
-		if (testCaseName.contains("_StatusCode")) {
-
-			OutputValidationDto customResponse = customStatusCodeResponse(String.valueOf(response.getStatusCode()),
-					testCaseDTO.getOutput());
-
-			ouputValid = new HashMap<>();
-			ouputValid.put(GlobalConstants.EXPECTED_VS_ACTUAL, List.of(customResponse));
 		} else {
-			ouputValid = OutputValidationUtil.doJsonOutputValidation(response.asString(),
-					getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()), testCaseDTO,
-					response.getStatusCode());
+			objOpDto.setStatus(GlobalConstants.FAIL_STRING);
 		}
 
-		Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+		objList.add(objOpDto);
+		objMap.put(GlobalConstants.EXPECTED_VS_ACTUAL, objList);
 
-		if (!OutputValidationUtil.publishOutputResult(ouputValid))
+		if (!OutputValidationUtil.publishOutputResult(objMap))
 			throw new AdminTestException("Failed at output validation");
-
 	}
 
-	/**
-	 * The method ser current test name to result
+	/*
+	 * The method set current test name to result
 	 * 
 	 * @param result
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void setResultTestName(ITestResult result) {
+
 		try {
 			Field method = TestResult.class.getDeclaredField("m_method");
 			method.setAccessible(true);

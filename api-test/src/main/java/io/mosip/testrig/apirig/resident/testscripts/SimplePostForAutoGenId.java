@@ -84,7 +84,6 @@ public class SimplePostForAutoGenId extends ResidentUtil implements ITest {
 	 * @throws AuthenticationTestException
 	 * @throws AdminTestException
 	 * @throws NoSuchAlgorithmException
-	 * @throws SecurityXSSException 
 	 */
 	@Test(dataProvider = "testcaselist")
 	public void test(TestCaseDTO testCaseDTO)
@@ -108,7 +107,6 @@ public class SimplePostForAutoGenId extends ResidentUtil implements ITest {
 		
 		inputJson = ResidentUtil.inputstringKeyWordHandeler(inputJson, testCaseName);
 
-		String outputJson = getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate());
 
 		if (testCaseDTO.getTemplateFields() != null && templateFields.length > 0) {
 			ArrayList<JSONObject> inputtestCases = AdminTestUtil.getInputTestCase(testCaseDTO);

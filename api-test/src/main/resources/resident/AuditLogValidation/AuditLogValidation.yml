@@ -1,0 +1,13 @@
+AuditLogValidation:
+   Resident_AuditLogValidation_All_Valid_Smoke:
+      endPoint: SELECT COUNT(*) FROM audit.app_audit_log
+      uniqueIdentifier: TC_Resident_AuditLogValidation_01
+      description: Get the AuditLogs details from database
+      role: audit
+      restMethod: post
+      inputTemplate: resident/AuditLogValidation/AuditLogValidation
+      outputTemplate: resident/AuditLogValidation/AuditLogValidationResult
+      input: '{
+}'
+      output: '{
+}'

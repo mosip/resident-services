@@ -45,6 +45,7 @@ import io.mosip.testrig.apirig.utils.MispPartnerAndLicenseKeyGeneration;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.PartnerRegistration;
 import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
+import io.mosip.testrig.apirig.utils.Watchdog;
 
 /**
  * Class to initiate mosip api test execution
@@ -66,6 +67,9 @@ public class MosipTestRunner {
 	 * @param arg
 	 */
 	public static void main(String[] arg) {
+		// Set execution elapse timeout to 1.5 hour
+		Watchdog watchdog = new Watchdog(90 * 60 * 1000L);
+		watchdog.start();
 
 		try {
 			LOGGER.info("** ------------- API Test Rig Run Started --------------------------------------------- **");
@@ -117,6 +121,9 @@ public class MosipTestRunner {
 		OTPListener.bTerminate = true;
 
 		HealthChecker.bTerminate = true;
+		
+		// Stop watchdog since task completed successfully
+		watchdog.stop();
 
 		System.exit(0);
 
