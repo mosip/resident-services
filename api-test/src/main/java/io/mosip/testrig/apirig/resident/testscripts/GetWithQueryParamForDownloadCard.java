@@ -31,6 +31,7 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
 public class GetWithQueryParamForDownloadCard extends ResidentUtil implements ITest {
@@ -81,7 +82,7 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	 * @throws Exception 
 	 */
 	@Test(dataProvider = "testcaselist")
-	public void test(TestCaseDTO testCaseDTO) throws Exception {
+	public void test(TestCaseDTO testCaseDTO) throws Exception, SecurityXSSException {
 		testCaseName = testCaseDTO.getTestCaseName();
 		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
 		if (HealthChecker.signalTerminateExecution) {
