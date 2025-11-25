@@ -67,9 +67,7 @@ public class MosipTestRunner {
 	 * @param arg
 	 */
 	public static void main(String[] arg) {
-		// Set execution elapse timeout to 1.5 hour
-		Watchdog watchdog = new Watchdog(90 * 60 * 1000L);
-		watchdog.start();
+		Watchdog watchdog = null;
 
 		try {
 			LOGGER.info("** ------------- API Test Rig Run Started --------------------------------------------- **");
@@ -84,6 +82,14 @@ public class MosipTestRunner {
 			}
 			AdminTestUtil.init();
 			ResidentConfigManager.init();
+			
+			// Read timeout from properties, fallback to 120 if not set which is 2 hours with buffer timing
+			String timeoutStr = ResidentConfigManager.getproperty("watchdogTimeoutMinutes");
+			long timeoutMinutes = timeoutStr.isEmpty() ? 120 : Long.parseLong(timeoutStr);
+
+			watchdog = new Watchdog(timeoutMinutes * 60 * 1000L);
+			watchdog.start();
+						
 			suiteSetup(getRunType());
 			SkipTestCaseHandler.loadTestcaseToBeSkippedList("testCaseSkippedList.txt");
 			GlobalMethods.setModuleNameAndReCompilePattern(ResidentConfigManager.getproperty("moduleNamePattern"));
@@ -123,7 +129,9 @@ public class MosipTestRunner {
 		HealthChecker.bTerminate = true;
 		
 		// Stop watchdog since task completed successfully
-		watchdog.stop();
+		if (watchdog != null) {
+			watchdog.stop();
+		}
 
 		System.exit(0);
 
