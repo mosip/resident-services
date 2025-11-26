@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.core.util.TokenHandlerUtil;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -65,7 +65,7 @@ public class TokenGenerator {
         TokenRequestDto tokenRequest = new TokenRequestDto();
         tokenRequest.setId(environment.getProperty("token.request.id"));
 
-        tokenRequest.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+        tokenRequest.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
         // tokenRequest.setRequest(setPasswordRequestDTO());
         tokenRequest.setRequest(dto);
         tokenRequest.setVersion(environment.getProperty("token.request.version"));

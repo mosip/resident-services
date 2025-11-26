@@ -11,7 +11,7 @@ import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.pdfgenerator.constant.PDFGeneratorExceptionCodeConstant;
@@ -433,10 +433,10 @@ public class Utility {
 
 	public ResidentTransactionEntity createEntity(RequestType requestType) {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setRequestDtimes(DateUtils2.getUTCCurrentDateTime());
+		residentTransactionEntity.setResponseDtime(DateUtils2.getUTCCurrentDateTime());
 		residentTransactionEntity.setCrBy(sessionUserNameUtility.getSessionUserName());
-		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setCrDtimes(DateUtils2.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
 		if (ServiceType.ASYNC.getRequestTypes().contains(requestType)) {
 			residentTransactionEntity.setReadStatus(false);
@@ -494,9 +494,9 @@ public class Utility {
 			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
 			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			LocalDateTime localdatetime = LocalDateTime
-					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
+					.parse(DateUtils2.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
 
-			request.setTimeStamp(DateUtils.getUTCCurrentDateTimeString());
+			request.setTimeStamp(DateUtils2.getUTCCurrentDateTimeString());
 			RequestWrapper<PDFSignatureRequestDto> requestWrapper = new RequestWrapper<>();
 
 			requestWrapper.setRequest(request);
@@ -531,7 +531,7 @@ public class Utility {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.EVENT_ID + "}", eventId);
 		}
 		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
-			String dateTimeFormat = formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime());
+			String dateTimeFormat = formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils2.getUTCCurrentDateTime());
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}", dateTimeFormat);
 		}
 		return propertyName;
@@ -542,7 +542,7 @@ public class Utility {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.ID + "}", id);
 		}
 		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
-			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}", formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}", formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils2.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
@@ -592,7 +592,7 @@ public class Utility {
 		}
 		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}",
-					formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
+					formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils2.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
@@ -911,7 +911,7 @@ public class Utility {
 		residentTransactionEntity.setReadStatus(readStatus);
 		residentTransactionEntity.setStatusComment(statusComment);
 		residentTransactionEntity.setUpdBy(ResidentConstants.RESIDENT);
-		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setUpdDtimes(DateUtils2.getUTCCurrentDateTime());
 		saveEntity(residentTransactionEntity);
 	}
 

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -125,7 +125,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 								residentTransactionEntity.setStatusCode(status);
 								residentTransactionEntity.setReadStatus(false);
 								residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
-								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+								residentTransactionEntity.setUpdDtimes(DateUtils2.getUTCCurrentDateTime());
 							});
 							residentTransactionRepository.saveAll(residentTransactionEntities);
 						} else {

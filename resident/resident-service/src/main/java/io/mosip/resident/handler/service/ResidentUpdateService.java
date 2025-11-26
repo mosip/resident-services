@@ -32,7 +32,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
@@ -182,7 +182,7 @@ public class ResidentUpdateService {
 
 				packetZipBytes = IOUtils.toByteArray(fis);
 
-				String creationTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+				String creationTime = DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime());
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),

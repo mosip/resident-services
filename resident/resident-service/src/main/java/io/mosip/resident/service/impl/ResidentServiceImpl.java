@@ -68,7 +68,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -352,7 +352,7 @@ public class ResidentServiceImpl implements ResidentService {
 		dto.setRequest(rids);
 		dto.setId(env.getProperty(STATUS_CHECK_ID));
 		dto.setVersion(env.getProperty(STATUS_CHECEK_VERSION));
-		dto.setRequesttime(DateUtils.getUTCCurrentDateTimeString(env.getProperty(DATETIME_PATTERN)));
+		dto.setRequesttime(DateUtils2.getUTCCurrentDateTimeString(env.getProperty(DATETIME_PATTERN)));
 		logger.debug("Getting RID status based on individual id");
 		try {
 			responseWrapper = (RegistrationStatusResponseDTO) residentServiceRestClient.postApi(
@@ -1325,7 +1325,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder()
 				.sortType("desc").sortField("createdDateTime").build();
 		MachineSearchRequestDTO machineSearchRequestDTO = MachineSearchRequestDTO.builder().version("1.0")
-				// .requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				// .requesttime(DateUtils2.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(
 						MachineSearchRequestDTO.MachineSearchRequest.builder()
 								.filters(List.of(searchFilterName, searchFilterPublicKey)).sort(List.of(searchSort))
@@ -1372,9 +1372,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode,
 			String regCenterId, String publicKey) throws ApisResourceAccessException {
 		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
-				// .requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				// .requesttime(DateUtils2.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
-						.validityDateTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime().plusYears(3)))
+						.validityDateTime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime().plusYears(3)))
 						.name(residentMachinePrefix + System.currentTimeMillis()).machineSpecId(machineSpecId)
 						.zoneCode(zoneCode).regCenterId(regCenterId).publicKey(publicKey).signPublicKey(publicKey)
 						.build())
@@ -1589,7 +1589,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
 				ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
-				sessionUserNameUtility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
+				sessionUserNameUtility.getSessionUserName(), DateUtils2.getUTCCurrentDateTime());
 		return pdfBytes;
 	}
 
@@ -1603,7 +1603,7 @@ public class ResidentServiceImpl implements ResidentService {
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, locale, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
-		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+		responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
 		return responseWrapper;
 	}
 
@@ -1888,7 +1888,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusResponseDTO.setInfo(eventStatusMap);
 			responseWrapper.setId(serviceEventId);
 			responseWrapper.setVersion(serviceEventVersion);
-			responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+			responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
 			responseWrapper.setResponse(eventStatusResponseDTO);
 
 		} catch (ApisResourceAccessException e) {
@@ -1952,7 +1952,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
+		LocalDateTime dt = DateUtils2.getUTCCurrentDateTime();
 		Optional<ResidentUserEntity> entity = residentUserRepository.findById(idaToken);
 		if (entity.isPresent()) {
 			return residentUserRepository.updateByIdLastbellnotifDtimes(idaToken, dt);
@@ -2007,7 +2007,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
 		if(eventReqDateTime == null){
-			eventReqDateTime = DateUtils.getUTCCurrentDateTime();
+			eventReqDateTime = DateUtils2.getUTCCurrentDateTime();
 		}
 		if(fromDate == null){
 			fromDate = LocalDate.of(LocalDate.now().getYear(), Month.JANUARY, 1);
@@ -2070,7 +2070,7 @@ public class ResidentServiceImpl implements ResidentService {
 		Map<String, Object> data = new HashMap<>();
 		responseWrapper.setId(env.getProperty(ResidentConstants.RESIDENT_USER_PROFILE_ID));
 		responseWrapper.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
-		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+		responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTime());
 		//Return the second element
 		List<ResidentSessionEntity> lastTwoLoginEntities = residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		if (!lastTwoLoginEntities.isEmpty()) {

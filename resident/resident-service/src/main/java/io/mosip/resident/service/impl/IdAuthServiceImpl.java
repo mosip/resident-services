@@ -45,7 +45,7 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
@@ -277,7 +277,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setStatusCode(verified? EventStatusSuccess.OTP_VERIFIED.name(): EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
-			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+			residentTransactionEntity.setUpdDtimes(DateUtils2.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		return residentTransactionEntity;
@@ -288,7 +288,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			IOException, JsonProcessingException, CertificateEncodingException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 				"IdAuthServiceImpl::internelOtpAuth()::entry");
-		String dateTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
+		String dateTime = DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime());
 		AuthRequestDTO authRequestDTO = new AuthRequestDTO();
 		authRequestDTO.setId(internalAuthId);
 		authRequestDTO.setVersion(internalAuthVersion);
@@ -363,7 +363,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		builder.queryParam("applicationId", "IDA");
 		builder.queryParam("referenceId", refId);
-		builder.queryParam("timeStamp", DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		builder.queryParam("timeStamp", DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 
 		UriComponents uriComponent = builder.build(false).encode();
 
@@ -417,7 +417,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTypeStatusRequestDto.setId(authTypeStatusId);
 		authTypeStatusRequestDto.setIndividualId(individualId);
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
-		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		authTypeStatusRequestDto.setRequestTime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		List<io.mosip.resident.dto.AuthTypeStatus> authTypes = new ArrayList<>();
 		String requestIdForAuthLockUnLock = null;
 		for (Entry<String, AuthTypeStatus> entry : authTypeStatusMap.entrySet()) {

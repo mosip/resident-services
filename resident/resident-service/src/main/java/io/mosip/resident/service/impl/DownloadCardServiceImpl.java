@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatusFailure;
@@ -214,7 +214,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRefIdType(uinVidValidator.getIndividualIdType(individualId).name());
 		residentTransactionEntity.setUpdBy(sessionUserNameUtility.getSessionUserName());
-		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setUpdDtimes(DateUtils2.getUTCCurrentDateTime());
 	}
 
 	@Override
@@ -389,7 +389,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			credentialReqestDto.setAdditionalData(additionalAttributes);
 			requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
 			requestDto.setRequest(credentialReqestDto);
-			requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+			requestDto.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 			requestDto.setVersion(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_VERSION);
 			ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
 					environment.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
@@ -440,7 +440,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		}
 		responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
 		responseWrapper.setVersion(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
-		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+		responseWrapper.setResponsetime(DateUtils2.getUTCCurrentDateTimeString());
 		responseWrapper.setResponse(vidDownloadCardResponseDto);
 		logger.debug("DownloadCardServiceImpl::getVidCardEventId()::exit");
 		return Tuples.of(responseWrapper, eventId);
@@ -493,7 +493,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		checkStatusResponseDTOResponseWrapper
 				.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
 		checkStatusResponseDTOResponseWrapper
-				.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+				.setResponsetime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		return checkStatusResponseDTOResponseWrapper;
 	}
 

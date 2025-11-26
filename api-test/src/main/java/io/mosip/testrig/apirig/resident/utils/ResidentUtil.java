@@ -24,7 +24,7 @@ import io.restassured.response.Response;
 public class ResidentUtil extends AdminTestUtil {
 
 	private static final Logger logger = Logger.getLogger(ResidentUtil.class);
-	
+	protected static int ResidentAuditCount = 0;
 	protected static final String ESIGNET_PAYLOAD = "config/esignetPayload.json";
 	
 	public static void setLogLevel() {
@@ -42,25 +42,27 @@ public class ResidentUtil extends AdminTestUtil {
 
 		addTestCaseDetailsToMap(modifiedTestCaseName, testCaseDTO.getUniqueIdentifier());
 		
+		if (testCaseName.contains("ESignet_")
+				&& (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET) || isCaptchaEnabled())) {
+			if (!MosipTestRunner.skipAll) {
+				MosipTestRunner.skipAll = true;
+			}
+		}
+
 		if (MosipTestRunner.skipAll == true) {
-			throw new SkipException(GlobalConstants.PRE_REQUISITE_FAILED_MESSAGE);
+			if (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET) == true) {
+				throw new SkipException(GlobalConstants.SERVICE_NOT_DEPLOYED);
+				  } else if (isCaptchaEnabled() == true) {
+				  GlobalMethods.reportCaptchaStatus(GlobalConstants.CAPTCHA_ENABLED, true);
+				  throw new SkipException(GlobalConstants.CAPTCHA_ENABLED_MESSAGE);
+				 
+			} 
 		}
 		
 		if (SkipTestCaseHandler.isTestCaseInSkippedList(testCaseName)) {
 			throw new SkipException(GlobalConstants.KNOWN_ISSUES);
 		}
 		
-		if ((ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET))
-				&& BaseTestCase.currentModule.equalsIgnoreCase("resident") && testCaseName.contains("_SignJWT_")) {
-			throw new SkipException("esignet module is not deployed");
-		}
-
-		if ((ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET))
-				&& BaseTestCase.currentModule.equalsIgnoreCase("resident")
-				&& (testCaseDTO.getRole() != null && (testCaseDTO.getRole().equalsIgnoreCase("residentNew")
-						|| testCaseDTO.getRole().equalsIgnoreCase("residentNewVid")))) {
-			throw new SkipException("esignet module is not deployed");
-		}
 		if (BaseTestCase.currentModule.equalsIgnoreCase(GlobalConstants.RESIDENT)) {
 			if (testCaseDTO.getRole() != null && (testCaseDTO.getRole().equalsIgnoreCase(GlobalConstants.RESIDENTNEW)
 					|| testCaseDTO.isValidityCheckRequired())) {

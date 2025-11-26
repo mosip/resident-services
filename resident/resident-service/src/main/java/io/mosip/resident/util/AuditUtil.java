@@ -26,7 +26,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
@@ -131,7 +131,7 @@ public class AuditUtil {
 				auditRequestDto.setSessionUserName("UnknownSessionName");
 				auditRequestDto.setCreatedBy("Unknown");
 			}
-			auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
+			auditRequestDto.setActionTimeStamp(DateUtils2.getUTCCurrentDateTime());
 			auditRequestDto.setDescription(auditEvent.getDescription());
 			auditRequestDto.setEventType(auditEvent.getType());
 			auditRequestDto.setEventName(auditEvent.getName());

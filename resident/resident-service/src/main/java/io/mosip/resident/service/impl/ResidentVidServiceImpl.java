@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -287,7 +287,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setId(id);
 			responseDto.setVersion(version);
 		}
-		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		responseDto.setResponsetime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		if(eventId == null) {
 			eventId = ResidentConstants.NOT_AVAILABLE;
 		}
@@ -387,7 +387,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setId(vidCreateId);
 		request.setVersion(residentCreateVidVersion);
 		request.setRequest(vidRequestDto);
-		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		request.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				IdType.UIN.name(),
@@ -582,7 +582,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setId(revokeVidId);
 			responseDto.setVersion(version);
 		}
-		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		responseDto.setResponsetime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 
 		if(eventId == null) {
 			eventId = ResidentConstants.NOT_AVAILABLE;
@@ -712,7 +712,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setId(vidRevokeId);
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
-		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		request.setRequesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()));
 		String apiUrl=env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid;
 		
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),

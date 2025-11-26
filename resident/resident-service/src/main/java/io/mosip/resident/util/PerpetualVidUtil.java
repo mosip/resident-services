@@ -2,7 +2,7 @@ package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -103,7 +103,7 @@ public class PerpetualVidUtil {
         ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
         res.setId(residentVidGetId);
         res.setVersion(newVersion);
-        res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        res.setResponsetime(DateUtils2.getUTCCurrentDateTimeString());
         if(response.getErrors()!=null && !response.getErrors().isEmpty()){
             res.setResponse(List.of());
             return res;

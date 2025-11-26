@@ -2,7 +2,7 @@ package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.HMACUtils;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.preregistration.application.constant.PreRegLoginErrorConstants;
@@ -105,7 +105,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(availableClaimUtility.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
-        if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
+        if (this.otpRepo.checkotpsent(refId, "active", DateUtils2.getUTCCurrentDateTime(), DateUtils2.getUTCCurrentDateTime()
                 .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
         Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.max-count", Integer.class))) {
             logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
@@ -121,9 +121,9 @@ public class OtpManagerServiceImpl implements OtpManager {
             otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionId()));
             otpTxn.setOtpHash(otpHash);
             otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
-            otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
-            otpTxn.setGeneratedDtimes(DateUtils.getUTCCurrentDateTime());
-            otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
+            otpTxn.setCrDtimes(DateUtils2.getUTCCurrentDateTime());
+            otpTxn.setGeneratedDtimes(DateUtils2.getUTCCurrentDateTime());
+            otpTxn.setExpiryDtimes(DateUtils2.getUTCCurrentDateTime().plusSeconds((Long)
                     this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
             otpTxn.setStatusCode("active");
             this.otpRepo.save(otpTxn);
@@ -204,7 +204,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         OtpTransactionEntity otpTxn = otpRepo.findTopByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS);
         otpTxn.setStatusCode(PreRegLoginConstant.USED_STATUS);
         otpRepo.save(otpTxn);
-        if (!(otpTxn.getExpiryDtimes().isAfter(DateUtils.getUTCCurrentDateTime()))) {
+        if (!(otpTxn.getExpiryDtimes().isAfter(DateUtils2.getUTCCurrentDateTime()))) {
             logger.error(PreRegLoginConstant.SESSION_ID, this.getClass().getSimpleName(),
                     PreRegLoginErrorConstants.EXPIRED_OTP.getErrorCode(), OTP_EXPIRED);
             throw new ResidentServiceException(ResidentErrorCode.EXPIRED_OTP.getErrorCode(),

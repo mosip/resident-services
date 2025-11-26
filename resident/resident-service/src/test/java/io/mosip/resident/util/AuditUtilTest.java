@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
@@ -95,7 +95,7 @@ public class AuditUtilTest {
         ReflectionTestUtils.setField(auditUtil, "asyncUtil", asyncUtil);
 
         host = InetAddress.getLocalHost();
-        localDateTime = DateUtils.getUTCCurrentDateTime();
+        localDateTime = DateUtils2.getUTCCurrentDateTime();
         ReflectionTestUtils.setField(auditUtil, "hostIpAddress","MOSIP");
         when(availableClaimValueUtility.getAvailableClaimValue(Mockito.anyString())).thenReturn("user1");
         when(environment.getProperty(Mockito.anyString())).thenReturn("user1");

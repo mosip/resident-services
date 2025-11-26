@@ -3,7 +3,7 @@ package io.mosip.resident.validator;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.DateUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -279,7 +279,7 @@ public class RequestValidator {
 	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
 
 		try {
-			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
+			DateUtils2.parseToLocalDateTime(requestDto.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(
 					AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, REQUESTTIME, "Request to generate VID"));
@@ -334,7 +334,7 @@ public class RequestValidator {
 	public void validateVidCreateV2Request(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
 
 		try {
-			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
+			DateUtils2.parseToLocalDateTime(requestDto.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(
 					AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, REQUESTTIME, "Request to generate VID"));
@@ -668,7 +668,7 @@ public class RequestValidator {
 			throw new InvalidInputException("revokeVidId");
 		}
 		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
+			DateUtils2.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, REQUESTTIME, msg));
 			throw new InvalidInputException(REQUESTTIME);
@@ -721,7 +721,7 @@ public class RequestValidator {
 			throw new InvalidInputException("revokeVidIdNew");
 		}
 		try {
-			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
+			DateUtils2.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, REQUESTTIME, msg));
 			throw new InvalidInputException(REQUESTTIME);
@@ -738,7 +738,7 @@ public class RequestValidator {
 		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException(ID);
 		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
+			DateUtils2.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException(REQUESTTIME);
 		}
@@ -1222,7 +1222,7 @@ public class RequestValidator {
 	}
 
 	public void validateRequestTime(Date requestTime) {
-		String localDateTime =DateUtils.getUTCCurrentDateTimeString();
+		String localDateTime =DateUtils2.getUTCCurrentDateTimeString();
 		Date afterDate = Date.from(Instant.parse(localDateTime).plusSeconds(Long.parseLong(
 				Objects.requireNonNull(this.environment.getProperty(ResidentConstants.RESIDENT_FUTURE_TIME_LIMIT)))));
 		Date beforeDate = Date.from(Instant.parse(localDateTime).minusSeconds(Long.parseLong(
@@ -1340,7 +1340,7 @@ public class RequestValidator {
 		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException(ID);
 		try {
-			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
+			DateUtils2.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException(REQUESTTIME);
 		}
