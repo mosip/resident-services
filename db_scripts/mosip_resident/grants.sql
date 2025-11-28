@@ -23,6 +23,18 @@ GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
    ON ALL TABLES IN SCHEMA resident
    TO residentuser;
 
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+ON resident.otp_transaction
+TO residentuser;
+
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+ON resident.resident_grievance_ticket
+TO residentuser;
+
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+   ON resident.resident_user_actions
+   TO residentuser;
+
 ALTER DEFAULT PRIVILEGES IN SCHEMA resident 
 	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO residentuser;
 -----------------------------------------------------------------------------------------------------
