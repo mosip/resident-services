@@ -5,8 +5,12 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AttributeListDto;
+import io.mosip.resident.dto.DraftResidentResponseDto;
+import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.UpdateCountDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.impl.IdentityServiceTest;
 import io.mosip.resident.service.impl.PendingDrafts;
 import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import org.junit.Test;
@@ -110,6 +114,89 @@ public class ValidateNewUpdateRequestTest {
 
         verify(remainingUpdateCountByIndividualId, times(1)).getRemainingUpdateCountByIndividualId(Mockito.<List<String>>any());
         verify(objectMapper, times(1)).convertValue(responseWrapper.getResponse(), AttributeListDto.class);
+    }
+
+    // ---------- validateNewUpdateRequest tests ----------
+
+    @Test
+    public void validateNewUpdateRequest_notSecureSession_shouldNotCallPendingDrafts()
+            throws ResidentServiceCheckedException, ApisResourceAccessException {
+
+        // should not throw
+        validator.validateNewUpdateRequest();
+
+        verifyNoInteractions(pendingDrafts);
+    }
+
+    @Test
+    public void validateNewUpdateRequest_secureSession_noPendingDrafts_shouldNotThrow()
+            throws ResidentServiceCheckedException, ApisResourceAccessException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+
+        DraftResidentResponseDto responseDto = new DraftResidentResponseDto();
+        responseDto.setDrafts(Collections.emptyList());
+
+        ResponseWrapper<DraftResidentResponseDto> wrapper = new ResponseWrapper<>();
+        wrapper.setResponse(responseDto);
+
+        when(pendingDrafts.getPendingDrafts(null)).thenReturn(wrapper);
+
+        // should not throw
+        validator.validateNewUpdateRequest();
+
+        verify(pendingDrafts, times(1)).getPendingDrafts(null);
+    }
+
+    @Test
+    public void validateNewUpdateRequest_secureSession_pendingDrafts_cancellable_shouldThrowPacketError()
+            throws ApisResourceAccessException, ResidentServiceCheckedException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+
+        DraftUinResidentResponseDto draft = new DraftUinResidentResponseDto();
+        draft.setCancellable(true);
+
+        DraftResidentResponseDto responseDto = new DraftResidentResponseDto();
+        responseDto.setDrafts(List.of(draft));
+        ResponseWrapper<DraftResidentResponseDto> wrapper = new ResponseWrapper<>();
+        wrapper.setResponse(responseDto);
+
+        when(pendingDrafts.getPendingDrafts(null)).thenReturn(wrapper);
+
+        try {
+            validator.validateNewUpdateRequest();
+            fail("Expected ResidentServiceCheckedException for pending cancelable draft");
+        } catch (ResidentServiceCheckedException ex) {
+            assertEquals(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_PACKET.getErrorCode(),
+                    ex.getErrorCode());
+        }
+
+        verify(pendingDrafts, times(1)).getPendingDrafts(null);
+    }
+
+    @Test
+    public void validateNewUpdateRequest_secureSession_pendingDrafts_notCancellable_shouldThrowRequestError()
+            throws ApisResourceAccessException, ResidentServiceCheckedException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+
+        DraftUinResidentResponseDto draft = new DraftUinResidentResponseDto();
+        draft.setCancellable(false);
+
+        DraftResidentResponseDto responseDto = new DraftResidentResponseDto();
+        responseDto.setDrafts(List.of(draft));
+        ResponseWrapper<DraftResidentResponseDto> wrapper = new ResponseWrapper<>();
+        wrapper.setResponse(responseDto);
+
+        when(pendingDrafts.getPendingDrafts(null)).thenReturn(wrapper);
+
+        try {
+            validator.validateNewUpdateRequest();
+            fail("Expected ResidentServiceCheckedException for pending non-cancelable draft");
+        } catch (ResidentServiceCheckedException ex) {
+            assertEquals(ResidentErrorCode.NOT_ALLOWED_TO_UPDATE_UIN_PENDING_REQUEST.getErrorCode(),
+                    ex.getErrorCode());
+        }
+
+        verify(pendingDrafts, times(1)).getPendingDrafts(null);
     }
     
 }
