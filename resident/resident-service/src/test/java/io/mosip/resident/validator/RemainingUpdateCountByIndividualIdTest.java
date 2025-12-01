@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for RemainingUpdateCountByIndividualId.
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RemainingUpdateCountByIndividualIdTest {
