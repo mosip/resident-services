@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for AuthTypeCodeTemplateData
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AuthTypeCodeTemplateDataTest {

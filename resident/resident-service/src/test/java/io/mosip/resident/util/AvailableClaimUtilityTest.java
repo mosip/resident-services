@@ -15,6 +15,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for AvailableClaimUtility
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AvailableClaimUtilityTest {
