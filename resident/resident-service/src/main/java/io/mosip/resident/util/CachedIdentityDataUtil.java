@@ -22,8 +22,8 @@ public class CachedIdentityDataUtil {
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 
 	@Autowired
-	@Qualifier("restClientWithSelfTokenRestTemplate")
-	private ResidentServiceRestClient restClientWithSelfTokenRestTemplate;
+	@Qualifier("restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
     public  <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
 		Map<String, String> pathSegments = new HashMap<String, String>();
@@ -34,7 +34,7 @@ public class CachedIdentityDataUtil {
 
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
-		return restClientWithSelfTokenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
+		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
 				pathSegments, queryParamName, queryParamValue, responseType);
 	}
 

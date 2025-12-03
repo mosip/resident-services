@@ -27,7 +27,7 @@ public class CachedIdentityDataUtilTest {
     private CachedIdentityDataUtil cachedIdentityDataUtil;
 
     @Mock
-    private ResidentServiceRestClient restClientWithSelfTokenRestTemplate;
+    private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
     @Before
     public void setUp() {
@@ -36,8 +36,8 @@ public class CachedIdentityDataUtilTest {
         // inject mock
         ReflectionTestUtils.setField(
                 cachedIdentityDataUtil,
-                "restClientWithSelfTokenRestTemplate",
-                restClientWithSelfTokenRestTemplate
+                "restClientWithSelfTOkenRestTemplate",
+                restClientWithSelfTOkenRestTemplate
         );
     }
 
@@ -47,7 +47,7 @@ public class CachedIdentityDataUtilTest {
         Class<?> responseType = String.class;
         String expectedResponse = "SUCCESS_PAYLOAD";
 
-        when(restClientWithSelfTokenRestTemplate.getApi(
+        when(restClientWithSelfTOkenRestTemplate.getApi(
                 eq(ApiName.IDREPO_IDENTITY_URL),
                 anyMap(),
                 anyList(),
@@ -64,7 +64,7 @@ public class CachedIdentityDataUtilTest {
         ArgumentCaptor<List> nameCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<List> valueCaptor = ArgumentCaptor.forClass(List.class);
 
-        verify(restClientWithSelfTokenRestTemplate, times(1))
+        verify(restClientWithSelfTOkenRestTemplate, times(1))
                 .getApi(eq(ApiName.IDREPO_IDENTITY_URL),
                         pathCaptor.capture(),
                         nameCaptor.capture(),
@@ -89,7 +89,7 @@ public class CachedIdentityDataUtilTest {
         String expectedResponse = "CACHED_RESPONSE";
 
         // stub getIdentityData() internal call
-        when(restClientWithSelfTokenRestTemplate.getApi(
+        when(restClientWithSelfTOkenRestTemplate.getApi(
                 eq(ApiName.IDREPO_IDENTITY_URL),
                 anyMap(),
                 anyList(),
@@ -101,7 +101,7 @@ public class CachedIdentityDataUtilTest {
 
         assertEquals(expectedResponse, result);
 
-        verify(restClientWithSelfTokenRestTemplate, times(1))
+        verify(restClientWithSelfTOkenRestTemplate, times(1))
                 .getApi(eq(ApiName.IDREPO_IDENTITY_URL),
                         anyMap(),
                         anyList(),
@@ -111,7 +111,7 @@ public class CachedIdentityDataUtilTest {
 
     @Test(expected = ApisResourceAccessException.class)
     public void testGetIdentityData_whenApiThrows_shouldPropagate() throws Exception {
-        when(restClientWithSelfTokenRestTemplate.getApi(
+        when(restClientWithSelfTOkenRestTemplate.getApi(
                 any(),
                 anyMap(),
                 anyList(),
