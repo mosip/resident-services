@@ -534,21 +534,9 @@ public class IdAuthServiceTest {
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException());
 
-
-        String idaToken = "ida-token-xyz";
-        when(availableClaimUtility.getIDATokenForIndividualId(Mockito.any()))
-                .thenReturn(idaToken);
-
         ResidentTransactionEntity txEntity = new ResidentTransactionEntity();
         txEntity.setEventId("event-1");
         txEntity.setAttributeList("PHONE");
-
-        when(residentTransactionRepository
-                .findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(
-                        Mockito.any(String.class), Mockito.any(String.class), Mockito.anyList()))
-                .thenReturn(txEntity);
-
-        when(sessionUserNameUtility.getSessionUserName()).thenReturn("test-user");
 
         // when
         Tuple2<Boolean, ResidentTransactionEntity> result =
