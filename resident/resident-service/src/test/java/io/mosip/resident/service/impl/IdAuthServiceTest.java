@@ -479,5 +479,91 @@ public class IdAuthServiceTest {
         verify(validateOtpCharLimit, times(1)).validateOtpCharLimit("111111");
         verify(residentTransactionRepository).save(txEntity);
     }
+
+    /**
+     * Failure path – OTP verification fails due to API resource access exception.
+     */
+    @Test(expected = OtpValidationFailedException.class)
+    public void validateOtpV2FailureApiResourceException() throws Exception {
+
+        IdAuthResponseDto authResponse = new IdAuthResponseDto();
+        authResponse.setAuthStatus(true);
+        AuthResponseDTO response = new AuthResponseDTO();
+        response.setResponse(authResponse);
+
+        String request = "request";
+
+        String certificate = "-----BEGIN CERTIFICATE-----\n" +
+                "MIIDrTCCApWgAwIBAgIIrpI6A2r3eqswDQYJKoZIhvcNAQELBQAwdjELMAkGA1UE\n" +
+                "BhMCSU4xCzAJBgNVBAgMAktBMRIwEAYDVQQHDAlCQU5HQUxPUkUxDTALBgNVBAoM\n" +
+                "BElJVEIxIDAeBgNVBAsMF01PU0lQLVRFQ0gtQ0VOVEVSIChJREEpMRUwEwYDVQQD\n" +
+                "DAx3d3cubW9zaXAuaW8wHhcNMjExMjIyMTUxMjA0WhcNMjMxMjIyMTUxMjA0WjB2\n" +
+                "MQswCQYDVQQGEwJJTjELMAkGA1UECAwCS0ExEjAQBgNVBAcMCUJBTkdBTE9SRTEN\n" +
+                "MAsGA1UECgwESUlUQjEgMB4GA1UECwwXTU9TSVAtVEVDSC1DRU5URVIgKElEQSkx\n" +
+                "FTATBgNVBAMMDElEQS1JTlRFUk5BTDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC\n" +
+                "AQoCggEBAJzaknlQZ6P/a8SI7GvrXa3ZnLqYwAC4c6kR7+rwPZRRlPHbGPCl9rLm\n" +
+                "Wgv2JNJLWK8OMa/U9TgWyogU3sXt+r5hXpBLc2dwqLEq6zPinjLoIG7l1Lu/vJCb\n" +
+                "0xXwllhjNqYFmsOb3ic3DoSycdXSj63oX+oHk3ghvRtcWzvGJPprsYOzyqSQmfqZ\n" +
+                "/TQJ7/JRajsY7oEcbMYa0uelWgrkvMZwEMhESQHzMdjQUzplAkk5hfFhCagIGoz8\n" +
+                "xF9JiGAtYvI98p2ZOyBqPC8zhVPlPa2R/zs2cZuPf2Pct46jMoMQ0KRhWUFJ89hz\n" +
+                "YKV7XtDJk0hBaVkLeuDJSQxZ+voDTW8CAwEAAaM/MD0wDAYDVR0TAQH/BAIwADAd\n" +
+                "BgNVHQ4EFgQU7+vHTy+sk1PhZcHuza7JFymIY0IwDgYDVR0PAQH/BAQDAgUgMA0G\n" +
+                "CSqGSIb3DQEBCwUAA4IBAQA9ovMUDmV6ffQR9ZXUpWcPTMZc7ypMTia7Vtpxp1A3\n" +
+                "T0P9d5lN9RjRYM6WWZ7URN12vBm2O58BiD/RqBz3gu6nADQ8gdj3WDtTlb8UBOZF\n" +
+                "Z84qso9qmd4T4Xr/y3lRRcxLLjytRhfnivS1VWaiOD5nQhz3HEHT1t1/Ldg786k3\n" +
+                "ZK3y6vmLZpbh1Ot0zT/gS5J+WmjYjefE4WG6PlhyypyTi+cWeWV+LRIAEYNRA9+G\n" +
+                "4VObWa+kqa/YvTDRcJ+PcjK/W2N+7Dg/FTui0eqavoSlIEy2KEbNTSDd1HK3qPUf\n" +
+                "RcvjiQLoyaZFsyWDXXucWu/kwUg++xvceSWdAa2gXFlW\n" +
+                "-----END CERTIFICATE-----";
+        PublicKeyResponseDto responseDto = new PublicKeyResponseDto();
+        responseDto.setCertificate(certificate);
+        responseDto.setPublicKey(
+                "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApGh1E3bppaeL8pznuRFx-diebah_ZIcIqs_uCJFvK-x2FkWi0F73tzTYYXE6R-peMmfgjMz8OVIcILEFylVpeQEPHy9ChNEhdSI861zSDbhW_aPPUMWgUOsMzD3b_b5IPLKODUWsGoeY2U8uwjLeVQjje89RK5z080C8SmhX0NRNPkfgX4K71kpqcP6ROKQMhHZ5m8ezdVb_AogndFx8Jw8A1CgIOPfFMY7z-l5UbH8afOydrtH2nShb5HAal5vX4tGOyv0KsZIrBR3YquNfw9vEzmHfrvt_0xrYubasbh3_Fnal57LY-GdQ7XKf9OPXJGDL4B85Z_gkbvefYhFflwIDAQAB");
+        ResponseWrapper<PublicKeyResponseDto> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(responseDto);
+
+        when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
+        when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
+        when(environment.getProperty(anyString())).thenReturn("dummy url");
+
+        doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
+        doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
+
+        when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
+
+        when(restClient.postApi(any(), any(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException());
+
+
+        String idaToken = "ida-token-xyz";
+        when(availableClaimUtility.getIDATokenForIndividualId(Mockito.any()))
+                .thenReturn(idaToken);
+
+        ResidentTransactionEntity txEntity = new ResidentTransactionEntity();
+        txEntity.setEventId("event-1");
+        txEntity.setAttributeList("PHONE");
+
+        when(residentTransactionRepository
+                .findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(
+                        Mockito.any(String.class), Mockito.any(String.class), Mockito.anyList()))
+                .thenReturn(txEntity);
+
+        when(sessionUserNameUtility.getSessionUserName()).thenReturn("test-user");
+
+        // when
+        Tuple2<Boolean, ResidentTransactionEntity> result =
+                idAuthService.validateOtpV2("1234567890", "1234567890", "111111", RequestType.VALIDATE_OTP);
+
+        // then
+        assertTrue(result.getT1());
+        assertEquals(txEntity, result.getT2());
+
+        assertEquals("OTP verified successfully", txEntity.getRequestSummary());
+        assertEquals(EventStatusSuccess.OTP_VERIFIED.name(), txEntity.getStatusCode());
+        assertEquals("OTP verified successfully", txEntity.getStatusComment());
+        assertEquals("test-user", txEntity.getUpdBy());
+        verify(validateOtpCharLimit, times(1)).validateOtpCharLimit("111111");
+        verify(residentTransactionRepository).save(txEntity);
+    }
     
 }
