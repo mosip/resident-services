@@ -435,7 +435,7 @@ public class IdAuthServiceTest {
                 "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApGh1E3bppaeL8pznuRFx-diebah_ZIcIqs_uCJFvK-x2FkWi0F73tzTYYXE6R-peMmfgjMz8OVIcILEFylVpeQEPHy9ChNEhdSI861zSDbhW_aPPUMWgUOsMzD3b_b5IPLKODUWsGoeY2U8uwjLeVQjje89RK5z080C8SmhX0NRNPkfgX4K71kpqcP6ROKQMhHZ5m8ezdVb_AogndFx8Jw8A1CgIOPfFMY7z-l5UbH8afOydrtH2nShb5HAal5vX4tGOyv0KsZIrBR3YquNfw9vEzmHfrvt_0xrYubasbh3_Fnal57LY-GdQ7XKf9OPXJGDL4B85Z_gkbvefYhFflwIDAQAB");
         ResponseWrapper<PublicKeyResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(responseDto);
-
+        
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
         when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
@@ -476,7 +476,7 @@ public class IdAuthServiceTest {
         assertEquals(EventStatusSuccess.OTP_VERIFIED.name(), txEntity.getStatusCode());
         assertEquals("OTP verified successfully", txEntity.getStatusComment());
         assertEquals("test-user", txEntity.getUpdBy());
-
+        verify(validateOtpCharLimit, times(1)).validateOtpCharLimit("111111");
         verify(residentTransactionRepository).save(txEntity);
     }
     
