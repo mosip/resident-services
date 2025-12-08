@@ -74,7 +74,7 @@ jobs:
   sonar_analysis:
     needs: build-maven-resident-services
     if: "${{  github.event_name != 'pull_request' }}"
-    uses: mahesh-binayak/kattu/.github/workflows/maven-sonar-analysis-new.yml@MOSIP-42148
+    uses: mosip/kattu/.github/workflows/maven-sonar-analysis.yml@master-java21
     with:
       SERVICE_LOCATION: ./resident
     secrets:
