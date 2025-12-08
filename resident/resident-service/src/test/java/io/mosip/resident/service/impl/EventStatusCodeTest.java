@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.service.impl.EventStatusCode;
 import io.mosip.resident.util.EventStatusBasedOnLangCode;
 import org.junit.Before;
 import org.junit.Test;
