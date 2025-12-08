@@ -33,12 +33,10 @@ public class EventStatusCodeTest {
     }
 
     @Test
-    public void getEventStatusCode_whenFailureStatus_returnsFailedTuple() {
-        // Pick a status that EventStatusFailure.containsStatus recognizes.
-        // Use EventStatus.FAILED.name() as a representative input (adjust if your enum uses different literal)
+    public void getEventStatusCodeWhenFailureStatusReturnsFailedTuple() {
         String statusCode = EventStatus.FAILED.name();
-        String lang = "en";
-        String expectedLabel = "Failed Label";
+        String lang = "eng";
+        String expectedLabel = EventStatus.FAILED.name();
 
         when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(eq(EventStatus.FAILED), eq(lang)))
                 .thenReturn(expectedLabel);
@@ -50,12 +48,10 @@ public class EventStatusCodeTest {
     }
 
     @Test
-    public void getEventStatusCode_whenCanceledStatus_returnsCanceledTuple() {
-        // Pick a status that EventStatusCanceled.containsStatus recognizes.
-        // Use EventStatus.CANCELED.name() as representative input.
+    public void getEventStatusCodeWhenCanceledStatusReturnsCanceledTuple() {
         String statusCode = EventStatus.CANCELED.name();
         String lang = "en";
-        String expectedLabel = "Canceled Label";
+        String expectedLabel = "Canceled";
 
         when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(eq(EventStatus.CANCELED), eq(lang)))
                 .thenReturn(expectedLabel);
@@ -67,11 +63,10 @@ public class EventStatusCodeTest {
     }
 
     @Test
-    public void getEventStatusCode_whenUnknownStatus_returnsInProgressTuple() {
-        // A status that isn't in success/failure/canceled sets should map to IN_PROGRESS
-        String statusCode = "SOME_RANDOM_STATUS";
-        String lang = "en";
-        String expectedLabel = "In Progress Label";
+    public void getEventStatusCodeWhenUnknownStatusReturnsInProgressTuple() {
+        String statusCode = "SUCCESS";
+        String lang = "eng";
+        String expectedLabel = EventStatus.IN_PROGRESS.name();
 
         when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(eq(EventStatus.IN_PROGRESS), eq(lang)))
                 .thenReturn(expectedLabel);

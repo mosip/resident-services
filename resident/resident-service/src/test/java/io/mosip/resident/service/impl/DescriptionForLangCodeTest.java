@@ -42,7 +42,7 @@ public class DescriptionForLangCodeTest {
     }
 
     @Test
-    public void getDescriptionForLangCode_whenStatusSuccess_usesSuccessTemplate() throws Exception {
+    public void getDescriptionForLangCodeWhenStatusSuccessUsesSuccessTemplate() throws Exception {
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         String lang = "en";
         String statusCode = EventStatus.SUCCESS.name();
@@ -70,7 +70,7 @@ public class DescriptionForLangCodeTest {
     }
 
     @Test
-    public void getDescriptionForLangCode_whenStatusCanceled_usesCanceledTemplate() throws Exception {
+    public void getDescriptionForLangCodeWhenStatusCanceledUsesCanceledTemplate() throws Exception {
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         String lang = "en";
         String statusCode = EventStatusCanceled.CANCELED.name();
@@ -94,7 +94,7 @@ public class DescriptionForLangCodeTest {
     }
 
     @Test
-    public void getDescriptionForLangCode_whenResidentStatusIdentityUpdated_usesRegprocSuccess() throws Exception {
+    public void getDescriptionForLangCodeWhenResidentStatusIdentityUpdatedUsesRegprocSuccess() throws Exception {
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         // set resident entity status to replicate identity-updated branch
         entity.setStatusCode(EventStatusInProgress.IDENTITY_UPDATED.name());
@@ -121,7 +121,7 @@ public class DescriptionForLangCodeTest {
     }
 
     @Test
-    public void getDescriptionForLangCode_whenFallback_usesFailureTemplate() throws Exception {
+    public void getDescriptionForLangCodeWhenFallbackUsesFailureTemplate() throws Exception {
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         entity.setStatusCode("SOME_OTHER");
         String lang = "en";
