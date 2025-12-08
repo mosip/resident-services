@@ -10,7 +10,7 @@ import io.mosip.resident.dto.DraftUinResidentResponseDto;
 import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.impl.IdentityServiceTest;
+import io.mosip.resident.util.AuthenticationTestUtil;
 import io.mosip.resident.service.impl.PendingDrafts;
 import io.mosip.resident.service.impl.RemainingUpdateCountByIndividualId;
 import org.junit.Test;
@@ -124,7 +124,7 @@ public class ValidateNewUpdateRequestTest {
     @Test
     public void validateNewUpdateRequestSecureSessionNoPendingDraftsShouldNotThrow()
             throws ResidentServiceCheckedException, ApisResourceAccessException {
-        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        AuthenticationTestUtil.getAuthUserDetailsFromAuthentication();
 
         DraftResidentResponseDto responseDto = new DraftResidentResponseDto();
         responseDto.setDrafts(Collections.emptyList());
@@ -143,7 +143,7 @@ public class ValidateNewUpdateRequestTest {
     @Test
     public void validateNewUpdateRequestSecureSessionPendingDraftsCancellableShouldThrowPacketError()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
-        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        AuthenticationTestUtil.getAuthUserDetailsFromAuthentication();
 
         DraftUinResidentResponseDto draft = new DraftUinResidentResponseDto();
         draft.setCancellable(true);
@@ -169,7 +169,7 @@ public class ValidateNewUpdateRequestTest {
     @Test
     public void validateNewUpdateRequestSecureSessionPendingDraftsNotCancellableShouldThrowRequestError()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
-        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        AuthenticationTestUtil.getAuthUserDetailsFromAuthentication();
 
         DraftUinResidentResponseDto draft = new DraftUinResidentResponseDto();
         draft.setCancellable(false);
