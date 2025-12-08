@@ -33,7 +33,7 @@ public class WebsubCallbackRequestDecoratorFilterTest {
     }
 
     @Test
-    public void doFilter_whenRequestIsAlreadyRepeatablePassesSameInstance() throws IOException, ServletException {
+    public void doFilterWhenRequestIsAlreadyRepeatablePassesSameInstance() throws IOException, ServletException {
         // Arrange: create a mocked RepeatableStreamHttpServletRequest
         RepeatableStreamHttpServletRequest repeatableRequest = mock(RepeatableStreamHttpServletRequest.class);
 
@@ -45,7 +45,7 @@ public class WebsubCallbackRequestDecoratorFilterTest {
     }
 
     @Test
-    public void doFilter_whenRequestIsHttpServletRequest_wrapsAndPassesRepeatableRequest() throws IOException, ServletException {
+    public void doFilterWhenRequestIsHttpServletRequestWrapsAndPassesRepeatableRequest() throws IOException, ServletException {
         // Arrange
         HttpServletRequest httpRequest = mock(HttpServletRequest.class);
 
@@ -65,7 +65,7 @@ public class WebsubCallbackRequestDecoratorFilterTest {
     }
 
     @Test
-    public void doFilter_whenRequestIsOtherServletRequest_passesThroughUnchanged() throws IOException, ServletException {
+    public void doFilterWhenRequestIsOtherServletRequestPassesThroughUnchanged() throws IOException, ServletException {
         // Arrange: generic ServletRequest implementation (mock)
         ServletRequest genericRequest = mock(ServletRequest.class);
 
