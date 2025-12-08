@@ -36,7 +36,7 @@ public class EventStatusCodeTest {
     public void getEventStatusCodeWhenFailureStatusReturnsFailedTuple() {
         String statusCode = EventStatus.FAILED.name();
         String lang = "eng";
-        String expectedLabel = EventStatus.FAILED.name();
+        String expectedLabel = "Failed";
 
         when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(eq(EventStatus.FAILED), eq(lang)))
                 .thenReturn(expectedLabel);
@@ -64,9 +64,9 @@ public class EventStatusCodeTest {
 
     @Test
     public void getEventStatusCodeWhenUnknownStatusReturnsInProgressTuple() {
-        String statusCode = "SUCCESS";
+        String statusCode = "UNKNOWN_STATUS";
         String lang = "eng";
-        String expectedLabel = EventStatus.IN_PROGRESS.name();
+        String expectedLabel = "In Progress";
 
         when(eventStatusBasedOnLangCode.getEventStatusBasedOnLangcode(eq(EventStatus.IN_PROGRESS), eq(lang)))
                 .thenReturn(expectedLabel);
