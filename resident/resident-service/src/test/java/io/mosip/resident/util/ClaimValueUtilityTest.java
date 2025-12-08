@@ -32,7 +32,7 @@ public class ClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetClaimValue_success() throws Exception {
+    public void testGetClaimValueSuccess() throws Exception {
         String claim = "sub";
         when(availableClaimValueUtility.getClaims(eq(claim)))
                 .thenReturn(Map.of(claim, "user123"));
@@ -44,7 +44,7 @@ public class ClaimValueUtilityTest {
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetClaimValue_whenAvailableClaimThrows_shouldPropagate() throws Exception {
+    public void testGetClaimValueWhenAvailableClaimThrowsShouldPropagate() throws Exception {
         String claim = "sub";
         when(availableClaimValueUtility.getClaims(eq(claim)))
                 .thenThrow(new ApisResourceAccessException("userinfo down"));
@@ -53,7 +53,7 @@ public class ClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetClaimValue_whenClaimMissing_returnsNull() throws Exception {
+    public void testGetClaimValueWhenClaimMissingReturnsNull() throws Exception {
         String claim = "missing";
         when(availableClaimValueUtility.getClaims(eq(claim)))
                 .thenReturn(Map.of()); // empty map

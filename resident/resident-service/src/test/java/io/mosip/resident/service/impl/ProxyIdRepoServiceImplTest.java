@@ -24,7 +24,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for ProxyIdRepoServiceImpl.discardDraft(...)
+ * Unit tests for ProxyIdRepoServiceImpl.discardDraft
+ * @author Kamesh Shekhar prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProxyIdRepoServiceImplTest {
@@ -53,7 +54,7 @@ public class ProxyIdRepoServiceImplTest {
     }
 
     @Test
-    public void discardDraft_whenResponseHasNoRecordsError_throwsNoRecordsFound() throws Exception {
+    public void discardDraftWhenResponseHasNoRecordsErrorThrowsNoRecordsFound() throws Exception {
         // Arrange
         String eid = "EID-404";
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
@@ -80,7 +81,7 @@ public class ProxyIdRepoServiceImplTest {
     }
 
     @Test
-    public void discardDraft_whenResponseHasOtherError_throwsUnknownException() throws Exception {
+    public void discardDraftWhenResponseHasOtherErrorThrowsUnknownException() throws Exception {
         // Arrange
         String eid = "EID-500";
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
@@ -107,7 +108,7 @@ public class ProxyIdRepoServiceImplTest {
     }
 
     @Test
-    public void discardDraft_whenApiThrowsApisResourceAccessException_wrapsAndRethrows() throws Exception {
+    public void discardDraftWhenApiThrowsApisResourceAccessExceptionWrapsAndRethrows() throws Exception {
         // Arrange
         String eid = "EID-EX";
         ResidentTransactionEntity entity = new ResidentTransactionEntity();

@@ -31,7 +31,7 @@ public class ReplacePlaceholderValueInTemplateTest {
     }
 
     @Test
-    public void testReplacePlaceholder_UpdateMyUin() {
+    public void testReplacePlaceholderUpdateMyUin() {
         // Arrange
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         String fileText = "TEMPLATE_TEXT";
@@ -55,7 +55,7 @@ public class ReplacePlaceholderValueInTemplateTest {
     }
 
     @Test
-    public void testReplacePlaceholder_ValidateOtp() {
+    public void testReplacePlaceholderValidateOtp() {
         // Arrange
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         String fileText = "OTP_TEMPLATE";

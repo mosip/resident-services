@@ -52,7 +52,7 @@ public class AcrMappingUtilTest {
     }
 
     @Test
-    public void testGetAmrAcrMapping_success() throws Exception {
+    public void testGetAmrAcrMappingSuccess() throws Exception {
 
         // raw JSON as String returned from RestTemplate
         String json = "{\"acr_amr\":{\"acr1\":[\"amr1\"],\"acr2\":[\"amr2\"]}}";
@@ -83,7 +83,7 @@ public class AcrMappingUtilTest {
     }
 
     @Test
-    public void testGetAmrAcrMapping_whenIOExceptionThrown_shouldThrowResidentServiceCheckedException() throws Exception {
+    public void testGetAmrAcrMappingWhenIOExceptionThrownShouldThrowResidentServiceCheckedException() throws Exception {
         String json = "{\"acr_amr\":{\"acr1\":[\"amr1\"]}}";
 
         when(residentRestTemplate.getForObject(anyString(), eq(String.class))).thenReturn(json);

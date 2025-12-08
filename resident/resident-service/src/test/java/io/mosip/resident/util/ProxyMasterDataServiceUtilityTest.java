@@ -34,7 +34,7 @@ public class ProxyMasterDataServiceUtilityTest {
     }
 
     @Test
-    public void testGetDynamicFieldBasedOnLangCodeAndFieldName_success() throws Exception {
+    public void testGetDynamicFieldBasedOnLangCodeAndFieldNameSuccess() throws Exception {
         String fieldName = "address";
         String langCode = "en";
         boolean withValue = true;
@@ -55,7 +55,7 @@ public class ProxyMasterDataServiceUtilityTest {
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
-    public void testGetDynamicFieldBasedOnLangCodeAndFieldName_whenExceptionThrown_shouldPropagate()
+    public void testGetDynamicFieldBasedOnLangCodeAndFieldNameWhenExceptionThrownShouldPropagate()
             throws Exception {
 
         when(dynamicFieldBasedOnLangCodeAndFieldName

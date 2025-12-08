@@ -35,7 +35,7 @@ public class AccessTokenUtilityTest {
     }
 
     @Test
-    public void testGetAccessToken_whenUserDetailsExists_shouldReturnToken() {
+    public void testGetAccessTokenWhenUserDetailsExistsShouldReturnToken() {
         MosipUserDto mosipUserDto = new MosipUserDto();
         mosipUserDto.setUserId("testUser");
         AuthUserDetails authUserDetails = new AuthUserDetails(mosipUserDto, "TEST_TOKEN");
@@ -50,7 +50,7 @@ public class AccessTokenUtilityTest {
     }
 
     @Test
-    public void testGetAccessToken_whenUserDetailsNull_shouldReturnEmptyString() {
+    public void testGetAccessTokenWhenUserDetailsNullShouldReturnEmptyString() {
         when(authUserDetailsUtil.getAuthUserDetails()).thenReturn(null);
 
         String token = accessTokenUtility.getAccessToken();

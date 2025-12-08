@@ -39,7 +39,7 @@ public class AvailableClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetClaimsFromToken_success() throws Exception {
+    public void testGetClaimsFromTokenSuccess() throws Exception {
         String token = "TOKEN-1";
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("sub", "user123");
@@ -58,7 +58,7 @@ public class AvailableClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetClaims_whenAccessTokenEmpty_returnsEmptyMap() throws Exception {
+    public void testGetClaimsWhenAccessTokenEmptyReturnsEmptyMap() throws Exception {
         when(accessTokenUtility.getAccessToken()).thenReturn("");
 
         Map<String, String> result = availableClaimValueUtility.getClaims(Set.of("sub"));
@@ -71,7 +71,7 @@ public class AvailableClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetClaims_varargs_delegatesToSet() throws Exception {
+    public void testGetClaimsVarargsDelegatesToSet() throws Exception {
         String token = "TOK";
         when(accessTokenUtility.getAccessToken()).thenReturn(token);
 
@@ -92,7 +92,7 @@ public class AvailableClaimValueUtilityTest {
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetClaimsFromToken_whenUserInfoThrowsApisException_propagates() throws Exception {
+    public void testGetClaimsFromTokenWhenUserInfoThrowsApisExceptionPropagates() throws Exception {
         String token = "TOK_ERR";
         when(userInfoUtility.getUserInfo(eq(token))).thenThrow(new ApisResourceAccessException("down"));
 
@@ -101,7 +101,7 @@ public class AvailableClaimValueUtilityTest {
     }
 
     @Test
-    public void testGetAvailableClaimValue_whenClaimMissing_returnsNull() throws Exception {
+    public void testGetAvailableClaimValueWhenClaimMissingReturnsNull() throws Exception {
         // access token present
         String token = "T-1";
         when(accessTokenUtility.getAccessToken()).thenReturn(token);

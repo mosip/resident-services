@@ -1,6 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.WorkflowCompletedEventDTO;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.util.IdentityDataUtil;
@@ -46,7 +45,7 @@ public class WebSubRegprocWorkFlowServiceImplTest {
     }
 
     @Test
-    public void updateResidentStatus_whenResultCodeIsNull_doesNothing() throws Exception {
+    public void updateResidentStatusWhenResultCodeIsNullDoesNothing() throws Exception {
         // Arrange
         WorkflowCompletedEventDTO dto = new WorkflowCompletedEventDTO();
         dto.setResultCode(null);
@@ -62,7 +61,7 @@ public class WebSubRegprocWorkFlowServiceImplTest {
     }
 
     @Test
-    public void updateResidentStatus_whenInstanceIdNull_doesNothing() throws Exception {
+    public void updateResidentStatusWhenInstanceIdNullDoesNothing() throws Exception {
         // Arrange: result code present but instanceId null
         WorkflowCompletedEventDTO dto = new WorkflowCompletedEventDTO();
         dto.setResultCode("ANY_CODE");

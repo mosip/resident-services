@@ -37,7 +37,7 @@ public class AttributeBasedOnLangCodeTest {
     }
 
     @Test
-    public void getAttributeBasedOnLangcode_whenTemplateTypeExists_returnsTemplateValue() {
+    public void getAttributeBasedOnLangcodeWhenTemplateTypeExistsReturnsTemplateValue() {
         String attributeName = "name";
         String languageCode = "en";
         String propertyKey = String.format("resident.%s.template.property.attribute.list", attributeName);
@@ -62,7 +62,7 @@ public class AttributeBasedOnLangCodeTest {
     }
 
     @Test
-    public void getAttributeBasedOnLangcode_whenTemplateTypeMissing_usesUnknownPropertyAndReturnsValue() {
+    public void getAttributeBasedOnLangcodeWhenTemplateTypeMissingUsesUnknownPropertyAndReturnsValue() {
         String attributeName = "missingAttr";
         String languageCode = "en";
         String propertyKey = String.format("resident.%s.template.property.attribute.list", attributeName);

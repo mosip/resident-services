@@ -38,7 +38,7 @@ public class EventStatusBasedOnLangCodeTest {
     }
 
     @Test
-    public void getTemplateTypeCode_delegatesToEnvironment() {
+    public void getTemplateTypeCodeDelegatesToEnvironment() {
         String propertyKey = "resident.event.status.APPROVED.template.property";
         when(environment.getProperty(eq(propertyKey))).thenReturn("TEMPLATE_APPROVED");
 
@@ -49,7 +49,7 @@ public class EventStatusBasedOnLangCodeTest {
     }
 
     @Test
-    public void getEventStatusBasedOnLangcode_whenPropertyExists_returnsTemplateValue() {
+    public void getEventStatusBasedOnLangcodeWhenPropertyExistsReturnsTemplateValue() {
         EventStatus eventStatus = EventStatus.SUCCESS;
         String languageCode = "en";
         String propKey = String.format("resident.event.status.%s.template.property", eventStatus.name());
@@ -69,7 +69,7 @@ public class EventStatusBasedOnLangCodeTest {
     }
 
     @Test
-    public void getEventStatusBasedOnLangcode_whenPropertyMissing_usesUnknownFallback() {
+    public void getEventStatusBasedOnLangcodeWhenPropertyMissingUsesUnknownFallback() {
         EventStatus eventStatus = EventStatus.FAILED;
         String languageCode = "en";
         String propKey = String.format("resident.event.status.%s.template.property", eventStatus.name());

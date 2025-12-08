@@ -42,7 +42,7 @@ public class CachedIdentityDataUtilTest {
     }
 
     @Test
-    public void testGetIdentityData_success() throws Exception {
+    public void testGetIdentityDataSuccess() throws Exception {
         String id = "123456";
         Class<?> responseType = String.class;
         String expectedResponse = "SUCCESS_PAYLOAD";
@@ -82,7 +82,7 @@ public class CachedIdentityDataUtilTest {
     }
 
     @Test
-    public void testGetCachedIdentityData_delegatesToGetIdentityData() throws Exception {
+    public void testGetCachedIdentityDataDelegatesToGetIdentityData() throws Exception {
         String id = "789";
         String accessToken = "TOKEN123"; // part of cache key, but unused in unit test
         Class<?> responseType = String.class;
@@ -110,7 +110,7 @@ public class CachedIdentityDataUtilTest {
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetIdentityData_whenApiThrows_shouldPropagate() throws Exception {
+    public void testGetIdentityDataWhenApiThrowsShouldPropagate() throws Exception {
         when(restClientWithSelfTOkenRestTemplate.getApi(
                 any(),
                 anyMap(),

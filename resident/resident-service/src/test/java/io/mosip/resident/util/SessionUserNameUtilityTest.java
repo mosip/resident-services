@@ -37,7 +37,7 @@ public class SessionUserNameUtilityTest {
     }
 
     @Test
-    public void getSessionUserName_whenNamePresent_returnsName() throws Exception {
+    public void getSessionUserNameWhenNamePresentReturnsName() throws Exception {
         String profileKey = "profile.name";
         when(environment.getProperty(eq(ResidentConstants.NAME_FROM_PROFILE))).thenReturn(profileKey);
         when(availableClaimValueUtility.getAvailableClaimValue(eq(profileKey))).thenReturn("John Doe");
@@ -50,7 +50,7 @@ public class SessionUserNameUtilityTest {
     }
 
     @Test
-    public void getSessionUserName_whenNameNull_returnsUnknownConstant() throws Exception {
+    public void getSessionUserNameWhenNameNullReturnsUnknownConstant() throws Exception {
         String profileKey = "profile.name";
         when(environment.getProperty(eq(ResidentConstants.NAME_FROM_PROFILE))).thenReturn(profileKey);
         when(availableClaimValueUtility.getAvailableClaimValue(eq(profileKey))).thenReturn(null);
@@ -62,7 +62,7 @@ public class SessionUserNameUtilityTest {
     }
 
     @Test
-    public void getSessionUserName_whenNameBlank_returnsUnknownConstant() throws Exception {
+    public void getSessionUserNameWhenNameBlankReturnsUnknownConstant() throws Exception {
         String profileKey = "profile.name";
         when(environment.getProperty(eq(ResidentConstants.NAME_FROM_PROFILE))).thenReturn(profileKey);
         when(availableClaimValueUtility.getAvailableClaimValue(eq(profileKey))).thenReturn("   ");
@@ -74,7 +74,7 @@ public class SessionUserNameUtilityTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void getSessionUserName_whenAvailableClaimThrows_shouldWrapAndRethrow() throws Exception {
+    public void getSessionUserNameWhenAvailableClaimThrowsShouldWrapAndRethrow() throws Exception {
         String profileKey = "profile.name";
         when(environment.getProperty(eq(ResidentConstants.NAME_FROM_PROFILE))).thenReturn(profileKey);
         when(availableClaimValueUtility.getAvailableClaimValue(eq(profileKey)))

@@ -63,7 +63,7 @@ public class IdentityDataUtilTest {
     // ---------------- sendNotification tests ----------------
 
     @Test
-    public void sendNotification_success_invokesNotificationService() throws Exception {
+    public void sendNotificationSuccessInvokesNotificationService() throws Exception {
         // arrange
         String eventId = "E1";
         String individualId = "IND1";
@@ -80,7 +80,7 @@ public class IdentityDataUtilTest {
     }
 
     @Test
-    public void sendNotification_whenNotificationThrows_isHandled() throws Exception {
+    public void sendNotificationWhenNotificationThrowsIsHandled() throws Exception {
         // arrange
         doThrow(new ResidentServiceCheckedException("ERR", "msg"))
                 .when(notificationService).sendNotification(any(NotificationRequestDtoV2.class), any());
@@ -94,7 +94,7 @@ public class IdentityDataUtilTest {
     }
 
     @Test
-    public void convertIdResponseIdentityObjectToJsonObject_success() throws Exception {
+    public void convertIdResponseIdentityObjectToJsonObjectSuccess() throws Exception {
         Map<String,Object> identityObj = Map.of("k","v");
         when(objectMapper.writeValueAsString(identityObj)).thenReturn("{\"k\":\"v\"}");
 
@@ -105,7 +105,7 @@ public class IdentityDataUtilTest {
     }
 
     @Test(expected = IdRepoAppException.class)
-    public void convertIdResponseIdentityObjectToJsonObject_invalidJson_throwsIdRepoAppException() throws Exception {
+    public void convertIdResponseIdentityObjectToJsonObjectInvalidJsonThrowsIdRepoAppException() throws Exception {
         Object bad = new Object();
         // make objectMapper produce an invalid JSON string
         when(objectMapper.writeValueAsString(bad)).thenReturn("not-a-json");
@@ -115,7 +115,7 @@ public class IdentityDataUtilTest {
     }
 
     @Test
-    public void getAuthTypeCodefromkey_delegatesToAcrMappingUtil() throws Exception {
+    public void getAuthTypeCodeFromKeyDelegatesToAcrMappingUtil() throws Exception {
         when(acrMappingUtil.getAmrAcrMapping()).thenReturn(Map.of("REQ","AMR"));
         String value = identityDataUtil.getAuthTypeCodefromkey("REQ");
         assertEquals("AMR", value);

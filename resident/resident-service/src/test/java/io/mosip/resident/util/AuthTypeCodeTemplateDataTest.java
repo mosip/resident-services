@@ -39,14 +39,14 @@ public class AuthTypeCodeTemplateDataTest {
     }
 
     @Test
-    public void getAuthTypeCodeTemplateData_nullAuthType_returnsEmptyString() {
+    public void getAuthTypeCodeTemplateDataNullAuthTypeReturnsEmptyString() {
         String result = authTypeCodeTemplateData.getAuthTypeCodeTemplateData(null, null, "en");
         assertEquals("", result);
         verifyNoInteractions(eventStatusBasedOnLangCode, templateValueFromTemplateTypeCodeAndLangCode);
     }
 
     @Test
-    public void getAuthTypeCodeTemplateData_singleAuthType_noStatus_returnsTemplateValue() {
+    public void getAuthTypeCodeTemplateDataSingleAuthTypeNoStatusReturnsTemplateValue() {
         String authType = "AT1";
         String language = "en";
         String propertyKey = String.format("resident.auth-type-code.%s.code", authType);
@@ -66,7 +66,7 @@ public class AuthTypeCodeTemplateDataTest {
     }
 
     @Test
-    public void getAuthTypeCodeTemplateData_multipleAuthTypes_joinedByDelimiter_returnsJoinedValues() {
+    public void getAuthTypeCodeTemplateDataMultipleAuthTypesJoinedByDelimiterReturnsJoinedValues() {
         String auth1 = "AT1";
         String auth2 = "AT2";
         String authTypeFromDB = String.join(ResidentConstants.ATTRIBUTE_LIST_DELIMITER, auth1, auth2);
@@ -104,7 +104,7 @@ public class AuthTypeCodeTemplateDataTest {
     }
 
     @Test
-    public void getAuthTypeCodeTemplateData_withStatus_usesIdAuthRequestTypeDescrProperty() {
+    public void getAuthTypeCodeTemplateDataWithStatusUsesIdAuthRequestTypeDescrProperty() {
         String authType = "ATX";
         String statusCode = "S1";
         String language = "en";
@@ -127,7 +127,7 @@ public class AuthTypeCodeTemplateDataTest {
     }
 
     @Test
-    public void getAuthTypeCodeTemplateData_eventStatusReturnsNull_usesFallbackUnknownProperty() {
+    public void getAuthTypeCodeTemplateDataEventStatusReturnsNullUsesFallbackUnknownProperty() {
         String authType = "MISSING";
         String language = "en";
         String prop = String.format("resident.auth-type-code.%s.code", authType);

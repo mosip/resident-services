@@ -30,7 +30,7 @@ public class MaskDataUtilityTest {
     }
 
     @Test
-    public void testMaskEmail_basicMasking() {
+    public void testMaskEmailBasicMasking() {
         // Define an inline MVEL function: takes value, returns first char + '***' + domain part
         String emailMaskFn = "def em(v){ v.substring(0,1) + '***' + v.substring(v.indexOf('@')) }; em";
         ReflectionTestUtils.setField(maskDataUtility, "emailMaskFunction", emailMaskFn);
@@ -43,7 +43,7 @@ public class MaskDataUtilityTest {
     }
 
     @Test
-    public void testMaskPhone_basicMasking() {
+    public void testMaskPhoneBasicMasking() {
         // Define inline MVEL function for phone: first 3 chars + '****' + last 2 chars
         String phoneMaskFn = "def ph(v){ v.substring(0,3) + '****' + v.substring(7) }; ph";
         ReflectionTestUtils.setField(maskDataUtility, "phoneMaskFunction", phoneMaskFn);
@@ -55,7 +55,7 @@ public class MaskDataUtilityTest {
     }
 
     @Test
-    public void testConvertToMaskData_handlesNullInput() {
+    public void testConvertToMaskDataHandlesNullInput() {
         // Define a generic masking function that prefixes 'X' to the provided string
         String maskFn = "def m(v){ 'X' + v }; m";
         ReflectionTestUtils.setField(maskDataUtility, "maskingFunction", maskFn);

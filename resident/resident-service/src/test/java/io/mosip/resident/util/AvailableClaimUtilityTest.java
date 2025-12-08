@@ -43,7 +43,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test
-    public void testGetIDAToken_usesDefaultPartner() {
+    public void testGetIDATokenUsesDefaultPartner() {
         String uin = "UIN123";
         String expected = "TOKEN-DEF";
 
@@ -56,7 +56,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test
-    public void testGetIDAToken_withExplicitPartner() {
+    public void testGetIDATokenWithExplicitPartner() {
         String uin = "UIN-EX";
         String partner = "OLV-X";
         String expected = "TOKEN-X";
@@ -70,7 +70,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test
-    public void testGetIDATokenForIndividualId_success() throws ResidentServiceCheckedException {
+    public void testGetIDATokenForIndividualIdSuccess() throws ResidentServiceCheckedException {
         String individualId = "IND-1";
         String uin = "UIN-1";
         String token = "TOKEN-1";
@@ -86,7 +86,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
-    public void testGetIDATokenForIndividualId_whenUinServiceThrows_shouldPropagate() throws ResidentServiceCheckedException {
+    public void testGetIDATokenForIndividualIdWhenUinServiceThrowsShouldPropagate() throws ResidentServiceCheckedException {
         String individualId = "IND-ERR";
 
         when(uinForIndividualId.getUinForIndividualId(eq(individualId)))
@@ -97,7 +97,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test
-    public void testGetResidentIdaToken_success() throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public void testGetResidentIdaTokenSuccess() throws ApisResourceAccessException, ResidentServiceCheckedException {
         String sessionIndividualId = "IND-SESSION";
         String uin = "UIN-S";
         String token = "TOKEN-S";
@@ -116,7 +116,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetResidentIdaToken_whenClaimThrowsApisException_shouldPropagate() throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public void testGetResidentIdaTokenWhenClaimThrowsApisExceptionShouldPropagate() throws ApisResourceAccessException, ResidentServiceCheckedException {
         when(claimValueUtility.getClaimValue(eq("individual_id")))
                 .thenThrow(new ApisResourceAccessException("claim error"));
 
@@ -124,7 +124,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test
-    public void testGetResidentIndvidualIdFromSession_success() throws ApisResourceAccessException {
+    public void testGetResidentIndvidualIdFromSessionSuccess() throws ApisResourceAccessException {
         when(claimValueUtility.getClaimValue(eq("individual_id"))).thenReturn("IND-XYZ");
 
         String actual = availableClaimUtility.getResidentIndvidualIdFromSession();
@@ -134,7 +134,7 @@ public class AvailableClaimUtilityTest {
     }
 
     @Test(expected = ApisResourceAccessException.class)
-    public void testGetResidentIndvidualIdFromSession_whenClaimThrows_shouldPropagate() throws ApisResourceAccessException {
+    public void testGetResidentIndvidualIdFromSessionWhenClaimThrowsShouldPropagate() throws ApisResourceAccessException {
         when(claimValueUtility.getClaimValue(eq("individual_id"))).thenThrow(new ApisResourceAccessException("err"));
 
         availableClaimUtility.getResidentIndvidualIdFromSession();

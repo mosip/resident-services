@@ -49,7 +49,7 @@ public class SummaryForLangCodeTest {
     }
 
     @Test
-    public void getSummaryTemplateTypeCode_delegatesToEventStatusBasedOnLangCode() {
+    public void getSummaryTemplateTypeCodeDelegatesToEventStatusBasedOnLangCode() {
         // Arrange
         RequestType requestType = RequestType.UPDATE_MY_UIN; // present in project
         TemplateType templateType = TemplateType.SUCCESS;
@@ -67,7 +67,7 @@ public class SummaryForLangCodeTest {
     }
 
     @Test
-    public void getSummaryForLangCode_statusSuccess_usesSuccessTemplateType() throws Exception {
+    public void getSummaryForLangCodeStatusSuccessUsesSuccessTemplateType() throws Exception {
         // Arrange
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         // entity status may be anything here
@@ -98,7 +98,7 @@ public class SummaryForLangCodeTest {
     }
 
     @Test
-    public void getSummaryForLangCode_statusCanceled_usesCanceledTemplateType() throws Exception {
+    public void getSummaryForLangCodeStatusCanceledUsesCanceledTemplateType() throws Exception {
         // Arrange
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         String lang = "en";
@@ -128,7 +128,7 @@ public class SummaryForLangCodeTest {
     }
 
     @Test
-    public void getSummaryForLangCode_residentStatusIdentityUpdated_usesRegprocSuccess() throws Exception {
+    public void getSummaryForLangCodeResidentStatusIdentityUpdatedUsesRegprocSuccess() throws Exception {
         // Arrange
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         entity.setStatusCode(EventStatusInProgress.IDENTITY_UPDATED.name()); // triggers REGPROC_SUCCESS branch
@@ -159,7 +159,7 @@ public class SummaryForLangCodeTest {
     }
 
     @Test
-    public void getSummaryForLangCode_fallback_usesDescriptionForLangCode() throws Exception {
+    public void getSummaryForLangCodeFallbackUsesDescriptionForLangCode() throws Exception {
         // Arrange: statusCode not SUCCESS, not CANCELED, and resident entity status not IDENTITY_UPDATED
         ResidentTransactionEntity entity = new ResidentTransactionEntity();
         entity.setStatusCode("OTHER_STATUS");
