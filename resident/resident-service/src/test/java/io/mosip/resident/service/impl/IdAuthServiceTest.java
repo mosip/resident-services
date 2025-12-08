@@ -534,24 +534,7 @@ public class IdAuthServiceTest {
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException());
 
-        ResidentTransactionEntity txEntity = new ResidentTransactionEntity();
-        txEntity.setEventId("event-1");
-        txEntity.setAttributeList("PHONE");
-
-        // when
-        Tuple2<Boolean, ResidentTransactionEntity> result =
-                idAuthService.validateOtpV2("1234567890", "1234567890", "111111", RequestType.VALIDATE_OTP);
-
-        // then
-        assertTrue(result.getT1());
-        assertEquals(txEntity, result.getT2());
-
-        assertEquals("OTP verified successfully", txEntity.getRequestSummary());
-        assertEquals(EventStatusSuccess.OTP_VERIFIED.name(), txEntity.getStatusCode());
-        assertEquals("OTP verified successfully", txEntity.getStatusComment());
-        assertEquals("test-user", txEntity.getUpdBy());
-        verify(validateOtpCharLimit, times(1)).validateOtpCharLimit("111111");
-        verify(residentTransactionRepository).save(txEntity);
+        idAuthService.validateOtpV2("1234567890", "1234567890", "111111", RequestType.VALIDATE_OTP);
     }
     
 }

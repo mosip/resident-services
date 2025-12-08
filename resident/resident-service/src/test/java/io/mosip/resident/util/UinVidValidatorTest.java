@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for UinVidValidator
- * * @author Kamesh Shekhar Prasad
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UinVidValidatorTest {

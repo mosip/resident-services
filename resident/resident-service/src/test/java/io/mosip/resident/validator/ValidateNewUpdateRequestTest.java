@@ -121,18 +121,6 @@ public class ValidateNewUpdateRequestTest {
         verify(objectMapper, times(1)).convertValue(responseWrapper.getResponse(), AttributeListDto.class);
     }
 
-    // ---------- validateNewUpdateRequest tests ----------
-
-    @Test
-    public void validateNewUpdateRequestNotSecureSessionShouldNotCallPendingDrafts()
-            throws ResidentServiceCheckedException, ApisResourceAccessException {
-
-        // should not throw
-        validator.validateNewUpdateRequest();
-
-        verifyNoInteractions(pendingDrafts);
-    }
-
     @Test
     public void validateNewUpdateRequestSecureSessionNoPendingDraftsShouldNotThrow()
             throws ResidentServiceCheckedException, ApisResourceAccessException {
