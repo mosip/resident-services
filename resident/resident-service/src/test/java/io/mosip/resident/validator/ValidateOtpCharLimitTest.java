@@ -26,7 +26,7 @@ public class ValidateOtpCharLimitTest {
     }
 
     @Test
-    public void testValidateOtpCharLimit_withinLimit_shouldNotThrow() {
+    public void testValidateOtpCharLimitWithinLimitShouldNotThrow() {
         // OTP length equal to configured limit (6) -> no exception expected
         try {
             validateOtpCharLimit.validateOtpCharLimit("123456");
@@ -36,7 +36,7 @@ public class ValidateOtpCharLimitTest {
     }
 
     @Test
-    public void testValidateOtpCharLimit_exceedsLimit_shouldThrowResidentServiceException() {
+    public void testValidateOtpCharLimitExceedsLimitShouldThrowResidentServiceException() {
         String otp = "1234567"; // length 7 > 6
         try {
             validateOtpCharLimit.validateOtpCharLimit(otp);

@@ -27,6 +27,11 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for ValidateNewUpdateRequest
+ * @author Kamesh Shekhar Prasad
+ */
+
 @RunWith(MockitoJUnitRunner.class)
 public class ValidateNewUpdateRequestTest {
 
@@ -43,7 +48,7 @@ public class ValidateNewUpdateRequestTest {
     private PendingDrafts pendingDrafts;
 
     @Test
-    public void validateUpdateCountLimit_emptyIdentity_shouldNotCallRemainingService()
+    public void validateUpdateCountLimitEmptyIdentityShouldNotCallRemainingService()
             throws ResidentServiceCheckedException {
 
         validator.validateUpdateCountLimit(Collections.emptySet());
@@ -53,7 +58,7 @@ public class ValidateNewUpdateRequestTest {
     }
 
     @Test
-    public void validateUpdateCountLimit_attributeHasUpdatesLeft_shouldNotThrow() throws ResidentServiceCheckedException {
+    public void validateUpdateCountLimitAttributeHasUpdatesLeftShouldNotThrow() throws ResidentServiceCheckedException {
         // prepare DTO with updates left > 0
         UpdateCountDto dto = new UpdateCountDto();
         dto.setAttributeName("email");
@@ -81,7 +86,7 @@ public class ValidateNewUpdateRequestTest {
     }
 
     @Test
-    public void validateUpdateCountLimit_attributeHasZeroUpdates_shouldThrowCheckedException() throws ResidentServiceCheckedException {
+    public void validateUpdateCountLimitAttributeHasZeroUpdatesShouldThrowCheckedException() throws ResidentServiceCheckedException {
         // prepare DTO with zero updates left
         UpdateCountDto dto = new UpdateCountDto();
         dto.setAttributeName("mobile");
@@ -119,7 +124,7 @@ public class ValidateNewUpdateRequestTest {
     // ---------- validateNewUpdateRequest tests ----------
 
     @Test
-    public void validateNewUpdateRequest_notSecureSession_shouldNotCallPendingDrafts()
+    public void validateNewUpdateRequestNotSecureSessionShouldNotCallPendingDrafts()
             throws ResidentServiceCheckedException, ApisResourceAccessException {
 
         // should not throw
@@ -129,7 +134,7 @@ public class ValidateNewUpdateRequestTest {
     }
 
     @Test
-    public void validateNewUpdateRequest_secureSession_noPendingDrafts_shouldNotThrow()
+    public void validateNewUpdateRequestSecureSessionNoPendingDraftsShouldNotThrow()
             throws ResidentServiceCheckedException, ApisResourceAccessException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 
@@ -148,7 +153,7 @@ public class ValidateNewUpdateRequestTest {
     }
 
     @Test
-    public void validateNewUpdateRequest_secureSession_pendingDrafts_cancellable_shouldThrowPacketError()
+    public void validateNewUpdateRequestSecureSessionPendingDraftsCancellableShouldThrowPacketError()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 
@@ -174,7 +179,7 @@ public class ValidateNewUpdateRequestTest {
     }
 
     @Test
-    public void validateNewUpdateRequest_secureSession_pendingDrafts_notCancellable_shouldThrowRequestError()
+    public void validateNewUpdateRequestSecureSessionPendingDraftsNotCancellableShouldThrowRequestError()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 

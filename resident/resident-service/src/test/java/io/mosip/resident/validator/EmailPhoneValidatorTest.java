@@ -28,13 +28,13 @@ public class EmailPhoneValidatorTest {
     // ---------------- Email tests ----------------
 
     @Test
-    public void testEmailValidator_validEmail_shouldReturnTrue() {
+    public void testEmailValidatorValidEmailShouldReturnTrue() {
         assertTrue(validator.emailValidator("test.email@domain.com"));
         assertTrue(validator.emailValidator("user123+tag@gmail.com"));
     }
 
     @Test
-    public void testEmailValidator_invalidEmail_shouldReturnFalse() {
+    public void testEmailValidatorInvalidEmailShouldReturnFalse() {
         assertFalse(validator.emailValidator("invalid-email"));
         assertFalse(validator.emailValidator("user@"));
         assertFalse(validator.emailValidator("@domain.com"));
@@ -43,13 +43,13 @@ public class EmailPhoneValidatorTest {
     // ---------------- Phone tests ----------------
 
     @Test
-    public void testPhoneValidator_validPhone_shouldReturnTrue() {
+    public void testPhoneValidatorValidPhoneShouldReturnTrue() {
         assertTrue(validator.phoneValidator("9876543210"));
         assertTrue(validator.phoneValidator("1234567890"));
     }
 
     @Test
-    public void testPhoneValidator_invalidPhone_shouldReturnFalse() {
+    public void testPhoneValidatorInvalidPhoneShouldReturnFalse() {
         assertFalse(validator.phoneValidator("12345"));         // too short
         assertFalse(validator.phoneValidator("12345678901"));   // too long
         assertFalse(validator.phoneValidator("abc1234567"));    // alphabets not allowed
