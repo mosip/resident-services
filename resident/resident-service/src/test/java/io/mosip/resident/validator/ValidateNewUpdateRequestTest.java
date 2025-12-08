@@ -99,9 +99,8 @@ public class ValidateNewUpdateRequestTest {
         responseWrapper.setVersion("v1");
         responseWrapper.setId("1");
         responseWrapper.setResponse(attributeListDto);
-        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(any())).thenReturn(responseWrapper);
 
-        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(Mockito.<List<String>>any()))
+        when(remainingUpdateCountByIndividualId.getRemainingUpdateCountByIndividualId(any()))
                 .thenReturn(responseWrapper);
 
         when(objectMapper.convertValue(responseWrapper.getResponse(), AttributeListDto.class))
