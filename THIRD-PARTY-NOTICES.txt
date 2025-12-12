@@ -148,20 +148,6 @@ Homepage: https://maven.apache.org/plugins/
 ================================================================================
 
 ================================================================================
-Package: Git Commit ID Plugin
-Version: 3.0.1
-License: LGPL 3.0
-Homepage: https://github.com/git-commit-id/git-commit-id-maven-plugin
-================================================================================
-
-================================================================================
-Package: Central Publishing Maven Plugin
-Version: 0.7.0
-License: Apache License 2.0
-Homepage: https://central.sonatype.org/
-================================================================================
-
-================================================================================
 Package: Netty (netty-all)
 Version: Not specified
 License: Apache License 2.0
