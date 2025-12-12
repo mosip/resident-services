@@ -5,28 +5,31 @@
 
 ## Overview
 
-Resident Services provide a suite of self-service tools that residents can access through the online Resident Portal.
+Resident Services provide a suite of self-service tools that residents can access through the online Resident Portal.  
 The portal enables residents to manage and interact with their Unique Identification Number (UIN) and Virtual ID (VID). Through this platform, residents can perform various identity-related operations, access credentials, and raise service requests or concerns.
 
 It exposes a set of APIs consumed by **Resident UI**, available here:  
- **[Resident UI GitHub Repository](https://github.com/mosip/resident-ui/)**
+**[Resident UI GitHub Repository](https://github.com/mosip/resident-ui/)**
 
 For a functional overview, refer to the official documentation:  
- https://docs.mosip.io/1.2.0/modules/resident-services
+https://docs.mosip.io/1.2.0/modules/resident-services
 
+---
 
 ## Services
 
-The Resident module contains the following services:
+The Resident module contains the following service:
 
-1. **[Resident Service](https://github.com/mosip/resident-services/tree/master/resident/resident-service)** - Core Resident service functionality
+1. **[Resident Service](https://github.com/mosip/resident-services/tree/master/resident/resident-service)** – Core Resident service functionality
 
+---
 
 ## Database
 
-Before starting the local setup, execute the required SQL scripts to initialize the database.
+Before starting the local setup, execute the required SQL scripts to initialize the database.  
+All database SQL scripts are available in the **[db_scripts](db_scripts)** directory.
 
-All database SQL scripts are available in the [db_scripts](db_scripts) directory.
+---
 
 ## Local Setup
 
@@ -35,240 +38,147 @@ The project can be set up in two ways:
 1. [Local Setup (for Development or Contribution)](#local-setup-for-development-or-contribution)
 2. [Local Setup with Docker (Easy Setup for Demos)](#local-setup-with-docker-easy-setup-for-demos)
 
-
 ### Prerequisites
-
-Install or configure the following:
 
 - **JDK**: 21.0.3
 - **Maven**: 3.9.6
 - **Docker**: Latest stable version
 - **PostgreSQL**: 10.2
-- **Keycloak**: [Check here](https://github.com/mosip/keycloak)
+- **Keycloak**: https://github.com/mosip/keycloak
 
 ### Configuration
 
-- Resident module uses the following configuration files that are accessible in this [repository](https://github.com/mosip/mosip-config/tree/master).
-  Please refer to the required released tagged version for configuration.
-  [Configuration-Resident](https://github.com/mosip/mosip-config/blob/master/resident-default.properties) and
-  [Configuration-Application](https://github.com/mosip/mosip-config/blob/master/application-default.properties) are defined here. You need to run the config-server along with the files mentioned above.
-- For generating clients, refer to MOSIP’s documentation here: [Client Generation Guide](https://docs.mosip.io/1.2.0/interoperability/integrations/mosip-crvs/approach/technical-details#id-1.-create-client-id-role-for-the-crvs)
-- To authenticate a client, use the Auth Manager API as described here: [Auth API Documentation](https://docs.mosip.io/1.2.0/interoperability/integrations/mosip-crvs/approach/technical-details#id-2.-fetch-access-token-to-call-the-apis)
+Resident module uses configuration files from the **mosip-config** repository:
 
-#### Required Configuration Properties
+- **[resident-default.properties](https://github.com/mosip/mosip-config/blob/master/resident-default.properties)**
+- **[application-default.properties](https://github.com/mosip/mosip-config/blob/master/application-default.properties)**
 
-The following properties must be configured with your environment-specific values before deployment:
+Ensure the MOSIP Config Server is running.
+
+---
+
+## Required Configuration Properties
 
 **Database Configuration:**
-- `mosip.resident.database.hostname` - Database hostname (default: postgres-postgresql.postgres)
-- `mosip.resident.database.port` - Database port (default: 5432)
-- `db.dbuser.password` - Database user password (passed as environment variable)
+- `mosip.kernel.database.hostname` – Database hostname
+- `mosip.kernel.database.port` – Database port
+- `db.dbuser.password` – Database user password (env variable)
 
 **IAM/Keycloak Configuration:**
-- `keycloak.internal.url` - Internal Keycloak URL (passed as environment variable)
-- `keycloak.external.url` - External Keycloak URL (passed as environment variable)
-- `mosip.resident.client.secret` - Resident client secret for Keycloak (passed as environment variable)
-- `mosip.keycloak.issuerUrl` - Keycloak issuer URL
+- `keycloak.internal.url`
+- `keycloak.external.url`
+- `mosip.resident.client.secret`
+- `mosip.keycloak.issuerUrl`
 
-**Service URLs:**
-- `mosip.kernel.authmanager.url` - Auth manager service URL
-- `mosip.kernel.keymanager.url` - Key manager service URL
-- `mosip.kernel.masterdata.url` - Masterdata service URL
-- `mosip.kernel.notification.url` - Notification service URL
-- `mosip.regproc.status.service.url` - Registration processor status service URL
-- `mosip.regproc.transaction.service.url` - Registration processor transaction service URL
-- `mosip.packet.receiver.url` - Packet receiver service URL
-- `mosip.idrepo.identity.url` - ID repository identity service URL
-- `mosip.ida.internal.url` - IDA internal service URL
-- `mosip.idrepo.credrequest.generator.url` - Credential request generator service URL
-- `mosip.idrepo.credential.service.url` - Credential service URL
-- `mosip.idrepo.vid.url` - ID repository VID service URL
-- `mosip.pms.partnermanager.url` - Partner manager service URL
-- `mosip.resident.url` - Resident service URL
-- `mosip.kernel.syncdata.url` - Sync data service URL
-- `mosip.digitalcard.service.url` - Digital card service URL
-- `mosip.kernel.ridgenerator.url` - RID generator service URL
-- `mosip.kernel.otpmanager.url` - OTP manager service URL
-- `mosip.kernel.auditmanager.url` - Audit manager service URL
-- `mosip.api.internal.url` - Internal API base URL
-- `mosip.api.public.url` - Public API base URL
+**Service URLs:**  
+(authmanager, keymanager, masterdata, notification, idrepo, ida, credential services, syncdata, auditmanager, otpmanager, pms, etc.)
 
 **Security Configuration:**
-- `mosip.security.csrf-enable` - Enable CSRF protection (default: false)
-- `mosip.security.secure-cookie` - Enable secure cookies (default: false)
+- `mosip.security.csrf-enable`
+- `mosip.security.secure-cookie`
 
-**Note**:
-- **If using config-server**: Properties marked as environment variables (e.g., `db.dbuser.password`, `keycloak.internal.url`, `keycloak.external.url`, `mosip.resident.client.secret`) must be passed through the config-server's 'overrides' environment variables and should NOT be defined in property files. Refer to the config-server helm chart for more details.
-- **If using application properties directly**: Update these properties directly in your `application.properties` or `resident-default.properties` file with your environment-specific values.
+**Note:** Environment variables MUST NOT be inside property files when using config-server.
+
+---
 
 ## Installation
 
 ### Local Setup (for Development or Contribution)
 
-1. Make sure the config server is running. For detailed instructions on setting up and running the Resident server, refer to the [Resident Server Setup Guide](https://docs.mosip.io/1.2.0/id-lifecycle-management/identity-management/resident-services/develop/resident-services-developer-guide).
-
-**Note**: Refer to the MOSIP Config Server Setup Guide for setup, and ensure the properties mentioned above in the configuration section are taken care of. Replace the properties with your own configurations (e.g., DB credentials, IAM credentials, URL).
-
+1. Run Config Server
 2. Clone the repository:
 
-```text
+```bash
 git clone <repo-url>
-cd resident
+cd resident-services
 ```
+
 3. Build the project:
 
-```text
+```bash
 mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
 ```
 
 4. Start the application:
-    - Click the Run button in your IDE, or
-    - Run via command: `java -jar target/resident-service:<$version>.jar`
 
-5. Verify Swagger is accessible at: `http://localhost:8099/resident/v1/swagger-ui.html`
+```bash
+java -jar resident/resident-service/target/resident-service-<version>.jar
+```
 
-### Local Setup with Docker (Easy Setup for Demos)
+5. Verify Swagger:
+```
+http://localhost:8099/resident/v1/swagger-ui/index.html
+```
 
-#### Option 1: Pull from Docker Hub
+---
 
-Recommended for users who want a quick, ready-to-use setup — testers, students, and external users.
+## Local Setup with Docker (Easy Setup for Demos)
 
-Pull the latest pre-built images from Docker Hub using the following commands:
+### Option 1: Pull from Docker Hub
 
-```text
+```bash
 docker pull mosipid/resident-service:1.2.1.2
 ```
 
-#### Option 2: Build Docker Images Locally
+### Option 2: Build Docker Image Locally
 
-Recommended for contributors or developers who want to modify or build the services from source.
-
-1. Clone and build the project:
-
-```text
-git clone <repo-url>
-cd resident
-mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
+```bash
+cd resident-services
+mvn clean install -Dgpg.skip=true
+cd resident/resident-service
+docker build -t resident-service .
 ```
 
-2. Navigate to each service directory and build the Docker image:
+### Run the Service
 
-```text
-cd resident/<service-directory>
-docker build -t <service-name> .
+```bash
+docker run -d -p 8099:8099 --name resident-service resident-service
 ```
 
-#### Running the Services
-
-Start each service using Docker:
-
-```text
-docker run -d -p <port>:<port> --name <service-name> <service-name>
-```
-
-#### Verify Installation
-
-Check that all containers are running:
-
-```text
-docker ps
-```
-
-Access the services at `http://localhost:<port>` using the port mappings listed above.
+---
 
 ## Deployment
 
 ### Kubernetes
 
-To deploy Resident services on a Kubernetes cluster, refer to the [Sandbox Deployment Guide](https://docs.mosip.io/1.2.0/deploymentnew/v3-installation).
+For cluster deployment, refer to the **Sandbox Deployment Guide**:  
+https://docs.mosip.io/1.2.0/deploymentnew/v3-installation
 
-### Local Setup with Docker (Easy Setup for Demos)
-
-#### Option 1: Pull from Docker Hub
-
-Recommended for users who want a quick, ready-to-use setup — testers, students, and external users.
-
-Pull the latest pre-built images from Docker Hub using the following commands:
-
-```text
-docker pull mosipid/admin-service:1.2.1.2
-docker pull mosipid/kernel-masterdata-service:1.2.1.2
-docker pull mosipid/kernel-syncdata-service:1.2.1.2
-docker pull mosipid/hotlist-service:1.2.1.2
-```
-
-#### Option 2: Build Docker Images Locally
-
-Recommended for contributors or developers who want to modify or build the services from source.
-
-1. Clone and build the project:
-
-```text
-git clone <repo-url>
-cd admin-services
-mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
-```
-
-2. Navigate to each service directory and build the Docker image:
-
-```text
-cd admin/<service-directory>
-docker build -t <service-name> .
-```
-
-#### Running the Services
-
-Start each service using Docker:
-
-```text
-docker run -d -p <port>:<port> --name <service-name> <service-name>
-```
-
-#### Verify Installation
-
-Check that all containers are running:
-
-```text
-docker ps
-```
-
-Access the services at `http://localhost:<port>` using the port mappings listed above.
-
-## Deployment
-
-### Kubernetes
-
-To deploy Resident services on a Kubernetes cluster, refer to the [Sandbox Deployment Guide](https://docs.mosip.io/1.2.0/deploymentnew/v3-installation).
+---
 
 ## Usage
 
 ### Resident UI
 
-For the complete Resident UI implementation and usage instructions, refer to the [Resident UI GitHub repository](https://github.com/mosip/resident-ui/).
+A complete UI implementation is available here:  
+https://github.com/mosip/resident-ui/
+
+---
 
 ## Documentation
 
-For more detailed documents for repositories, you can [check here](https://github.com/mosip/documentation/tree/1.2.0/docs).
+- **Repository Docs:** https://github.com/mosip/documentation/tree/1.2.0/docs
+- **API Documentation:** https://mosip.stoplight.io/docs/resident
+- **Product Documentation:**  
+  https://docs.mosip.io/1.2.0/id-lifecycle-management/identity-management/resident-services
 
-### API Documentation
-
-API endpoints, base URL, and mock server details are available via Stoplight and Swagger documentation: [MOSIP Resident Service API Documentation](https://mosip.stoplight.io/docs/resident).
-
-### Product Documentation
-
-To learn more about resident services from a functional perspective and use case scenarios, refer to our main documentation: [Click here](https://docs.mosip.io/1.2.0/id-lifecycle-management/identity-management/resident-services).
+---
 
 ## Testing
 
-Automated functional tests are available in the [Functional Tests repository](api-test).
+Automated functional tests are available in the **[Functional Tests repository](api-test)**.
+
+---
 
 ## Contribution & Community
 
-• To learn how you can contribute code to this application, [click here](https://docs.mosip.io/1.2.0/community/code-contributions).
+- Contribution Guide: https://docs.mosip.io/1.2.0/community/code-contributions
+- Community Support: https://community.mosip.io/
+- Report Issues: https://github.com/mosip/resident-services/issues
 
-• If you have questions or encounter issues, visit the [MOSIP Community](https://community.mosip.io/) for support.
-
-• For any GitHub issues: [Report here](https://github.com/mosip/resident-services/issues)
+---
 
 ## License
-This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
+
+This project is licensed under the **Mozilla Public License 2.0**.  
+See the [LICENSE](LICENSE) file.
