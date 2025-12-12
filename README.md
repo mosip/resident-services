@@ -5,16 +5,8 @@
 
 ## Overview
 
-The **Resident Services module** provides a secure and user-friendly interface for residents to interact with MOSIP’s identity system.
-
-It enables:
-
-- OTP generation and validation
-- Authentication requests
-- Credential download (Card, UIN, eUIN)
-- Authentication history
-- VID creation and management
-- Resident profile and ID updates
+Resident Services provide a suite of self-service tools that residents can access through the online Resident Portal.
+The portal enables residents to manage and interact with their Unique Identification Number (UIN) and Virtual ID (VID). Through this platform, residents can perform various identity-related operations, access credentials, and raise service requests or concerns.
 
 It exposes a set of APIs consumed by **Resident UI**, available here:  
  **[Resident UI GitHub Repository](https://github.com/mosip/resident-ui/)**
