@@ -68,6 +68,7 @@ The following properties must be configured with your environment-specific value
 - `keycloak.internal.url` - Internal Keycloak URL (passed as environment variable)
 - `keycloak.external.url` - External Keycloak URL (passed as environment variable)
 - `mosip.resident.client.secret` - Resident client secret for Keycloak (passed as environment variable)
+- `mosip.keycloak.issuerUrl` - Keycloak issuer URL
 
 **Service URLs:**
 - `mosip.kernel.authmanager.url` - Auth manager service URL
@@ -92,174 +93,182 @@ The following properties must be configured with your environment-specific value
 - `mosip.api.internal.url` - Internal API base URL
 - `mosip.api.public.url` - Public API base URL
 
-### Build the Project
+**Security Configuration:**
+- `mosip.security.csrf-enable` - Enable CSRF protection (default: false)
+- `mosip.security.secure-cookie` - Enable secure cookies (default: false)
 
-```bash
-cd resident-service
-mvn install -Dgpg.skip=true
+**Note**:
+- **If using config-server**: Properties marked as environment variables (e.g., `db.dbuser.password`, `keycloak.internal.url`, `keycloak.external.url`, `mosip.resident.client.secret`) must be passed through the config-server's 'overrides' environment variables and should NOT be defined in property files. Refer to the config-server helm chart for more details.
+- **If using application properties directly**: Update these properties directly in your `application.properties` or `resident-default.properties` file with your environment-specific values.
+
+## Installation
+
+### Local Setup (for Development or Contribution)
+
+1. Make sure the config server is running. For detailed instructions on setting up and running the Resident server, refer to the [Resident Server Setup Guide](https://docs.mosip.io/1.2.0/id-lifecycle-management/identity-management/resident-services/develop/resident-services-developer-guide).
+
+**Note**: Refer to the MOSIP Config Server Setup Guide for setup, and ensure the properties mentioned above in the configuration section are taken care of. Replace the properties with your own configurations (e.g., DB credentials, IAM credentials, URL).
+
+2. Clone the repository:
+
+```text
+git clone <repo-url>
+cd resident
+```
+3. Build the project:
+
+```text
+mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
 ```
 
-### Run the Application
+4. Start the application:
+    - Click the Run button in your IDE, or
+    - Run via command: `java -jar target/resident-service:<$version>.jar`
 
-Run from IDE or use:
+5. Verify Swagger is accessible at: `http://localhost:8099/resident/v1/swagger-ui.html`
 
-```bash
-java -jar target/resident-service-<version>.jar
+### Local Setup with Docker (Easy Setup for Demos)
+
+#### Option 1: Pull from Docker Hub
+
+Recommended for users who want a quick, ready-to-use setup — testers, students, and external users.
+
+Pull the latest pre-built images from Docker Hub using the following commands:
+
+```text
+docker pull mosipid/resident-service:1.2.1.2
 ```
 
-Swagger URL depends on the `bootstrap.properties` context path.
+#### Option 2: Build Docker Images Locally
 
----
+Recommended for contributors or developers who want to modify or build the services from source.
 
-## Required Configuration Updates
+1. Clone and build the project:
 
-### Hibernate Dialect
-
-Use version-neutral dialect for future PostgreSQL compatibility:
-
-```
-hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+```text
+git clone <repo-url>
+cd resident
+mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
 ```
 
-### Spring Boot 3.x Path Matching
+2. Navigate to each service directory and build the Docker image:
 
-```
-spring.mvc.pathmatch.matching-strategy=ANT_PATH_MATCHER
-```
-
-### Add the Below Config to resident-default.properties
-
-```
-hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-
-## Keymanager service
-mosip.kernel.keymanager.hsm.keystore-type=OFFLINE
-mosip.kernel.keymanager.hsm.config-path=/config/softhsm-application.conf
-mosip.kernel.keymanager.hsm.keystore-pass=${softhsm.kernel.security.pin}
-
-# Spring Boot 3.x change for actuator
-management.endpoint.env.show-values=ALWAYS  
-
-resident.template.purpose.success.AUTHENTICATION_REQUEST=mosip.event.type.AUTHENTICATION_REQUEST
-resident.template.purpose.failure.AUTHENTICATION_REQUEST=mosip.event.type.AUTHENTICATION_REQUEST
+```text
+cd resident/<service-directory>
+docker build -t <service-name> .
 ```
 
-### Update Exclusion List (No Auth Required)
+#### Running the Services
 
-```
-mosip.service.end-points=/**/req/otp,/**/proxy/**,/**/validate-otp,/**/channel/verification-status/**,
- /**/req/credential/**,/**/req/card/*,/**/req/auth-history,/**/rid/check-status,/**/req/auth-lock,
- /**/req/auth-unlock,/**/req/update-uin,/**/req/print-uin,/**/req/euin,/**/credential/types,
- /**/req/policy/**,/**/aid/status,/**/individualId/otp,/**/mock/**,/**/callback/**,
- /**/download-card,/**/download/registration-centers-list/**,/**/download/supporting-documents/**,
- /**/vid/policy,/**/vid,/vid/**,/**/download/nearestRegistrationcenters/**,
- /**/authorize/admin/validateToken,/**/logout/user,/**/aid-stage/**
+Start each service using Docker:
+
+```text
+docker run -d -p <port>:<port> --name <service-name> <service-name>
 ```
 
----
+#### Verify Installation
 
-## Configuration Files
+Check that all containers are running:
 
-These files define environment-level configurations:
-
-- **[resident-default.properties](https://github.com/mosip/mosip-config/blob/master/resident-default.properties)**
-- **[application-default.properties](https://github.com/mosip/mosip-config/blob/master/application-default.properties)**
-
-Ensure these are served through config-server for local and deployment environments.
-
----
-
-## Default Context, Path & Port
-
-See:
-
-```
-resident/resident-service/src/main/resources/bootstrap.properties
-```
-
----
-
-## Local Setup with Docker (Easy Setup for Demos)
-
-### Build Docker Image
-
-```bash
-cd <service-folder>
-docker build -f Dockerfile -t mosip/resident-service .
-```
-
-### Run the Container
-
-```bash
-docker run -d -p <port>:<port> --name resident-service mosip/resident-service
-```
-
-Check running containers:
-
-```bash
+```text
 docker ps
 ```
 
----
+Access the services at `http://localhost:<port>` using the port mappings listed above.
 
-## Deployment (Kubernetes)
+## Deployment
 
-### Prerequisites
+### Kubernetes
 
-Set your kubeconfig:
+To deploy Resident services on a Kubernetes cluster, refer to the [Sandbox Deployment Guide](https://docs.mosip.io/1.2.0/deploymentnew/v3-installation).
 
-```bash
-export KUBECONFIG=~/.kube/<k8s-cluster.config>
+### Local Setup with Docker (Easy Setup for Demos)
+
+#### Option 1: Pull from Docker Hub
+
+Recommended for users who want a quick, ready-to-use setup — testers, students, and external users.
+
+Pull the latest pre-built images from Docker Hub using the following commands:
+
+```text
+docker pull mosipid/admin-service:1.2.1.2
+docker pull mosipid/kernel-masterdata-service:1.2.1.2
+docker pull mosipid/kernel-syncdata-service:1.2.1.2
+docker pull mosipid/hotlist-service:1.2.1.2
 ```
 
-### Install Resident Services
+#### Option 2: Build Docker Images Locally
 
-```bash
-cd deploy
-./install.sh
+Recommended for contributors or developers who want to modify or build the services from source.
+
+1. Clone and build the project:
+
+```text
+git clone <repo-url>
+cd admin-services
+mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
 ```
 
-### Delete Deployment
+2. Navigate to each service directory and build the Docker image:
 
-```bash
-./delete.sh
+```text
+cd admin/<service-directory>
+docker build -t <service-name> .
 ```
 
-### Restart Deployment
+#### Running the Services
 
-```bash
-./restart.sh
+Start each service using Docker:
+
+```text
+docker run -d -p <port>:<port> --name <service-name> <service-name>
 ```
 
----
+#### Verify Installation
 
-## API Documentation
+Check that all containers are running:
 
-API reference and mock server details are available here:  
- **https://mosip.github.io/documentation/**
+```text
+docker ps
+```
 
----
+Access the services at `http://localhost:<port>` using the port mappings listed above.
+
+## Deployment
+
+### Kubernetes
+
+To deploy Resident services on a Kubernetes cluster, refer to the [Sandbox Deployment Guide](https://docs.mosip.io/1.2.0/deploymentnew/v3-installation).
+
+## Usage
+
+### Resident UI
+
+For the complete Resident UI implementation and usage instructions, refer to the [Resident UI GitHub repository](https://github.com/mosip/resident-ui/).
+
+## Documentation
+
+For more detailed documents for repositories, you can [check here](https://github.com/mosip/documentation/tree/1.2.0/docs).
+
+### API Documentation
+
+API endpoints, base URL, and mock server details are available via Stoplight and Swagger documentation: [MOSIP Resident Service API Documentation](https://mosip.stoplight.io/docs/resident).
+
+### Product Documentation
+
+To learn more about resident services from a functional perspective and use case scenarios, refer to our main documentation: [Click here](https://docs.mosip.io/1.2.0/id-lifecycle-management/identity-management/resident-services).
 
 ## Testing
 
-Automated functional tests are available in the **[API Test repository](api-test)**.
-
----
+Automated functional tests are available in the [Functional Tests repository](api-test).
 
 ## Contribution & Community
 
-• Contribution guide:  
-https://docs.mosip.io/1.2.0/community/code-contributions
+• To learn how you can contribute code to this application, [click here](https://docs.mosip.io/1.2.0/community/code-contributions).
 
-• Community discussions:  
-https://community.mosip.io/
+• If you have questions or encounter issues, visit the [MOSIP Community](https://community.mosip.io/) for support.
 
-• Report issues:  
-https://github.com/mosip/resident-services/issues
-
----
+• For any GitHub issues: [Report here](https://github.com/mosip/resident-services/issues)
 
 ## License
-
-This project is released under the **Mozilla Public License 2.0**.  
-See the [LICENSE](LICENSE) file.
+This project is licensed under the terms of [Mozilla Public License 2.0](LICENSE).
