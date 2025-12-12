@@ -14,15 +14,27 @@ It exposes a set of APIs consumed by **Resident UI**, available here:
 For a functional overview, refer to the official documentation:  
  https://docs.mosip.io/1.2.0/modules/resident-services
 
----
+
+## Services
+
+The Resident module contains the following services:
+
+1. **[Resident Service](https://github.com/mosip/resident-services/tree/master/resident/resident-service)** - Core Resident service functionality
+
 
 ## Database
 
-Before starting the local setup, execute the required SQL scripts available in the **[db_scripts](db_scripts)** directory.
+Before starting the local setup, execute the required SQL scripts to initialize the database.
 
----
+All database SQL scripts are available in the [db_scripts](db_scripts) directory.
 
-## Local Setup (for Development or Contribution)
+## Local Setup
+
+The project can be set up in two ways:
+
+1. [Local Setup (for Development or Contribution)](#local-setup-for-development-or-contribution)
+2. [Local Setup with Docker (Easy Setup for Demos)](#local-setup-with-docker-easy-setup-for-demos)
+
 
 ### Prerequisites
 
@@ -30,10 +42,55 @@ Install or configure the following:
 
 - **JDK**: 21.0.3
 - **Maven**: 3.9.6
-- **PostgreSQL**
-- **Docker** (optional for containerized builds)
-- **MOSIP Config Server**  
-  (Guide: https://docs.mosip.io/1.2.0/modules/module-configuration#config-server)
+- **Docker**: Latest stable version
+- **PostgreSQL**: 10.2
+- **Keycloak**: [Check here](https://github.com/mosip/keycloak)
+
+### Configuration
+
+- Resident module uses the following configuration files that are accessible in this [repository](https://github.com/mosip/mosip-config/tree/master).
+  Please refer to the required released tagged version for configuration.
+  [Configuration-Resident](https://github.com/mosip/mosip-config/blob/master/resident-default.properties) and
+  [Configuration-Application](https://github.com/mosip/mosip-config/blob/master/application-default.properties) are defined here. You need to run the config-server along with the files mentioned above.
+- For generating clients, refer to MOSIP’s documentation here: [Client Generation Guide](https://docs.mosip.io/1.2.0/interoperability/integrations/mosip-crvs/approach/technical-details#id-1.-create-client-id-role-for-the-crvs)
+- To authenticate a client, use the Auth Manager API as described here: [Auth API Documentation](https://docs.mosip.io/1.2.0/interoperability/integrations/mosip-crvs/approach/technical-details#id-2.-fetch-access-token-to-call-the-apis)
+
+#### Required Configuration Properties
+
+The following properties must be configured with your environment-specific values before deployment:
+
+**Database Configuration:**
+- `mosip.resident.database.hostname` - Database hostname (default: postgres-postgresql.postgres)
+- `mosip.resident.database.port` - Database port (default: 5432)
+- `db.dbuser.password` - Database user password (passed as environment variable)
+
+**IAM/Keycloak Configuration:**
+- `keycloak.internal.url` - Internal Keycloak URL (passed as environment variable)
+- `keycloak.external.url` - External Keycloak URL (passed as environment variable)
+- `mosip.resident.client.secret` - Resident client secret for Keycloak (passed as environment variable)
+
+**Service URLs:**
+- `mosip.kernel.authmanager.url` - Auth manager service URL
+- `mosip.kernel.keymanager.url` - Key manager service URL
+- `mosip.kernel.masterdata.url` - Masterdata service URL
+- `mosip.kernel.notification.url` - Notification service URL
+- `mosip.regproc.status.service.url` - Registration processor status service URL
+- `mosip.regproc.transaction.service.url` - Registration processor transaction service URL
+- `mosip.packet.receiver.url` - Packet receiver service URL
+- `mosip.idrepo.identity.url` - ID repository identity service URL
+- `mosip.ida.internal.url` - IDA internal service URL
+- `mosip.idrepo.credrequest.generator.url` - Credential request generator service URL
+- `mosip.idrepo.credential.service.url` - Credential service URL
+- `mosip.idrepo.vid.url` - ID repository VID service URL
+- `mosip.pms.partnermanager.url` - Partner manager service URL
+- `mosip.resident.url` - Resident service URL
+- `mosip.kernel.syncdata.url` - Sync data service URL
+- `mosip.digitalcard.service.url` - Digital card service URL
+- `mosip.kernel.ridgenerator.url` - RID generator service URL
+- `mosip.kernel.otpmanager.url` - OTP manager service URL
+- `mosip.kernel.auditmanager.url` - Audit manager service URL
+- `mosip.api.internal.url` - Internal API base URL
+- `mosip.api.public.url` - Public API base URL
 
 ### Build the Project
 
