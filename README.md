@@ -60,8 +60,8 @@ Ensure the MOSIP Config Server is running.
 ## Required Configuration Properties
 
 **Database Configuration:**
-- `mosip.kernel.database.hostname` – Database hostname
-- `mosip.kernel.database.port` – Database port
+- `mosip.resident.database.hostname` – Database hostname
+- `mosip.resident.database.port` – Database port
 - `db.dbuser.password` – Database user password (env variable)
 
 **IAM/Keycloak Configuration:**
