@@ -1,4 +1,4 @@
-\c mosip_resident sysadmin
+\c mosip_resident
 
 REVOKE SELECT, INSERT, REFERENCES, UPDATE, DELETE
 ON resident.otp_transaction
