@@ -13,7 +13,7 @@ It exposes a set of APIs consumed by **[Resident UI](https://github.com/mosip/re
 
 The Resident module contains the following services:
 
-- **[Resident Service](https://github.com/mosip/resident-services/tree/master/resident/resident-service)** - Core Resident service.
+- **[Resident Service](./resident)** - Core Resident service.
 
 
 ## Database
