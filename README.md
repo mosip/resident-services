@@ -165,7 +165,7 @@ Check that all containers are running:
 docker ps
 ```
 
-Access the services at http://localhost:<port> using the port mappings listed above.
+Access the services at `http://localhost:<port>` using the port mappings listed above.
 
 ## Deployment
 
