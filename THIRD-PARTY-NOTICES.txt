@@ -97,7 +97,7 @@ Homepage: https://www.joda.org/joda-time/
 ================================================================================
 Package: H2 Database
 Version: Not specified
-License: MPL 2.0 / EPL 1.0
+License: MPL 2.0 
 Homepage: https://www.h2database.com/
 ================================================================================
 
@@ -133,7 +133,7 @@ Homepage: https://github.com/powermock/powermock
 ================================================================================
 Package: JUnit (Vintage Engine & JUnit4)
 Version: Not specified
-License: EPL 1.0 / EPL 2.0 (Inferred)
+License: EPL 1.0 
 Homepage: https://junit.org/
 ================================================================================
 
