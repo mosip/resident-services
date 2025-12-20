@@ -1,0 +1,104 @@
+MOSIP Project - Notices
+Copyright © 2022
+Modular Open Source Identity Platform (MOSIP)
+
+This project includes third-party software components licensed under various
+open-source licenses. Attribution for these components is provided below.
+Full license texts are available in the LICENSES/ directory or from their
+respective upstream sources.
+
+---
+
+Third-party attributions:
+
+• Apache Commons (Lang, IO)
+  Licensed under the Apache License 2.0.
+
+• Apache HttpClient
+  Licensed under the Apache License 2.0.
+
+• Spring Framework & Spring Boot
+  Licensed under the Apache License 2.0.
+
+• SpringDoc OpenAPI
+  Licensed under the Apache License 2.0.
+
+• Micrometer
+  Licensed under the Apache License 2.0.
+
+• Jackson (FasterXML)
+  Licensed under the Apache License 2.0.
+
+• Gson
+  Licensed under the Apache License 2.0.
+
+• JSON.simple
+  Licensed under the Apache License 2.0.
+
+• Nimbus JOSE + JWT
+  Licensed under the Apache License 2.0.
+
+• Jose4j (Brian Campbell JOSE Library)
+  Licensed under the Apache License 2.0.
+
+• Joda-Time
+  Licensed under the Apache License 2.0.
+
+• H2 Database
+  Licensed under the MPL 2.0 / EPL 1.0 dual license.
+
+• PostgreSQL JDBC Driver
+  Licensed under the BSD-2-Clause License.
+
+• MVEL2 Expression Engine
+  Licensed under the Apache License 2.0.
+
+• Mockito
+  Licensed under the MIT License.
+
+• Powermock
+  Licensed under the Apache License 2.0.
+
+• JUnit (JUnit4, Vintage, JUnit5)
+  Licensed under the Eclipse Public License 1.0 / 2.0.
+
+• Apache Maven Plugins
+  Licensed under the Apache License 2.0.
+
+• Git Commit ID Plugin
+  Licensed under the LGPL 3.0 License.
+
+• Central Publishing Maven Plugin
+  Licensed under the Apache License 2.0.
+
+• Netty (netty-all)
+  Licensed under the Apache License 2.0.
+
+• MOSIP Kernel Libraries
+  Licensed under the Mozilla Public License 2.0.
+
+• MOSIP Commons Libraries
+  Licensed under the Mozilla Public License 2.0.
+
+• MOSIP ID Repository Components
+  Licensed under the Mozilla Public License 2.0.
+
+• MOSIP Pre-Registration Components
+  Licensed under the Mozilla Public License 2.0.
+
+• MOSIP Testrig API Test Commons
+  Licensed under the Mozilla Public License 2.0.
+
+• GitHub Actions (actions/checkout, upload-artifact, setup-java)
+  Licensed under the MIT License.
+
+• mosip/kattu GitHub Workflow Templates
+  Licensed under the Mozilla Public License 2.0.
+
+• action-slack (8398a7/action-slack)
+  Licensed under the MIT License.
+
+---
+
+Additional third-party components are licensed under compatible open-source
+licenses. Full license texts are provided in the LICENSES/ directory.
