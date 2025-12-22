@@ -5,27 +5,3 @@ modules:
       repository: mosipid/apitest-resident
       tag: 1.3.0
       pullPolicy: Always
-
-  prereg:
-    enabled: false
-
-  idrepo:
-    enabled: false
-
-  masterdata:
-    enabled: false
-
-  partner:
-    enabled: false
-
-  pms:
-    enabled: false
-
-  auth:
-    enabled: false
-
-  esignet:
-    enabled: false
-
-  mimoto:
-    enabled: false
