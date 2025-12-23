@@ -4,6 +4,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_01      
       description: Request credential to share with partner      
       role: residentNew
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       auditLogCheck: true
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
@@ -79,6 +80,7 @@ ReqShareCredWithPartner:
       description: Request credential to share with partner when logged in using UIN and purpose is given with only spaces    
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
       input: '{
@@ -99,6 +101,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_05      
       description: Request credential to share with partner when logged in using UIN and purpose is given as alphanumeric values      
       role: residentNew
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
@@ -119,6 +122,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_06      
       description: Request credential to share with partner when logged in using UIN and purpose is given with invalid value      
       role: residentNew
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
@@ -145,6 +149,7 @@ ReqShareCredWithPartner:
       description: Request credential to share with partner when logged in using UIN and consent is given empty     
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
       input: '{
@@ -169,6 +174,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_08      
       description: Request credential to share with partner when logged in using UIN and consent value is not given      
       role: residentNew
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
@@ -194,6 +200,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_09      
       description: Request credential to share with partner when logged in using VID      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
@@ -215,6 +222,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_10      
       description: Request credential to share with partner when logged in using VID and purpose is given empty      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
@@ -242,6 +250,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_11      
       description: Request credential to share with partner when logged in using VID and purpose is given with only spaces      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
@@ -263,6 +272,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_12      
       description: Request credential to share with partner when logged in using VID and purpose is given as alphanumeric values      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartnerResult
@@ -283,6 +293,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_13      
       description: Request credential to share with partner when logged in using VID and purpose value is given invalid      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
@@ -308,6 +319,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_14      
       description: Request credential to share with partner when logged in using VID and consent is given empty      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error
@@ -333,6 +345,7 @@ ReqShareCredWithPartner:
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_15      
       description: Request credential to share with partner when logged in using VID and consent is removed from request      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
       outputTemplate: resident/error

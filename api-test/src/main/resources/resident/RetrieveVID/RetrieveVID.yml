@@ -4,6 +4,7 @@ RetrieveVID:
       uniqueIdentifier: TC_Resident_RetrieveVid_01      
       description: Retrieve VIDs when logged using UIN      
       role: residentNew
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
       restMethod: get
       auditLogCheck: true
@@ -19,6 +20,7 @@ RetrieveVID:
       uniqueIdentifier: TC_Resident_RetrieveVid_02      
       description: Retrieve VIDs when logged using VID      
       role: residentNewVid
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/RetrieveVID/RetrieveVID

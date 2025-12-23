@@ -4,6 +4,7 @@ GetInputAttributeValues:
       uniqueIdentifier: TC_Resident_GetInputAtributes_01      
       description: Get input attribute values using a valid UIN with all valid inputs
       role: residentNew
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
       restMethod: get
       auditLogCheck: true
@@ -21,6 +22,7 @@ GetInputAttributeValues:
       description: Get second input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
@@ -36,6 +38,7 @@ GetInputAttributeValues:
       description: Get third input attribute values using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
@@ -51,6 +54,7 @@ GetInputAttributeValues:
       description: Get input attribute values using a valid UIN with an invalid schematype
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/error
@@ -71,6 +75,7 @@ GetInputAttributeValues:
       description: Get input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
@@ -86,6 +91,7 @@ GetInputAttributeValues:
       description: Get second input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult
@@ -101,6 +107,7 @@ GetInputAttributeValues:
       description: Get third input attribute values using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  addtonalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetInputAttributeValues/getInputAttributeValues
       outputTemplate: resident/GetInputAttributeValues/getInputAttributeValuesResult

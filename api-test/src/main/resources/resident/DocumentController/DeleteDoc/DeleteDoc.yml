@@ -5,6 +5,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with all valid inputs
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/DocumentController/DeleteDoc/DeleteDocResult
       input: '{
@@ -21,6 +22,7 @@ DeleteDoc:
       description: Delete document using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/DocumentController/DeleteDoc/DeleteDocResult
       input: '{
@@ -37,6 +39,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid transactionId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -58,6 +61,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid format transactionId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -79,6 +83,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid transactionId and docId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -99,6 +104,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid format transactionId and docId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -119,6 +125,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid docId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -140,6 +147,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid format docId
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -183,6 +191,7 @@ DeleteDoc:
       description: Delete document using a valid VID with an invalid transactionId
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -204,6 +213,7 @@ DeleteDoc:
       description: Delete document using a valid VID with an invalid format transactionId
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -225,6 +235,7 @@ DeleteDoc:
       description: Delete document using a valid UIN with an invalid token
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -245,6 +256,7 @@ DeleteDoc:
       description: Delete document using a valid VID with an invalid format transactionId and docId
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -265,6 +277,7 @@ DeleteDoc:
       description: Delete document using a valid VID with an invalid docId
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{
@@ -286,6 +299,7 @@ DeleteDoc:
       description: Delete document using a valid VID with an invalid format docId
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/DeleteDoc/DeleteDoc
       outputTemplate: resident/error
       input: '{

@@ -5,6 +5,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with all valid inputs
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/DocumentController/UploadDocument/UploadDocumentResult
       input: '{
@@ -30,6 +31,7 @@ UploadDocument:
       description: Upload the document using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/DocumentController/UploadDocument/UploadDocumentResult
       input: '{
@@ -55,6 +57,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with large file
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -80,6 +83,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with an invalid file
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -105,6 +109,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with an empty docTypeCode
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -130,6 +135,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with blank doccatCode
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -156,6 +162,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with an invalid langCode
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -182,6 +189,7 @@ UploadDocument:
       description: Upload the document using a valid UIN with an empty langCode
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -253,6 +261,7 @@ UploadDocument:
       description: Upload the document using a valid VID with large file
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -278,6 +287,7 @@ UploadDocument:
       description: Upload the document using a valid VID with an invalid file
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -303,6 +313,7 @@ UploadDocument:
       description: Upload the document using a valid VID with an empty docTypCode
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -329,6 +340,7 @@ UploadDocument:
       description: Upload the document using a valid VID with blank DoccatCode
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -355,6 +367,7 @@ UploadDocument:
       description: Upload the document using a valid VID with an invalid langCode
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{
@@ -381,6 +394,7 @@ UploadDocument:
       description: Upload the document using a valid VID with an empty langCode
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
       outputTemplate: resident/error
       input: '{

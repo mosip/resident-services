@@ -5,6 +5,7 @@ UpdateUINNew:
       description: Update demographic details with all valid details and logged in using UIN     
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/UpdateUINNew/UpdateUINNewResult
       input: '{
@@ -25,6 +26,7 @@ UpdateUINNew:
       description: Update demographic details with all valid details and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/UpdateUINNew/UpdateUINNewResult
       input: '{
@@ -45,6 +47,7 @@ UpdateUINNew:
       description: Update email with invalid language is given and logged in using UIN      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -69,6 +72,7 @@ UpdateUINNew:
       description: Update email with invalid language is given and logged in using VID       
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -119,6 +123,7 @@ UpdateUINNew:
       description: Update email with invalid transactionid is given      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -144,6 +149,7 @@ UpdateUINNew:
       description: Update email when transactionid is removed from request      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -168,6 +174,7 @@ UpdateUINNew:
       description: Update email when transactionid is given empty     
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -193,6 +200,7 @@ UpdateUINNew:
       description: Update email with invalid consent is given      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -218,6 +226,7 @@ UpdateUINNew:
       description: Update email when consent is removed from request      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -243,6 +252,7 @@ UpdateUINNew:
       description: Update email when consent is given empty      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -268,6 +278,7 @@ UpdateUINNew:
       description: Update email when invalid requesttime is given      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -293,6 +304,7 @@ UpdateUINNew:
       description: Update email when requesttime is removed from request      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -318,6 +330,7 @@ UpdateUINNew:
       description: Update email when requesttime is given empty      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -343,6 +356,7 @@ UpdateUINNew:
       description: Update email when invalid transactionid is given and logged in using VID  
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -368,6 +382,7 @@ UpdateUINNew:
       description: Update email when transactionid is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -392,6 +407,7 @@ UpdateUINNew:
       description: Update email when transactionid is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -417,6 +433,7 @@ UpdateUINNew:
       description: Update email when invalid consent is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -442,6 +459,7 @@ UpdateUINNew:
       description: Update email when consent is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -467,6 +485,7 @@ UpdateUINNew:
       description: Update email when consent is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -492,6 +511,7 @@ UpdateUINNew:
       description: Update email when invalid requestime is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -517,6 +537,7 @@ UpdateUINNew:
       description: Update email when requestime is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -542,6 +563,7 @@ UpdateUINNew:
       description: Update email when requestime is given empty and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNew
       outputTemplate: resident/error
       input: '{
@@ -567,6 +589,7 @@ UpdateUINNew:
       description: Update email when invalid identity is given and logged in using UIN      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
       outputTemplate: resident/error
       input: '{
@@ -592,6 +615,7 @@ UpdateUINNew:
       description: Update email when invalid identity is given and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
       outputTemplate: resident/error
       input: '{
@@ -617,6 +641,7 @@ UpdateUINNew:
       description: Update when identity is removed and logged in using UIN      
       role: residentNew
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
       outputTemplate: resident/error
       input: '{
@@ -642,6 +667,7 @@ UpdateUINNew:
       description: Update when identity is removed and logged in using VID      
       role: residentNewVid
       restMethod: patch
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateUINNew/UpdateUINNewInvalid
       outputTemplate: resident/error
       input: '{

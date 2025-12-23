@@ -6,6 +6,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
@@ -23,6 +24,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
@@ -40,6 +42,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -57,6 +60,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -74,6 +78,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -91,6 +96,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
@@ -108,6 +114,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
@@ -125,6 +132,7 @@ GetAcknowledgementController:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -142,6 +150,7 @@ GetAcknowledgementController:
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -159,6 +168,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -176,6 +186,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -193,6 +204,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -210,6 +222,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
@@ -227,6 +240,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
@@ -244,6 +258,7 @@ GetAcknowledgementController:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{

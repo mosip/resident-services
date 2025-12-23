@@ -5,6 +5,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/PersonalizedCard/PersonalizedCardResult
@@ -23,6 +24,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/PersonalizedCard/PersonalizedCardResult
@@ -87,6 +89,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using UIN and invalid html is given in request   
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error
@@ -110,6 +113,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using UIN and empty html is given in request      
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error
@@ -133,6 +137,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using VID and invalid html is given in request      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error
@@ -156,6 +161,7 @@ PersonalizedCard:
       description: Download personalized card when logged in using VID and empty html is given in request      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error

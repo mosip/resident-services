@@ -5,6 +5,7 @@ GetRequestCardVid:
       description: Request card using temporary VID when logged in using UIN      
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/GetRequestCardVid/GetRequestCardVidResult
@@ -41,6 +42,7 @@ GetRequestCardVid:
       description: Request card using invalid VID when logged in using UIN      
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/error
       input: '{
@@ -60,6 +62,7 @@ GetRequestCardVid:
       description: Request card using invalid VID when logged in using UIN      
       role: residentNew
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/error
       input: '{
@@ -79,6 +82,7 @@ GetRequestCardVid:
       description: Request card using Onetimeuse VID when logged in using VID      
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/GetRequestCardVid/GetRequestCardVidResult
       input: '{
@@ -94,6 +98,7 @@ GetRequestCardVid:
       description: Request card using invalid VID when logged in using VID      
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/error
       input: '{
@@ -113,6 +118,7 @@ GetRequestCardVid:
       description: Request card using VID when logged in using invalid VID      
       role: residentNewVid
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetRequestCardVid/GetRequestCardVid
       outputTemplate: resident/error
       input: '{

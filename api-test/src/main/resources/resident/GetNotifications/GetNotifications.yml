@@ -6,6 +6,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -24,6 +25,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -42,6 +44,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -60,6 +63,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -105,6 +109,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -123,6 +128,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -145,6 +151,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -167,6 +174,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -189,6 +197,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -212,6 +221,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -234,6 +244,7 @@ GetNotifications:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -256,6 +267,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -274,6 +286,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -292,6 +305,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/GetNotifications/GetNotificationsResult
       input: '{
@@ -310,6 +324,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -327,6 +342,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -349,6 +365,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -365,6 +382,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -387,6 +405,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{
@@ -410,6 +429,7 @@ GetNotifications:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotifications/GetNotifications
       outputTemplate: resident/error
       input: '{

@@ -5,6 +5,7 @@ GetPartnersByPartnerType:
       description: Get partners by partnertype using UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  additionalDependiencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       auditLogCheck: true
       inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
@@ -21,6 +22,7 @@ GetPartnersByPartnerType:
       description: Get partners by partnertype using UIN with an empty partnertype
       role: residentNew
       checkErrorsOnlyInResponse: true
+	  additionalDependiencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
       outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
@@ -77,6 +79,7 @@ GetPartnersByPartnerType:
       description: Get partners by partnertype using VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  additionalDependiencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
       outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult
@@ -92,6 +95,7 @@ GetPartnersByPartnerType:
       description: Get partners by partnertype using VID with an empty partnertype
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+	  additionalDependiencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerType
       outputTemplate: resident/GetPartnersByPartnerType/getPartnersByPartnerTypeResult

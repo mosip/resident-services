@@ -5,6 +5,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when logged in using UIN      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
@@ -23,6 +24,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when logged in using VID     
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
       input: '{
@@ -40,6 +42,7 @@ SendOtpForContactDet:
       description: Request otp to given invalid userid when logged in using UIN      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -61,6 +64,7 @@ SendOtpForContactDet:
       description: Request otp when userid value is empty      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -82,6 +86,7 @@ SendOtpForContactDet:
       description: Request otp when userid is removed from request       
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -103,6 +108,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when invalid transactionid is given      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -124,6 +130,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when transactionid value is empty     
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -145,6 +152,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when transactionid is removed from request      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -187,6 +195,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when invalid requesttime is given      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -208,6 +217,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when requestime value is empty      
       role: residentNew
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -229,6 +239,7 @@ SendOtpForContactDet:
       description: Request otp when invalid userid is given and logged in using VID     
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -250,6 +261,7 @@ SendOtpForContactDet:
       description: Request otp when userid values is empty and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -271,6 +283,7 @@ SendOtpForContactDet:
       description: Request otp when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -292,6 +305,7 @@ SendOtpForContactDet:
       description: Request otp when invalid transactionid is given and logged in uisng VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -313,6 +327,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when transcation id is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -334,6 +349,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when transaction id is removed and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -355,6 +371,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when invalid requesttime is given and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -376,6 +393,7 @@ SendOtpForContactDet:
       description: Request otp to given userid when requesttime is given as empty and logged in using VID      
       role: residentNewVid
       restMethod: post
+	  additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
