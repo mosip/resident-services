@@ -1,0 +1,241 @@
+THIRD-PARTY-NOTICES
+
+This project includes third-party packages that are distributed under various open-source licenses. Below is a list of packages and their associated licenses.
+
+================================================================================
+Package: Apache Commons Lang
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://commons.apache.org/proper/commons-lang/
+================================================================================
+
+================================================================================
+Package: Apache Commons IO
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://commons.apache.org/proper/commons-io/
+================================================================================
+
+================================================================================
+Package: Apache HttpClient
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://hc.apache.org/httpcomponents-client-4.5.x/
+================================================================================
+
+================================================================================
+Package: Spring Framework & Spring Boot
+Includes: spring-boot-starter-web, starter-test, starter-data-jpa,
+          starter-webflux (2.5.4), starter-thymeleaf,
+          spring-security-test, configuration-processor,
+          spring-boot-maven-plugin (3.2.3)
+Version: Mixed (2.5.x – 3.2.x)
+License: Apache License 2.0
+Homepage: https://spring.io/projects/spring-boot
+================================================================================
+
+================================================================================
+Package: SpringDoc OpenAPI
+Includes: springdoc-openapi-starter-webmvc-ui (2.6.0),
+          springdoc-openapi-maven-plugin (0.2)
+Version: 2.6.0 / 0.2
+License: Apache License 2.0
+Homepage: https://springdoc.org/
+================================================================================
+
+================================================================================
+Package: Micrometer
+Includes: micrometer-core, micrometer-registry-prometheus
+Version: Not specified
+License: Apache License 2.0 (Inferred)
+Homepage: https://micrometer.io/
+================================================================================
+
+================================================================================
+Package: Jackson (FasterXML)
+Includes: jackson-datatype-jsr310, jackson-module-afterburner
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://github.com/FasterXML/jackson
+================================================================================
+
+================================================================================
+Package: Gson
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://github.com/google/gson
+================================================================================
+
+================================================================================
+Package: JSON.simple
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://github.com/fangyidong/json-simple
+================================================================================
+
+================================================================================
+Package: Nimbus JOSE + JWT
+Version: 9.37.2
+License: Apache License 2.0
+Homepage: https://connect2id.com/products/nimbus-jose-jwt
+================================================================================
+
+================================================================================
+Package: Jose4j (Brian Campbell JOSE Library)
+Version: 0.9.4
+License: Apache License 2.0
+Homepage: https://bitbucket.org/b_c/jose4j/wiki/Home
+================================================================================
+
+================================================================================
+Package: Joda-Time
+Version: 2.8.1
+License: Apache License 2.0
+Homepage: https://www.joda.org/joda-time/
+================================================================================
+
+================================================================================
+Package: H2 Database
+Version: Not specified
+License: MPL 2.0 
+Homepage: https://www.h2database.com/
+================================================================================
+
+================================================================================
+Package: PostgreSQL JDBC Driver
+Version: Not specified
+License: BSD-2-Clause (Inferred)
+Homepage: https://github.com/pgjdbc/pgjdbc
+================================================================================
+
+================================================================================
+Package: MVEL2 Expression Engine
+Version: 2.5.2
+License: Apache License 2.0
+Homepage: https://github.com/mvel/mvel
+================================================================================
+
+================================================================================
+Package: Mockito
+Version: 3.11.2
+License: MIT License
+Homepage: https://github.com/mockito/mockito
+================================================================================
+
+================================================================================
+Package: PowerMock
+Includes: powermock-api-mockito2, powermock-module-junit4
+Version: Not specified
+License: Apache License 2.0 (Inferred)
+Homepage: https://github.com/powermock/powermock
+================================================================================
+
+================================================================================
+Package: JUnit (Vintage Engine & JUnit4)
+Version: Not specified
+License: EPL 1.0 
+Homepage: https://junit.org/
+================================================================================
+
+================================================================================
+Package: Maven Plugins (Apache)
+Includes: maven-compiler-plugin, maven-surefire-plugin (2.22.0),
+          maven-jar-plugin, maven-source-plugin, maven-war-plugin,
+          maven-antrun-plugin, maven-javadoc-plugin
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://maven.apache.org/plugins/
+================================================================================
+
+================================================================================
+Package: Netty (netty-all)
+Version: Not specified
+License: Apache License 2.0
+Homepage: https://netty.io/
+================================================================================
+
+================================================================================
+Package: MOSIP Kernel Libraries
+Includes: kernel-core, kernel-bom, kernel-auth-adapter,
+          kernel-idvalidator-uin, kernel-idvalidator-rid,
+          kernel-idvalidator-vid, kernel-pdfgenerator,
+          kernel-cbeffutil-api, kernel-openid-bridge-api,
+          kernel-logger-logback, kernel-virusscanner-clamav,
+          kernel-templatemanager-velocity,
+          kernel-transliteration-icu4j,
+          kernel-dataaccess-hibernate,
+          kernel-websubclient-api
+Version: 1.3.0-SNAPSHOT (various)
+License: MPL 2.0 (Inferred from MOSIP repository)
+Homepage: https://github.com/mosip
+================================================================================
+
+================================================================================
+Package: MOSIP Commons Libraries
+Includes: commons-packet-manager
+Version: 1.3.0-SNAPSHOT
+License: MPL 2.0
+Homepage: https://github.com/mosip
+================================================================================
+
+================================================================================
+Package: MOSIP ID Repository
+Includes: id-repository-core
+Version: 1.3.0-SNAPSHOT
+License: MPL 2.0
+Homepage: https://github.com/mosip
+================================================================================
+
+================================================================================
+Package: MOSIP Pre-Registration
+Includes: pre-registration-application-service
+Version: 1.3.0-SNAPSHOT
+License: MPL 2.0
+Homepage: https://github.com/mosip
+================================================================================
+
+================================================================================
+Package: MOSIP Testrig API Test Commons
+Version: 1.3.3
+License: MPL 2.0
+Homepage: https://github.com/mosip
+================================================================================
+
+================================================================================
+Package: actions/checkout
+Version: 3.*.*
+License: MIT License (Inferred)
+Homepage: https://github.com/actions/checkout
+================================================================================
+
+================================================================================
+Package: actions/upload-artifact
+Version: 4.*.*
+License: MIT License (Inferred)
+Homepage: https://github.com/actions/upload-artifact
+================================================================================
+
+================================================================================
+Package: actions/setup-java
+Version: 3.*.*
+License: MIT License
+Homepage: https://github.com/actions/setup-java
+================================================================================
+
+================================================================================
+Package: mosip/kattu GitHub Workflows
+Includes: maven-build.yml, maven-sonar-analysis.yml, maven-publish-to-nexus.yml,
+          docker-build.yml, db-test.yml, chart-lint-publish.yml
+Version: master / master-java21
+License: MPL 2.0
+Homepage: https://github.com/mosip/kattu
+================================================================================
+
+================================================================================
+Package: action-slack (8398a7/action-slack)
+Version: 3.*.*
+License: MIT License
+Homepage: https://github.com/8398a7/action-slack
+================================================================================
+
+Full license texts and additional details for each of the above packages are available in the license/ directory of this repository. Please refer to those files or the original source of each package for complete legal terms and conditions.
