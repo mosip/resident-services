@@ -5,7 +5,7 @@ AuthUnlockNew:
       description: Unlock the demo authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -26,7 +26,7 @@ AuthUnlockNew:
       description: Unlock the otp email authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -47,7 +47,7 @@ AuthUnlockNew:
       description: Unlock the otp email authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -68,7 +68,7 @@ AuthUnlockNew:
       description: Unlock the otp phone authentication type using a valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -89,7 +89,7 @@ AuthUnlockNew:
       description: Unlock the otp phone authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -110,7 +110,7 @@ AuthUnlockNew:
       description: Unlock the demo authentication type using a valid UIN for 120 seconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -131,7 +131,7 @@ AuthUnlockNew:
       description: Unlock the face authentication type using a valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -151,7 +151,7 @@ AuthUnlockNew:
       description: Unlock the face authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -172,7 +172,7 @@ AuthUnlockNew:
       description: Unlock the iris authentication type using a valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -193,7 +193,7 @@ AuthUnlockNew:
       description: Unlock the iris authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -214,7 +214,7 @@ AuthUnlockNew:
       description: Unlock the finger authentication type using a valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -235,7 +235,7 @@ AuthUnlockNew:
       description: Unlock the finger authentication type using a valid UIN for the specified time
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -256,7 +256,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -281,7 +281,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid ID
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -306,7 +306,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -331,7 +331,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -357,7 +357,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid locked status
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -382,7 +382,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an invalid unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -407,7 +407,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -432,7 +432,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty ID
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -457,7 +457,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -482,7 +482,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -508,7 +508,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty locked status
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -529,7 +529,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid UIN and an empty unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -550,7 +550,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -575,7 +575,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing ID
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -600,7 +600,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -625,7 +625,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -651,7 +651,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing lockedstatus
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -672,7 +672,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid UIN with missing unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -717,7 +717,7 @@ AuthUnlockNew:
       description: Unlock the demo authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -738,7 +738,7 @@ AuthUnlockNew:
       description: Unlock the otp-phone authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -759,7 +759,7 @@ AuthUnlockNew:
       description: Unlock the otp-email authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -780,7 +780,7 @@ AuthUnlockNew:
       description: Unlock the demo authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -801,7 +801,7 @@ AuthUnlockNew:
       description: Unlock the face authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -822,7 +822,7 @@ AuthUnlockNew:
       description: Unlock the face authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -843,7 +843,7 @@ AuthUnlockNew:
       description: Unlock the iris authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -864,7 +864,7 @@ AuthUnlockNew:
       description: Unlock the iris authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -885,6 +885,7 @@ AuthUnlockNew:
       description: Unlock the finger authentication type using a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -905,7 +906,7 @@ AuthUnlockNew:
       description: Unlock the finger authentication type using a valid VID for the specified time
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -926,7 +927,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -951,7 +952,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid ID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -976,7 +977,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1001,7 +1002,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1027,7 +1028,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1052,7 +1053,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an invalid unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1077,7 +1078,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1102,7 +1103,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty ID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1127,7 +1128,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1152,7 +1153,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1178,7 +1179,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -1199,7 +1200,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using a valid VID and an empty unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -1220,7 +1221,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1245,7 +1246,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing ID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1270,7 +1271,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1295,7 +1296,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/error
       input: '{
@@ -1321,7 +1322,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{
@@ -1342,7 +1343,7 @@ AuthUnlockNew:
       description: Unlock the authentication type using valid VID with missing unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNew
       outputTemplate: resident/AuthUnlockNew/CreateAuthUnlockNewResult
       input: '{

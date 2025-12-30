@@ -5,7 +5,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using one valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -23,7 +23,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using second valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -41,7 +41,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using third valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -59,7 +59,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using valid UIN with an invalid langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/error
@@ -81,7 +81,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using valid UIN with an invalid templatetype code
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/error
@@ -125,7 +125,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -143,7 +143,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using an another valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -161,7 +161,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using an another valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCodeResult
@@ -179,7 +179,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using a valid VID with an invalid langcode
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/error
@@ -201,7 +201,7 @@ GetAllTemplateBylangCodeAndTemplateTypeCode:
       description: Get all template by language code and templatetype code using a valid VID with an invalid templatetype code
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  addittionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAllTemplateBylangCodeAndTemplateTypeCode/GetAllTemplateBylangCodeAndTemplateTypeCode
       outputTemplate: resident/error

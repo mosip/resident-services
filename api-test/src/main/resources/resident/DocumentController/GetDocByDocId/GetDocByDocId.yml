@@ -6,7 +6,7 @@ GetDocByDocId:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocIdResult
       input: '{
@@ -24,7 +24,7 @@ GetDocByDocId:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocIdResult
       input: '{
@@ -42,7 +42,7 @@ GetDocByDocId:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/error
       input: '{
@@ -65,7 +65,7 @@ GetDocByDocId:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/error
       input: '{
@@ -111,7 +111,7 @@ GetDocByDocId:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/error
       input: '{
@@ -134,7 +134,7 @@ GetDocByDocId:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/GetDocByDocId/GetDocByDocId
       outputTemplate: resident/error
       input: '{

@@ -5,7 +5,7 @@ residentNewVid:
       description: Get authlock status using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetAuthLockStatus/getAuthLockStatus
       outputTemplate: resident/GetAuthLockStatus/getAuthLockStatusResult
@@ -39,7 +39,7 @@ residentNewVid:
       description: Get authlock status using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetAuthLockStatus/getAuthLockStatus
       outputTemplate: resident/GetAuthLockStatus/getAuthLockStatusResult

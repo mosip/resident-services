@@ -4,7 +4,7 @@ GetIdentityMapping:
       uniqueIdentifier: TC_Resident_GetIdentityMapping_01      
       description: Get identity mapping using all valid inputs
       role: residentNew
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetIdentityMapping/getIdentityMapping

@@ -26,7 +26,7 @@ SendOtpToUserId:
       description: Request otp to given userid when invalid requesttime is given      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -49,7 +49,7 @@ SendOtpToUserId:
       description: Request otp to given userid when requesttime is removed from request      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -72,7 +72,7 @@ SendOtpToUserId:
       description: Request otp to given userid when requesttime value is given as null      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -96,7 +96,7 @@ SendOtpToUserId:
       description: Request otp when invalid userid is given      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -119,7 +119,7 @@ SendOtpToUserId:
       description: Request otp when userid value is given empty      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -142,7 +142,7 @@ SendOtpToUserId:
       description: Request otp when only spaces is given as userid value      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -165,7 +165,7 @@ SendOtpToUserId:
       description: Request otp when userid is removed in request      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -188,7 +188,7 @@ SendOtpToUserId:
       description: Request otp when null value is given for userid      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -212,7 +212,7 @@ SendOtpToUserId:
       description: Request otp to given userid when invalid transactionid is given      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -235,7 +235,7 @@ SendOtpToUserId:
       description: Request otp to given userid when empty transactionid is given      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -258,7 +258,7 @@ SendOtpToUserId:
       description: Request otp to given userid when only spaces id given as transactionid      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -281,7 +281,7 @@ SendOtpToUserId:
       description: Request otp to given userid when transactionid is removed in request      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -304,7 +304,7 @@ SendOtpToUserId:
       description: Request otp to given userid when logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/SendOtpToUserId/SendOtpToUserIdResult
       input: '{
@@ -322,7 +322,7 @@ SendOtpToUserId:
       description: Request otp to given userid when invalid requesttime is given      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -345,7 +345,7 @@ SendOtpToUserId:
       description: Request otp to given userid when is requesttime is removed from request      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -368,7 +368,7 @@ SendOtpToUserId:
       description: Request otp to given userid when request time given as null and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -392,7 +392,7 @@ SendOtpToUserId:
       description: Request otp to invalid userid when logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -415,7 +415,7 @@ SendOtpToUserId:
       description: Request otp when userid value is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -438,7 +438,7 @@ SendOtpToUserId:
       description: Request otp when userid value is given with only spaces and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -461,7 +461,7 @@ SendOtpToUserId:
       description: Request otp when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -484,7 +484,7 @@ SendOtpToUserId:
       description: Request otp when userid value is given null and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -508,7 +508,7 @@ SendOtpToUserId:
       description: Request otp to given userid when invalid transactionid is given and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -531,7 +531,7 @@ SendOtpToUserId:
       description: Request otp to given userid when transactionid is given empty and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -554,7 +554,7 @@ SendOtpToUserId:
       description: Request otp to given userid when only spaces given as transactionid and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -577,7 +577,7 @@ SendOtpToUserId:
       description: Request otp to given userid when transactionid is removed and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/error
       input: '{
@@ -600,7 +600,7 @@ SendOtpToUserId:
       description: Request otp to given userid and logged in using VID     
       role: residentNewVid
       restMethod: post
-	  additionalDependecies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       auditLogCheck: true
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
       outputTemplate: resident/SendOtpToUserId/SendOtpToUserIdResult

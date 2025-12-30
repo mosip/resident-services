@@ -5,7 +5,7 @@ UnPinStatus:
       description: Unpin status for given eventid when logged using UIN     
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UnPinStatus/UnPinStatus
       outputTemplate: resident/UnPinStatus/UnPinStatusResult
       input: '{
@@ -21,7 +21,7 @@ UnPinStatus:
       description: Unpin status for given eventid when logged using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UnPinStatus/UnPinStatus
       outputTemplate: resident/UnPinStatus/UnPinStatusResult
       input: '{
@@ -37,7 +37,7 @@ UnPinStatus:
       description: Unpin status for invalid eventid when logged using UIN    
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UnPinStatus/UnPinStatus
       outputTemplate: resident/error
       input: '{
@@ -57,7 +57,7 @@ UnPinStatus:
       description: Unpin status for invalid eventid when logged using VID       
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UnPinStatus/UnPinStatus
       outputTemplate: resident/error
       input: '{

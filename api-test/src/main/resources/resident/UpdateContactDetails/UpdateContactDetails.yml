@@ -5,7 +5,7 @@ UpdateContactDetails:
       description: Update contact details by giving invalid userid and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -39,7 +39,7 @@ UpdateContactDetails:
       description: Update contact details by giving userid value empty and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -73,7 +73,7 @@ UpdateContactDetails:
       description: Update contact details when userid is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -107,7 +107,7 @@ UpdateContactDetails:
       description: Update contact details when invalid transactionid is given and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -141,7 +141,7 @@ UpdateContactDetails:
       description: Update contact details when transactionid is given empty and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -175,7 +175,7 @@ UpdateContactDetails:
       description: Update contact details when transactionid is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -209,7 +209,7 @@ UpdateContactDetails:
       description: Update contact details when invalid otp is used and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -243,7 +243,7 @@ UpdateContactDetails:
       description: Update contact details when otp value is empty and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -277,7 +277,7 @@ UpdateContactDetails:
       description: Update contact details when otp is removed from request and logged in using UIN      
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -349,7 +349,7 @@ UpdateContactDetails:
       description: Update contact details when invalid userid is given and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -383,7 +383,7 @@ UpdateContactDetails:
       description: Update contact details when userid is given as empty value and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -417,7 +417,7 @@ UpdateContactDetails:
       description: Update contact details when userid is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -451,7 +451,7 @@ UpdateContactDetails:
       description: Update contact details when invalid transaction id is given and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -485,7 +485,7 @@ UpdateContactDetails:
       description: Update contact details when transaction id is given as empty and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -519,7 +519,7 @@ UpdateContactDetails:
       description: Update contact details when transaction id is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -553,7 +553,7 @@ UpdateContactDetails:
       description: Update contact details when invalid otp is given and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -587,7 +587,7 @@ UpdateContactDetails:
       description: Update contact details when otp is given empty value and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -621,7 +621,7 @@ UpdateContactDetails:
       description: Update contact details when otp is removed from request and logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/error
       input: '{
@@ -656,7 +656,7 @@ UpdateContactDetails:
       role: residentNew
       restMethod: post
       auditLogCheck: true
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/UpdateContactDetails/UpdateContactDetailsResult
       input: '{
@@ -686,7 +686,7 @@ UpdateContactDetails:
       description: Update contact details when logged in using VID      
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
       outputTemplate: resident/UpdateContactDetails/UpdateContactDetailsResult
       input: '{

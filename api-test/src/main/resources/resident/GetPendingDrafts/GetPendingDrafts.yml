@@ -6,7 +6,7 @@ GetPendingDrafts:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetPendingDrafts/GetPendingDrafts
       outputTemplate: resident/GetPendingDrafts/GetPendingDraftsResult
       input: '{
@@ -20,7 +20,7 @@ GetPendingDrafts:
       description: Get Pending drafts list with invalid langCode
       role: residentNew
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetPendingDrafts/GetPendingDrafts
       outputTemplate: resident/error
       input: '{

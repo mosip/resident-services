@@ -7,6 +7,7 @@ AuthorizationCode:
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_AuthenticateUserIDP_01
       inputTemplate: resident/AuthorizationCode/AuthorizationCode
       outputTemplate: resident/AuthorizationCode/AuthorizationCodeResult
       input: '{
@@ -21,12 +22,13 @@ AuthorizationCode:
 
    Resident_ESignet_AuthorizationCode_Vid_All_Valid_Smoke_sid:
       endPoint: /v1/esignet/authorization/auth-code
-      uniqueIdentifier: Dependent_ESignet_AuthorizationCode_01
+      uniqueIdentifier: Dependent_ESignet_AuthorizationCode_02
       description: Generate the ESignet authorization code using VID with valid inputs
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_AuthenticateUserIDP_02
       inputTemplate: resident/AuthorizationCode/AuthorizationCode
       outputTemplate: resident/AuthorizationCode/AuthorizationCodeResult
       input: '{

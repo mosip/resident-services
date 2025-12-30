@@ -5,7 +5,7 @@ GetDocByTransId:
       description: Get the document by transactionId using a valid UIN with all valid inputs
       role: residentNew
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
       outputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransIdResult
@@ -22,7 +22,7 @@ GetDocByTransId:
       description: Get the document by transactionId using a valid VID with all valid inputs
       role: residentNewVid
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
       outputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransIdResult
       input: '{
@@ -38,7 +38,7 @@ GetDocByTransId:
       description: Get the document by transactionId using a valid UIN with an invalid transactionId
       role: residentNew
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
       outputTemplate: resident/error
       input: '{
@@ -79,7 +79,7 @@ GetDocByTransId:
       description: Get the document by transactionId using a valid VID with an invalid transactionId
       role: residentNewVid
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DocumentController/GetDocByTransId/GetDocByTransId
       outputTemplate: resident/error
       input: '{

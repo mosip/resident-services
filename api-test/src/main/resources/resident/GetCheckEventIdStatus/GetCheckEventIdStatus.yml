@@ -6,7 +6,7 @@ GetCheckEventIdStatus:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
@@ -24,7 +24,7 @@ GetCheckEventIdStatus:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
@@ -42,7 +42,7 @@ GetCheckEventIdStatus:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -64,7 +64,7 @@ GetCheckEventIdStatus:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -86,7 +86,7 @@ GetCheckEventIdStatus:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -108,7 +108,7 @@ GetCheckEventIdStatus:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -129,7 +129,7 @@ GetCheckEventIdStatus:
       description: Get check eventId status using a valid UIN without eventId
       role: residentNew
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{

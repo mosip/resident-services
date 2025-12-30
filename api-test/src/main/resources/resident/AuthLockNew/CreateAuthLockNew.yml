@@ -5,7 +5,7 @@ AuthLockNew:
       description: Lock the demo authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -26,7 +26,7 @@ AuthLockNew:
       description: Lock the otp-phone authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -47,7 +47,7 @@ AuthLockNew:
       description: Lock the otp-email authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -68,7 +68,7 @@ AuthLockNew:
       description: Lock the bio-face authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -89,7 +89,7 @@ AuthLockNew:
       description: Lock the bio-iris authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -110,7 +110,7 @@ AuthLockNew:
       description: Lock the bio-finger authentication type using valid UIN
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -131,7 +131,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN and an invalid requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -156,7 +156,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN and an invalid Id
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -181,7 +181,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN and an invalid version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -206,7 +206,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN and an invalid authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -231,7 +231,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN and an invalid locked status
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -256,7 +256,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an invalid unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -281,7 +281,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an empty requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -305,7 +305,7 @@ AuthLockNew:
       uniqueIdentifier: TC_Resident_AuthLockNew_14
       description: Lock the authentication type using valid UIN with an empty Id
       role: residentNew
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
@@ -331,7 +331,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an empty version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -356,7 +356,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an empty authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -382,7 +382,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an empty locked status
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -403,7 +403,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with an empty unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -424,7 +424,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing requesttime
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -449,7 +449,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing Id
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -474,7 +474,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing version
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -499,7 +499,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing authtype
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -525,7 +525,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing locked status
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -546,7 +546,7 @@ AuthLockNew:
       description: Lock the authentication type using valid UIN with missing unlockforseconds
       role: residentNew
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -585,7 +585,7 @@ AuthLockNew:
       description: Lock the demo authentication type using valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -606,7 +606,7 @@ AuthLockNew:
       description: Lock the face authentication type using valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -627,7 +627,7 @@ AuthLockNew:
       description: Lock the iris authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -648,7 +648,7 @@ AuthLockNew:
       description: Lock the finger authentication type using a valid VID
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -669,7 +669,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -694,7 +694,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid Id
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -719,7 +719,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -744,7 +744,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -769,7 +769,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -794,7 +794,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an invalid unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -819,7 +819,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -844,7 +844,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty Id
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -869,7 +869,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -894,7 +894,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -920,7 +920,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -941,7 +941,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with an empty unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -962,7 +962,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing requesttime
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -987,7 +987,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing Id
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -1012,7 +1012,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing version
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -1037,7 +1037,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing authtype
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -1063,7 +1063,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing lockedstatus
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -1084,7 +1084,7 @@ AuthLockNew:
       description: Lock the authentication type using valid VID with missing unlockforseconds
       role: residentNewVid
       restMethod: post
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{

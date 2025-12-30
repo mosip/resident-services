@@ -5,7 +5,7 @@ PutBellUpdatedTime:
       description: Bell updated time when logged in using UIN      
       role: residentNew
       checkErrorsOnlyInResponse: true
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: put
       inputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTime
       outputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTimeResult
@@ -19,7 +19,7 @@ PutBellUpdatedTime:
       description: Bell updated time when logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: put
       inputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTime
       outputTemplate: resident/PutBellUpdatedTime/PutBellUpdatedTimeResult

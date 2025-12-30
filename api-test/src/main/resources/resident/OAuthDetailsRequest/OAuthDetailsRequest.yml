@@ -1,7 +1,8 @@
 OAuthDetailsRequest:
    Resident_ESignet_OAuthDetailsRequest_all_Valid_Smoke_sid:
       endPoint: /v1/esignet/authorization/oauth-details
-      description: Get OAuth details      
+      uniqueIdentifier: Dependent_ESignet_OAuthDetailsRequest_01	  
+      description: Get OAuth details    
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -27,6 +28,7 @@ OAuthDetailsRequest:
 
    Resident_ESignet_OAuthDetailsRequest_Vid_all_Valid_Smoke_sid:
       endPoint: /v1/esignet/authorization/oauth-details
+      uniqueIdentifier: Dependent_ESignet_OAuthDetailsRequest_02
       description: Get OAuth details for valid VID      
       role: resident
       checkErrorsOnlyInResponse: true

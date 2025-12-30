@@ -6,7 +6,7 @@ DownloadUinCardByEventId:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
@@ -24,7 +24,7 @@ DownloadUinCardByEventId:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
       input: '{
@@ -41,7 +41,7 @@ DownloadUinCardByEventId:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_01
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/error
       input: '{
@@ -58,7 +58,7 @@ DownloadUinCardByEventId:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
-	  additionalDependencies: Dependent_ESignet_GenerateToken_02
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/error
       input: '{
