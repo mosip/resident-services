@@ -1,0 +1,297 @@
+================================================================================
+COPYRIGHT NOTICES
+================================================================================
+
+This software incorporates components from the projects listed below. The
+original copyright notices have been preserved in accordance with the terms
+of their respective licenses:
+
+--------------------------------------------------------------------------------
+SPRING FRAMEWORK & SPRING BOOT
+--------------------------------------------------------------------------------
+Spring Framework & Spring Boot (all modules)
+  Copyright © 2002-2024 Pivotal Software, Inc.
+  Copyright © 2002-2024 VMware, Inc. or its affiliates.
+  Licensed under the Apache License, Version 2.0
+
+Project Reactor
+  Copyright © 2011-2021 Pivotal Software Inc.
+  Copyright © 2011-2021 VMware Inc. or its affiliates.
+  Licensed under the Apache License, Version 2.0
+
+Thymeleaf
+  Copyright © 2011-2022 The THYMELEAF team (http://www.thymeleaf.org)
+  Licensed under the Apache License, Version 2.0
+
+Spring Security
+  Copyright © 2002-2024 Pivotal Software, Inc.
+  Copyright © 2002-2024 VMware, Inc. or its affiliates.
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+APACHE SOFTWARE FOUNDATION PROJECTS
+--------------------------------------------------------------------------------
+Apache Commons Lang3
+  Copyright © 2001-2025 The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+
+Apache Commons IO
+  Copyright © 2002-2025 The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+
+Apache HttpComponents (HttpClient)
+  Copyright © 1999-2025 The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+
+Apache Maven Plugins (all plugins)
+  Copyright © 2001-2025 The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+  Includes: maven-compiler-plugin, maven-surefire-plugin, maven-javadoc-plugin,
+  maven-jar-plugin, maven-war-plugin, maven-source-plugin, maven-antrun-plugin,
+  maven-shade-plugin, maven-gpg-plugin
+
+MVEL2 Expression Engine
+  Copyright © The Codehaus / MVFLEX/Valhalla Project
+  Copyright © Mike Brock, Dhanji Prasanna, John Graham, Mark Proctor, 
+              Christopher Brock and other contributors
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+FASTERXML / JACKSON
+--------------------------------------------------------------------------------
+Jackson Core, Databind, Annotations & Modules
+  Copyright © 2007-2024 Tatu Saloranta (tatu.saloranta@iki.fi)
+  Copyright © 2007-2024 FasterXML, LLC
+  Licensed under the Apache License, Version 2.0
+  Includes: jackson-core, jackson-databind, jackson-datatype-jsr310,
+  jackson-module-afterburner
+
+--------------------------------------------------------------------------------
+DATABASE DRIVERS
+--------------------------------------------------------------------------------
+PostgreSQL JDBC Driver
+  Copyright © 1997-2024 PostgreSQL Global Development Group
+  Licensed under the BSD 2-Clause License
+
+H2 Database Engine
+  Copyright © 2004-2014 H2 Group
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0) OR
+              Eclipse Public License 1.0 (EPL-1.0)
+
+--------------------------------------------------------------------------------
+JSON & DATA PROCESSING
+--------------------------------------------------------------------------------
+Gson (Google)
+  Copyright © 2008-2021 Google Inc.
+  Licensed under the Apache License, Version 2.0
+
+JSON Simple
+  Copyright © 2006 Yidong Fang
+  Licensed under the Apache License, Version 2.0
+
+SnakeYAML
+  Copyright © 2008 SnakeYAML (Andrey Somov)
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+SECURITY & CRYPTOGRAPHY
+--------------------------------------------------------------------------------
+Nimbus JOSE+JWT
+  Copyright © Connect2id Ltd.
+  Licensed under the Apache License, Version 2.0
+
+Jose4j
+  Copyright © Brian Campbell
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+DATE & TIME
+--------------------------------------------------------------------------------
+Joda-Time
+  Copyright © 2001-2024 Stephen Colebourne
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+NETWORKING
+--------------------------------------------------------------------------------
+Netty
+  Copyright © 2025 The Netty Project
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+MONITORING & METRICS
+--------------------------------------------------------------------------------
+Micrometer Core & Registry
+  Copyright © 2017-2024 VMware, Inc.
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+DOCUMENTATION & API
+--------------------------------------------------------------------------------
+SpringDoc OpenAPI
+  Copyright © 2019-2024 springdoc.org
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+TESTING FRAMEWORKS
+--------------------------------------------------------------------------------
+JUnit 4
+  Copyright © 2002-2025 JUnit
+  Licensed under the Eclipse Public License 1.0 (EPL-1.0)
+
+JUnit 5 (Jupiter & Vintage Engine)
+  Copyright © 2015-2024 the original author or authors
+  Licensed under the Eclipse Public License 2.0 (EPL-2.0)
+
+Mockito
+  Copyright © 2007-2024 Mockito contributors
+  Licensed under the MIT License
+
+PowerMock (API & Modules)
+  Copyright © PowerMock contributors
+  Copyright © Johan Haleby, Jan Kronquist, Arthur Zagretdinov
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+LOGGING
+--------------------------------------------------------------------------------
+SLF4J (Simple Logging Facade for Java)
+  Copyright © 2004-2025 QOS.ch
+  Licensed under the MIT License
+  Includes: slf4j-api, jcl-over-slf4j, jul-to-slf4j
+
+Logback
+  Copyright © 1999-2024 QOS.ch
+  Licensed under the Eclipse Public License 1.0 (EPL-1.0) OR
+              GNU Lesser General Public License v2.1 (LGPL-2.1)
+
+--------------------------------------------------------------------------------
+BUILD & DEVELOPMENT TOOLS
+--------------------------------------------------------------------------------
+Project Lombok
+  Copyright © 2009-2024 The Project Lombok Authors
+  Licensed under the MIT License
+
+git-commit-id-plugin
+  Copyright © 2010 Konrad Malawski
+  Licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0)
+
+JaCoCo Maven Plugin
+  Copyright © 2009-2024 Mountainminds GmbH & Co. KG and Contributors
+  Licensed under the Eclipse Public License 2.0 (EPL-2.0)
+
+SonarQube Maven Plugin
+  Copyright © SonarSource SA
+  Licensed under the GNU Lesser General Public License v3.0 (LGPL-3.0)
+
+Sonatype Central Publishing Maven Plugin
+  Copyright © 2022-present Sonatype, Inc.
+  Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+MOSIP LIBRARIES
+--------------------------------------------------------------------------------
+MOSIP Kernel Libraries (all modules)
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Copyright © International Institute of Information Technology, Bangalore (IIIT-B)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: kernel-core, kernel-auth-adapter, kernel-logger-logback,
+  kernel-dataaccess-hibernate, kernel-cbeffutil-api, kernel-idvalidator-*,
+  kernel-pdfgenerator, kernel-templatemanager-velocity, kernel-transliteration-icu4j,
+  kernel-virusscanner-clamav, kernel-websubclient-api, kernel-authcodeflowproxy-api,
+  kernel-openid-bridge-api, kernel-ref-idobjectvalidator
+
+MOSIP Commons Libraries
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Copyright © International Institute of Information Technology, Bangalore (IIIT-B)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: commons-packet-manager, khazana
+
+MOSIP ID Repository
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Copyright © International Institute of Information Technology, Bangalore (IIIT-B)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: id-repository-core
+
+MOSIP Pre-Registration
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Copyright © International Institute of Information Technology, Bangalore (IIIT-B)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: pre-registration-application-service
+
+MOSIP API Test Commons
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Copyright © International Institute of Information Technology, Bangalore (IIIT-B)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: apitest-commons
+
+--------------------------------------------------------------------------------
+GITHUB ACTIONS & CI/CD WORKFLOWS
+--------------------------------------------------------------------------------
+GitHub Actions - Checkout
+  Copyright © 2019-2024 GitHub, Inc.
+  Licensed under the MIT License
+
+GitHub Actions - Upload Artifact
+  Copyright © 2019-2024 GitHub, Inc.
+  Licensed under the MIT License
+
+GitHub Actions - Setup Java
+  Copyright © 2019-2024 GitHub, Inc.
+  Licensed under the MIT License
+
+Action Slack (8398a7/action-slack)
+  Copyright © 2019-2024 8398a7
+  Licensed under the MIT License
+
+MOSIP Kattu Workflows
+  Copyright © MOSIP (Modular Open Source Identity Platform)
+  Licensed under the Mozilla Public License 2.0 (MPL-2.0)
+  Includes: maven-build.yml, maven-sonar-analysis.yml, maven-publish-to-nexus.yml,
+  docker-build.yml, chart-lint-publish.yml, db-test.yml
+
+================================================================================
+LICENSE TEXTS
+================================================================================
+
+For complete license texts, please refer to the following locations:
+
+Apache License, Version 2.0
+  - Full text: http://www.apache.org/licenses/LICENSE-2.0
+  - Local: license/Apache-2.0.txt (if directory exists)
+
+MIT License
+  - Full text: https://opensource.org/licenses/MIT
+  - Local: license/MIT.txt (if directory exists)
+
+Eclipse Public License 1.0 (EPL-1.0)
+  - Full text: https://www.eclipse.org/legal/epl-v10.html
+  - Local: license/EPL-1.0.txt (if directory exists)
+
+Eclipse Public License 2.0 (EPL-2.0)
+  - Full text: https://www.eclipse.org/legal/epl-2.0/
+  - Local: license/EPL-2.0.txt (if directory exists)
+
+Mozilla Public License 2.0 (MPL-2.0)
+  - Full text: https://www.mozilla.org/MPL/2.0/
+  - Local: license/MPL-2.0.txt (if directory exists)
+
+BSD 2-Clause License
+  - Full text: https://opensource.org/licenses/BSD-2-Clause
+  - Local: license/BSD-2-Clause.txt (if directory exists)
+
+GNU Lesser General Public License v3.0 (LGPL-3.0)
+  - Full text: https://www.gnu.org/licenses/lgpl-3.0.html
+  - Local: license/LGPL-3.0.txt (if directory exists)
+
+GNU Lesser General Public License v2.1 (LGPL-2.1)
+  - Full text: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+  - Local: license/LGPL-2.1.txt (if directory exists)
+
+For additional details about each package, including homepages and specific
+version information, please refer to the THIRD-PARTY-NOTICES.txt file in
+this repository.
+
+================================================================================
+END OF COPYRIGHT NOTICES
+================================================================================
