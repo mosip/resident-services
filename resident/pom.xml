@@ -189,6 +189,16 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${jcl.to.slf4j.version}</version>
         </dependency>
+       <dependency>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-core</artifactId>
+          <version>1.2.11</version> <!-- newer version -->
+    </dependency>
+    <dependency>
+         <groupId>ch.qos.logback</groupId>
+         <artifactId>logback-classic</artifactId>
+         <version>1.2.11</version> <!-- newer version -->
+    </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -243,7 +253,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>1.6.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
