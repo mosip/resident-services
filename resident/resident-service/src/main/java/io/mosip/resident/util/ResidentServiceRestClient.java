@@ -201,6 +201,7 @@ public class ResidentServiceRestClient {
 			}
 			URI urlWithPath = builder.build(pathsegments);
 			try {
+				logger.info("constructed url for the call " + urlWithPath);
 				obj = getApi(urlWithPath, responseType);
 
 			} catch (Exception e) {
