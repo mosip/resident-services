@@ -935,7 +935,7 @@ public class Utility {
 	public <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
 		Map<String, String> pathSegments = new HashMap<String, String>();
 		//pathSegments.put("id", id);
-		pathSegments.put("id", id + "@nin");
+		pathSegments.put("id", id);
 		List<String> queryParamName = new ArrayList<>();
 		queryParamName.add("type");
 		queryParamName.add("idType");
