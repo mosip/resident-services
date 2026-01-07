@@ -292,7 +292,9 @@ public class ResidentCredentialController {
 							requestDTO.getRequest().getSharableAttributes().stream()
 									.filter(attr -> attr.isMasked())
 									.map(attr -> attr.getAttributeName())
-									.collect(Collectors.toList())));
+									.collect(Collectors.toList()),
+							"idType", "handle"
+							));
 
 		}
 	}
