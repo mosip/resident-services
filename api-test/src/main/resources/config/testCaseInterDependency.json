@@ -350,7 +350,10 @@
         "TC_Resident_GenerateVID_12",
         "Dependent_Idrepo_AddIdentity_09"
     ],
-    "TC_Resident_GenerateVID_37": [],
+    "TC_Resident_GenerateVID_37": [
+        "Dependent_Idrepo_AddIdentity_08",
+        "TC_Resident_GenerateVID_11"
+    ],
     "TC_Resident_GenerateVID_32": [
         "Dependent_Idrepo_AddIdentity_03",
         "TC_Resident_GenerateVID_09"
@@ -398,7 +401,10 @@
         "Dependent_Idrepo_AddIdentity_03",
         "TC_Resident_GenerateVID_08"
     ],
-    "TC_Resident_GenerateVID_40": [],
+    "TC_Resident_GenerateVID_40": [
+        "TC_Resident_GenerateVID_37",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
     "TC_Resident_RequestCredentials_02": [
         "Dependent_Idrepo_AddIdentity_03",
         "TC_Resident_GenerateVID_08"
@@ -713,7 +719,10 @@
     "TC_Resident_GetserviceHistory_48": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetserviceHistory_47": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetserviceHistory_49": ["Dependent_ESignet_GenerateToken_01"],
-    "TC_Resident_RequestCredentials_47": ["TC_Resident_GenerateVID_85"],
+    "TC_Resident_RequestCredentials_47": [
+        "TC_Resident_GenerateVID_85",
+        "Dependent_Idrepo_AddIdentity_26"
+    ],
     "TC_Resident_RequestCredentials_48": [
         "Dependent_Idrepo_AddIdentity_26",
         "TC_Resident_GenerateVID_86"
@@ -754,10 +763,19 @@
     "TC_Resident_GetserviceHistory_36": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetserviceHistory_39": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetserviceHistory_38": ["Dependent_ESignet_GenerateToken_01"],
-    "TC_Resident_SendotpforExpiration_03": ["TC_Resident_GenerateVID_71"],
-    "TC_Resident_SendotpforExpiration_04": ["TC_Resident_GenerateVID_75"],
+    "TC_Resident_SendotpforExpiration_03": [
+        "TC_Resident_GenerateVID_71",
+        "Dependent_Idrepo_AddIdentity_20"
+    ],
+    "TC_Resident_SendotpforExpiration_04": [
+        "Dependent_Idrepo_AddIdentity_21",
+        "TC_Resident_GenerateVID_75"
+    ],
     "TC_Resident_SendotpforExpiration_01": ["Dependent_Idrepo_AddIdentity_18"],
-    "TC_Resident_SendotpforExpiration_02": ["TC_Resident_GenerateVID_70"],
+    "TC_Resident_SendotpforExpiration_02": [
+        "TC_Resident_GenerateVID_70",
+        "Dependent_Idrepo_AddIdentity_19"
+    ],
     "TC_Resident_GenerateVID_108": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GenerateVID_107": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GenerateVID_106": ["Dependent_ESignet_GenerateToken_01"],
@@ -965,14 +983,23 @@
         "Dependent_Idrepo_AddIdentity_15",
         "Dependent_ESignet_GenerateToken_02"
     ],
-    "TC_Resident_ValidateExpiredOtp_02": ["TC_Resident_GenerateVID_70"],
+    "TC_Resident_ValidateExpiredOtp_02": [
+        "TC_Resident_GenerateVID_70",
+        "TC_Resident_SendotpforExpiration_02"
+    ],
     "TC_Resident_AuthUnlockNew_41": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_RetrieveVid_01": ["Dependent_ESignet_GenerateToken_01"],
-    "TC_Resident_ValidateExpiredOtp_03": ["TC_Resident_GenerateVID_71"],
+    "TC_Resident_ValidateExpiredOtp_03": [
+        "TC_Resident_GenerateVID_71",
+        "TC_Resident_SendotpforExpiration_03"
+    ],
     "TC_Resident_AuthUnlockNew_40": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_RetrieveVid_02": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_UpdateUINNew_27": ["Dependent_ESignet_GenerateToken_02"],
-    "TC_Resident_ValidateExpiredOtp_04": ["TC_Resident_GenerateVID_75"],
+    "TC_Resident_ValidateExpiredOtp_04": [
+        "TC_Resident_GenerateVID_75",
+        "TC_Resident_SendotpforExpiration_04"
+    ],
     "TC_Resident_AuthUnlockNew_43": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_AuthUnlockNew_42": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_AuthUnlockNew_45": ["Dependent_ESignet_GenerateToken_02"],
@@ -1233,7 +1260,10 @@
         "Dependent_Idrepo_AddIdentity_09"
     ],
     "TC_Resident_GetNotifications_12": ["Dependent_ESignet_GenerateToken_01"],
-    "TC_Resident_GenerateVID_11": ["TC_Resident_GenerateVID_01"],
+    "TC_Resident_GenerateVID_11": [
+        "TC_Resident_GenerateVID_01",
+        "Dependent_Idrepo_AddIdentity_08"
+    ],
     "TC_Resident_RevokeVid_29": [
         "Dependent_Idrepo_AddIdentity_13",
         "TC_Resident_GenerateVID_55"
