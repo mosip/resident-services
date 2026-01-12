@@ -1,6 +1,6 @@
 package io.mosip.testrig.apirig.resident.testrunner;
 
-import java.io.File;
+import java.io.File;	
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -54,6 +54,7 @@ import io.mosip.testrig.apirig.utils.Watchdog;
 public class MosipTestRunner {
 	private static final Logger LOGGER = Logger.getLogger(MosipTestRunner.class);
 	private static String cachedPath = null;
+	private static String generateDependency;
 
 	public static String jarUrl = MosipTestRunner.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 	public static List<String> languageList = new ArrayList<>();
@@ -120,12 +121,22 @@ public class MosipTestRunner {
 			BiometricDataProvider.generateBiometricTestData("Registration");
 			
 			String testCasesToExecuteString = ResidentConfigManager.getproperty("testCasesToExecute");
+			
+			generateDependency = ResidentConfigManager.getproperty("generateDependencyJson");
 
-			DependencyResolver.loadDependencies(getGlobalResourcePath() + "/" + "config/testCaseInterDependency.json");
-			if (!testCasesToExecuteString.isBlank()) {
-				ResidentUtil.testCasesInRunScope = DependencyResolver.getDependencies(testCasesToExecuteString);
+			if (!"yes".equalsIgnoreCase(generateDependency)) {
+
+				String testCasesToExecute = ResidentConfigManager.getproperty("testCasesToExecute");
+				LOGGER.info("Testcases to execute as per config: " + testCasesToExecute);
+
+				if (testCasesToExecute != null && !testCasesToExecute.isBlank()) {
+					DependencyResolver
+							.loadDependencies(getGlobalResourcePath() + "/config/testCaseInterDependency.json");
+
+					ResidentUtil.testCasesInRunScope = DependencyResolver.getDependencies(testCasesToExecute);
+				}
 			}
-
+			
 			startTestRunner();
 		} catch (Exception e) {
 			LOGGER.error("Exception " + e.getMessage());
@@ -139,8 +150,12 @@ public class MosipTestRunner {
 
 		HealthChecker.bTerminate = true;
 		
-		// Used for generating the test case interdependency JSON file
-		//AdminTestUtil.generateTestCaseInterDependencies(getGlobalResourcePath() + "/config/testCaseInterDependency.json");
+		if ("yes".equalsIgnoreCase(generateDependency)) {
+			LOGGER.info("Generating test case inter-dependencies");
+			AdminTestUtil.generateTestCaseInterDependencies(BaseTestCase.testCaseInterDependencyPath);
+		} else {
+			LOGGER.info("Skipping dependency generation");
+		}
 		
 		// Stop watchdog since task completed successfully
 		watchdog.stop();
