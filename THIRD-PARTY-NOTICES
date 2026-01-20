@@ -165,7 +165,7 @@ Includes: kernel-core, kernel-bom, kernel-auth-adapter,
           kernel-transliteration-icu4j,
           kernel-dataaccess-hibernate,
           kernel-websubclient-api
-Version: 1.2.1-SNAPSHOT (various)
+Version: 1.3.0-SNAPSHOT (various)
 License: MPL 2.0 (Inferred from MOSIP repository)
 Homepage: https://github.com/mosip
 ================================================================================
@@ -173,7 +173,7 @@ Homepage: https://github.com/mosip
 ================================================================================
 Package: MOSIP Commons Libraries
 Includes: commons-packet-manager
-Version: 1.2.1-SNAPSHOT
+Version: 1.3.0-SNAPSHOT
 License: MPL 2.0
 Homepage: https://github.com/mosip
 ================================================================================
@@ -181,7 +181,7 @@ Homepage: https://github.com/mosip
 ================================================================================
 Package: MOSIP ID Repository
 Includes: id-repository-core
-Version: 1.2.1-SNAPSHOT
+Version: 1.3.0-SNAPSHOT
 License: MPL 2.0
 Homepage: https://github.com/mosip
 ================================================================================
@@ -189,7 +189,7 @@ Homepage: https://github.com/mosip
 ================================================================================
 Package: MOSIP Pre-Registration
 Includes: pre-registration-application-service
-Version: 1.2.1-SNAPSHOT
+Version: 1.3.0-SNAPSHOT
 License: MPL 2.0
 Homepage: https://github.com/mosip
 ================================================================================
