@@ -4,6 +4,7 @@ GetServiceHistory:
       uniqueIdentifier: TC_Resident_GetserviceHistory_01      
       description: Get service history when logged in using UIN      
       role: residentNew
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
       restMethod: get
       auditLogCheck: true
@@ -31,6 +32,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -59,6 +61,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -81,6 +84,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -105,6 +109,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -129,6 +134,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -153,6 +159,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -177,6 +184,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -201,6 +209,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -225,6 +234,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -253,6 +263,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -281,6 +292,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -309,6 +321,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -337,6 +350,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -365,6 +379,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -393,6 +408,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -421,6 +437,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -449,6 +466,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -477,6 +495,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -505,6 +524,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -529,6 +549,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -553,6 +574,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -581,6 +603,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -609,6 +632,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -633,6 +657,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -657,6 +682,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -681,6 +707,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -705,6 +732,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -761,6 +789,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -785,6 +814,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -813,6 +843,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -835,6 +866,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -859,6 +891,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -883,6 +916,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -907,6 +941,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -931,6 +966,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -955,6 +991,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -979,6 +1016,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1007,6 +1045,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1035,6 +1074,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1063,6 +1103,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1091,6 +1132,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1119,6 +1161,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1147,6 +1190,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1175,6 +1219,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1203,6 +1248,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1231,6 +1277,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1259,6 +1306,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1283,6 +1331,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1307,6 +1356,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1335,6 +1385,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1363,6 +1414,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1387,6 +1439,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1411,6 +1464,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1435,6 +1489,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1459,6 +1514,7 @@ GetServiceHistory:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1486,6 +1542,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1510,6 +1567,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1538,6 +1596,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1560,6 +1619,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1584,6 +1644,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1608,6 +1669,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1632,6 +1694,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1656,6 +1719,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1680,6 +1744,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1704,6 +1769,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1732,6 +1798,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1760,6 +1827,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1788,6 +1856,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1816,6 +1885,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1844,6 +1914,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1872,6 +1943,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1900,6 +1972,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1928,6 +2001,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -1956,6 +2030,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -1984,6 +2059,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -2008,6 +2084,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -2032,6 +2109,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -2060,6 +2138,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{
@@ -2088,6 +2167,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -2112,6 +2192,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -2138,6 +2219,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/GetServiceHistory/GetServiceHistoryResult
       input: '{
@@ -2162,6 +2244,7 @@ GetServiceHistory:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetServiceHistory/GetServiceHistory
       outputTemplate: resident/error
       input: '{

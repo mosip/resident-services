@@ -52,6 +52,12 @@ public class ResidentUtil extends AdminTestUtil {
 			throw new SkipException(GlobalConstants.NOT_IN_RUN_SCOPE_MESSAGE);
 		}
 		
+		// Handle extra workflow dependencies
+		if (testCaseDTO != null && testCaseDTO.getAdditionalDependencies() != null
+				&& AdminTestUtil.generateDependency == true) {
+			addAdditionalDependencies(testCaseDTO);
+		}
+				
 		if (testCaseName.contains("ESignet_")
 				&& (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET) || isCaptchaEnabled())) {
 			if (!MosipTestRunner.skipAll) {

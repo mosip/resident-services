@@ -6,6 +6,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
       input: '{
@@ -25,6 +26,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
       input: '{
@@ -44,6 +46,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
       input: '{
@@ -104,6 +107,7 @@ RevokeVIDNew:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNewResult
       input: '{
@@ -123,6 +127,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/error
       input: '{
@@ -147,6 +152,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/error
       input: '{
@@ -171,6 +177,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/error
       input: '{
@@ -195,6 +202,7 @@ RevokeVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/RevokeVIDNew/CreateRevokeVIDNew
       outputTemplate: resident/error
       input: '{

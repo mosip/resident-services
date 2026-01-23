@@ -6,6 +6,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -24,6 +25,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -42,6 +44,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -60,6 +63,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNewAsPhone
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -78,6 +82,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNewAsEmail
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -96,6 +101,7 @@ GenerateVIDNew:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -113,6 +119,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an empty requesttime
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -135,6 +142,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an empty Id
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -157,6 +165,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an empty version
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -179,6 +188,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an empty vidtype
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -203,6 +213,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an invalid requesttime
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -225,6 +236,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an invalid Id
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -247,6 +259,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an invalid version
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -269,6 +282,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an invalid vidtype
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -290,6 +304,7 @@ GenerateVIDNew:
       uniqueIdentifier: TC_Resident_GenerateVID_109
       description: Generate perpetual VID using valid UIN and token
       role: residentNew
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
@@ -332,6 +347,7 @@ GenerateVIDNew:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/GenerateVID/createGenerateVIDNewResult
       input: '{
@@ -349,6 +365,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an invalid transactionId
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -371,6 +388,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using valid UIN with an empty channel
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNewAsEmpty
       outputTemplate: resident/error
       input: '{
@@ -393,6 +411,7 @@ GenerateVIDNew:
       description: Generate perpetual VID using a valid UIN with an empty transactionId
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -409,12 +428,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_requesttime_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_Vid_Empty_requesttime_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_115
       description: Generate perpetual VID using a valid UIN with an empty requesttime
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -431,12 +451,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_Id_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_Empty_Id_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_116
       description: Generate perpetual VID using a valid UIN with an empty Id
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -453,12 +474,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_version_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_Empty_version_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_117
       description: Generate perpetual VID using a valid UIN with an empty version
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -475,12 +497,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Empty_vidType_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_Empty_vidType_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_118
       description: Generate perpetual VID using a valid UIN with an empty vidtype
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -499,12 +522,13 @@ GenerateVIDNew:
 
 
 
-   Resident_Generate_Perpetual_VID_uin_requesttime_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_requesttime_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_119
       description: Generate perpetual VID using a valid UIN with an invalid requesttime
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -521,12 +545,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_Id_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_Id_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_120
       description: Generate perpetual VID using a valid UIN with an invalid Id
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -543,12 +568,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_version_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_version_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_121
       description: Generate perpetual VID using a valid UIN with an invalid version
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{
@@ -565,12 +591,13 @@ GenerateVIDNew:
   ]
 }'
 
-   Resident_Generate_Perpetual_VID_uin_vidType_Invalid_Neg:
+   Resident_Generate_Perpetual_VID_vid_vidType_Invalid_Neg:
       endPoint: /resident/v1/generate-vid
       uniqueIdentifier: TC_Resident_GenerateVID_122
       description: Generate perpetual VID using a valid UIN with an invalid vidtype
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GenerateVID/createGenerateVIDNew
       outputTemplate: resident/error
       input: '{

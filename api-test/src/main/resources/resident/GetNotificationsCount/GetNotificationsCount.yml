@@ -6,6 +6,7 @@ GetNotificationsCount:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
       outputTemplate: resident/GetNotificationsCount/GetNotificationsCount
       input: '{
@@ -21,6 +22,7 @@ GetNotificationsCount:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
       outputTemplate: resident/GetNotificationsCount/GetNotificationsCount
       input: '{

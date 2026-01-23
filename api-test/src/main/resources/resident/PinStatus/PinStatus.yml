@@ -5,6 +5,7 @@ PinStatus:
       description: Pin status for EID when logged in using UIN      
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/PinStatus/PinStatus
       outputTemplate: resident/PinStatus/PinStatusResult
       input: '{
@@ -20,6 +21,7 @@ PinStatus:
       description: Pin status for EID when logged in using VID      
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/PinStatus/PinStatus
       outputTemplate: resident/PinStatus/PinStatusResult
       input: '{
@@ -35,6 +37,7 @@ PinStatus:
       description: Pin status for invalid EID when logged in using UIN      
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/PinStatus/PinStatus
       outputTemplate: resident/error
       input: '{
@@ -54,6 +57,7 @@ PinStatus:
       description: Pin status for invalid EID when logged in using VID      
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/PinStatus/PinStatus
       outputTemplate: resident/error
       input: '{

@@ -6,6 +6,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/GrievanceTicket/GrievanceTicketResult
       input: '{
@@ -101,6 +102,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -128,6 +130,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -155,6 +158,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -182,6 +186,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -209,6 +214,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -236,6 +242,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -263,6 +270,7 @@ GrievanceTicket:
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -290,6 +298,7 @@ GrievanceTicket:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/GrievanceTicket/GrievanceTicketResult
       input: '{
@@ -313,6 +322,7 @@ GrievanceTicket:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -340,6 +350,7 @@ GrievanceTicket:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -367,6 +378,7 @@ GrievanceTicket:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{
@@ -394,6 +406,7 @@ GrievanceTicket:
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GrievanceTicket/GrievanceTicket
       outputTemplate: resident/error
       input: '{

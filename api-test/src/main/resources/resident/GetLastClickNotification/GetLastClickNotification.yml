@@ -5,6 +5,7 @@ GetLastClickNotification:
       description: Get last click notification using a valid UIN with all valid inputs
       role: residentNew
       checkErrorsOnlyInResponse: true
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: get
       inputTemplate: resident/GetLastClickNotification/GetLastClickNotification
       outputTemplate: resident/GetLastClickNotification/GetLastClickNotificationResult
@@ -20,6 +21,7 @@ GetLastClickNotification:
       description: Get last click notification using a valid VID with all valid inputs
       role: residentNewVid
       checkErrorsOnlyInResponse: true
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: get
       inputTemplate: resident/GetLastClickNotification/GetLastClickNotification
       outputTemplate: resident/GetLastClickNotification/GetLastClickNotificationResult
