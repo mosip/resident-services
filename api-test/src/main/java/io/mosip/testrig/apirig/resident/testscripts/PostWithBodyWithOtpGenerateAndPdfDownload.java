@@ -3,12 +3,15 @@ package io.mosip.testrig.apirig.resident.testscripts;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.testng.Assert;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -137,24 +140,59 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 		pdf = postWithBodyAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
 				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,
 				testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
+		
+		// Check if response is empty
+		if (pdf == null || pdf.length == 0) {
+		    Assert.fail("UIN card download failed: response is empty");
+		}
+		
+		// Check if response is JSON (API error)
+		String responseString = new String(pdf);
+
+		// Check if it starts with { → it's JSON (probably an error)
+		if (responseString.trim().startsWith("{")) {
+		    JSONObject json = new JSONObject(responseString);  // parse JSON
+		    
+		    GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), json.toString(2));
+
+		    // If JSON contains "errors", fail the test
+		    if (json.has("errors")) {
+		        Assert.fail("UIN card download failed: " + json.getJSONArray("errors").toString());
+		    } else {
+		        Assert.fail("UIN card download failed: unexpected JSON response");
+		    }
+		}
+		
+		// Check PDF header (%PDF)
+		String pdfHeader = new String(Arrays.copyOfRange(pdf, 0, 4), StandardCharsets.UTF_8);
+		if (!pdfHeader.equals("%PDF")) {
+		    Assert.fail("UIN card download failed: invalid PDF header");
+		}
+		
 		PdfReader pdfReader = null;
 		ByteArrayInputStream bIS = null;
+		String pdfAsText = null;
 
 		try {
+			
+			String password = "TEST1992";
+			
 			bIS = new ByteArrayInputStream(pdf);
-			pdfReader = new PdfReader(bIS);
+			pdfReader = new PdfReader(bIS, password.getBytes(StandardCharsets.UTF_8));
 			pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
+			
+			// Check if PDF content is empty
+		    if (pdfAsText == null || pdfAsText.isEmpty()) {
+		        Assert.fail("UIN card download failed: PDF is empty or unreadable");
+		    }
+		    
+		    GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
+
 		} catch (IOException e) {
-			Reporter.log("Exception : " + e.getMessage());
+			Assert.fail("Exception while reading PDF: " + e.getMessage());
 		} finally {
 			AdminTestUtil.closeByteArrayInputStream(bIS);
 			AdminTestUtil.closePdfReader(pdfReader);
-		}
-
-		if (pdf != null && (new String(pdf).contains("errors") || pdfAsText == null)) {
-			GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download UIN Card");
-		} else {
-			GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
 		}
 
 	}
