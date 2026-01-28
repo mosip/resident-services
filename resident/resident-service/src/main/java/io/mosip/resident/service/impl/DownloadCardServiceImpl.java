@@ -229,6 +229,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))) {
 					password = utility.getPassword(attributeValues);
 				}
+				logger.info(String.format("Get personalization card PDF password is %s", password ));
 				residentTransactionEntity.setRequestSummary(
 						RequestType.DOWNLOAD_PERSONALIZED_CARD.name() + " - " + ResidentConstants.SUCCESS);
 				residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
