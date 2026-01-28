@@ -440,9 +440,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		logger.debug("DownloadCardServiceImpl::getIndividualIdStatus()::entry");
 		String rid = getRidForIndividualId(individualId);
 		Map<String, String> packetStatusMap = utilities.getPacketStatus(rid);
+		logger.info("PacketStatusMap for RID {} : {}", rid, packetStatusMap);		
 		try {
 			String transactionTypeCode = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
 			String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+			logger.info(String.format("Fetching transactionTypeCode: %s and aidStatus: %s", transactionTypeCode, aidStatus));
 			if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
 					&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
 				residentCredentialService.getDataShareUrl(rid + utility.getRidDeliMeterValue());
