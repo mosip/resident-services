@@ -363,3 +363,75 @@ SendOTP:
 }'
       output: '{
     }'
+
+   Resident_SendOTP_With_Invalid_UIN_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_21      
+      description: Request otp using invalid UIN as individualId   
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$INVALID_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009"
+    }'
+
+   Resident_SendOTP_With_Valid_UIN_NotIn_DB_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_22      
+      description: Request otp using valid UIN but not present in db  
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$VALID_UIN_NOTIN_DB$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-018"
+    }'
+
+   Resident_SendOTP_With_Invalid_VID_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_23     
+      description: Request otp using invalid VID as individualId   
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$INVALID_VID$",
+    "individualIdType": "VID"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009"
+    }'
+
+   Resident_SendOTP_With_Valid_VID_NotIn_DB_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_24     
+      description: Request otp using valid VID but not present in db  
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$VALID_VID_NOTIN_DB$",
+    "individualIdType": "VID"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-018"
+    }'
