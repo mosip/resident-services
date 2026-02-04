@@ -121,6 +121,12 @@ public enum ResidentErrorCode {
 	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
 	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name"),
 	INVALID_UIN_VID_ENTERED("RES-SER-522", "Invalid UIN/VID entered"),
+	
+	NIN_VAL_INVALID_NULL("RES-SER-527", "NIN should not be Empty or Null."),
+	NIN_VAL_ILLEGAL_LENGTH("RES-SER-528", "NIN length should be as 14 digit."),
+	NIN_VAL_INVALID_DIGITS("RES-SER-529", "Enter a valid NIN digits"),
+	INVALID_NIN_ENTERED("RES-SER-522", "Invalid NIN entered"),
+	
 
 	OTP_EXPIRED("RES-OTP-006", "OTP has expired"),
 	OTP_INVALID("RES-OTP-007", "OTP is invalid"),

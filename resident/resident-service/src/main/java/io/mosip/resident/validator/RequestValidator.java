@@ -6,9 +6,11 @@ import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.core.util.ChecksumUtils;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.idvalidator.uin.constant.UinExceptionConstant;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
@@ -89,6 +91,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -200,6 +203,12 @@ public class RequestValidator {
 	public void setAuthUnlockId(String authUnLockId) {
 		this.authUnLockId = authUnLockId;
 	}
+	
+	@Value("${mosip.id.validation.nin.length}")
+	private int ninLength;
+	
+	@Value("${mosip.id.validation.regex.nin}")
+	private String numericRegEx;
 
 	@Value("${mosip.id.validation.identity.phone}")
 	private String phoneRegex;
@@ -675,6 +684,25 @@ public class RequestValidator {
 			return false;
 		}
 	}
+	
+
+	private boolean validateNin(String nin) {
+		if (StringUtils.isEmpty(nin)) {
+			throw new InvalidIDException(ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorCode(),
+					ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorMessage());
+		}
+		if (nin.length() != ninLength) {
+			throw new InvalidIDException(ResidentErrorCode.NIN_VAL_ILLEGAL_LENGTH.getErrorCode(),
+					ResidentErrorCode.NIN_VAL_ILLEGAL_LENGTH.getErrorMessage());
+		}
+		if (!Pattern.matches(numericRegEx, nin)) {
+			throw new InvalidIDException(ResidentErrorCode.NIN_VAL_INVALID_DIGITS.getErrorCode(),
+					ResidentErrorCode.NIN_VAL_INVALID_DIGITS.getErrorMessage());
+		}
+
+		return true;
+	}
+
 
 	public void validateVidRevokeRequest(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired, String individualId) {
 
@@ -1063,7 +1091,7 @@ public class RequestValidator {
 	private boolean validateUinOrVid(String individualId) {
 		return this.validateUin(individualId) || this.validateVid(individualId);
 	}
-
+	
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateRequestNewApi(reqDto, RequestIdType.CHECK_STATUS);
 		validateTransactionId(reqDto.getRequest().getTransactionId());
@@ -1078,11 +1106,17 @@ public class RequestValidator {
 					AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "channel", "Request channel verification API"));
 			throw new InvalidInputException("channel");
 		}
-		if (StringUtils.isEmpty(individualId) || !validateUinOrVid(individualId)) {
+		if (individualId.length() != ninLength && (StringUtils.isEmpty(individualId) || !validateUinOrVid(individualId))) {
 			audit.setAuditRequestDto(
 					AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
 			throw new ResidentServiceException(ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorCode(),
 					ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorMessage());
+		}
+		if(individualId.length() == ninLength  && (StringUtils.isEmpty(individualId) ||  !validateNin(individualId))) {
+			audit.setAuditRequestDto(
+					AuditEnum.getAuditEventWithValue(AuditEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
+			throw new ResidentServiceException(ResidentErrorCode.INVALID_NIN_ENTERED.getErrorCode(),
+					ResidentErrorCode.INVALID_NIN_ENTERED.getErrorMessage());
 		}
 		if (individualId.length() > vidLength) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
