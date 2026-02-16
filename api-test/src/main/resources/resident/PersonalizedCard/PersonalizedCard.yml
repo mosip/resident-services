@@ -4,23 +4,22 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_01      
       description: Download personalized card when logged in using UIN      
       role: residentNew
-      checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/PersonalizedCard/PersonalizedCardResult
       input: '{
        "requesttime": "$TIMESTAMP$",
-       "html": "YmFzZS02NC11cmwtZW5jb2RlZCBodG1sIGNvbnRlbnQ=",
+       "html": "$PERSONALIZED_CARD_HTML$",
        "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
 }'
       output: '{
-       
+       "Content-Type": "application/pdf"
 }'
 
    Resident_PersonalizedCard_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download/personalized-card
-      uniqueIdentifier: TC_Resident_PersonalizesCard_02      
+      uniqueIdentifier: TC_Resident_PersonalizesCard_02    
       description: Download personalized card when logged in using VID      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
@@ -30,31 +29,30 @@ PersonalizedCard:
       outputTemplate: resident/PersonalizedCard/PersonalizedCardResult
       input: '{
        "requesttime": "$TIMESTAMP$",
-       "html": "YmFzZS02NC11cmwtZW5jb2RlZCBodG1sIGNvbnRlbnQ=",
+       "html": "$PERSONALIZED_CARD_HTML$",
        "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
 }'
       output: '{
-       
+       "Content-Type": "application/pdf"
 }'
 
    Resident_PersonalizedCard_Empty_Access_Token_Neg:
       endPoint: /resident/v1/download/personalized-card
-      uniqueIdentifier: TC_Resident_PersonalizesCard_03      
+      uniqueIdentifier: TC_Resident_PersonalizesCard_03    
       description: Download personalized card when access token is empty      
       role:
-      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error
       input: '{
        "requesttime": "$TIMESTAMP$",
-       "html": "YmFzZS02NC11cmwtZW5jb2RlZCBodG1sIGNvbnRlbnQ=",
+       "html": "$PERSONALIZED_CARD_HTML$",
        "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
 }'
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "KER-ATH-401"
     }
   ]
        
@@ -65,19 +63,18 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_04      
       description: Download personalized card using invalid access token      
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
       outputTemplate: resident/error
       input: '{
        "requesttime": "$TIMESTAMP$",
-       "html": "YmFzZS02NC11cmwtZW5jb2RlZCBodG1sIGNvbnRlbnQ=",
+       "html": "$PERSONALIZED_CARD_HTML$",
        "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
 }'
       output: '{
        "errors": [
        {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "KER-ATH-401"
       }
       ]
        
@@ -88,7 +85,6 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_05      
       description: Download personalized card when logged in using UIN and invalid html is given in request   
       role: residentNew
-      checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -101,7 +97,7 @@ PersonalizedCard:
       output: '{
              "errors": [
        {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "RES-SER-410"
       }
       ]
 }'
@@ -112,7 +108,6 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_06      
       description: Download personalized card when logged in using UIN and empty html is given in request      
       role: residentNew
-      checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -125,7 +120,7 @@ PersonalizedCard:
       output: '{
          "errors": [
        {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "RES-SER-410"
       }
       ]
        
@@ -136,7 +131,6 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_07      
       description: Download personalized card when logged in using VID and invalid html is given in request      
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -149,7 +143,7 @@ PersonalizedCard:
       output: '{
           "errors": [
        {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "RES-SER-410"
       }
       ]
 }'
@@ -160,7 +154,6 @@ PersonalizedCard:
       uniqueIdentifier: TC_Resident_PersonalizesCard_08      
       description: Download personalized card when logged in using VID and empty html is given in request      
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -173,7 +166,7 @@ PersonalizedCard:
       output: '{
           "errors": [
        {
-      "errorCode": "RES-SER-410 "
+      "errorCode": "RES-SER-410"
       }
       ]
 }'

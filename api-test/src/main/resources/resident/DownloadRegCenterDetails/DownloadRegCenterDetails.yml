@@ -4,7 +4,6 @@ DownloadRegCenterDetails:
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_01
       description: Download registration center details using all valid inputs
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetailsResult
@@ -14,7 +13,7 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Langcode_Neg:
@@ -22,7 +21,6 @@ DownloadRegCenterDetails:
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_02
       description: Download registration center details using an invalid langcode
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -32,7 +30,11 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "errors": [
+         {
+            "errorCode": "KER-ATH-401"
+         }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Hierarchylevel_Neg:
@@ -40,7 +42,6 @@ DownloadRegCenterDetails:
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_03
       description: Download registration center details using an invalid hierarchylevel
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -50,7 +51,11 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "errors": [
+         {
+            "errorCode": "KER-ATH-401"
+         }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Name_Neg:
@@ -58,7 +63,6 @@ DownloadRegCenterDetails:
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_04
       description: Download registration center details using an invalid name
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -68,7 +72,11 @@ DownloadRegCenterDetails:
 		  "name": "10@##112"
 }'
       output: '{
-		
+        "errors": [
+          {
+             "errorCode": "KER-ATH-401"
+          }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_All_Input_Neg:
@@ -76,7 +84,6 @@ DownloadRegCenterDetails:
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_05
       description: Download registration center details using all invalid inputs
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -86,5 +93,9 @@ DownloadRegCenterDetails:
 		  "name": "10@##112"
 }'
       output: '{
-		
+        "errors": [
+           {
+              "errorCode": "KER-ATH-401"
+           }
+      ]
 }'

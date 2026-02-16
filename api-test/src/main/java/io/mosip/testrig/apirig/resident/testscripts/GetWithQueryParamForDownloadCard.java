@@ -1,13 +1,14 @@
 package io.mosip.testrig.apirig.resident.testscripts;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.testng.Assert;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -17,20 +18,23 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.BaseTestMethod;
-import org.testng.internal.TestResult;
 
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
+import io.mosip.testrig.apirig.dto.OutputValidationDto;
 import io.mosip.testrig.apirig.dto.TestCaseDTO;
 import io.mosip.testrig.apirig.resident.utils.ResidentConfigManager;
 import io.mosip.testrig.apirig.resident.utils.ResidentUtil;
 import io.mosip.testrig.apirig.testrunner.BaseTestCase;
 import io.mosip.testrig.apirig.testrunner.HealthChecker;
+import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.OutputValidationUtil;
+import io.mosip.testrig.apirig.utils.ReportUtil;
+import io.mosip.testrig.apirig.utils.RestClient;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
@@ -85,6 +89,7 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	public void test(TestCaseDTO testCaseDTO) throws Exception, SecurityXSSException {
 		testCaseName = testCaseDTO.getTestCaseName();
 		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
+		boolean isNegative = testCaseName.toLowerCase().contains("_neg");
 		if (HealthChecker.signalTerminateExecution) {
 			throw new SkipException(GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
 		}
@@ -104,55 +109,94 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 				pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
 						getJsonFromTemplate(inputtestCases.get(i).toString(), testCaseDTO.getInputTemplate()),
 						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-				PdfReader pdfReader = null;
-				ByteArrayInputStream bIS = null;
-
-				try {
-					bIS = new ByteArrayInputStream(pdf);
-					pdfReader = new PdfReader(bIS);
-					pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
-				} catch (IOException e) {
-					Reporter.log("Exception : " + e.getMessage());
-				} finally {
-					AdminTestUtil.closeByteArrayInputStream(bIS);
-					AdminTestUtil.closePdfReader(pdfReader);
-				}
-
-				if (pdf != null && (new String(pdf).contains("errors") || pdfAsText == null)) {
-					GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download");
-				} else {
-					GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
-				}
+				Response response = RestClient.getPdfDownloadResponse();
+				validatePdfOrError(response, pdf, isNegative, testCaseDTO);
 			}
 		}  
 		
 		else {
 			pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
-			
-			PdfReader pdfReader = null;
-			ByteArrayInputStream bIS = null;
-			
-			try {
-				bIS = new ByteArrayInputStream(pdf);
-				pdfReader = new PdfReader(bIS);
-				pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
-			} catch (IOException e) {
-				Reporter.log("Exception : " + e.getMessage());
-			} finally {
-				AdminTestUtil.closeByteArrayInputStream(bIS);
-				AdminTestUtil.closePdfReader(pdfReader);
-			}
-			 
-			 if(pdf!=null && (new String(pdf).contains("errors")|| pdfAsText == null)) {
-				 GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download");
-			 }
-			 else {
-				 GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
-			 }
+			Response response = RestClient.getPdfDownloadResponse();
+			validatePdfOrError(response, pdf, isNegative, testCaseDTO);
 		}
-		 
-				
 		
+	}
+	
+	private void validatePdfOrError(Response response, byte[] pdf, boolean isNegative, TestCaseDTO testCaseDTO) throws AdminTestException {
+
+	    String contentType = response != null ? response.getHeader("Content-Type") : null;
+	    String rawResponse = pdf != null ? new String(pdf) : null;
+
+	    if (!isNegative) {
+
+	        if (contentType != null && contentType.contains("application/pdf")) {
+	            try {
+	            	PdfReader reader;
+	            	try {
+	                    //First opening pdf without password
+	                    reader = new PdfReader(new ByteArrayInputStream(pdf));
+
+	                    if (reader.isEncrypted()) {
+	                        reader.close();
+	                        throw new Exception("Encrypted PDF");
+	                    }
+
+	                    logger.info("Opened non-encrypted PDF");
+
+	                } catch (Exception e) {
+
+	                    // If encrypted, try with password
+	                    String password = getPdfPassword();
+
+	                    reader = new PdfReader(
+	                            new ByteArrayInputStream(pdf),
+	                            password.getBytes());
+
+	                    logger.info("Opened password protected PDF");
+	                }
+
+	            	pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+
+	                GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
+	                        "PDF Content:\n" + pdfAsText);
+
+	                Map<String, List<OutputValidationDto>> outputValid =
+	                        OutputValidationUtil.doJsonOutputValidation(
+	                                "{\"Content-Type\":\"" + contentType + "\"}",
+	                                getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+	                                testCaseDTO,
+	                                response.getStatusCode());
+
+	                Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
+
+	            } catch (Exception e) {
+	                Assert.fail("Invalid PDF received: " + e.getMessage());
+	            }
+	        } else {
+	            Assert.fail("Expected PDF but received: " + contentType);
+	        }
+	    }
+
+	    else {
+
+	        if (rawResponse == null)
+	            Assert.fail("Response is null");
+
+	        GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
+	                ResidentUtil.formatJsonIfPossible(rawResponse));
+
+	        Map<String, List<OutputValidationDto>> outputValid =
+	                OutputValidationUtil.doJsonOutputValidation(
+	                        rawResponse,
+	                        getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+	                        testCaseDTO,
+	                        response.getStatusCode());
+
+	        Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
+
+	        if (!OutputValidationUtil.publishOutputResult(outputValid))
+	            throw new AdminTestException("Failed at output validation");
+	    }
 	}
 
 	/**
@@ -162,16 +206,6 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void setResultTestName(ITestResult result) {
-		try {
-			Field method = TestResult.class.getDeclaredField("m_method");
-			method.setAccessible(true);
-			method.set(result, result.getMethod().clone());
-			BaseTestMethod baseTestMethod = (BaseTestMethod) result.getMethod();
-			Field f = baseTestMethod.getClass().getSuperclass().getDeclaredField("m_methodName");
-			f.setAccessible(true);
-			f.set(baseTestMethod, testCaseName);
-		} catch (Exception e) {
-			Reporter.log(GlobalConstants.EXCEPTION + e.getMessage());
-		}
+		result.setAttribute("TestCaseName", testCaseName);
 	}	
 }

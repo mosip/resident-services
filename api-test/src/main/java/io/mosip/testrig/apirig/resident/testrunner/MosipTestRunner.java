@@ -110,6 +110,7 @@ public class MosipTestRunner {
 			KeycloakUserManager.createUsers();
 			KeycloakUserManager.closeKeycloakInstance();
 			AdminTestUtil.getRequiredField();
+			//BaseTestCase.getLanguageList();
 
 			AdminTestUtil.getRegistrationCenterData();
 			AdminTestUtil.getLocationDataWithLocationCode(BaseTestCase.locationCode);
@@ -152,7 +153,7 @@ public class MosipTestRunner {
 		
 		if ("yes".equalsIgnoreCase(generateDependency)) {
 			LOGGER.info("Generating test case inter-dependencies");
-			AdminTestUtil.generateTestCaseInterDependencies(BaseTestCase.testCaseInterDependencyPath);
+			AdminTestUtil.generateTestCaseInterDependencies(BaseTestCase.getTestCaseInterDependencyPath());
 		} else {
 			LOGGER.info("Skipping dependency generation");
 		}

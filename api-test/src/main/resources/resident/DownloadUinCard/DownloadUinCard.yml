@@ -36,10 +36,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_02
       description: Download UIN card with an invalid OTP
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "198365@@eeG",
@@ -58,7 +58,7 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
 			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
@@ -70,10 +70,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_03
       description: Download UIN card using an invalid transactionId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "213$@As",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -92,7 +92,7 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
 			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
@@ -104,10 +104,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_04
       description: Download UIN card using an empty transactionId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -126,7 +126,7 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
 			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
@@ -138,10 +138,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_05
       description: Download UIN card using an invalid OTP
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "123456",
@@ -160,7 +160,7 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410",
+					"errorCode": "RES-OTP-007",
 			        "message": "Invalid input parameter - otp"
 			}],
                 "sendOtpResp":{
@@ -173,10 +173,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_06
       description: Download UIN card using an empty OTP
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "",
@@ -207,10 +207,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_07
       description: Download UIN card using an invalid individualId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -241,10 +241,10 @@ DownloadUinCard:
       uniqueIdentifier: TC_Resident_DownloadUinCard_08
       description: Download UIN card using an empty individualId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -263,7 +263,7 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410"
+					"errorCode": "RES-SER-414"
 			}],
                 "sendOtpResp":{
 			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
