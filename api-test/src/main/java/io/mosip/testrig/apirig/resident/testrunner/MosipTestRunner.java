@@ -110,7 +110,6 @@ public class MosipTestRunner {
 			KeycloakUserManager.createUsers();
 			KeycloakUserManager.closeKeycloakInstance();
 			AdminTestUtil.getRequiredField();
-			//BaseTestCase.getLanguageList();
 
 			AdminTestUtil.getRegistrationCenterData();
 			AdminTestUtil.getLocationDataWithLocationCode(BaseTestCase.locationCode);
