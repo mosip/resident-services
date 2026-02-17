@@ -135,13 +135,12 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	            	try {
 	                    //First opening pdf without password
 	                    reader = new PdfReader(new ByteArrayInputStream(pdf));
-
-	                    if (reader.isEncrypted()) {
-	                        reader.close();
-	                        throw new Exception("Encrypted PDF");
-	                    }
-
-	                    logger.info("Opened non-encrypted PDF");
+	                    if (!reader.isEncrypted()) {
+							logger.info("Opened non-encrypted PDF");
+						} else {
+							reader.close();
+							throw new com.itextpdf.text.exceptions.BadPasswordException("Encrypted PDF");
+						}
 
 	                } catch (com.itextpdf.text.exceptions.BadPasswordException e) {
 
