@@ -143,7 +143,7 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 
 	                    logger.info("Opened non-encrypted PDF");
 
-	                } catch (Exception e) {
+	                } catch (com.itextpdf.text.exceptions.BadPasswordException e) {
 
 	                    // If encrypted, try with password
 	                    String password = getPdfPassword();

@@ -125,7 +125,7 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 
 	                    logger.info("Opened non-encrypted PDF");
 
-	                } catch (Exception e) {
+	                } catch (com.itextpdf.text.exceptions.BadPasswordException e) {
 
 	                    // If encrypted, try with password
 	                    String password = getPdfPassword();
