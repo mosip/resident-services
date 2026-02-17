@@ -40,7 +40,6 @@ import io.restassured.response.Response;
 public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(PostWithBodyWithOtpGenerateAndPdfDownload.class);
 	protected String testCaseName = "";
-	public Response response = null;
 	public byte[] pdf = null;
 	public String pdfAsText = null;
 
@@ -175,7 +174,7 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 							"PDF Content:\n" + pdfAsText);
 
 				} catch (Exception e) {
-					Assert.fail("Invalid PDF received");
+					Assert.fail("Invalid PDF received: " + e.getMessage());
 				}
 			} else {
 				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),

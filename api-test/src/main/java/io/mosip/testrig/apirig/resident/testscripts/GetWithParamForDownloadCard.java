@@ -147,7 +147,7 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 			        Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
 
 			    } catch (Exception e) {
-			        Assert.fail("Invalid PDF received");
+			        Assert.fail("Invalid PDF received: " + e.getMessage());
 			    }
 			} else {
 				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
