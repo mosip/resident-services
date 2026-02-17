@@ -132,7 +132,11 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 
 	                    logger.info("Opened password protected PDF");
 	                }
-	            	pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+	            	try {
+						pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+					} finally {
+						reader.close();
+					}
 
 			        GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
 			                "PDF Content:\n" + pdfAsText);
@@ -148,16 +152,16 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 			    }
 			} else {
 				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-		                "Expected PDF but received JSON:\n" + ResidentUtil.formatJsonIfPossible(rawResponse));
+		                "Expected PDF but received JSON:\n" + ResidentUtil.formatJson(rawResponse));
 		        Assert.fail("Testcase failed. Expected PDF but got " + contentType);
 		    }
 			
 		} else {
-			if (rawResponse == null) {
+			if (rawResponse == null || response == null) {
 		        Assert.fail("Testcase failed. Response is null.");
 		    } else {
 		    	GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-						ResidentUtil.formatJsonIfPossible(rawResponse));
+						ResidentUtil.formatJson(rawResponse));
 				Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
 						rawResponse, getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
 						testCaseDTO, response.getStatusCode());

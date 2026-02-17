@@ -154,8 +154,11 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 
 	                    logger.info("Opened password protected PDF");
 	                }
-
-	            	pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+	            	try {
+						pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+					} finally {
+						reader.close();
+					}
 
 	                GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
 	                        "PDF Content:\n" + pdfAsText);
@@ -179,11 +182,11 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 
 	    else {
 
-	        if (rawResponse == null)
+	        if (rawResponse == null || response == null)
 	            Assert.fail("Response is null");
 
 	        GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-	                ResidentUtil.formatJsonIfPossible(rawResponse));
+	                ResidentUtil.formatJson(rawResponse));
 
 	        Map<String, List<OutputValidationDto>> outputValid =
 	                OutputValidationUtil.doJsonOutputValidation(

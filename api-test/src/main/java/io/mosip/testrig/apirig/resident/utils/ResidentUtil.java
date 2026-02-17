@@ -215,7 +215,7 @@ public class ResidentUtil extends AdminTestUtil {
 
 	}
 	
-	public static String formatJsonIfPossible(String responseBody) {
+	public static String formatJson(String responseBody) {
 	    if (responseBody == null) {
 	        return null;
 	    }
@@ -257,7 +257,7 @@ public class ResidentUtil extends AdminTestUtil {
 
 	    String firstName = fullNameArray.getJSONObject(0).getString("value");
 
-	    String first4 = firstName.substring(0, 4);
+	    String first4 = firstName.substring(0, Math.min(4, firstName.length()));
 	    String year = dob.split("/")[0];
 
 	    return first4 + year;
