@@ -101,7 +101,7 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 		auditLogCheck = testCaseDTO.isAuditLogCheck();
 		pdf = getWithPathParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck, COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
 		
-		Response response = RestClient.getPdfDownloadResponse();
+		Response response = RestClient.pdfDownloadResponse;
 		String contentType = response != null ? response.getHeader("Content-Type") : null;
 		String rawResponse = pdf != null ? new String(pdf) : null;
 		

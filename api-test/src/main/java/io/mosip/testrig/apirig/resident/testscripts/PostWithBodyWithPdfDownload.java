@@ -105,7 +105,7 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,
 				testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
 
-		Response response = RestClient.getPdfDownloadResponse();
+		Response response = RestClient.pdfDownloadResponse;
 		String contentType = response != null ? response.getHeader("Content-Type") : null;
 		String rawResponse = pdf != null ? new String(pdf) : null;
 

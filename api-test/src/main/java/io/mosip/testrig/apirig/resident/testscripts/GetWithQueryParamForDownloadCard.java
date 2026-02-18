@@ -109,14 +109,14 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 				pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
 						getJsonFromTemplate(inputtestCases.get(i).toString(), testCaseDTO.getInputTemplate()),
 						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-				Response response = RestClient.getPdfDownloadResponse();
+				Response response = RestClient.pdfDownloadResponse;
 				validatePdfOrError(response, pdf, isNegative, testCaseDTO);
 			}
 		}  
 		
 		else {
 			pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
-			Response response = RestClient.getPdfDownloadResponse();
+			Response response = RestClient.pdfDownloadResponse;
 			validatePdfOrError(response, pdf, isNegative, testCaseDTO);
 		}
 		

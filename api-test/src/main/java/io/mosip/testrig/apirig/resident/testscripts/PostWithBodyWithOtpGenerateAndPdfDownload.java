@@ -134,7 +134,7 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 		pdf = postWithBodyAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
 				getJsonFromTemplate(req.toString(), testCaseDTO.getInputTemplate()), COOKIENAME,
 				testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-		Response response = RestClient.getPdfDownloadResponse();
+		Response response = RestClient.pdfDownloadResponse;
 		String contentType = response != null ? response.getHeader("Content-Type") : null;
 		String rawResponse = pdf != null ? new String(pdf) : null;
 
