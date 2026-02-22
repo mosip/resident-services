@@ -13,7 +13,6 @@
 		<parameter name="ymlFile"
 			value="resident/AddIdentity/AddIdentity.yml" />
 			<parameter name="prerequisite" value="Yes" />
-			<parameter name="reqKeyName" value="identity.fullName,identity.dateOfBirth" />
 		<classes>
 			<class name="io.mosip.testrig.apirig.resident.testscripts.AddIdentity" />
 		</classes>

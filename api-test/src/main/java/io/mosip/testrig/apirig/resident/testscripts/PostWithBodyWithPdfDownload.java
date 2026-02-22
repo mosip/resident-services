@@ -39,10 +39,10 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(PostWithBodyWithPdfDownload.class);
 	protected String testCaseName = "";
 	public Response response = null;
-	public byte[] pdf = null;
-	public String pdfAsText = null;
+	public byte[] pdf=null;
+	public String pdfAsText =null;
 	public boolean sendEsignetToken = false;
-
+	
 	@BeforeClass
 	public static void setLogLevel() {
 		if (ResidentConfigManager.IsDebugEnabled())
@@ -50,7 +50,7 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 		else
 			logger.setLevel(Level.ERROR);
 	}
-
+	
 	/**
 	 * get current testcaseName
 	 */
@@ -68,9 +68,10 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 	public Object[] getTestCaseList(ITestContext context) {
 		String ymlFile = context.getCurrentXmlTest().getLocalParameters().get("ymlFile");
 		sendEsignetToken = context.getCurrentXmlTest().getLocalParameters().containsKey("sendEsignetToken");
-		logger.info("Started executing yml: " + ymlFile);
+		logger.info("Started executing yml: "+ymlFile);
 		return getYmlTestData(ymlFile);
 	}
+	
 
 	/**
 	 * Test method for OTP Generation execution
@@ -82,22 +83,19 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 	 * @throws AdminTestException
 	 */
 	@Test(dataProvider = "testcaselist")
-	public void test(TestCaseDTO testCaseDTO)
-			throws AuthenticationTestException, AdminTestException, SecurityXSSException {
+	public void test(TestCaseDTO testCaseDTO) throws AuthenticationTestException, AdminTestException, SecurityXSSException {		
 		testCaseName = testCaseDTO.getTestCaseName();
 		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
 		if (HealthChecker.signalTerminateExecution) {
-			throw new SkipException(
-					GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
+			throw new SkipException(GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
 		}
-
+		
 		if (testCaseDTO.getTestCaseName().contains("VID") || testCaseDTO.getTestCaseName().contains("Vid")) {
 			if (!BaseTestCase.getSupportedIdTypesValueFromActuator().contains("VID")
 					&& !BaseTestCase.getSupportedIdTypesValueFromActuator().contains("vid")) {
 				throw new SkipException(GlobalConstants.VID_FEATURE_NOT_SUPPORTED);
 			}
 		}
-
 		
 		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(),
 				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,

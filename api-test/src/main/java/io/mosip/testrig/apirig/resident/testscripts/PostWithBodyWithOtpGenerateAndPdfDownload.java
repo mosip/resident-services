@@ -39,8 +39,8 @@ import io.restassured.response.Response;
 public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(PostWithBodyWithOtpGenerateAndPdfDownload.class);
 	protected String testCaseName = "";
-	Response response;
-	public byte[] pdf=null;
+	public Response response = null;
+	public byte[] pdf = null;
 	public String pdfAsText = null;
 
 	@BeforeClass
