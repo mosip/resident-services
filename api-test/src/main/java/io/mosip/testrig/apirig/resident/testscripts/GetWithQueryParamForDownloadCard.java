@@ -34,7 +34,6 @@ import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
-import io.mosip.testrig.apirig.utils.RestClient;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
@@ -89,7 +88,6 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	public void test(TestCaseDTO testCaseDTO) throws Exception, SecurityXSSException {
 		testCaseName = testCaseDTO.getTestCaseName();
 		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
-		boolean isNegative = testCaseName.toLowerCase().contains("_neg");
 		if (HealthChecker.signalTerminateExecution) {
 			throw new SkipException(GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
 		}
@@ -106,99 +104,74 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 		if (testCaseDTO.getTemplateFields() != null && templateFields.length > 0) {
 			ArrayList<JSONObject> inputtestCases = AdminTestUtil.getInputTestCase(testCaseDTO);
 			for (int i = 0; i < languageList.size(); i++) {
-				pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
+				response = getWithQueryParamAndCookieForBothAccessToken(ApplnURI + testCaseDTO.getEndPoint(),
 						getJsonFromTemplate(inputtestCases.get(i).toString(), testCaseDTO.getInputTemplate()),
-						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-				Response response = RestClient.pdfDownloadResponse;
-				validatePdfOrError(response, pdf, isNegative, testCaseDTO);
+						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+				validatePdfOrError(response, testCaseDTO);
 			}
 		}  
 		
 		else {
-			pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
-			Response response = RestClient.pdfDownloadResponse;
-			validatePdfOrError(response, pdf, isNegative, testCaseDTO);
+			response = getWithQueryParamAndCookieForBothAccessToken(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+			validatePdfOrError(response, testCaseDTO);
 		}
 		
 	}
 	
-	private void validatePdfOrError(Response response, byte[] pdf, boolean isNegative, TestCaseDTO testCaseDTO) throws AdminTestException {
+	private void validatePdfOrError(Response response, TestCaseDTO testCaseDTO) throws AdminTestException {
 
-	    String contentType = response != null ? response.getHeader("Content-Type") : null;
-	    String rawResponse = pdf != null ? new String(pdf) : null;
-
-	    if (!isNegative) {
-
-	        if (contentType != null && contentType.contains("application/pdf")) {
-	            try {
-	            	PdfReader reader;
-	            	try {
-	                    //First opening pdf without password
-	                    reader = new PdfReader(new ByteArrayInputStream(pdf));
-	                    if (!reader.isEncrypted()) {
-							logger.info("Opened non-encrypted PDF");
-						} else {
-							reader.close();
-							throw new com.itextpdf.text.exceptions.BadPasswordException("Encrypted PDF");
-						}
-
-	                } catch (com.itextpdf.text.exceptions.BadPasswordException e) {
-
-	                    // If encrypted, try with password
-	                    String password = getPdfPassword();
-
-	                    reader = new PdfReader(
-	                            new ByteArrayInputStream(pdf),
-	                            password.getBytes());
-
-	                    logger.info("Opened password protected PDF");
-	                }
-	            	try {
-						pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
-					} finally {
+		String contentType = response != null ? response.getHeader("Content-Type") : null;
+		if (contentType != null && contentType.contains("application/pdf")) {
+			pdf = response.asByteArray();
+			try {
+				PdfReader reader;
+				try {
+					// First opening pdf without password
+					reader = new PdfReader(new ByteArrayInputStream(pdf));
+					if (!reader.isEncrypted()) {
+						logger.info("Opened non-encrypted PDF");
+					} else {
 						reader.close();
+						throw new com.itextpdf.text.exceptions.BadPasswordException("Encrypted PDF");
 					}
 
-	                GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-	                        "PDF Content:\n" + pdfAsText);
+				} catch (com.itextpdf.text.exceptions.BadPasswordException e) {
 
-	                Map<String, List<OutputValidationDto>> outputValid =
-	                        OutputValidationUtil.doJsonOutputValidation(
-	                                "{\"Content-Type\":\"" + contentType + "\"}",
-	                                getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
-	                                testCaseDTO,
-	                                response.getStatusCode());
+					// If encrypted, try with password
+					String password = properties.getProperty("pdfPassword");
 
-	                Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
+					reader = new PdfReader(new ByteArrayInputStream(pdf), password.getBytes());
 
-	            } catch (Exception e) {
-	                Assert.fail("Invalid PDF received: " + e.getMessage());
-	            }
-	        } else {
-	            Assert.fail("Expected PDF but received: " + contentType);
-	        }
-	    }
+					logger.info("Opened password protected PDF");
+				}
+				try {
+					pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+				} finally {
+					reader.close();
+				}
 
-	    else {
+				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "PDF Content:\n" + pdfAsText);
 
-	        if (rawResponse == null || response == null)
-	            Assert.fail("Response is null");
+				Map<String, List<OutputValidationDto>> outputValid = OutputValidationUtil.doJsonOutputValidation(
+						"{\"Content-Type\":\"" + contentType + "\"}",
+						getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()), testCaseDTO,
+						response.getStatusCode());
 
-	        GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-	                ResidentUtil.formatJson(rawResponse));
+				Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
 
-	        Map<String, List<OutputValidationDto>> outputValid =
-	                OutputValidationUtil.doJsonOutputValidation(
-	                        rawResponse,
-	                        getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
-	                        testCaseDTO,
-	                        response.getStatusCode());
+			} catch (Exception e) {
+				Assert.fail("Invalid PDF received: " + e.getMessage());
+			}
+		} else {
+			Map<String, List<OutputValidationDto>> outputValid = OutputValidationUtil.doJsonOutputValidation(
+					response.asString(), getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+					testCaseDTO, response.getStatusCode());
 
-	        Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
+			Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
 
-	        if (!OutputValidationUtil.publishOutputResult(outputValid))
-	            throw new AdminTestException("Failed at output validation");
-	    }
+			if (!OutputValidationUtil.publishOutputResult(outputValid))
+				throw new AdminTestException("Failed at output validation");
+		}
 	}
 
 	/**

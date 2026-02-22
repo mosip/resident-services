@@ -85,7 +85,7 @@ GetAcknowledgementController:
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
-		  "languageCode": "",
+		  "languageCode": " ",
 		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
 }'
       output: '{

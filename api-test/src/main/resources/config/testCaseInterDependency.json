@@ -811,17 +811,17 @@
     "TC_Resident_GetserviceHistory_78": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_07": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetAuthorizationtoken_01": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetLastClickNotification_02": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_02": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_GetLastClickNotification_01": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetAuthorizationtoken_03": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetAuthorizationtoken_08": ["Dependent_ESignet_GenerateToken_01"],

@@ -31,7 +31,6 @@ import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
-import io.mosip.testrig.apirig.utils.RestClient;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
@@ -87,7 +86,6 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 	public void test(TestCaseDTO testCaseDTO) throws AdminTestException, SecurityXSSException {	
 		testCaseName = testCaseDTO.getTestCaseName();
 		testCaseName = ResidentUtil.isTestCaseValidForExecution(testCaseDTO);
-		boolean isNegative = testCaseName.toLowerCase().contains("_neg");
 		if (HealthChecker.signalTerminateExecution) {
 			throw new SkipException(GlobalConstants.TARGET_ENV_HEALTH_CHECK_FAILED + HealthChecker.healthCheckFailureMapS);
 		}
@@ -99,76 +97,61 @@ public class GetWithParamForDownloadCard extends ResidentUtil implements ITest {
 			}
 		}
 		auditLogCheck = testCaseDTO.isAuditLogCheck();
-		pdf = getWithPathParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck, COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
-		
-		Response response = RestClient.pdfDownloadResponse;
+		response = getWithPathParamAndCookie(ApplnURI + testCaseDTO.getEndPoint(),
+				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck, COOKIENAME,
+				testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+
 		String contentType = response != null ? response.getHeader("Content-Type") : null;
-		String rawResponse = pdf != null ? new String(pdf) : null;
-		
-		if (!isNegative) {
-			if (contentType != null && contentType.contains("application/pdf")) {
+		if (contentType != null && contentType.contains("application/pdf")) {
+			pdf = response.asByteArray();
 
-			    try {
-			    	PdfReader reader;
-	            	try {
-	                    //First opening pdf without password
-	                    reader = new PdfReader(new ByteArrayInputStream(pdf));
-						if (!reader.isEncrypted()) {
-							logger.info("Opened non-encrypted PDF");
-						} else {
-							reader.close();
-							throw new com.itextpdf.text.exceptions.BadPasswordException("Encrypted PDF");
-						}
-
-	                } catch (com.itextpdf.text.exceptions.BadPasswordException e) {
-
-	                    // If encrypted, try with password
-	                    String password = getPdfPassword();
-
-	                    reader = new PdfReader(
-	                            new ByteArrayInputStream(pdf),
-	                            password.getBytes());
-
-	                    logger.info("Opened password protected PDF");
-	                }
-	            	try {
-						pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
-					} finally {
+			try {
+				PdfReader reader;
+				try {
+					// First opening pdf without password
+					reader = new PdfReader(new ByteArrayInputStream(pdf));
+					if (!reader.isEncrypted()) {
+						logger.info("Opened non-encrypted PDF");
+					} else {
 						reader.close();
+						throw new com.itextpdf.text.exceptions.BadPasswordException("Encrypted PDF");
 					}
 
-			        GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-			                "PDF Content:\n" + pdfAsText);
-			        
-			        Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
-			        		"{\"Content-Type\":\"" + contentType + "\"}", getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
-							testCaseDTO, response.getStatusCode());
+				} catch (com.itextpdf.text.exceptions.BadPasswordException e) {
 
-			        Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+					// If encrypted, try with password
+					String password = properties.getProperty("pdfPassword");
 
-			    } catch (Exception e) {
-			        Assert.fail("Invalid PDF received: " + e.getMessage());
-			    }
-			} else {
-				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-		                "Expected PDF but received JSON:\n" + ResidentUtil.formatJson(rawResponse));
-		        Assert.fail("Testcase failed. Expected PDF but got " + contentType);
-		    }
-			
-		} else {
-			if (rawResponse == null || response == null) {
-		        Assert.fail("Testcase failed. Response is null.");
-		    } else {
-		    	GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(),
-						ResidentUtil.formatJson(rawResponse));
+					reader = new PdfReader(new ByteArrayInputStream(pdf), password.getBytes());
+
+					logger.info("Opened password protected PDF");
+				}
+				try {
+					pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+				} finally {
+					reader.close();
+				}
+
+				GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "PDF Content:\n" + pdfAsText);
+
 				Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
-						rawResponse, getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
-						testCaseDTO, response.getStatusCode());
+						"{\"Content-Type\":\"" + contentType + "\"}",
+						getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()), testCaseDTO,
+						response.getStatusCode());
+
 				Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
-				if (!OutputValidationUtil.publishOutputResult(ouputValid))
-					throw new AdminTestException("Failed at output validation");
-		    }
-			
+
+			} catch (Exception e) {
+				Assert.fail("Invalid PDF received: " + e.getMessage());
+			}
+
+		} else {
+			Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
+					response.asString(), getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+					testCaseDTO, response.getStatusCode());
+			Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+			if (!OutputValidationUtil.publishOutputResult(ouputValid))
+				throw new AdminTestException("Failed at output validation");
 		}
 	}
 
