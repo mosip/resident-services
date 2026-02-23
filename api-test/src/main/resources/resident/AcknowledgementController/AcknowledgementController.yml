@@ -91,7 +91,7 @@ GetAcknowledgementController:
       output: '{
       "errors": [
        {
-          "errorCode": "RES-SER-418"
+          "errorCode": "RES-SER-410"
        }
      ]
 }'
@@ -149,12 +149,12 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": "$1STLANG$",
-		  "eventId":  ""
+		  "eventId":  " "
 }'
       output: '{
       "errors": [
         {
-           "errorCode": "RES-SER-418"
+           "errorCode": "RES-SER-414"
         }
       ]
 }'
@@ -232,13 +232,13 @@ GetAcknowledgementController:
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
       outputTemplate: resident/error
       input: '{
-		  "languageCode": "",
+		  "languageCode": " ",
 		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
 }'
       output: '{
       "errors": [
         {
-          "errorCode": "RES-SER-418"
+          "errorCode": "RES-SER-410"
         }
      ]
 }'
@@ -254,12 +254,12 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": "$1STLANG$",
-		  "eventId":  ""
+		  "eventId":  " "
 }'
       output: '{
       "errors": [
         {
-          "errorCode": "RES-SER-418"
+          "errorCode": "RES-SER-414"
         }
       ]
 }'
