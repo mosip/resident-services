@@ -28,6 +28,7 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
+import io.mosip.testrig.apirig.utils.NotificationListener;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
@@ -101,6 +102,7 @@ public class PatchWithBodyWithOtpGenerate extends ResidentUtil implements ITest 
 		sendOtpEndPoint = otpReqJson.getString("sendOtpEndPoint");
 		otpReqJson.remove("sendOtpEndPoint");
 
+		NotificationListener.markRequestStart();
 		Response otpResponse = postWithBodyAndCookie(ApplnURI + sendOtpEndPoint,
 				getJsonFromTemplate(otpReqJson.toString(), sendOtpReqTemplate), COOKIENAME, GlobalConstants.RESIDENT,
 				testCaseDTO.getTestCaseName());
@@ -156,8 +158,11 @@ public class PatchWithBodyWithOtpGenerate extends ResidentUtil implements ITest 
 			Field f = baseTestMethod.getClass().getSuperclass().getDeclaredField("m_methodName");
 			f.setAccessible(true);
 			f.set(baseTestMethod, testCaseName);
+
 		} catch (Exception e) {
 			Reporter.log("Exception : " + e.getMessage());
 		}
+
+		NotificationListener.markRequestRemove();
 	}
 }

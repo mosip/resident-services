@@ -29,6 +29,7 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
+import io.mosip.testrig.apirig.utils.NotificationListener;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
@@ -117,6 +118,7 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 		int maxLoopCount = Integer.parseInt(properties.getProperty("uinGenMaxLoopCount"));
 		int currLoopCount = 0;
 		while (currLoopCount < maxLoopCount) {
+			NotificationListener.markRequestStart();
 			if (testCaseName.contains(GlobalConstants.ESIGNET_)) {
 				if (ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
 					throw new SkipException("esignet is not deployed hence skipping the testcase");
@@ -217,9 +219,12 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 			Field f = baseTestMethod.getClass().getSuperclass().getDeclaredField("m_methodName");
 			f.setAccessible(true);
 			f.set(baseTestMethod, testCaseName);
+			
 		} catch (Exception e) {
 			Reporter.log("Exception : " + e.getMessage());
 		}
+
+		NotificationListener.markRequestRemove();
 	}
 
 	@AfterClass(alwaysRun = true)
