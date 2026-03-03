@@ -224,6 +224,6 @@ public class GetWithParamWithOtpGenerate extends ResidentUtil implements ITest {
 			Reporter.log("Exception : " + e.getMessage());
 		}
 
-		NotificationListener.markRequestStart();
+		NotificationListener.markRequestRemove();
 	}
 }
