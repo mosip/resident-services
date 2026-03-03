@@ -159,9 +159,10 @@ public class PatchWithBodyWithOtpGenerate extends ResidentUtil implements ITest 
 			f.setAccessible(true);
 			f.set(baseTestMethod, testCaseName);
 
-			NotificationListener.markRequestRemove();
 		} catch (Exception e) {
 			Reporter.log("Exception : " + e.getMessage());
 		}
+
+		NotificationListener.markRequestRemove();
 	}
 }

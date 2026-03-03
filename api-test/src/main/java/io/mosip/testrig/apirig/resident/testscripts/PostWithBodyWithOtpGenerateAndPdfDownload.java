@@ -176,10 +176,11 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 			Field f = baseTestMethod.getClass().getSuperclass().getDeclaredField("m_methodName");
 			f.setAccessible(true);
 			f.set(baseTestMethod, testCaseName);
-
-			NotificationListener.markRequestRemove();
+			
 		} catch (Exception e) {
 			Reporter.log("Exception : " + e.getMessage());
 		}
+
+		NotificationListener.markRequestRemove();
 	}
 }

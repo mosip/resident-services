@@ -31,6 +31,7 @@ import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
+import io.mosip.testrig.apirig.utils.NotificationListener;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
@@ -108,6 +109,7 @@ public class GetWithParamWithOtpGenerate extends ResidentUtil implements ITest {
 		sendOtpEndPoint = otpReqJson.getString("sendOtpEndPoint");
 		otpReqJson.remove("sendOtpEndPoint");
 
+		NotificationListener.markRequestStart();
 		Response otpResponse = postWithBodyAndCookie(ApplnURI + sendOtpEndPoint,
 				getJsonFromTemplate(otpReqJson.toString(), sendOtpReqTemplate), COOKIENAME, GlobalConstants.RESIDENT,
 				testCaseDTO.getTestCaseName());
@@ -221,5 +223,7 @@ public class GetWithParamWithOtpGenerate extends ResidentUtil implements ITest {
 		} catch (Exception e) {
 			Reporter.log("Exception : " + e.getMessage());
 		}
+
+		NotificationListener.markRequestStart();
 	}
 }
