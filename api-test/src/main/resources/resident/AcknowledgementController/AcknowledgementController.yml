@@ -10,7 +10,7 @@ GetAcknowledgementController:
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
 		  "languageCode": "$1STLANG$",
-		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
          "Content-Type": "application/pdf"
@@ -27,7 +27,7 @@ GetAcknowledgementController:
       outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
       input: '{
 		  "languageCode": "$1STLANG$",
-		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
           "Content-Type": "application/pdf"
@@ -44,7 +44,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": "ar$!22",
-		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -86,7 +86,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": " ",
-		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -107,7 +107,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": " ",
-		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -170,7 +170,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": "$1STLANG$",
-		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -191,7 +191,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": "ar$!22",
-		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -233,7 +233,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": " ",
-		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [
@@ -275,7 +275,7 @@ GetAcknowledgementController:
       outputTemplate: resident/error
       input: '{
 		  "languageCode": " ",
-		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
+		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
       "errors": [

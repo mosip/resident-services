@@ -10,7 +10,7 @@ DownloadUinCardByEventId:
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
       input: '{
-      	"eventId": "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+      	"eventId": "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
         "Content-Type": "application/pdf"
@@ -26,7 +26,7 @@ DownloadUinCardByEventId:
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
       input: '{
-      	"eventId": "$ID:GetRequestCardVid_vid_all_Valid_Smoke_res_sid_eventid$"
+      	"eventId": "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
         "Content-Type": "application/pdf"
@@ -102,7 +102,7 @@ DownloadUinCardByEventId:
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
       outputTemplate: resident/error
       input: '{
-      	"eventId": "$ID:GetRequestCardVid_uin_all_Valid_Smoke_res_sid_eventid$"
+      	"eventId": "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
       output: '{
         "errors": [
