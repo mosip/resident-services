@@ -26,6 +26,7 @@ import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
+import io.mosip.testrig.apirig.utils.NotificationListener;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
@@ -102,6 +103,7 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 		sendOtpEndPoint = otpReqJson.getString("sendOtpEndPoint");
 		otpReqJson.remove("sendOtpEndPoint");
 
+		NotificationListener.markRequestStart();
 		Response otpResponse = postWithBodyAndCookie(ApplnURI + sendOtpEndPoint,
 				getJsonFromTemplate(otpReqJson.toString(), sendOtpReqTemplate), COOKIENAME, GlobalConstants.RESIDENT,
 				testCaseDTO.getTestCaseName());
@@ -148,5 +150,6 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 	@AfterMethod(alwaysRun = true)
 	public void setResultTestName(ITestResult result) {
 		result.setAttribute("TestCaseName", testCaseName);
+		NotificationListener.markRequestRemove();
 	}
 }
