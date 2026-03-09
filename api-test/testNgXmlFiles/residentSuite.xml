@@ -625,7 +625,7 @@
 			value="resident/GetRequestCardVid/GetRequestCardVid.yml" />
 		<parameter name="sendEsignetToken" value="true" />
 		<parameter name="idKeyName" value="eventId" />
-		<parameter name="resHeaderKeyName" value="eventid" />
+		<parameter name="headerKeyName" value="eventid" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParamForAutoGenId" />

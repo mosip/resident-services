@@ -37,7 +37,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(GetWithParamForAutoGenId.class);
 	protected String testCaseName = "";
 	public String idKeyName = null;
-	public String resHeaderKeyName = null;
+	public String headerKeyName = null;
 	public Response response = null;
 	public boolean sendEsignetToken = false;
 	public boolean auditLogCheck = false;
@@ -67,7 +67,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 	public Object[] getTestCaseList(ITestContext context) {
 		String ymlFile = context.getCurrentXmlTest().getLocalParameters().get("ymlFile");
 		idKeyName = context.getCurrentXmlTest().getLocalParameters().get("idKeyName");
-		resHeaderKeyName = context.getCurrentXmlTest().getLocalParameters().get("resHeaderKeyName");
+		headerKeyName = context.getCurrentXmlTest().getLocalParameters().get("headerKeyName");
 		sendEsignetToken = context.getCurrentXmlTest().getLocalParameters().containsKey("sendEsignetToken");
 		logger.info("Started executing yml: " + ymlFile);
 		return getYmlTestData(ymlFile);
@@ -122,8 +122,8 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 					getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck,
 					COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), idKeyName, sendEsignetToken);
 
-			if (resHeaderKeyName != null || !resHeaderKeyName.isEmpty()) {
-				saveResponseHeader(response, resHeaderKeyName);
+			if (headerKeyName != null || !headerKeyName.isEmpty()) {
+				saveResponseHeader(response, headerKeyName);
 			}
 			
 			Map<String, List<OutputValidationDto>> ouputValid = null;
