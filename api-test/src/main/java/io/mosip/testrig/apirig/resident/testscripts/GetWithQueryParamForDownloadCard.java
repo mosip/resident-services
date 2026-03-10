@@ -1,9 +1,8 @@
 package io.mosip.testrig.apirig.resident.testscripts;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -17,20 +16,18 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.BaseTestMethod;
-import org.testng.internal.TestResult;
 
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-
+import io.mosip.testrig.apirig.dto.OutputValidationDto;
 import io.mosip.testrig.apirig.dto.TestCaseDTO;
 import io.mosip.testrig.apirig.resident.utils.ResidentConfigManager;
 import io.mosip.testrig.apirig.resident.utils.ResidentUtil;
 import io.mosip.testrig.apirig.testrunner.BaseTestCase;
 import io.mosip.testrig.apirig.testrunner.HealthChecker;
+import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
-import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.OutputValidationUtil;
+import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.SecurityXSSException;
 import io.restassured.response.Response;
 
@@ -38,8 +35,6 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 	private static final Logger logger = Logger.getLogger(GetWithQueryParamForDownloadCard.class);
 	protected String testCaseName = "";
 	public Response response = null;
-	public byte[] pdf=null;
-	public String pdfAsText =null;
 	public boolean sendEsignetToken = false;
 	
 	@BeforeClass
@@ -101,58 +96,35 @@ public class GetWithQueryParamForDownloadCard extends ResidentUtil implements IT
 		if (testCaseDTO.getTemplateFields() != null && templateFields.length > 0) {
 			ArrayList<JSONObject> inputtestCases = AdminTestUtil.getInputTestCase(testCaseDTO);
 			for (int i = 0; i < languageList.size(); i++) {
-				pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
+				response = getWithQueryParamAndCookieForBothAccessToken(ApplnURI + testCaseDTO.getEndPoint(),
 						getJsonFromTemplate(inputtestCases.get(i).toString(), testCaseDTO.getInputTemplate()),
-						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-				PdfReader pdfReader = null;
-				ByteArrayInputStream bIS = null;
-
-				try {
-					bIS = new ByteArrayInputStream(pdf);
-					pdfReader = new PdfReader(bIS);
-					pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
-				} catch (IOException e) {
-					Reporter.log("Exception : " + e.getMessage());
-				} finally {
-					AdminTestUtil.closeByteArrayInputStream(bIS);
-					AdminTestUtil.closePdfReader(pdfReader);
-				}
-
-				if (pdf != null && (new String(pdf).contains("errors") || pdfAsText == null)) {
-					GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download");
-				} else {
-					GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
-				}
+						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+				validatePdfOrError(response, testCaseDTO);
 			}
 		}  
 		
 		else {
-			pdf = getWithQueryParamAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
-			
-			PdfReader pdfReader = null;
-			ByteArrayInputStream bIS = null;
-			
-			try {
-				bIS = new ByteArrayInputStream(pdf);
-				pdfReader = new PdfReader(bIS);
-				pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
-			} catch (IOException e) {
-				Reporter.log("Exception : " + e.getMessage());
-			} finally {
-				AdminTestUtil.closeByteArrayInputStream(bIS);
-				AdminTestUtil.closePdfReader(pdfReader);
-			}
-			 
-			 if(pdf!=null && (new String(pdf).contains("errors")|| pdfAsText == null)) {
-				 GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download");
-			 }
-			 else {
-				 GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
-			 }
+			response = getWithQueryParamAndCookieForBothAccessToken(ApplnURI + testCaseDTO.getEndPoint(), getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+			validatePdfOrError(response, testCaseDTO);
 		}
-		 
-				
 		
+	}
+	
+	private void validatePdfOrError(Response response, TestCaseDTO testCaseDTO) throws AdminTestException {
+
+		if (handlePdfResponse(response, testCaseDTO)) {
+			return;
+			
+		} else {
+			Map<String, List<OutputValidationDto>> outputValid = OutputValidationUtil.doJsonOutputValidation(
+					response.asString(), getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+					testCaseDTO, response.getStatusCode());
+
+			Reporter.log(ReportUtil.getOutputValidationReport(outputValid));
+
+			if (!OutputValidationUtil.publishOutputResult(outputValid))
+				throw new AdminTestException("Failed at output validation");
+		}
 	}
 
 	/**

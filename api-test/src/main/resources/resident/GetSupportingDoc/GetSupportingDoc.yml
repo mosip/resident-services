@@ -4,7 +4,6 @@ GetSupportingDoc:
       uniqueIdentifier: TC_Resident_SupportingDocument_01      
       description: Get supporting documents      
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetSupportingDoc/GetSupportingDoc
       outputTemplate: resident/GetSupportingDoc/GetSupportingDocResult
@@ -12,21 +11,24 @@ GetSupportingDoc:
       		"langcode": "$1STLANG$"
 }'
       output: '{
-        
+            "Content-Type": "application/pdf"
 }'
 
    Resident_GetSupportingDoc_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/supporting-documents
-      uniqueIdentifier: TC_Resident_SupportingDocument_02      
+      uniqueIdentifier: TC_Resident_SupportingDocument_02     
       description: Get supporting documents when invalid language code is given      
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/GetSupportingDoc/GetSupportingDoc
-      outputTemplate: resident/GetSupportingDoc/GetSupportingDocResult
+      outputTemplate: resident/error
       input: '{
       		"langcode": "engg"
 }'
       output: '{
-        
+      "errors": [
+        {
+           "errorCode": "RES-SER-410"
+        }
+     ]
 }'

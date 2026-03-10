@@ -800,39 +800,39 @@
     "TC_Resident_GetAuthorizationtoken_04": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetserviceHistory_76": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_05": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetserviceHistory_79": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_06": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetserviceHistory_78": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_07": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetAuthorizationtoken_01": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetLastClickNotification_02": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_02": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_GetLastClickNotification_01": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetAuthorizationtoken_03": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetAuthorizationtoken_08": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetAuthorizationtoken_09": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_GetserviceHistory_60": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_10": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_GetserviceHistory_62": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetserviceHistory_61": ["Dependent_ESignet_GenerateToken_02"],
@@ -847,12 +847,12 @@
     "TC_Resident_GetserviceHistory_69": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_12": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_GetAuthorizationtoken_13": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_GetAuthorizationtoken_14": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_ShareCredentialWithPartner_09": [
         "Dependent_ESignet_GenerateToken_02",
@@ -1078,7 +1078,7 @@
     "TC_Resident_GetPartnerbyPartnerType_05": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_DownloadUinCardByEventId_04": ["Dependent_ESignet_GenerateToken_02"],
     "TC_Resident_UpdateUINNew_02": ["Dependent_ESignet_GenerateToken_02"],
-    "TC_Resident_DownloadUinCardByEventId_06": ["TC_Resident_GetserviceHistory_30"],
+    "TC_Resident_DownloadUinCardByEventId_06": ["TC_Resident_GetCardUsingVID_01"],
     "TC_Resident_UpdateUINNew_01": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_UpdateUINNew_04": [
         "Dependent_Idrepo_AddIdentity_15",
@@ -1111,7 +1111,7 @@
     ],
     "TC_Resident_AuthUnlockNew_25": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_DownloadUinCardByEventId_01": [
-        "TC_Resident_GetserviceHistory_30",
+        "TC_Resident_GetCardUsingVID_01",
         "Dependent_ESignet_GenerateToken_01"
     ],
     "TC_Resident_AuthUnlockNew_24": ["Dependent_ESignet_GenerateToken_01"],
@@ -1120,7 +1120,7 @@
     "TC_Resident_AuthUnlockNew_26": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_DownloadUinCardByEventId_02": [
         "Dependent_ESignet_GenerateToken_02",
-        "TC_Resident_GetserviceHistory_58"
+        "TC_Resident_GetCardUsingVID_05"
     ],
     "TC_Resident_AuthUnlockNew_29": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_AuthUnlockNew_28": ["Dependent_ESignet_GenerateToken_01"],
@@ -1153,6 +1153,7 @@
     "TC_Resident_DownloadCredential_04": ["TC_Resident_RequestCredentials_01"],
     "TC_Resident_DownloadCredential_05": ["TC_Resident_RequestCredentials_02"],
     "TC_Resident_DownloadCredential_06": ["TC_Resident_RequestCredentials_03"],
+    "TC_Resident_DownloadCredential_08": ["TC_Resident_RequestCredentials_01"],
     "TC_Resident_GetInputAtributes_02": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_GetInputAtributes_01": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_AuthUnlockNew_01": ["Dependent_ESignet_GenerateToken_01"],

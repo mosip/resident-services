@@ -1,8 +1,5 @@
 package io.mosip.testrig.apirig.resident.testscripts;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -18,11 +15,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.BaseTestMethod;
-import org.testng.internal.TestResult;
 
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 import io.mosip.testrig.apirig.dto.OutputValidationDto;
 import io.mosip.testrig.apirig.dto.TestCaseDTO;
@@ -31,10 +24,8 @@ import io.mosip.testrig.apirig.resident.utils.ResidentUtil;
 import io.mosip.testrig.apirig.testrunner.BaseTestCase;
 import io.mosip.testrig.apirig.testrunner.HealthChecker;
 import io.mosip.testrig.apirig.utils.AdminTestException;
-import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.AuthenticationTestException;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
-import io.mosip.testrig.apirig.utils.GlobalMethods;
 import io.mosip.testrig.apirig.utils.NotificationListener;
 import io.mosip.testrig.apirig.utils.OutputValidationUtil;
 import io.mosip.testrig.apirig.utils.ReportUtil;
@@ -45,8 +36,6 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 	private static final Logger logger = Logger.getLogger(PostWithBodyWithOtpGenerateAndPdfDownload.class);
 	protected String testCaseName = "";
 	public Response response = null;
-	public byte[] pdf = null;
-	public String pdfAsText = null;
 
 	@BeforeClass
 	public static void setLogLevel() {
@@ -136,29 +125,21 @@ public class PostWithBodyWithOtpGenerateAndPdfDownload extends ResidentUtil impl
 		if (!OutputValidationUtil.publishOutputResult(ouputValidOtp))
 			throw new AdminTestException("Failed at otp output validation");
 
-		pdf = postWithBodyAndCookieForPdf(ApplnURI + testCaseDTO.getEndPoint(),
-				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,
-				testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
-		PdfReader pdfReader = null;
-		ByteArrayInputStream bIS = null;
-
-		try {
-			bIS = new ByteArrayInputStream(pdf);
-			pdfReader = new PdfReader(bIS);
-			pdfAsText = PdfTextExtractor.getTextFromPage(pdfReader, 1);
-		} catch (IOException e) {
-			Reporter.log("Exception : " + e.getMessage());
-		} finally {
-			AdminTestUtil.closeByteArrayInputStream(bIS);
-			AdminTestUtil.closePdfReader(pdfReader);
-		}
-
-		if (pdf != null && (new String(pdf).contains("errors") || pdfAsText == null)) {
-			GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "Not able to download UIN Card");
+		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(),
+				getJsonFromTemplate(req.toString(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(),
+				testCaseDTO.getTestCaseName());
+		
+		if (handlePdfResponse(response, testCaseDTO)) {
+			return;
+			
 		} else {
-			GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), pdfAsText);
+			Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
+					response.asString(), getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()),
+					testCaseDTO, response.getStatusCode());
+			Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+			if (!OutputValidationUtil.publishOutputResult(ouputValid))
+				throw new AdminTestException("Failed at output validation");
 		}
-
 	}
 
 	/**

@@ -1,8 +1,10 @@
 package io.mosip.testrig.apirig.resident.utils;
 
+import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
@@ -10,15 +12,25 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.testng.Assert;
+import org.testng.Reporter;
 import org.testng.SkipException;
+import com.itextpdf.text.exceptions.BadPasswordException;
+
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 import io.mosip.testrig.apirig.dbaccess.DBManager;
+import io.mosip.testrig.apirig.dto.OutputValidationDto;
 import io.mosip.testrig.apirig.dto.TestCaseDTO;
 import io.mosip.testrig.apirig.resident.testrunner.MosipTestRunner;
 import io.mosip.testrig.apirig.testrunner.BaseTestCase;
+import io.mosip.testrig.apirig.utils.AdminTestException;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.OutputValidationUtil;
+import io.mosip.testrig.apirig.utils.ReportUtil;
 import io.mosip.testrig.apirig.utils.RestClient;
 import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
 import io.restassured.response.Response;
@@ -132,6 +144,11 @@ public class ResidentUtil extends AdminTestUtil {
 					getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES, "mosip.iam.module.clientID"));
 		}
 		
+		if (jsonString.contains("$PERSONALIZED_CARD_HTML$")) {
+			jsonString = replaceKeywordWithValue(jsonString, "$PERSONALIZED_CARD_HTML$",
+					readBase64Resource("resident/personalized_card.html.b64"));
+		}
+		
 		if (jsonString.contains("$IDPCLIENTPAYLOAD$")) {
 			String clientId = getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES,
 					"mosip.iam.module.clientID");
@@ -212,6 +229,62 @@ public class ResidentUtil extends AdminTestUtil {
 			logger.error(GlobalConstants.EXCEPTION_STRING_2 + e);
 			return claims;
 		}
+
+	}
+	
+	public boolean handlePdfResponse(Response response, TestCaseDTO testCaseDTO)
+			throws AdminTestException {
+		String contentType = response != null ? response.getHeader("Content-Type") : null;
+		if (contentType == null || !contentType.contains("application/pdf")) {
+			return false;
+		}
+
+		byte[] pdf = response.asByteArray();
+		try {
+			PdfReader reader;
+			try {
+				// First opening pdf without password
+				reader = new PdfReader(new ByteArrayInputStream(pdf));
+				if (!reader.isEncrypted()) {
+					logger.info("Opened non-encrypted PDF");
+				} else {
+					reader.close();
+					throw new BadPasswordException("Encrypted PDF");
+				}
+
+			} catch (BadPasswordException e) {
+
+				// If encrypted, try with password
+				String password = properties.getProperty("pdfPassword");
+
+				reader = new PdfReader(new ByteArrayInputStream(pdf), password.getBytes());
+
+				logger.info("Opened password protected PDF");
+			}
+			String pdfAsText;
+			try {
+				pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+			} finally {
+				reader.close();
+			}
+
+			GlobalMethods.reportResponse(null, ApplnURI + testCaseDTO.getEndPoint(), "PDF Content:\n" + pdfAsText);
+
+			Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
+					"{\"Content-Type\":\"" + contentType + "\"}",
+					getJsonFromTemplate(testCaseDTO.getOutput(), testCaseDTO.getOutputTemplate()), testCaseDTO,
+					response.getStatusCode());
+
+			Reporter.log(ReportUtil.getOutputValidationReport(ouputValid));
+			if (!OutputValidationUtil.publishOutputResult(ouputValid))
+				throw new AdminTestException("PDF validation failed");
+
+			return true;
+
+		} catch (Exception e) {
+			Assert.fail("Invalid PDF received: " + e.getMessage());
+		}
+		return true;
 
 	}
 	
