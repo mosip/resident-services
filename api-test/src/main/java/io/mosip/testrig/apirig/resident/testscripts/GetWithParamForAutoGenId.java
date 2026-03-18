@@ -132,7 +132,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 				OutputValidationDto customResponse = customStatusCodeResponse(String.valueOf(response.getStatusCode()),
 						testCaseDTO.getOutput());
 
-				ouputValid = new HashMap<>();
+				ouputValid  = new HashMap<>();
 				ouputValid.put(GlobalConstants.EXPECTED_VS_ACTUAL, List.of(customResponse));
 			} else {
 				ouputValid = OutputValidationUtil.doJsonOutputValidation(response.asString(),
