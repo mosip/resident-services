@@ -122,7 +122,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 					getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck,
 					COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), idKeyName, sendEsignetToken);
 
-			if (headerKeyName != null || !headerKeyName.isEmpty()) {
+			if (headerKeyName != null && !headerKeyName.isEmpty()) {
 				saveResponseHeader(response, headerKeyName);
 			}
 			
