@@ -122,7 +122,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 					getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), auditLogCheck,
 					COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), idKeyName, sendEsignetToken);
 
-			if (headerKeyName != null || !headerKeyName.isEmpty()) {
+			if (headerKeyName != null && !headerKeyName.isEmpty()) {
 				saveResponseHeader(response, headerKeyName);
 			}
 			
@@ -132,7 +132,7 @@ public class GetWithParamForAutoGenId extends ResidentUtil implements ITest {
 				OutputValidationDto customResponse = customStatusCodeResponse(String.valueOf(response.getStatusCode()),
 						testCaseDTO.getOutput());
 
-				ouputValid = new HashMap<>();
+				ouputValid  = new HashMap<>();
 				ouputValid.put(GlobalConstants.EXPECTED_VS_ACTUAL, List.of(customResponse));
 			} else {
 				ouputValid = OutputValidationUtil.doJsonOutputValidation(response.asString(),
