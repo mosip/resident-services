@@ -34,4 +34,4 @@ COMMENT ON COLUMN resident.resident_session.machine_type IS 'The OS of device us
 CREATE INDEX idx_resident_session_ida_token ON resident.resident_session (ida_token);
 GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_session
-   TO residentuser;
+   TO :dbuname;

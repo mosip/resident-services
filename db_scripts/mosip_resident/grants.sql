@@ -9,20 +9,20 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	    Granting usage access to residentuser scripts added.
 -----------------------------------------------------------------------------------------------------
-\c mosip_resident 
+\c :mosipdbname 
 
 GRANT CONNECT
-   ON DATABASE mosip_resident
-   TO residentuser;
+   ON DATABASE :mosipdbname
+   TO :dbuname;
 
 GRANT USAGE
    ON SCHEMA resident
-   TO residentuser;
+   TO :dbuname;
 
 GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES
    ON ALL TABLES IN SCHEMA resident
-   TO residentuser;
+   TO :dbuname;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA resident 
-	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO residentuser;
+	GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO :dbuname;
 -----------------------------------------------------------------------------------------------------
