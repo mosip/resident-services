@@ -124,22 +124,33 @@ public class PostWithBodyWithOtpGenerate extends ResidentUtil implements ITest {
 						GlobalConstants.RESIDENT, testCaseDTO.getTestCaseName());
 			}
 
-			if (otpResponse != null && (otpResponse.asString().contains("RES-SER-524")
-					|| otpResponse.asString().contains("RES-SER-525"))) {
-				logger.info("waiting for: " + properties.getProperty("uinGenDelayTime")
-						+ " to update UIN as previous packet is pending.");
-				try {
-					Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
+			if (otpResponse == null) {
+				logger.error("Received null otpResponse while invoking send-otp endpoint; aborting retry loop.");
+				break;
+			}
 
-				} catch (NumberFormatException | InterruptedException e) {
-					logger.error(e.getMessage());
-					Thread.currentThread().interrupt();
+			String otpResponseBody = otpResponse.asString();
+			if (otpResponseBody.contains("RES-SER-524")) {
+				int discarded = ResidentUtil.discardCancellablePendingDrafts(
+						testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
+				logger.info("RES-SER-524 on send-otp: discarded " + discarded
+						+ " cancellable draft(s) before retrying.");
+				if (discarded == 0) {
+					sleepForUinGenDelay();
 				}
+			} else if (otpResponseBody.contains("RES-SER-525")) {
+				logger.info("RES-SER-525 on send-otp: previous packet is non-cancellable, waiting "
+						+ properties.getProperty("uinGenDelayTime") + " ms before retry.");
+				sleepForUinGenDelay();
 			} else {
 				break;
 			}
 
 			currLoopCount++;
+		}
+
+		if (otpResponse == null) {
+			throw new AdminTestException("Received null otpResponse from send-otp endpoint; cannot validate output.");
 		}
 
 		JSONObject res = new JSONObject(testCaseDTO.getOutput());
@@ -169,15 +180,50 @@ public class PostWithBodyWithOtpGenerate extends ResidentUtil implements ITest {
 				logger.info("waiting for " + properties.getProperty("expireOtpTime")
 						+ " mili secs to test expire otp case in RESIDENT Service");
 				Thread.sleep(Long.parseLong(properties.getProperty("expireOtpTime")));
-			} catch (NumberFormatException | InterruptedException e) {
+			} catch (NumberFormatException e) {
+				logger.error(e.getMessage());
+			} catch (InterruptedException e) {
 				logger.error(e.getMessage());
 				Thread.currentThread().interrupt();
 			}
 		}
 
-		response = postRequestWithCookieAndHeader(ApplnURI + testCaseDTO.getEndPoint(),
-				getJsonFromTemplate(req.toString(), testCaseDTO.getInputTemplate()), COOKIENAME, testCaseDTO.getRole(),
-				testCaseDTO.getTestCaseName(), sendEsignetToken);
+		// The actual update-data POST is what triggers the "previous packet pending"
+		// check inside ValidateNewUpdateRequest, so retry it (and discard cancellable
+		// drafts on RES-SER-524) the same way we do for the send-otp call above.
+		int updateLoopCount = 0;
+		while (updateLoopCount < maxLoopCount) {
+			response = postRequestWithCookieAndHeader(ApplnURI + testCaseDTO.getEndPoint(),
+					getJsonFromTemplate(req.toString(), testCaseDTO.getInputTemplate()), COOKIENAME,
+					testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
+
+			if (response == null) {
+				logger.error("Received null response while invoking update-data endpoint; aborting retry loop.");
+				break;
+			}
+
+			String responseBody = response.asString();
+			if (responseBody.contains("RES-SER-524")) {
+				int discarded = ResidentUtil.discardCancellablePendingDrafts(
+						testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
+				logger.info("RES-SER-524 on update-data: discarded " + discarded
+						+ " cancellable draft(s) before retrying.");
+				if (discarded == 0) {
+					sleepForUinGenDelay();
+				}
+			} else if (responseBody.contains("RES-SER-525")) {
+				logger.info("RES-SER-525 on update-data: previous packet is non-cancellable, waiting "
+						+ properties.getProperty("uinGenDelayTime") + " ms before retry.");
+				sleepForUinGenDelay();
+			} else {
+				break;
+			}
+			updateLoopCount++;
+		}
+
+		if (response == null) {
+			throw new AdminTestException("Received null response from update-data endpoint; cannot validate output.");
+		}
 		Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
 				response.asString(), getJsonFromTemplate(res.toString(), testCaseDTO.getOutputTemplate()), testCaseDTO,
 				response.getStatusCode());
@@ -193,6 +239,17 @@ public class PostWithBodyWithOtpGenerate extends ResidentUtil implements ITest {
 	 * 
 	 * @param result
 	 */
+	private void sleepForUinGenDelay() {
+		try {
+			Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
+		} catch (NumberFormatException e) {
+			logger.error(e.getMessage());
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+			Thread.currentThread().interrupt();
+		}
+	}
+
 	@AfterMethod(alwaysRun = true)
 	public void setResultTestName(ITestResult result) {
 		try {
