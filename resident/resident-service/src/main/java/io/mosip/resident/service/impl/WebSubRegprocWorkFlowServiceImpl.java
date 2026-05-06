@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author Kamesh Shekhar Prasad
  */
@@ -43,29 +45,82 @@ public class WebSubRegprocWorkFlowServiceImpl implements WebSubRegprocWorkFlowSe
     @Override
     public void updateResidentStatus(WorkflowCompletedEventDTO workflowCompletedEventDTO) throws ResidentServiceCheckedException {
         logger.debug("WebSubRegprocWorkFlowServiceImpl:updateResidentStatus entry");
-        ResidentTransactionEntity residentTransactionEntity = null;
-        String individualId = null;
-        if (workflowCompletedEventDTO.getResultCode() != null) {
-            if (workflowCompletedEventDTO.getInstanceId() != null) {
-                residentTransactionEntity =
-                        residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(workflowCompletedEventDTO.getInstanceId());
-            }
-            if (residentTransactionEntity != null) {
-                individualId = residentTransactionEntity.getIndividualId();
-                if (PacketStatus.getStatusCodeList(PacketStatus.FAILURE, environment).contains(workflowCompletedEventDTO.getResultCode())) {
-                    utility.updateEntity(EventStatusFailure.FAILED.name(), RequestType.UPDATE_MY_UIN.name() + " - " + ResidentConstants.FAILED,
-                            false, "Packet Failed in Regproc with status code-" +
-                            workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    identityDataUtil.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_FAILED);
-                } else if (PacketStatus.getStatusCodeList(PacketStatus.SUCCESS, environment).contains(workflowCompletedEventDTO.getResultCode())) {
-                    utility.updateEntity(EventStatusInProgress.IDENTITY_UPDATED.name(), EventStatusInProgress.IDENTITY_UPDATED.name(), false,
-                            "Packet processed in Regproc with status code-" +
-                            workflowCompletedEventDTO.getResultCode(), residentTransactionEntity);
-                    identityDataUtil.sendNotification(residentTransactionEntity.getEventId(), individualId, TemplateType.REGPROC_SUCCESS);
-                }
-            }
+
+        String resultCode = workflowCompletedEventDTO.getResultCode();
+        String instanceId = workflowCompletedEventDTO.getInstanceId();
+        String maskedAid = maskTrailing(instanceId);
+        logger.info("regproc workflow callback received: resultCode=" + resultCode + " aid=" + maskedAid);
+
+        // Diagnostic gates for MOSIP-40519: every silent fall-through here used to
+        // leave the row stuck at IN_PROGRESS / NEW with no audit trail.
+        if (resultCode == null) {
+            logger.warn("regproc workflow callback dropped: resultCode is null (aid=" + maskedAid + ")");
+            return;
         }
+        if (instanceId == null) {
+            logger.warn("regproc workflow callback dropped: instanceId is null (resultCode=" + resultCode + ")");
+            return;
+        }
+
+        ResidentTransactionEntity residentTransactionEntity =
+                residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(instanceId);
+        if (residentTransactionEntity == null) {
+            logger.warn("regproc workflow callback dropped: no ResidentTransactionEntity found for incoming aid="
+                    + maskedAid + " (resultCode=" + resultCode + ")");
+            return;
+        }
+
+        String eventId = residentTransactionEntity.getEventId();
+        String individualId = residentTransactionEntity.getIndividualId();
+
+        List<String> failureList = PacketStatus.getStatusCodeList(PacketStatus.FAILURE, environment);
+        List<String> successList = PacketStatus.getStatusCodeList(PacketStatus.SUCCESS, environment);
+
+        if (failureList.contains(resultCode)) {
+            utility.updateEntity(EventStatusFailure.FAILED.name(),
+                    RequestType.UPDATE_MY_UIN.name() + " - " + ResidentConstants.FAILED,
+                    false,
+                    "Packet Failed in Regproc with status code-" + resultCode,
+                    residentTransactionEntity);
+            identityDataUtil.sendNotification(eventId, individualId, TemplateType.REGPROC_FAILED);
+            logger.info("regproc workflow callback applied: status=FAILED eventId=" + eventId
+                    + " resultCode=" + resultCode);
+        } else if (successList.contains(resultCode)) {
+            utility.updateEntity(EventStatusInProgress.IDENTITY_UPDATED.name(),
+                    EventStatusInProgress.IDENTITY_UPDATED.name(),
+                    false,
+                    "Packet processed in Regproc with status code-" + resultCode,
+                    residentTransactionEntity);
+            identityDataUtil.sendNotification(eventId, individualId, TemplateType.REGPROC_SUCCESS);
+            logger.info("regproc workflow callback applied: status=IDENTITY_UPDATED eventId=" + eventId
+                    + " resultCode=" + resultCode);
+        } else {
+            // The unmatched-resultCode silent drop. Surface enough context to tell apart
+            // (a) regproc emitting a code outside the configured lists vs (b) the lists
+            // themselves being empty/misconfigured on the deployed environment.
+            logger.warn("regproc workflow callback dropped: resultCode=" + resultCode
+                    + " not in configured SUCCESS list (size=" + successList.size()
+                    + ") or FAILURE list (size=" + failureList.size()
+                    + "); eventId=" + eventId
+                    + ". Check resident.success.packet-status-code.list and resident.failure.packet-status-code.list properties.");
+        }
+
         logger.debug("WebSubRegprocWorkFlowServiceImpl:updateResidentStatus exit");
+    }
+
+    /**
+     * Mask all but the last 4 chars of an identifier so it can appear in logs
+     * without leaking the full value. Used for AIDs in callback diagnostics.
+     */
+    private static String maskTrailing(String value) {
+        if (value == null) {
+            return "null";
+        }
+        int len = value.length();
+        if (len <= 4) {
+            return "****";
+        }
+        return "****" + value.substring(len - 4);
     }
 
 }
