@@ -85,7 +85,7 @@ public class SimplePatchForAutoGenId extends ResidentUtil implements ITest {
 			for (int i = 0; i < languageList.size(); i++) {
 				response = patchWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(),
 						getJsonFromTemplate(inputtestCases.get(i).toString(), testCaseDTO.getInputTemplate()),
-						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
+						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
 
 				Map<String, List<OutputValidationDto>> ouputValid = OutputValidationUtil.doJsonOutputValidation(
 						response.asString(),

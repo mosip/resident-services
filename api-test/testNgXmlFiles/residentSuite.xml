@@ -409,7 +409,6 @@
 	<test name="GetNotificationsCountBeforeOperations">
 		<parameter name="ymlFile"
 			value="resident/GetNotificationsCount/GetNotificationsCountBeforeOperations.yml" />
-		<parameter name="sendEsignetToken" value="true" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
