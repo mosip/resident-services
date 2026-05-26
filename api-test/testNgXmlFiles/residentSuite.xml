@@ -139,6 +139,14 @@
 				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
 		</classes>
 	</test>
+	<test name="AuditLogValidationBeforePrintUin">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
 	<test name="PrintUin">
 		<parameter name="ymlFile"
 			value="resident/PRINTUIN/createPrintUin.yml" />
@@ -147,12 +155,28 @@
 				name="io.mosip.testrig.apirig.resident.testscripts.PostWithBodyWithOtpGenerate" />
 		</classes>
 	</test>
+	<test name="AuditLogValidationAfterPrintUin">
+		<parameter name="ymlFile"
+			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
+		</classes>
+	</test>
 	<test name="RidCheckStatus">
 		<parameter name="ymlFile"
 			value="resident/RidCheckStatus/createRidCheckStatus.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.SimplePost" />
+		</classes>
+	</test>
+	<test name="GetAidStage">
+		<parameter name="ymlFile"
+			value="resident/GetAidStage/GetAidStage.yml" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
 		</classes>
 	</test>
 	<test name="ValidateExpiredOTP">
@@ -380,6 +404,15 @@
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.SimplePostForAutoGenIdForUrlEncoded" />
+		</classes>
+	</test>
+	<test name="GetNotificationsCountBeforeOperations">
+		<parameter name="ymlFile"
+			value="resident/GetNotificationsCount/GetNotificationsCountBeforeOperations.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
 		</classes>
 	</test>
 	<test name="GetRemainingupdatecountbyIndividualIdRequest2">
@@ -827,9 +860,19 @@
 		<parameter name="ymlFile"
 			value="resident/UpdateUINNew/UpdateUINNew.yml" />
 		<parameter name="sendEsignetToken" value="true" />
+		<parameter name="idKeyName" value="eventId" />
 		<classes>
 			<class
-				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatch" />
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatchForAutoGenId" />
+		</classes>
+	</test>
+	<test name="GetCheckEventIdStatusAfterUpdate">
+		<parameter name="ymlFile"
+			value="resident/GetCheckEventIdStatus/GetCheckEventIdStatusAfterUpdate.yml" />
+		<parameter name="sendEsignetToken" value="true" />
+		<classes>
+			<class
+				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
 		</classes>
 	</test>
 	<test name="GetDocByTransId">

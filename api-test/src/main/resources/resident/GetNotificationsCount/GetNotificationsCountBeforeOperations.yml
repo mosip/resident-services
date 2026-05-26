@@ -1,0 +1,30 @@
+GetNotificationsCountBeforeOperations:
+   Resident_GetNotificationsCount_uin_BeforeOperations_Smoke:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_05
+      description: Verify unread notification count is 0 for UIN before any operations are performed
+      role: residentNew
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/GetNotificationsCount/GetNotificationsCountResult
+      input: '{
+}'
+      output: '{
+  "unreadCount": "0"
+}'
+
+   Resident_GetNotificationsCount_vid_BeforeOperations_Smoke:
+      endPoint: /resident/v1/unread/notification-count
+      uniqueIdentifier: TC_Resident_GetNotificationCount_06
+      description: Verify unread notification count is 0 for VID before any operations are performed
+      role: residentNewVid
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetNotificationsCount/GetNotificationsCount
+      outputTemplate: resident/GetNotificationsCount/GetNotificationsCountResult
+      input: '{
+}'
+      output: '{
+  "unreadCount": "0"
+}'

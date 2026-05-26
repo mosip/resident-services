@@ -143,3 +143,91 @@ GetCheckEventIdStatus:
     }
   ]
 }'
+
+   Resident_GetCheckEventIdStatus_uin_SpaceWithin_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_10
+      description: Get check eventId status using a valid UIN with a space within the eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": "550e8400 e29b41d4a716446655440000",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_SpaceWithin_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_11
+      description: Get check eventId status using a valid VID with a space within the eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": "550e8400 e29b41d4a716446655440000",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_uin_SpaceAtEnds_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_12
+      description: Get check eventId status using a valid UIN with spaces at the beginning and end of the eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": " 550e8400e29b41d4a716446655440000 ",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_SpaceAtEnds_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_13
+      description: Get check eventId status using a valid VID with spaces at the beginning and end of the eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": " 550e8400e29b41d4a716446655440000 ",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'

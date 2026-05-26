@@ -1,0 +1,53 @@
+GetAidStage:
+   Resident_GetAidStage_Valid_Processed_RID_Smoke:
+      endPoint: /resident/v1/aid-stage/{rid}
+      uniqueIdentifier: TC_Resident_GetAidStage_01
+      description: Get AID stage status for a successfully processed RID in regproc
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetAidStage/GetAidStage
+      outputTemplate: resident/GetAidStage/GetAidStageResult
+      input: '{
+        "rid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$"
+}'
+      output: '{
+    "aidStatus": "SUCCESS"
+}'
+
+   Resident_GetAidStage_Invalid_RID_Neg:
+      endPoint: /resident/v1/aid-stage/{rid}
+      uniqueIdentifier: TC_Resident_GetAidStage_02
+      description: Get AID stage status using an invalid RID
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetAidStage/GetAidStage
+      outputTemplate: resident/error
+      input: '{
+        "rid": "INVALID@RID#123"
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetAidStage_Empty_RID_Neg:
+      endPoint: /resident/v1/aid-stage/{rid}
+      uniqueIdentifier: TC_Resident_GetAidStage_03
+      description: Get AID stage status using an empty RID
+      role: resident
+      restMethod: get
+      inputTemplate: resident/GetAidStage/GetAidStage
+      outputTemplate: resident/error
+      input: '{
+        "rid": ""
+}'
+      output: '{
+  "errors": [
+    {
+      "errorCode": "RES-SER-418"
+    }
+  ]
+}'
