@@ -137,6 +137,7 @@ public class PostWithAutogenIdWithOtpGenerate extends ResidentUtil implements IT
 					&& !(testCaseName.contains("_CheckVidIs_REVOKED_Neg"))) {
 				logger.info("waiting for: " + properties.getProperty("uinGenDelayTime")
 						+ " as UIN not available in database");
+				NotificationListener.markRequestRemove();
 				try {
 					Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
 				} catch (NumberFormatException | InterruptedException e) {
