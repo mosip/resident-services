@@ -111,15 +111,15 @@ public class AddIdentity extends ResidentUtil implements ITest {
 		String phoneNumber = "";
 		String email = testCaseName + "_" + BaseTestCase.runContext + "@mosip.net";
 		if (inputJson.contains("$PHONENUMBERFORIDENTITY$")) {
-			
 			if (!phoneSchemaRegex.isEmpty())
 				try {
 					phoneNumber = genStringAsperRegex(phoneSchemaRegex);
 				} catch (Exception e) {
 					logger.error(e.getMessage());
 				}
-			
 			inputJson = replaceKeywordWithValue(inputJson, "$PHONENUMBERFORIDENTITY$", phoneNumber);
+		}
+		if (inputJson.contains("$EMAILVALUE$")) {
 			inputJson = replaceKeywordWithValue(inputJson, "$EMAILVALUE$", email);
 		}
 
