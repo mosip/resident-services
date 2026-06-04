@@ -177,4 +177,38 @@ There is **no `$NOTEMPTY$`** keyword. Dynamic fields (URLs, event IDs, timestamp
 - `checkErrorsOnlyInResponse: true` + `output: '{}'` → test **passes** as long as the response has no `errors` field (no value comparison performed).
 - Without this flag + `output: '{}'` → test is marked **SKIPPED** (no comparison done, not a pass).
 
+### OTP fetch failure — two distinct root causes
+
+When a test fails with `RES-SER-422 OTP is invalid`, the debug log tells you which of two problems occurred:
+
+**1. Wrong OTP extracted (regex false match)**
+Symptom: `Extracted OTP=XXXXXX` is logged but the 6 digits are the **tail of the masked ID** (e.g., `489079` from `XXXXXXXX26489079`), not the actual OTP.
+Cause: The `OTP_PATTERN` third alternative `\bOTP\b.*?\b(\d{6})\b` scans lazily after the `OTP` keyword and can latch onto 6 digits at the end of a longer digit sequence if there is no word boundary before them.
+Fix: The pattern in `NotificationListener.java` uses `\b(\d{6})\b` which requires the 6 digits to be a standalone number — already fixed. If this recurs after a commons change, verify the third alternative still has `\b` on both sides.
+
+**2. OTP email not delivered (environment)**
+Symptom: `[POLL LOOP N] No message yet for email=...@mosip.net` repeats until `[POLL TIMEOUT]`. No `[STORE]` log appears for that email at all.
+Cause: The MOSIP notification service sent the SMS OTP but did not relay the email OTP to the mock SMTP WebSocket. This is an intermittent server-side delivery issue, not a code bug.
+Distinguish from case 1: if a `[STORE]` for the email appears with "OTP not found in message", the message arrived but the regex didn't match. If no `[STORE]` appears for that email at all, the message was never delivered.
+
+### OTP channel mismatch in YAML (`sendOtpReqTemplate` vs `otp` field)
+
+For tests that use the `sendOtp` + `validateOtp` nested structure (e.g., `GetChannelVerificationStatus`), the channel used in `sendOtpReqTemplate` **must match** the suffix used in the `otp` lookup key:
+
+| `sendOtpReqTemplate` used | Correct `otp` field value |
+|---|---|
+| `createSendOTPAsEmail` | `$ID:<testCase>_EMAIL$` (polls email queue) |
+| `createSendOTPAsPhone` | `$ID:<testCase>_PHONE$@phone` (polls phone/SMS queue) |
+
+If you use `createSendOTPAsPhone` but set `otp` to an email address, the framework polls `otpQueues` for an email OTP that was never sent — causing a full **180-second timeout** before proceeding with an empty OTP. The test may still pass (depending on `checkErrorsOnlyInResponse`) but wastes the entire OTP expiry window.
+
+Example fix (TC_Resident_GetChannelVerificationStatus_09):
+```yaml
+# Wrong — waits 180s because OTP was sent only to PHONE
+"otp": "$ID:AddIdentity_Positive_PDEA_smoke_EMAIL$"
+
+# Correct — gets OTP from SMS immediately
+"otp": "$ID:AddIdentity_Positive_PDEA_smoke_PHONE$@phone"
+```
+
 Use `checkErrorsOnlyInResponse: true` when the goal is just to confirm the API returns a valid response with no errors, without asserting specific field values.

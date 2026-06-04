@@ -350,7 +350,7 @@ GetChannelVerificationStatus:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:AddIdentity_Positive_PDEA_smoke_UIN$",
-    "otp": "$ID:AddIdentity_Positive_PDEA_smoke_EMAIL$",
+    "otp": "$ID:AddIdentity_Positive_PDEA_smoke_PHONE$@phone",
     "validateOtpReqTemplate": "resident/ValidateOTP/ValidateOTP",
     "validateOtpEndPoint": "/resident/v1/validate-otp"
     }
