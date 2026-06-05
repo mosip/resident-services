@@ -200,7 +200,7 @@ GenerateVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-418"
+      "errorCode": "RES-SER-406"
     }
   ]
 }'
@@ -294,7 +294,7 @@ GenerateVIDNew:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-418"
+      "errorCode": "RES-SER-406"
     }
   ]
 }'

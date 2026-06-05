@@ -91,9 +91,8 @@ public class PostWithBodyWithPdfDownload extends ResidentUtil implements ITest {
 		
 		String inputJson = getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate());
 		inputJson = ResidentUtil.inputstringKeyWordHandeler(inputJson, testCaseName);
-		
-		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(),
-				getJsonFromTemplate(testCaseDTO.getInput(), testCaseDTO.getInputTemplate()), COOKIENAME,
+
+		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, COOKIENAME,
 				testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
 
 		if (handlePdfResponse(response, testCaseDTO)) {

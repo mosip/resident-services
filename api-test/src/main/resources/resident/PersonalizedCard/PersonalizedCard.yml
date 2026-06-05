@@ -11,7 +11,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "$PERSONALIZED_CARD_HTML$",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
        "Content-Type": "application/pdf"
@@ -30,7 +30,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "$PERSONALIZED_CARD_HTML$",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
        "Content-Type": "application/pdf"
@@ -47,7 +47,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "$PERSONALIZED_CARD_HTML$",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
       "errors": [
@@ -69,7 +69,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "$PERSONALIZED_CARD_HTML$",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
        "errors": [
@@ -92,7 +92,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "sfdr$=",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
              "errors": [
@@ -115,7 +115,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
          "errors": [
@@ -138,7 +138,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "sfdr$=",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
           "errors": [
@@ -161,7 +161,7 @@ PersonalizedCard:
       input: '{
        "requesttime": "$TIMESTAMP$",
        "html": "",
-       "attributes": [{attributesVal: "firstName"}, {attributesVal: "dateOfBirth"}, {attributesVal: "email"}]
+       "attributes": [{"attributesVal": "firstName"}, {"attributesVal": "dateOfBirth"}, {"attributesVal": "email"}]
 }'
       output: '{
           "errors": [

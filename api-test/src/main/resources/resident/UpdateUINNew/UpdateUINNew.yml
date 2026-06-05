@@ -1,5 +1,5 @@
 UpdateUINNew:
-   Resident_UpdateUINNew_all_Valid_Smoke_sid:
+   Resident_UpdateUINNew_all_Valid_Smoke:
       endPoint: /resident/v1/update-uin
       uniqueIdentifier: TC_Resident_UpdateUINNew_01      
       description: Update demographic details with all valid details and logged in using UIN     
@@ -20,7 +20,7 @@ UpdateUINNew:
         "status": "Success"
 }'
 
-   Resident_UpdateUINNew_vid_all_Valid_Smoke_sid:
+   Resident_UpdateUINNew_vid_all_Valid_Smoke:
       endPoint: /resident/v1/update-uin
       uniqueIdentifier: TC_Resident_UpdateUINNew_02      
       description: Update demographic details with all valid details and logged in using VID      

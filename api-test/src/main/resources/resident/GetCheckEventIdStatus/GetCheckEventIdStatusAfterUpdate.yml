@@ -8,9 +8,9 @@ GetCheckEventIdStatusAfterUpdate:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
-      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusUpdateNameResult
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
-        "eventId": "$ID:UpdateUINNew_all_Valid_Smoke_sid_eventId$",
+        "eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$",
         "langCode": "$1STLANG$"
 }'
       output: '{
@@ -26,9 +26,9 @@ GetCheckEventIdStatusAfterUpdate:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
-      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusUpdateNameResult
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
-        "eventId": "$ID:UpdateUINNew_vid_all_Valid_Smoke_sid_eventId$",
+        "eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$",
         "langCode": "$1STLANG$"
 }'
       output: '{

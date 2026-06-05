@@ -409,6 +409,7 @@
 	<test name="GetNotificationsCountBeforeOperations">
 		<parameter name="ymlFile"
 			value="resident/GetNotificationsCount/GetNotificationsCountBeforeOperations.yml" />
+		<parameter name="sendEsignetToken" value="true" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.GetWithParam" />
@@ -859,10 +860,9 @@
 		<parameter name="ymlFile"
 			value="resident/UpdateUINNew/UpdateUINNew.yml" />
 		<parameter name="sendEsignetToken" value="true" />
-		<parameter name="idKeyName" value="eventId" />
 		<classes>
 			<class
-				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatchForAutoGenId" />
+				name="io.mosip.testrig.apirig.resident.testscripts.SimplePatch" />
 		</classes>
 	</test>
 	<test name="GetCheckEventIdStatusAfterUpdate">
