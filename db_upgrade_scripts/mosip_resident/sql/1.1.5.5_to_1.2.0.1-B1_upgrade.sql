@@ -1,4 +1,4 @@
-CREATE DATABASE mosip_resident
+CREATE DATABASE :mosipdbname
 	ENCODING = 'UTF8'
 	LC_COLLATE = 'en_US.UTF-8'
 	LC_CTYPE = 'en_US.UTF-8'
@@ -6,31 +6,31 @@ CREATE DATABASE mosip_resident
 	OWNER = postgres
 	TEMPLATE  = template0;
 
-COMMENT ON DATABASE mosip_resident IS 'Resident service database stores all the data related to transactions done in resident services';
+COMMENT ON DATABASE :mosipdbname IS 'Resident service database stores all the data related to transactions done in resident services';
 
-\c mosip_resident
+\c :mosipdbname
 
 DROP SCHEMA IF EXISTS resident CASCADE;
 CREATE SCHEMA resident;
 ALTER SCHEMA resident OWNER TO postgres;
-ALTER DATABASE mosip_resident SET search_path TO resident,pg_catalog,public;
+ALTER DATABASE :mosipdbname SET search_path TO resident,pg_catalog,public;
 
-CREATE ROLE residentuser WITH 
+CREATE ROLE :dbuname WITH
 	INHERIT
 	LOGIN
 	PASSWORD 'dbuserpwd';
 
 GRANT CONNECT
-   ON DATABASE mosip_resident
-   TO residentuser;
+   ON DATABASE :mosipdbname
+   TO :dbuname;
 
 GRANT USAGE
    ON SCHEMA resident
-   TO residentuser;
+   TO :dbuname;
 
 GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES
    ON ALL TABLES IN SCHEMA resident
-   TO residentuser;
+   TO :dbuname;
 
 -- This Table is used to save the OTP for the user whenever user requests for one using the email id / phone number to log into the application.
 CREATE TABLE resident.otp_transaction(
@@ -69,7 +69,7 @@ COMMENT ON COLUMN resident.otp_transaction.del_dtimes IS 'Date and Timestamp whe
 -----------------------------------------------------------------------------------------------------
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.otp_transaction
-   TO residentuser;
+   TO :dbuname;
 
 -- This Table is used to save the  resident_grievance_ticket table values.
 CREATE TABLE resident.resident_grievance_ticket(
@@ -111,7 +111,7 @@ COMMENT ON COLUMN resident.resident_grievance_ticket.del_dtimes IS 'Deleted time
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_grievance_ticket
-   TO residentuser;
+   TO :dbuname;
 
 -- This Table is used to save the  user actions for the user actions table.
 
@@ -135,7 +135,7 @@ COMMENT ON COLUMN resident.resident_session.machine_type IS 'The OS of device us
 
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_session
-   TO residentuser;
+   TO :dbuname;
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
@@ -215,7 +215,7 @@ COMMENT ON COLUMN resident.resident_transaction.credential_request_id IS 'The cr
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_transaction
-   TO residentuser;
+   TO :dbuname;
 
 -- This Table is used to save the  user actions for the user actions table.
 
@@ -231,4 +231,4 @@ COMMENT ON COLUMN resident.resident_user_actions.last_bell_notif_click_dtimes IS
 
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_user_actions
-   TO residentuser;
+   TO :dbuname;
