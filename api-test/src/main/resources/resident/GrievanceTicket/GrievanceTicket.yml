@@ -2,7 +2,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_all_Valid_Smoke:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_01      
-      description: Log Grievance ticket when logged using UIN    
+      description: Verify that the system successfully logs the grievance ticket when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -26,7 +26,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_InvalidUser_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_02      
-      description: Log Grievance ticket when logged using UIN with invalid token 
+      description: Verify that the system returns an error when the API is called with logged using UIN with invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -54,7 +54,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_03      
-      description: Log Grievance ticket when logged in using UIN with invalid token      
+      description: Verify that the system returns an error when the API is called with logged in using UIN with invalid token
       role: invalid
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -76,7 +76,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_StatusCode_Empty_Token_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_04      
-      description: Log Grievance ticket when logged in using UIN without token      
+      description: Verify that the system returns an error when the API is called with logged in using UIN without token
       role: 
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -98,7 +98,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Invalid_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_05      
-      description: Log Grievance ticket when logged in using UIN with invalid EID      
+      description: Verify that the system returns an error when the API is called with logged in using UIN with invalid EID
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -126,7 +126,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Diff_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_06      
-      description: Log Grievance ticket when logged in using UIN with EID taken from other UIN      
+      description: Verify that the system returns an error when the API is called with logged in using UIN with EID taken from other UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -154,7 +154,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Missing_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_07      
-      description: Log Grievance ticket when logged in using UIN without EID value      
+      description: Verify that the system returns an error when the API is called with logged in using UIN without EID value
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -182,7 +182,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Empty_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_08      
-      description: Log Grievance ticket when logged in using UIN with empty EID value      
+      description: Verify that the system returns an error when the API is called with logged in using UIN with empty EID value
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -210,7 +210,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Empty_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_09      
-      description: Log Grievance ticket when logged in using UIN with empty message      
+      description: Verify that the system returns an error when the API is called with logged in using UIN with empty message
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -238,7 +238,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_Missing_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_10      
-      description: Log Grievance ticket when logged in using UIN without message value      
+      description: Verify that the system returns an error when the API is called with logged in using UIN without message value
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -266,7 +266,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_uin_OverRange_Msg_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_11      
-      description: Log Grievance ticket when logged in using UIN with message is given more than limited characters       
+      description: Verify that the system returns an error when the API is called with logged in using UIN with message is given more than limited characters
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -294,7 +294,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_vid_all_Valid_Smoke:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_12      
-      description: Log Grievance ticket when logged in using VID      
+      description: Verify that the system successfully logs the grievance ticket when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -318,7 +318,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_vid_Invalid_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_13      
-      description: Log Grievance ticket when logged in using VID and given invalid EID      
+      description: Verify that the system returns an error when the API is called with logged in using VID and given invalid EID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -346,7 +346,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_vid_Diff_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_14      
-      description: Log Grievance ticket when logged in using VID and given EID belongs to different VID      
+      description: Verify that the system returns an error when the API is called with logged in using VID and given EID belongs to different VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -374,7 +374,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_vid_Missing_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_15      
-      description: Log Grievance ticket when logged in using VID and EID is removed from request      
+      description: Verify that the system returns an error when the API is called with logged in using VID and EID is removed from request
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -402,7 +402,7 @@ GrievanceTicket:
    Resident_GrievanceTicket_vid_Empty_Eid_Neg:
       endPoint: /resident/v1/grievance/ticket
       uniqueIdentifier: TC_Resident_GrievanceTicket_16      
-      description: Log Grievance ticket when logged in using VID and empty value is given for EID      
+      description: Verify that the system returns an error when the API is called with logged in using VID and empty value is given for EID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post

@@ -2,7 +2,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_all_Valid_Smoke:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_01
-      description: Request otp using UIN      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -22,7 +22,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_Invalid_IndividualId_Neg:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_02      
-      description: Request otp using invalid individualID      
+      description: Verify that the system returns an error when the API is called with otp using invalid individualID
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -45,7 +45,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_Empty_IndividualId_Neg:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_03      
-      description: Request otp when individualId value is empty      
+      description: Verify that the system returns an error when the API is called with individualId value is empty
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -68,7 +68,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_04      
-      description: Request otp bu giving invalid transcationId      
+      description: Verify that the system returns an error when the API is called with otp bu giving invalid transcationId
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -91,7 +91,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_Empty_TransactionID_Neg:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_05      
-      description: Request otp when transcationId is empty      
+      description: Verify that the system returns an error when the API is called with transcationId is empty
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp
@@ -114,7 +114,7 @@ ReqAidOtp:
    Resident_ReqAidOtp_Invalid_OtpChannel_Neg:
       endPoint: /resident/v1/individualId/otp
       uniqueIdentifier: TC_Resident_ReqAID_06      
-      description: Request otp with invalid otpChannel      
+      description: Verify that the system returns an error when the API is called with otp with invalid otpChannel
       role: resident
       restMethod: post
       inputTemplate: resident/ReqAidOtp/ReqAidOtp

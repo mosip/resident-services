@@ -2,7 +2,7 @@ UpdateUIN:
    Resident_UpdateUIN_Valid_All_Smoke_Pos_sid:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_01      
-      description: Update UIN with all valid details      
+      description: Verify that the system successfully updates the UIN when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -35,7 +35,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_Otp_Empty_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_02      
-      description: Update UIN when otp is not given      
+      description: Verify that the system returns an error when the API is called with missing OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -73,7 +73,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_Otp_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_03     
-      description: Update UIN when invalid otp is given      
+      description: Verify that the system returns an error when the API is called with invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -111,7 +111,7 @@ UpdateUIN:
    Resident_UpdateUIN_Missing_Otp_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_04      
-      description: Update UIN when otp is removed from request      
+      description: Verify that the system returns an error when the API is called with missing OTP in the request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -149,7 +149,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_TrnxID_Empty_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_05      
-      description: Update UIN when invalid transactionid is given      
+      description: Verify that the system returns an error when the API is called with invalid transaction ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -187,7 +187,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_TrnxID_Mismatch_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_06      
-      description: Update UIN when transactionid is mismatched from Request otp API      
+      description: Verify that the system returns an error when the API is called with mismatched transaction ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -225,7 +225,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_IndividualId_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_07      
-      description: Update UIN when invalid individualid is given      
+      description: Verify that the system returns an error when the API is called with invalid individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -263,7 +263,7 @@ UpdateUIN:
    Resident_UpdateUIN_Missing_IndividualId_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_08      
-      description: Update UIN when individualid is removed from request      
+      description: Verify that the system returns an error when the API is called with missing individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -301,7 +301,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_Id_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_09      
-      description: Update UIN when invalid id is given      
+      description: Verify that the system returns an error when the API is called with invalid id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -339,7 +339,7 @@ UpdateUIN:
    Resident_UpdateUIN_Missing_Id_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_10      
-      description: Update UIN when id is removed from request      
+      description: Verify that the system returns an error when the API is called with missing id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -377,7 +377,7 @@ UpdateUIN:
    Resident_UpdateUIN_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_11      
-      description: Update UIN when timestamp is removed from request      
+      description: Verify that the system returns an error when the API is called with missing timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -415,7 +415,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_Timestamp_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_12      
-      description: Update UIN when invalid timestamp is given      
+      description: Verify that the system returns an error when the API is called with invalid timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -453,7 +453,7 @@ UpdateUIN:
    Resident_UpdateUIN_Invalid_Version_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_13      
-      description: Update UIN when invalid version is given      
+      description: Verify that the system returns an error when the API is called with invalid version
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -491,7 +491,7 @@ UpdateUIN:
    Resident_UpdateUIN_Missing_Version_Neg:
       endPoint: /resident/v1/req/update-uin
       uniqueIdentifier: TC_Resident_UpdateUIN_14      
-      description: Update UIN when version is removed from request      
+      description: Verify that the system returns an error when the API is called with missing version      
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

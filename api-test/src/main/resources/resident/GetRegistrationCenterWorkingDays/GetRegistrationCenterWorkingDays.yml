@@ -2,7 +2,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_allValid_smoke:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_GetRegistrationCenterWorkingDays_01      
-      description: Get Registartion centre working days with all valid values in input parameters    
+      description: Verify that the system successfully returns the registartion centre working days with all valid values in input parameters when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -18,7 +18,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_Invalid_langCode:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_GetRegistrationCenterWorkingDays_02      
-      description: Get Registartion centre working days when invalid language code is given  in input parametrs  
+      description: Verify that the system returns an error when the API is called with invalid language code is given in input parametrs
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -39,7 +39,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_Invalid_registrationCenterID:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_GetRegistrationCenterWorkingDays_03      
-      description: Get Registartion centre working days when invalid registartion centre id is given in input parameters     
+      description: Verify that the system returns an error when the API is called with invalid registartion centre id is given in input parameters
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -60,7 +60,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_Invalid_langCode_registrationCenterID:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_RegistrationCenterWorkingDays_04      
-      description: Get Registartion centre working days when invalid registartion centre id and invalid language code is given in input parameters      
+      description: Verify that the system returns an error when the API is called with invalid registartion centre id and invalid language code is given in input parameters
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -81,7 +81,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_StatusCode_Empty_registrationCenterID_Neg:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_GetRegistrationCenterWorkingDays_05      
-      description: Get Registartion centre working days when registartion centre id is not given in input parameters      
+      description: Verify that the system returns an error when the API is called with registartion centre id is not given in input parameters
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -96,7 +96,7 @@ GetRegistrationCenterWorkingDays:
    Resident_GetRegistrationCenterWorkingDays_StatusCode_Empty_langCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}
       uniqueIdentifier: TC_Resident_GetRegistrationCenterWorkingDays_06      
-      description: Get Registartion centre working days when language code is not given in input parameters      
+      description: Verify that the system returns an error when the API is called with language code is not given in input parameters
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

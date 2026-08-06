@@ -2,7 +2,7 @@ GetImmediateChildrenByLocCodeAndLangCode:
    Resident_GetImmediateChildrenByLocCodeAndLangCode_allValid_smoke:
       endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
       uniqueIdentifier: TC_Resident_GetImmediateChildren_01      
-      description: Get immediate children by location code and language code using all valid inputs
+      description: Verify that the system successfully returns the immediate children by location code and language code when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -18,7 +18,7 @@ GetImmediateChildrenByLocCodeAndLangCode:
    Resident_GetImmediateChildrenByLocCodeAndLangCode_Invalid_locationCode:
       endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
       uniqueIdentifier: TC_Resident_GetImmediateChildren_02      
-      description: Get immediate children by location code and language code using an invalid location code
+      description: Verify that the system returns an error when the API is called with an invalid location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -39,7 +39,7 @@ GetImmediateChildrenByLocCodeAndLangCode:
    Resident_GetImmediateChildrenByLocCodeAndLangCode_Invalid_langCode:
       endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
       uniqueIdentifier: TC_Resident_GetImmediateChildren_03      
-      description: Get immediate children by location code and language code using an invalid language code
+      description: Verify that the system returns an error when the API is called with an invalid language code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -60,7 +60,7 @@ GetImmediateChildrenByLocCodeAndLangCode:
    Resident_GetImmediateChildrenByLocCodeAndLangCode_StatusCode_Empty_locationCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
       uniqueIdentifier: TC_Resident_GetImmediateChildren_04      
-      description: Get immediate children by location code and language code using an empty location code
+      description: Verify that the system returns an error when the API is called with an empty location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -75,6 +75,7 @@ GetImmediateChildrenByLocCodeAndLangCode:
    Resident_GetImmediateChildrenByLocCodeAndLangCode_StatusCode_Empty_langCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/immediatechildren/{locationCode}/{langCode}
       uniqueIdentifier: TC_Resident_GetImmediateChildren_05      
+      description: Verify that the system returns an error when the API is called with an empty language code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

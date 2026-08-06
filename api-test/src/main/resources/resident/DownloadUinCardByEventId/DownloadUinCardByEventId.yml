@@ -2,7 +2,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_01
-      description: Download UIN card by eventId using a valid UIN with all valid inputs
+      description: Verify that the system successfully returns the UIN card PDF when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -19,7 +19,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_02
-      description: Download UIN card by eventId using a valid VID with all valid inputs
+      description: Verify that the system successfully returns the UIN card PDF when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -35,7 +35,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_uin_Invalid_EventId_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_03
-      description: Download UIN card by eventId using a valid UIN with an invalid eventId
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid eventId
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -55,7 +55,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_vid_Invalid_EventId_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_04
-      description: Download UIN card by eventId using a valid VID with an invalid eventId
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid eventId
       role: residentNewVid
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -75,7 +75,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_uin_Without_Token_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_05
-      description: Download UIN card by eventId using a valid UIN without token
+      description: Verify that the system returns an error when the API is called with a valid UIN without token
       role:
       validityCheckRequired: true
       restMethod: get
@@ -95,7 +95,7 @@ DownloadUinCardByEventId:
    Resident_DownloadUinCardByEventId_uin_Diff_User_Neg:
       endPoint: /resident/v1/download-card/event/{eventId}
       uniqueIdentifier: TC_Resident_DownloadUinCardByEventId_06
-      description: Download UIN card by eventId using a valid UIN with different user
+      description: Verify that the system returns an error when the API is called with a valid UIN and different user
       role: resident
       validityCheckRequired: true
       restMethod: get

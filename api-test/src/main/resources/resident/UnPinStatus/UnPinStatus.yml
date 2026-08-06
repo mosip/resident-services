@@ -2,7 +2,7 @@ UnPinStatus:
    Resident_UnPinStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/unpinned/{eventId}
       uniqueIdentifier: TC_Resident_UnpinStatus_01      
-      description: Unpin status for given eventid when logged using UIN     
+      description: Verify that the system successfully unpins the status for the event when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -18,7 +18,7 @@ UnPinStatus:
    Resident_UnPinStatus_vid_all_Valid_Smoke:
       endPoint: /resident/v1/unpinned/{eventId}
       uniqueIdentifier: TC_Resident_UnpinStatus_02      
-      description: Unpin status for given eventid when logged using VID      
+      description: Verify that the system successfully unpins the status for the event when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -34,7 +34,7 @@ UnPinStatus:
    Resident_UnPinStatus_uin_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
       uniqueIdentifier: TC_Resident_UnpinStatus_03      
-      description: Unpin status for invalid eventid when logged using UIN    
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid event ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -54,7 +54,7 @@ UnPinStatus:
    Resident_UnPinStatus_vid_Invalid_Input_Neg:
       endPoint: /resident/v1/pinned/{eventId}
       uniqueIdentifier: TC_Resident_UnpinStatus_04      
-      description: Unpin status for invalid eventid when logged using VID       
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid event ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -74,7 +74,7 @@ UnPinStatus:
    Resident_UnPinStatus_uin_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/pinned/{eventId}
       uniqueIdentifier: TC_Resident_UnpinStatus_05      
-      description: Unpin status for eventid when logged using UIN with invalid token     
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid token
       role: invalid
       validityCheckRequired: true
       restMethod: post

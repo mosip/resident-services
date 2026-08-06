@@ -2,7 +2,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_uin_all_Valid_Smoke:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_01      
-      description: Download personalized card when logged in using UIN      
+      description: Verify that the system successfully returns the personalized card PDF when the API is called with valid input details and a valid UIN
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -20,7 +20,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_02    
-      description: Download personalized card when logged in using VID      
+      description: Verify that the system successfully returns the personalized card PDF when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -39,7 +39,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_Empty_Access_Token_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_03    
-      description: Download personalized card when access token is empty      
+      description: Verify that the system returns an error when the API is called with empty access token
       role:
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -61,7 +61,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_Invalid_Access_Token_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_04      
-      description: Download personalized card using invalid access token      
+      description: Verify that the system returns an error when the API is called with invalid access token
       role: resident
       restMethod: post
       inputTemplate: resident/PersonalizedCard/PersonalizedCard
@@ -83,7 +83,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_uin_Invalid_Html_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_05      
-      description: Download personalized card when logged in using UIN and invalid html is given in request   
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid html
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -106,7 +106,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_uin_Empty_Html_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_06      
-      description: Download personalized card when logged in using UIN and empty html is given in request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty html
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -129,7 +129,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_vid_Invalid_Html_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_07      
-      description: Download personalized card when logged in using VID and invalid html is given in request      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid html
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -152,7 +152,7 @@ PersonalizedCard:
    Resident_PersonalizedCard_vid_Empty_Html_Neg:
       endPoint: /resident/v1/download/personalized-card
       uniqueIdentifier: TC_Resident_PersonalizesCard_08      
-      description: Download personalized card when logged in using VID and empty html is given in request      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty html      
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post

@@ -2,7 +2,7 @@ UploadDocument:
    Resident_UploadDocument_uin_all_Valid_Smoke_sid:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_01
-      description: Upload the document using a valid UIN with all valid inputs
+      description: Verify that the system successfully uploads the document when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -28,7 +28,7 @@ UploadDocument:
    Resident_UploadDocument_vid_all_Valid_Smoke_sid:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_02
-      description: Upload the document using a valid VID with all valid inputs
+      description: Verify that the system successfully uploads the document when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -54,7 +54,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Large_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_03
-      description: Upload the document using a valid UIN with large file
+      description: Verify that the system returns an error when the API is called with a valid UIN and large file
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -80,7 +80,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Invalid_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_04
-      description: Upload the document using a valid UIN with an invalid file
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid file
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -106,7 +106,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Empty_docTypCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_05
-      description: Upload the document using a valid UIN with an empty docTypeCode
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty docTypCode
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -132,7 +132,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Blank_DoccatCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_06
-      description: Upload the document using a valid UIN with blank doccatCode
+      description: Verify that the system returns an error when the API is called with a valid UIN and blank docCatCode
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -159,7 +159,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Invalid_LangCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_07
-      description: Upload the document using a valid UIN with an invalid langCode
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid langCode
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -186,7 +186,7 @@ UploadDocument:
    Resident_UploadDocument_uin_Empty_langCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_08
-      description: Upload the document using a valid UIN with an empty langCode
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty langCode
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -213,7 +213,7 @@ UploadDocument:
    Resident_UploadDocument_Invalid_Token:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_09
-      description: Upload the document using an invalid token
+      description: Verify that the system returns an error when the API is called with invalid token
       role: null
       restMethod: post
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
@@ -239,7 +239,7 @@ UploadDocument:
    Resident_UploadDocument_StatusCode_Empty_Token:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_10
-      description: Upload the document with an empty token and check statusCode
+      description: Verify that the system returns an error when the API is called with empty token
       role: 
       restMethod: post
       inputTemplate: resident/DocumentController/UploadDocument/UploadDocument
@@ -258,7 +258,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Large_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_11
-      description: Upload the document using a valid VID with large file
+      description: Verify that the system returns an error when the API is called with a valid VID and large file
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -284,7 +284,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Invalid_File_Neg:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_12
-      description: Upload the document using a valid VID with an invalid file
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid file
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -310,7 +310,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Empty_docTypCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_13
-      description: Upload the document using a valid VID with an empty docTypCode
+      description: Verify that the system returns an error when the API is called with a valid VID and empty docTypCode
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -337,7 +337,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Blank_DoccatCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_14
-      description: Upload the document using a valid VID with blank DoccatCode
+      description: Verify that the system returns an error when the API is called with a valid VID and blank docCatCode
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -364,7 +364,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Invalid_LangCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_15
-      description: Upload the document using a valid VID with an invalid langCode
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid langCode
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -391,7 +391,7 @@ UploadDocument:
    Resident_UploadDocument_vid_Empty_langCode:
       endPoint: /resident/v1/documents/{transactionId}?docCatCode={docCatCode}&docTypCode={docTypCode}&langCode={langCode}&referenceId={referenceId}
       uniqueIdentifier: TC_Resident_UploadDocument_16
-      description: Upload the document using a valid VID with an empty langCode
+      description: Verify that the system returns an error when the API is called with a valid VID and empty langCode
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02

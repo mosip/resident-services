@@ -2,7 +2,7 @@ PutBellUpdatedTime:
    Resident_PutBellUpdatedTime_uin_StatusCode_all_Valid_Smoke:
       endPoint: /resident/v1/bell/updatedttime
       uniqueIdentifier: TC_Resident_BellUpdatedTime_01      
-      description: Bell updated time when logged in using UIN      
+      description: Verify that the system successfully updates the bell notification time when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -16,7 +16,7 @@ PutBellUpdatedTime:
    Resident_PutBellUpdatedTime_vid_StatusCode_all_Valid_Smoke:
       endPoint: /resident/v1/bell/updatedttime
       uniqueIdentifier: TC_Resident_BellUpdatedTime_02      
-      description: Bell updated time when logged in using VID      
+      description: Verify that the system successfully updates the bell notification time when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -30,7 +30,7 @@ PutBellUpdatedTime:
    Resident_PutBellUpdatedTime_Invalid_Token:
       endPoint: /resident/v1/bell/updatedttime
       uniqueIdentifier: TC_Resident_BellUpdatedTime_03      
-      description: Bell updated time when invalid token is given to login      
+      description: Verify that the system returns an error when the API is called with invalid token is given to login
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: put

@@ -2,7 +2,7 @@ GetPendingDrafts:
    Resident_GetPendingDrafts_Valid_langCode_eng_Smoke:
       endPoint: /resident/v1/identity/get-pending-drafts/{langcode}
       uniqueIdentifier: TC_Resident_GetPendingDrafts_01
-      description: Get Pending drafts list with valid data
+      description: Verify that the system successfully returns the pending drafts list when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -17,7 +17,7 @@ GetPendingDrafts:
    Resident_GetPendingDrafts__Invalid_langCode_eng_Smoke_Neg:
       endPoint: /resident/v1/identity/get-pending-drafts/{langcode}
       uniqueIdentifier: TC_Resident_GetPendingDrafts_02
-      description: Get Pending drafts list with invalid langCode
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid langCode
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01

@@ -2,7 +2,7 @@ AuthorizationCode:
    Resident_ESignet_AuthorizationCode_uin_All_Valid_Smoke_sid:
       endPoint: /v1/esignet/authorization/auth-code
       uniqueIdentifier: Dependent_ESignet_AuthorizationCode_01
-      description: Generate the ESignet authorization code using UIN with valid inputs
+      description: Verify that the system successfully generates the ESignet authorization code when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -23,7 +23,7 @@ AuthorizationCode:
    Resident_ESignet_AuthorizationCode_Vid_All_Valid_Smoke_sid:
       endPoint: /v1/esignet/authorization/auth-code
       uniqueIdentifier: Dependent_ESignet_AuthorizationCode_02
-      description: Generate the ESignet authorization code using VID with valid inputs
+      description: Verify that the system successfully generates the ESignet authorization code when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true

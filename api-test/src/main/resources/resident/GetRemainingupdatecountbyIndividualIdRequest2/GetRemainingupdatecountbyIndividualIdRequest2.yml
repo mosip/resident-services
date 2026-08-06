@@ -2,7 +2,7 @@ GetRemainingupdatecountbyIndividualIdRequest2:
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_uin_Valid_Smoke:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
       uniqueIdentifier: TC_Resident_GetRemainingupdatecount_05      
-      description: Get remaining update count for UIN       
+      description: Verify that the system successfully processes the update request when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -20,7 +20,7 @@ GetRemainingupdatecountbyIndividualIdRequest2:
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_vid_Valid_Smoke:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
       uniqueIdentifier: TC_Resident_GetRemainingupdatecount_06      
-      description: Get remaining update count for VID      
+      description: Verify that the system successfully processes the update request when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -38,7 +38,7 @@ GetRemainingupdatecountbyIndividualIdRequest2:
    Resident_GetRemainingupdatecountbyIndividualIdRequest2_Invalid_Token:
       endPoint: /resident/v1/identity/update-count?filter_attribute_list={filter_attribute_list}
       uniqueIdentifier: TC_Resident_GetRemainingupdatecount_07      
-      description: Get remaining update count when invalid token is used      
+      description: Verify that the system returns an error when the API is called with invalid token is used
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

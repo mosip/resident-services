@@ -2,7 +2,7 @@ AuditLogValidation:
    Resident_AuditLogValidation_All_Valid_Smoke:
       endPoint: SELECT COUNT(*) FROM audit.app_audit_log
       uniqueIdentifier: TC_Resident_AuditLogValidation_01
-      description: Get the AuditLogs details from database
+      description: Verify that the system successfully returns the audit log count when the API is called with valid input details from the database
       role: audit
       restMethod: post
       inputTemplate: resident/AuditLogValidation/AuditLogValidation

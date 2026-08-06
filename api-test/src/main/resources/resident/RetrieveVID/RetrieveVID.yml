@@ -2,7 +2,7 @@ RetrieveVID:
    Resident_RetrieveVID_uin_all_Valid_Smoke:
       endPoint: /resident/v1/vids
       uniqueIdentifier: TC_Resident_RetrieveVid_01      
-      description: Retrieve VIDs when logged using UIN      
+      description: Verify that the system successfully retrieves the VIDs when the API is called with valid input details and a valid UIN
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       checkErrorsOnlyInResponse: true
@@ -18,7 +18,7 @@ RetrieveVID:
    Resident_RetrieveVID_Vid_all_Valid_Smoke:
       endPoint: /resident/v1/vids
       uniqueIdentifier: TC_Resident_RetrieveVid_02      
-      description: Retrieve VIDs when logged using VID      
+      description: Verify that the system successfully retrieves the VIDs when the API is called with valid input details and a valid VID
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       checkErrorsOnlyInResponse: true
@@ -33,7 +33,7 @@ RetrieveVID:
    Resident_RetrieveVID_Invalid_Token_Neg:
       endPoint: /resident/v1/vids
       uniqueIdentifier: TC_Resident_RetrieveVid_03      
-      description: Retrieve VIDs when invalid token is used      
+      description: Verify that the system returns an error when the API is called with invalid token is used
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

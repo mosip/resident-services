@@ -2,7 +2,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_0_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_01      
-      description: Get order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the order status when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -17,7 +17,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_1_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_02      
-      description: Get 1st order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the 1st order status using uin with valid transactionid when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -32,7 +32,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_2_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_03      
-      description: Get 2nd order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the 2nd order status using uin with valid transactionid when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -47,7 +47,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_3_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_04      
-      description: Get 3rd order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the 3rd order status using uin with valid transactionid when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -62,7 +62,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_4_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_05      
-      description: Get 4th order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the 4th order status using uin with valid transactionid when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -77,7 +77,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_5_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_06      
-      description: Get 5th order status using UIN with valid transactionId
+      description: Verify that the system successfully returns the 5th order status using uin with valid transactionid when the API is called with valid input details and a valid UIN
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -92,7 +92,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_6_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_07      
-      description: Get 6th order status using UIN with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 6th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -111,7 +111,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_7_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_08      
-      description: Get 7th order status using UIN with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 7th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -130,7 +130,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_8_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_09      
-      description: Get 8th order status using UIN with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 8th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -149,7 +149,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_9_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_10      
-      description: Get 9th order status using UIN with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 9th order status using UIN with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -169,7 +169,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_0_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_11      
-      description: Get order status using VID with valid transactionId
+      description: Verify that the system successfully returns the order status when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -184,7 +184,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_1_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_12      
-      description: Get 1st order status using VID with valid transactionId
+      description: Verify that the system successfully returns the 1st order status using vid with valid transactionid when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -199,7 +199,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_2_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_13      
-      description: Get 2nd order status using VID with valid transactionId
+      description: Verify that the system successfully returns the 2nd order status using vid with valid transactionid when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -214,7 +214,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_3_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_14      
-      description: Get 3rd order status using VID with valid transactionId
+      description: Verify that the system successfully returns the 3rd order status using vid with valid transactionid when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -229,7 +229,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_4_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_15      
-      description: Get 4th order status using VID with valid transactionId
+      description: Verify that the system successfully returns the 4th order status using vid with valid transactionid when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -244,7 +244,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_5_Valid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_16      
-      description: Get 5th order status using VID with valid transactionId
+      description: Verify that the system successfully returns the 5th order status using vid with valid transactionid when the API is called with valid input details and a valid VID
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -259,7 +259,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_6_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_17      
-      description: Get 6th order status using VID with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 6th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -278,7 +278,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_7_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_18
-      description: Get 7th order status using VID with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 7th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -297,7 +297,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_8_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_19      
-      description: Get 8th order status using VID with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 8th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus
@@ -316,7 +316,7 @@ GetOrderStatus:
    Resident_GetOrderStatus_Vid_9_Invalid_TransactionID_Smoke:
       endPoint: /resident/v1/mock/print-partner/check-order-status?transactionId={transactionId}&individualId={individualId}
       uniqueIdentifier: TC_Resident_GetOrderStatus_20      
-      description: Get 9th order status using VID with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with 9th order status using VID with an invalid transactionId
       role: resident
       restMethod: get
       inputTemplate: resident/GetOrderStatus/GetOrderStatus

@@ -2,7 +2,7 @@ ReGenerateVID:
    Resident_ReGenerateVID_All_Valid_Smoke_Perpetual_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_ReGenerateVID_01
-      description: Regenerate perpetual VID using all valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -34,7 +34,7 @@ ReGenerateVID:
    Resident_ReGenerateVID_All_Valid_Smoke_Temp_VID_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_ReGenerateVID_02
-      description: Regenerate temporary VID using all valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

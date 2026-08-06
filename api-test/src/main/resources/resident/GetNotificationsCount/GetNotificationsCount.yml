@@ -2,7 +2,7 @@ GetNotificationsCount:
    Resident_GetNotificationsCount_vid_all_Valid_Smoke:
       endPoint: /resident/v1/unread/notification-count
       uniqueIdentifier: TC_Resident_GetNotificationCount_01      
-      description: Get notifications count of VID using all valid inputs
+      description: Verify that the system successfully returns the notifications count when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -18,7 +18,7 @@ GetNotificationsCount:
    Resident_GetNotificationsCount_uin_all_Valid_Smoke:
       endPoint: /resident/v1/unread/notification-count
       uniqueIdentifier: TC_Resident_GetNotificationCount_02      
-      description: Get notifications count of UIN using all valid inputs
+      description: Verify that the system successfully returns the notifications count when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -34,7 +34,7 @@ GetNotificationsCount:
    Resident_GetNotificationsCount_uin_InvalidToken_Neg:
       endPoint: /resident/v1/unread/notification-count
       uniqueIdentifier: TC_Resident_GetNotificationCount_03      
-      description: Get notifications count of VID using an invalid token
+      description: Verify that the system returns an error when the API is called with notifications count of VID using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -54,7 +54,7 @@ GetNotificationsCount:
    Resident_GetNotificationsCount_vid_InvalidToken_Neg:
       endPoint: /resident/v1/unread/notification-count
       uniqueIdentifier: TC_Resident_GetNotificationCount_04      
-      description: Get notifications count of VID using an invalid token
+      description: Verify that the system returns an error when the API is called with notifications count of VID using an invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

@@ -2,7 +2,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_Invalid_User_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_01      
-      description: Request otp to given userid when invalid token is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid token
       role: resident
       restMethod: post
       inputTemplate: resident/SendOtpToUserId/SendOtpToUserId
@@ -23,7 +23,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_02      
-      description: Request otp to given userid when invalid requesttime is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid request time
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -46,7 +46,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Missing_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_03      
-      description: Request otp to given userid when requesttime is removed from request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing request time
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -69,7 +69,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Null_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_04      
-      description: Request otp to given userid when requesttime value is given as null      
+      description: Verify that the system returns an error when the API is called with a valid UIN and null request time
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -93,7 +93,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_05      
-      description: Request otp when invalid userid is given      
+      description: Verify that the system returns an error when the API is called with invalid user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -116,7 +116,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_06      
-      description: Request otp when userid value is given empty      
+      description: Verify that the system returns an error when the API is called with empty user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -139,7 +139,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_07      
-      description: Request otp when only spaces is given as userid value      
+      description: Verify that the system returns an error when the API is called with user ID containing only spaces
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -162,7 +162,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_08      
-      description: Request otp when userid is removed in request      
+      description: Verify that the system returns an error when the API is called with missing user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -185,7 +185,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_09      
-      description: Request otp when null value is given for userid      
+      description: Verify that the system returns an error when the API is called with null user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -209,7 +209,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_10      
-      description: Request otp to given userid when invalid transactionid is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -232,7 +232,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_11      
-      description: Request otp to given userid when empty transactionid is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -255,7 +255,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_SpaceVal_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_12      
-      description: Request otp to given userid when only spaces id given as transactionid      
+      description: Verify that the system returns an error when the API is called with a valid UIN and transaction ID containing only spaces
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -278,7 +278,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_13      
-      description: Request otp to given userid when transactionid is removed in request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -301,7 +301,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_14      
-      description: Request otp to given userid when logged in using UIN      
+      description: Verify that the system successfully sends the OTP to the user ID when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -319,7 +319,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_15      
-      description: Request otp to given userid when invalid requesttime is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid request time
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -342,7 +342,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_16      
-      description: Request otp to given userid when is requesttime is removed from request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing request time
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -365,7 +365,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Null_Requesttime_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_17      
-      description: Request otp to given userid when request time given as null and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and null request time
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -389,7 +389,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_18      
-      description: Request otp to invalid userid when logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -412,7 +412,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_19      
-      description: Request otp when userid value is given empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -435,7 +435,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_20      
-      description: Request otp when userid value is given with only spaces and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and user ID containing only spaces
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -458,7 +458,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_21      
-      description: Request otp when userid is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -481,7 +481,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_22      
-      description: Request otp when userid value is given null and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and null user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -505,7 +505,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_23      
-      description: Request otp to given userid when invalid transactionid is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -528,7 +528,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_24      
-      description: Request otp to given userid when transactionid is given empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -551,7 +551,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_SpaceVal_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_25      
-      description: Request otp to given userid when only spaces given as transactionid and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and transaction ID containing only spaces
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -574,7 +574,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_26      
-      description: Request otp to given userid when transactionid is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -597,7 +597,7 @@ SendOtpToUserId:
    Resident_SendOtpToUserId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotptoUserID_27      
-      description: Request otp to given userid and logged in using VID     
+      description: Verify that the system successfully sends the OTP to the user ID when the API is called with valid input details and a valid VID     
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02

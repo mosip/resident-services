@@ -2,7 +2,7 @@ AuthHistory:
    Resident_AuthHistory_With_UIN_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_01
-      description: Retrieve authentication history based on residents UIN
+      description: Verify that the system successfully returns the authentication history when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -33,7 +33,7 @@ AuthHistory:
    Resident_AuthHistory_With_VID_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_02
-      description: Retrieve authentication history based on residents VID
+      description: Verify that the system successfully returns the authentication history when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -64,7 +64,7 @@ AuthHistory:
    Resident_AuthHistory_InValid_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_03
-      description: Retrieve the authentication history using invalid UIN
+      description: Verify that the system returns an error when the API is called with invalid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -100,7 +100,7 @@ AuthHistory:
    Resident_AuthHistory_missing_UIN_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_04
-      description: Retrieve the authentication history by missing UIN
+      description: Verify that the system returns an error when the API is called with missing UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -137,7 +137,7 @@ AuthHistory:
    Resident_AuthHistory_Missing_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_05
-      description: Retrieve the authentication history by missing OTP parameter
+      description: Verify that the system returns an error when the API is called with missing OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -173,7 +173,7 @@ AuthHistory:
    Resident_AuthHistory_TransactionMismatch_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_06
-      description: Retrieve the authentication history by transaction mismatch
+      description: Verify that the system returns an error when the API is called with transaction mismatch
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -209,7 +209,7 @@ AuthHistory:
    Resident_AuthHistory_Invalid_Id_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_07
-      description: Retrieve the authentication history using an invalid ID parameter
+      description: Verify that the system returns an error when the API is called with invalid ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -245,7 +245,7 @@ AuthHistory:
    Resident_AuthHistory_Missing_Id_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_08
-      description: Retrieve the authentication history using missing ID parameter
+      description: Verify that the system returns an error when the API is called with missing ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -281,7 +281,7 @@ AuthHistory:
    Resident_AuthHistory_InValid_version_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_09
-      description: Retrieve the authentication history using invalid version parameter
+      description: Verify that the system returns an error when the API is called with invalid version
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -317,7 +317,7 @@ AuthHistory:
    Resident_AuthHistory_Missing_version_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_10
-      description: Retrieve the authentication history with missing version
+      description: Verify that the system returns an error when the API is called with missing version
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -353,7 +353,7 @@ AuthHistory:
    Resident_AuthHistory_Invalid_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_11
-      description: Retrieve the authentication history using invalid timestamp
+      description: Verify that the system returns an error when the API is called with invalid timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -389,7 +389,7 @@ AuthHistory:
    Resident_AuthHistory_Missing_Timestamp_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_12
-      description: Retrieve the authentication history with missing timestamp
+      description: Verify that the system returns an error when the API is called with missing timestamp
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -426,7 +426,7 @@ AuthHistory:
    Resident_AuthHistory_InValid_OTP_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_13
-      description: Retrieve the authentication history using invalid OTP
+      description: Verify that the system returns an error when the API is called with invalid OTP
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -463,7 +463,7 @@ AuthHistory:
    Resident_AuthHistory_With_UIN_Phone_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_14
-      description: Retrieve the authentication history with UIN via phone
+      description: Verify that the system successfully returns the authentication history when the API is called with valid input details and a valid UIN via phone
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -495,7 +495,7 @@ AuthHistory:
    Resident_AuthHistory_With_UIN_Email_smoke_Pos:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_15
-      description: Retrieve the authentication history with UIN via email
+      description: Verify that the system successfully returns the authentication history when the API is called with valid input details and a valid UIN via email
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -526,7 +526,7 @@ AuthHistory:
    Resident_AuthHistory_With_UIN_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/req/auth-history
       uniqueIdentifier: TC_Resident_AuthHistory_16
-      description: Retrieve the authentication history with UIN using an empty channel
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

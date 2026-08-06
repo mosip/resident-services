@@ -2,7 +2,7 @@ createSendOTP:
    Resident_SendOTP_All_Valid_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_01      
-      description: Request otp using UIN      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

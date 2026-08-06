@@ -2,7 +2,7 @@ AuditLog:
    Resident_AuditLog_StatusCode_uin_all_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/audit/log
       uniqueIdentifier: TC_Resident_AuditLog_01
-      description: Audit log correctly returns the status codes for all operations performed on a resident when a valid UIN is provided
+      description: Verify that the system successfully returns the audit log status code when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -31,7 +31,7 @@ AuditLog:
    Resident_AuditLog_StatusCode_vid_all_Valid_Smoke:
       endPoint: /resident/v1/auth-proxy/audit/log
       uniqueIdentifier: TC_Resident_AuditLog_02
-      description: Audit log correctly returns the status codes for all operations performed on a resident when a valid VID is provided
+      description: Verify that the system successfully returns the audit log status code when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post

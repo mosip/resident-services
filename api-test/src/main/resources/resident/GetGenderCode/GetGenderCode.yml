@@ -2,7 +2,7 @@ GetGenderCode:
    Resident_GetGenderCode_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
       uniqueIdentifier: TC_Resident_GetGenderCode_01      
-      description: Get gendercode using all valid inputs
+      description: Verify that the system successfully returns gender code when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -18,7 +18,7 @@ GetGenderCode:
    Resident_GetGenderCode1_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
       uniqueIdentifier: TC_Resident_GetGenderCode_02      
-      description: Get one gendercode using all valid inputs
+      description: Verify that the system successfully returns gender code for female gender type when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -34,7 +34,7 @@ GetGenderCode:
    Resident_GetGenderCode2_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
       uniqueIdentifier: TC_Resident_GetGenderCode_03      
-      description: Get another gendercode using all valid inputs
+      description: Verify that the system successfully returns gender code for others gender type when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -50,7 +50,7 @@ GetGenderCode:
    Resident_GetGenderCode_Invalid_GenderType_Neg:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
       uniqueIdentifier: TC_Resident_GetGenderCode_04      
-      description: Get gendercode using an invalid gendertype
+      description: Verify that the system returns an error when the API is called with an invalid gender type
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -72,7 +72,7 @@ GetGenderCode:
    Resident_GetGenderCode_Invalid_langCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/gendercode/{gendertype}/{langcode}
       uniqueIdentifier: TC_Resident_GetGenderCode_05      
-      description: Get gendercode using an invalid langcode
+      description: Verify that the system returns an error when the API is called with an invalid language code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

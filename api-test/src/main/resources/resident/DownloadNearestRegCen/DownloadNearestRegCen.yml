@@ -2,7 +2,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_allValid_smoke:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_01
-      description: Download nearest registration center using all valid inputs
+      description: Verify that the system successfully returns the nearest registration centers PDF when the API is called with valid input details
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
@@ -20,7 +20,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_02
-      description: Download nearest registration center using an invalid langcode
+      description: Verify that the system returns an error when the API is called with invalid langcode
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
@@ -42,7 +42,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_Invalid_Latitude_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_03
-      description: Download nearest registration center using an invalid latitude
+      description: Verify that the system returns an error when the API is called with invalid latitude
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
@@ -64,7 +64,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_Invalid_Proximitydistance_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_04
-      description: Download nearest registration center using an invalid proximitydistance
+      description: Verify that the system returns an error when the API is called with invalid proximitydistance
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
@@ -86,7 +86,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_Invalid_Longitude_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_05
-      description: Download nearest registration center using an invalid longitude
+      description: Verify that the system returns an error when the API is called with invalid longitude
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
@@ -108,7 +108,7 @@ DownloadNearestRegCen:
    Resident_DownloadNearestRegCen_Invalid_All_Inputs_Neg:
       endPoint: /resident/v1/download/nearestRegistrationcenters
       uniqueIdentifier: TC_Resident_DownloadNearestRegCen_06
-      description: Download nearest registration center using all invalid inputs
+      description: Verify that the system returns an error when the API is called with all invalid inputs
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen

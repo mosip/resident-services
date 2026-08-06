@@ -2,7 +2,7 @@ GetCheckEventIdStatusAfterUpdate:
    Resident_GetCheckEventIdStatus_uin_UpdateName_Smoke:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_08
-      description: Get event status for update-name operation using UIN - response should include download card link
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details, update-name operation and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -20,7 +20,7 @@ GetCheckEventIdStatusAfterUpdate:
    Resident_GetCheckEventIdStatus_vid_UpdateName_Smoke:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_09
-      description: Get event status for update-name operation using VID - response should include download card link
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details, update-name operation and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get

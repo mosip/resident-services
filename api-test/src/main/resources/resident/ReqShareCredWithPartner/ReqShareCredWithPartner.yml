@@ -2,7 +2,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_all_Valid_Smoke:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_01      
-      description: Request credential to share with partner      
+      description: Verify that the system successfully processes the credential share request when the API is called with valid input details
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -25,7 +25,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_Invalid__AccessToken_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_02      
-      description: Request credential to share with partner with invalid token      
+      description: Verify that the system returns an error when the API is called with credential to share with partner with invalid token
       role: resident
       restMethod: post
       inputTemplate: resident/ReqShareCredWithPartner/ReqShareCredWithPartner
@@ -50,7 +50,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_Empty_Purpose_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_03      
-      description: Request credential to share with partner when logged in using UIN and purpose is empty      
+      description: Verify that the system returns an error when the API is called with logged in using UIN and purpose is empty
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -78,7 +78,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_Invalid_Space_Purpose_Pos:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_04      
-      description: Request credential to share with partner when logged in using UIN and purpose is given with only spaces    
+      description: Verify that the system returns an error when the API is called with logged in using UIN and purpose is given with only spaces
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -100,7 +100,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_AlphaNumeric_Value_Purpose_Pos:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_05      
-      description: Request credential to share with partner when logged in using UIN and purpose is given as alphanumeric values      
+      description: Verify that the system successfully processes the credential share request when the API is called with valid input details and a valid UIN
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -121,7 +121,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_Invalid_Purpose_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_06      
-      description: Request credential to share with partner when logged in using UIN and purpose is given with invalid value      
+      description: Verify that the system returns an error when the API is called with logged in using UIN and purpose is given with invalid value
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -147,7 +147,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_Empty_Consent_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_07      
-      description: Request credential to share with partner when logged in using UIN and consent is given empty     
+      description: Verify that the system returns an error when the API is called with logged in using UIN and consent is given empty
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -173,7 +173,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_uin_Input_Consent_Absent_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_08      
-      description: Request credential to share with partner when logged in using UIN and consent value is not given      
+      description: Verify that the system returns an error when the API is called with logged in using UIN and consent value is not given
       role: residentNew
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
@@ -199,7 +199,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_vid_all_Valid_Smoke:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_09      
-      description: Request credential to share with partner when logged in using VID      
+      description: Verify that the system successfully processes the credential share request when the API is called with valid input details and a valid VID
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -221,7 +221,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_vid_Empty_Purpose_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_10      
-      description: Request credential to share with partner when logged in using VID and purpose is given empty      
+      description: Verify that the system returns an error when the API is called with logged in using VID and purpose is given empty
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -249,7 +249,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_vid_Invalid_Space_Purpose:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_11      
-      description: Request credential to share with partner when logged in using VID and purpose is given with only spaces      
+      description: Verify that the system returns an error when the API is called with logged in using VID and purpose is given with only spaces
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -271,7 +271,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_Vid_AlphaNumeric_Value_Purpose_Pos:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_12      
-      description: Request credential to share with partner when logged in using VID and purpose is given as alphanumeric values      
+      description: Verify that the system successfully processes the credential share request when the API is called with valid input details and a valid VID
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -292,7 +292,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_Vid_Invalid_Purpose_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_13      
-      description: Request credential to share with partner when logged in using VID and purpose value is given invalid      
+      description: Verify that the system returns an error when the API is called with logged in using VID and purpose value is given invalid
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -318,7 +318,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_Vid_Empty_Consent_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_14      
-      description: Request credential to share with partner when logged in using VID and consent is given empty      
+      description: Verify that the system returns an error when the API is called with logged in using VID and consent is given empty
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post
@@ -344,7 +344,7 @@ ReqShareCredWithPartner:
    Resident_ReqShareCredWithPartner_vid_Input_Consent_Absent_Neg:
       endPoint: /resident/v1/share-credential
       uniqueIdentifier: TC_Resident_ShareCredentialWithPartner_15      
-      description: Request credential to share with partner when logged in using VID and consent is removed from request      
+      description: Verify that the system returns an error when the API is called with logged in using VID and consent is removed from request
       role: residentNewVid
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       restMethod: post

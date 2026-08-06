@@ -2,7 +2,7 @@ GetSupportingDoc:
    Resident_GetSupportingDoc_all_Valid_Smoke:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_SupportingDocument_01      
-      description: Get supporting documents      
+      description: Verify that the system successfully returns the supporting documents when the API is called with valid input details
       role: resident
       restMethod: get
       inputTemplate: resident/GetSupportingDoc/GetSupportingDoc
@@ -17,7 +17,7 @@ GetSupportingDoc:
    Resident_GetSupportingDoc_Invalid_Langcode_Neg:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_SupportingDocument_02     
-      description: Get supporting documents when invalid language code is given      
+      description: Verify that the system returns an error when the API is called with invalid language code is given
       role: resident
       restMethod: get
       inputTemplate: resident/GetSupportingDoc/GetSupportingDoc

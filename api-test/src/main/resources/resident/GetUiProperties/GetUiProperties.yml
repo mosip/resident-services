@@ -2,7 +2,7 @@ GetUiProperties:
    Resident_GetUiProperties_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/config/ui-properties
       uniqueIdentifier: TC_Resident_GetUiProperties_01      
-      description: Get UI properties      
+      description: Verify that the system successfully returns the UI properties when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

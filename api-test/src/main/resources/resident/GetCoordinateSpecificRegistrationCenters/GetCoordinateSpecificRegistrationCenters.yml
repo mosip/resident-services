@@ -2,7 +2,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_allValid_smoke:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_01      
-      description: Get coordinate specific registration centers using all valid inputs
+      description: Verify that the system successfully returns the coordinate specific registration centers when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -21,7 +21,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_langCode:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_02      
-      description: Get coordinate specific registration centers using an invalid langcode
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid langcode
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -44,7 +44,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_Latitude:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_03      
-      description: Get coordinate specific registration centers using an invalid latitude
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid latitude
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -67,7 +67,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_Random_Proximity_Distance:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_04      
-      description: Get coordinate specific registration centers using an invalid random proximitydistance
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid random proximitydistance
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -89,7 +89,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Random_Longitude:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_05      
-      description: Get coordinate specific registration centers using random longitude
+      description: Verify that the system successfully returns the coordinate specific registration centers when the API is called with valid input details
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -111,7 +111,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Random_Latitude:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_06      
-      description: Get coordinate specific registration centers using random latitude
+      description: Verify that the system successfully returns the coordinate specific registration centers when the API is called with valid input details
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -133,7 +133,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Valid_smoke:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_07      
-      description: Get coordinate specific registration centers using valid inputs
+      description: Verify that the system successfully returns the coordinate specific registration centers when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -152,7 +152,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_langCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_08      
-      description: Get coordinate specific registration centers using an invalid langcode
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid langcode
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -174,7 +174,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_Latitude_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_09      
-      description: Get coordinate specific registration centers using an invalid latitude
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid latitude
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -197,7 +197,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_Proximity_Distance_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_10      
-      description: Get coordinate specific registration centers using an invalid proximitydistance
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid proximitydistance
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -219,7 +219,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_Invalid_Longitude:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_11      
-      description: Get coordinate specific registration centers using an invalid longitude
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers using an invalid longitude
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -241,7 +241,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_StatusCode_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_12      
-      description: Get coordinate specific registration centers statuscode using an empty langcode
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers statuscode using an empty langcode
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -257,7 +257,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_StatusCode_Empty_Latitude_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_13      
-      description: Get coordinate specific registration centers statuscode using an empty latitude
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers statuscode using an empty latitude
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters
@@ -273,7 +273,7 @@ GetCoordinateSpecificRegistrationCenters:
    Resident_GetCoordinateSpecificRegistrationCenters_StatusCode_Empty_Longitude_Neg:
       endPoint: /resident/v1/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}
       uniqueIdentifier: TC_Resident_GetRegistrationCentreCoordinates_14      
-      description: Get coordinate specific registration centers statuscode using an empty longitude
+      description: Verify that the system returns an error when the API is called with coordinate specific registration centers statuscode using an empty longitude
       role: resident
       restMethod: get
       inputTemplate: resident/GetCoordinateSpecificRegistrationCenters/getCoordinateSpecificRegistrationCenters

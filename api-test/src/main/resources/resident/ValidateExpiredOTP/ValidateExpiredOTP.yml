@@ -2,7 +2,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_UIN_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_01      
-      description: Validate expired otp, otp requested using UIN      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid UIN
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -25,7 +25,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_PerpVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_02      
-      description: Validate expired otp, otp requested using perpetual VID  
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid perpetual VID
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -48,7 +48,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_TempVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_03      
-      description: Validate expired otp, otp requested using temporary VID      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid temporary VID
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -70,7 +70,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_OnetimeVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_04      
-      description: Validate expired otp, otp requested using onetimeuse VID      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid onetime use VID      
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP

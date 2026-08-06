@@ -2,7 +2,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Perp_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_01      
-      description: Revoke perpetual VID when logged in using UIN      
+      description: Verify that the system successfully revokes the perpetual VID when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -22,7 +22,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Temp_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_02      
-      description: Revoke temporary VID when logged in using UIN      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -42,7 +42,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_OneTimeUse_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_03      
-      description: Revoke onetimeuse VID when logged in using UIN      
+      description: Verify that the system successfully revokes the onetime use VID when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -62,7 +62,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_StatusCode_Without_Token_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_04      
-      description: Revoke VID without token 
+      description: Verify that the system returns an error when the API is called with vID without token
       role: 
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -80,7 +80,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_Diff_Token_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Temporary_1_Esignet_Integ_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_05      
-      description: Revoke VID when logged which does not belonged to logged in UIN    
+      description: Verify that the system returns an error when the API is called with logged which does not belonged to logged in UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -103,7 +103,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_Using_Vid_Valid_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Onetimeuse_Using_VID_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_06      
-      description: Revoke Onetimeuse VID      
+      description: Verify that the system successfully revokes the onetime use VID when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -123,7 +123,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Using_Vid_Invalid_User_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_Inv_Scen_Valid_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_07      
-      description: Revoke perpetual VID when logged in using invalid VID      
+      description: Verify that the system returns an error when the API is called with logged in using invalid VID
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -148,7 +148,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Perp_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_Perpetual_VID_uin_Valid_Token_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_08      
-      description: Revoke perpetual VID when logged in using already revoked VID      
+      description: Verify that the system returns an error when the API is called with logged in using already revoked VID
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -173,7 +173,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Temp_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_09      
-      description: Revoke temporary VID when logged in using already revoked VID      
+      description: Verify that the system returns an error when the API is called with logged in using already revoked VID
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -198,7 +198,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_OneTimeUse_Revoked_Neg:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Onetimeuse_VID_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_10
-      description: Revoke onetimeuse VID when logged in using already revoked VID
+      description: Verify that the system returns an error when the API is called with logged in using already revoked VID
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -223,7 +223,7 @@ RevokeVIDNew:
    Resident_RevokeVIDNew_uin_Temp_Without_TransactionId_Smoke:
       endPoint: /resident/v1/revoke-vid/$ID:GenerateVID_uin_Temporary_VID2_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVidnew_11
-      description: Revoke temporary VID when logged in using UIN without transactionId in request
+      description: Verify that the system returns an error when the API is called with logged in using UIN without transactionId in request
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: patch

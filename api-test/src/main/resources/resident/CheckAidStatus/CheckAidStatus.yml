@@ -2,7 +2,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_all_Valid_Smoke:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_01
-      description: Check the status of the AID using valid data
+      description: Verify that the system successfully returns the AID status when the API is called with valid input details
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -32,7 +32,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_02
-      description: Check the status of the AID by using an invalid AID
+      description: Verify that the system returns an error when the API is called with invalid AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -67,7 +67,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_03
-      description: Check the status of the AID using an invalid transactionID
+      description: Verify that the system returns an error when the API is called with invalid transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -102,7 +102,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_Otp_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_04
-      description: Check the status of the AID using an invalid OTP
+      description: Verify that the system returns an error when the API is called with invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -137,7 +137,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_05
-      description: Check the status of the AID using an empty AID
+      description: Verify that the system returns an error when the API is called with empty AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -172,7 +172,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_06
-      description: Check the status of the AID using an empty transaction ID
+      description: Verify that the system returns an error when the API is called with empty transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -207,7 +207,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_Otp_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_07
-      description: Check the status of the AID using an empty otp
+      description: Verify that the system returns an error when the API is called with empty OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -243,7 +243,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_08
-      description: Check the status of the AID with the aid field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -278,7 +278,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_Requesttime_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_09
-      description: Check the status of the AID with the requesttime field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing requesttime
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -313,7 +313,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_Requesttime_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_10
-      description: Check the status of the AID with an empty requesttime value
+      description: Verify that the system returns an error when the API is called with empty requesttime
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -348,7 +348,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_Otp_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_11
-      description: Check the status of the AID with the otp field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -383,7 +383,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_TransactionID_Alpha_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_12
-      description: Check the status of the AID using an alphabetic-only transactionId
+      description: Verify that the system returns an error when the API is called with alphabetic-only transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -418,7 +418,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_13
-      description: Check the status of the AID with the transactionId field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -453,7 +453,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_Id_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_14
-      description: Check the status of the AID using an invalid id value
+      description: Verify that the system returns an error when the API is called with invalid ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -490,7 +490,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_Id_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_15
-      description: Check the status of the AID with the id field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -527,7 +527,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_Id_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_16
-      description: Check the status of the AID with an empty id value
+      description: Verify that the system returns an error when the API is called with empty ID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -564,7 +564,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Empty_Version_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_17
-      description: Check the status of the AID with an empty version value
+      description: Verify that the system returns an error when the API is called with empty version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -601,7 +601,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_Version_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_18
-      description: Check the status of the AID using an invalid version value
+      description: Verify that the system returns an error when the API is called with invalid version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -638,7 +638,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Missing_Version_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_19
-      description: Check the status of the AID with the version field missing from the request body
+      description: Verify that the system returns an error when the API is called with missing version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -675,7 +675,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_VidOnly_all_Valid_Smoke:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_20
-      description: Check AID status with use-vid-only=true — response must contain individualIdType as UIN or VID
+      description: Verify that the system successfully returns the AID status when the API is called with valid input details and use-vid-only set to true
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -705,7 +705,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_VidOnly_Invalid_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_21
-      description: Check AID status with use-vid-only=true using an AID value that does not exist
+      description: Verify that the system returns an error when the API is called with use-vid-only set to true and invalid AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -740,7 +740,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_Invalid_Requesttime_Format_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_22
-      description: Check the status of the AID using a date-only requesttime without the time component
+      description: Verify that the system returns an error when the API is called with invalid requesttime format
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true

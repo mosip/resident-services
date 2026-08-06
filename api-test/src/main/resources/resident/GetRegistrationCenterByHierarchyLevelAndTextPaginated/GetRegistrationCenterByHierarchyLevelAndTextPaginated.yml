@@ -2,7 +2,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_01      
-      description: Get Registartion centres when all details are given in input parameters
+      description: Verify that the system successfully returns the registration centers when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -23,7 +23,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_02      
-      description: Get Registartion centres when invalid langcode is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid langcode is given in input parameters
       role: resident	  
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -49,7 +49,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_HierarchyLevel:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_03      
-      description: Get Registartion centres when invalid hierarchylevel is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid hierarchylevel is given in input parameters
       role: resident	  
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -75,7 +75,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Name:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_04      
-      description: Get Registartion centres when invalid name is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid name is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -101,7 +101,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_PageNumber:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_05      
-      description: Get Registartion centres when invalid pagenumber is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid pagenumber is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -127,7 +127,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_PageSize:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_06      
-      description: Get Registartion centres when invalid pagesize is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid pagesize is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -153,7 +153,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_SortBy_Value:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_07      
-      description: Get Registartion centres when invalid sortby is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid sortby is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -179,7 +179,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_OrderBy_Value:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_08      
-      description: Get Registartion centres when invalid orderby is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid orderby is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -205,7 +205,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_HierarchyLevel:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_09      
-      description: Get Registartion centres when invalid/Random hierarchylevel is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid/Random hierarchylevel is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -231,7 +231,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_PageNumber:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_10      
-      description: Get Registartion centres when invalid/Random pagenumber is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid/Random pagenumber is given in input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -257,7 +257,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_Invalid_Random_PageSize:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_11      
-      description: Get Registartion centres when invalid/random pagesize is given in input parameters
+      description: Verify that the system returns an error when the API is called with invalid/random pagesize is given in input parameters
       role: resident		
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -283,7 +283,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_LangCode_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_12      
-      description: Get Registartion centres when no value entered in langcode input parameters
+      description: Verify that the system returns an error when the API is called with no value entered in langcode input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -303,7 +303,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_HierarchyLevel_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_13      
-      description: Get Registartion centres when no value entered in hierarchylevel input parameters
+      description: Verify that the system returns an error when the API is called with no value entered in hierarchylevel input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -323,7 +323,7 @@ GetRegistrationCenterByHierarchyLevelAndTextPaginated:
    Resident_GetRegistrationCenterByHierarchyLevelAndTextPaginated_StatusCode_Name_Empty_Neg:
       endPoint: /resident/v1/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}?pageNumber={pageNumber}&pageSize={pageSize}&orderBy={orderBy}&sortBy={sortBy}
       uniqueIdentifier: TC_Resident_GetRegistrationbyhierarchylevel&textpaginated_14      
-      description: Get Registartion centres when no value entered in name input parameters
+      description: Verify that the system returns an error when the API is called with no value entered in name input parameters
       role: resident			
       checkErrorsOnlyInResponse: true
       restMethod: get

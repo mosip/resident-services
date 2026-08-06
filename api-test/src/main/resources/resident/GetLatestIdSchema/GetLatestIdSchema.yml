@@ -2,7 +2,7 @@ GetLatestIdSchema:
    Resident_GetLatestIdSchema_all_Valid_Smoke:
       endPoint: /resident/v1/proxy/masterdata/idschema/latest?schemaVersion={schemaVersion}&domain={domain}&type={type}
       uniqueIdentifier: TC_Resident_GetLastSchema_01      
-      description: Get latest Idschema using all valid inputs
+      description: Verify that the system successfully returns the latest ID schema when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -19,7 +19,7 @@ GetLatestIdSchema:
    Resident_GetLatestIdSchema_Invalid_Schema_Version:
       endPoint: /resident/v1/proxy/masterdata/idschema/latest?schemaVersion={schemaVersion}&domain={domain}&type={type}
       uniqueIdentifier: TC_Resident_GetLastSchema_02      
-      description: Get latest Idschema using an invalid schema version
+      description: Verify that the system returns an error when the API is called with latest Idschema using an invalid schema version
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

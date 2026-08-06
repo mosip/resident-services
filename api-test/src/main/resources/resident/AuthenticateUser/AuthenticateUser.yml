@@ -2,7 +2,7 @@ AuthenticateUser:
    Resident_ESignet_AuthenticateUserIDP_uin_Otp_Valid_Smoke:
       endPoint: /v1/esignet/authorization/authenticate
       uniqueIdentifier: Dependent_ESignet_AuthenticateUserIDP_01
-      description: Authenticate a user using their UIN and a valid OTP in the eSignet authentication process
+      description: Verify that the system successfully authenticates the user when the API is called with valid input details, a valid UIN and a valid OTP in the eSignet authentication process
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -35,7 +35,7 @@ AuthenticateUser:
    Resident_ESignet_AuthenticateUserIDP_vid_Otp_Valid_Smoke:
       endPoint: /v1/esignet/authorization/authenticate
       uniqueIdentifier: Dependent_ESignet_AuthenticateUserIDP_02
-      description: Authenticate a user using their VID and a valid OTP in the eSignet authentication process
+      description: Verify that the system successfully authenticates the user when the API is called with valid input details, a valid VID and a valid OTP in the eSignet authentication process
       role: resident
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true

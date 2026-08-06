@@ -2,7 +2,7 @@ GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_allValid_smoke:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
       uniqueIdentifier: TC_Resident_GetLocationDeatils_01      
-      description: Get location details by location code and language code using all valid inputs
+      description: Verify that the system successfully returns the location details when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -19,7 +19,7 @@ GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_Invalid_LangCode:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
       uniqueIdentifier: TC_Resident_GetLocationDeatils_02      
-      description: Get location details by location code and language code using an invalid langcode
+      description: Verify that the system returns an error when the API is called with location details by location code and language code using an invalid langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -40,7 +40,7 @@ GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_Invalid_LocationCode:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
       uniqueIdentifier: TC_Resident_GetLocationDeatils_03      
-      description: Get location details by location code and language code using an invalid location code
+      description: Verify that the system returns an error when the API is called with location details by location code and language code using an invalid location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -61,7 +61,7 @@ GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_StatusCode_Empty_LangCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
       uniqueIdentifier: TC_Resident_GetLocationDeatils_04      
-      description: Get location details by location code and language code using an empty langcode
+      description: Verify that the system returns an error when the API is called with location details by location code and language code using an empty langcode
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -76,7 +76,7 @@ GetLocationDetailsByLocCodeAndLangCode:
    Resident_GetLocationDetailsByLocCodeAndLangCode_StatusCode_Empty_LocationCode_Neg:
       endPoint: /resident/v1/proxy/masterdata/locations/info/{loccode}/{langCode}
       uniqueIdentifier: TC_Resident_GetLocationDeatils_05      
-      description: Get location details by location code and language code using an empty location code
+      description: Verify that the system returns an error when the API is called with location details by location code and language code using an empty location code
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: get

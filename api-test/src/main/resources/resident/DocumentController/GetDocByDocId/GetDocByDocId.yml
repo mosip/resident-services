@@ -2,7 +2,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_uin_all_Valid_Smoke:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_01
-      description: Get the document by docId using a valid UIN with all valid inputs
+      description: Verify that the system successfully retrieves the document by docId when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -20,7 +20,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_vid_all_Valid_Smoke:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_02
-      description: Get the document by docId using a valid VID with all valid inputs
+      description: Verify that the system successfully retrieves the document by docId when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -38,7 +38,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_uin_Invalid_TransactionId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_03
-      description: Get the document by docId using a valid UIN with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transactionId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -61,7 +61,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_uin_Invalid_docId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_04
-      description: Get the document by docId using a valid UIN with an invalid docId
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid docId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -84,7 +84,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_uin_Invalid_Token:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_05
-      description: Get the document by docId using a valid UIN with an invalid token
+      description: Verify that the system returns an error when the API is called with invalid token
       role: null
       checkErrorsOnlyInResponse: true
       validityCheckRequired: true
@@ -107,7 +107,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_vid_Invalid_TransactionId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_06
-      description: Get the document by docId using a valid VID with an invalid transactionId
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid transactionId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
@@ -130,7 +130,7 @@ GetDocByDocId:
    Resident_GetDocByDocId_vid_Invalid_docId:
       endPoint: /resident/v1/document/{docId}?transactionId={transactionId}
       uniqueIdentifier: TC_Resident_GetDocByDocId_07
-      description: Get the document by docId using a valid VID with an invalid docId
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid docId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get

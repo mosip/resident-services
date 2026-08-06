@@ -2,7 +2,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_all_Valid_Smoke:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_01      
-      description: Transliterate data for the language given when logged in using UIN      
+      description: Verify that the system successfully transliterates the data when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -22,7 +22,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_all_Valid_Smoke:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_02      
-      description: Transliterate data for the language given when logged in using VID      
+      description: Verify that the system successfully transliterates the data when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -42,7 +42,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Same_Lang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_03      
-      description: Transliterate data, where from and to language is given same and logged in using UIN      
+      description: Verify that the system successfully transliterates the data when the API is called with valid input details, a valid UIN and same from and to language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -66,7 +66,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Invalid_UserToken_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_04      
-      description: Transliterate data when user token is invalid      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -90,7 +90,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Invalid_Token_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_05      
-      description: Transliterate data when token is invalid     
+      description: Verify that the system returns an error when the API is called with invalid token
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -113,7 +113,7 @@ TranslitrateData:
    Resident_TranslitrateData_StatusCode_Empty_Token_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_06      
-      description: Transliterate data when token is empty      
+      description: Verify that the system returns an error when the API is called with empty token
       role: 
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -130,7 +130,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Invalid_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_07      
-      description: Transliterate data when from language is given invalid and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid from language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -154,7 +154,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Missing_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_08      
-      description: Transliterate data when from language is removed from request and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing from language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -178,7 +178,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Empty_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_09      
-      description: Transliterate data when from language is given empty and logged in using UIN     
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty from language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -202,7 +202,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Invalid_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_10      
-      description: Transliterate data when to language is given invalid and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid to language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -226,7 +226,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Missing_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_11      
-      description: Transliterate data when to language is removed from request and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing to language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -250,7 +250,7 @@ TranslitrateData:
    Resident_TranslitrateData_uin_Empty_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_12      
-      description: Transliterate data when from language is given empty and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty to language
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -274,7 +274,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Same_Lang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_13      
-      description: Transliterate data when from and to language is given same and logged in using VID      
+      description: Verify that the system successfully transliterates the data when the API is called with valid input details, a valid VID and same from and to language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -298,7 +298,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Invalid_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_14      
-      description: Transliterate data when from language is given invalid and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid from language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -322,7 +322,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Missing_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_15      
-      description: Transliterate data when from language is missing and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing from language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -346,7 +346,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Empty_FromLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_16      
-      description: Transliterate data when from language is given empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty from language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -370,7 +370,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Invalid_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_17      
-      description: Transliterate data when to language is given invalid and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid to language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -394,7 +394,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Missing_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_18      
-      description: Transliterate data when to language is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing to language
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -418,7 +418,7 @@ TranslitrateData:
    Resident_TranslitrateData_vid_Empty_ToLang_Neg:
       endPoint: /resident/v1/transliteration/transliterate
       uniqueIdentifier: TC_Resident_Translitrate_19      
-      description: Transliterate data when to language is given empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty to language      
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: post

@@ -2,7 +2,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_uin_all_Valid_Smoke_sid:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_01      
-      description: Request card using temporary VID when logged in using UIN      
+      description: Verify that the system successfully returns the request card status when the API is called with valid input details, temporary VID and a valid UIN
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -19,7 +19,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_uin_Invalid_User_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_02      
-      description: Request card using VID when logged in using invalid UIN
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid UIN
       role: null
       validityCheckRequired: true
       restMethod: get
@@ -39,7 +39,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_uin_Invalid_Vid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_03      
-      description: Request card using invalid VID when logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid VID
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -59,7 +59,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_uin_Invalid_UserVid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_04      
-      description: Request card using invalid VID when logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid user VID
       role: residentNew
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -79,7 +79,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_vid_all_Valid_Smoke_sid:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_05      
-      description: Request card using Onetimeuse VID when logged in using VID      
+      description: Verify that the system successfully returns the request card status when the API is called with valid input details, onetime use VID and a valid VID
       role: residentNewVid
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -95,7 +95,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_vid_Invalid_Vid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_06      
-      description: Request card using invalid VID when logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid VID
       role: residentNewVid
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -115,7 +115,7 @@ GetRequestCardVid:
    Resident_GetRequestCardVid_vid_Invalid_UserVid_Neg:
       endPoint: /resident/v1/request-card/vid/{VID}
       uniqueIdentifier: TC_Resident_GetCardUsingVID_07      
-      description: Request card using VID when logged in using invalid VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid user VID
       role: residentNewVid
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02

@@ -2,7 +2,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Invalid_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_01      
-      description: Update contact details by giving invalid userid and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -36,7 +36,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Empty_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_02      
-      description: Update contact details by giving userid value empty and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -70,7 +70,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_User_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_03      
-      description: Update contact details when userid is removed from request and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing user ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -104,7 +104,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_04      
-      description: Update contact details when invalid transactionid is given and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -138,7 +138,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_05      
-      description: Update contact details when transactionid is given empty and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -172,7 +172,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_06      
-      description: Update contact details when transactionid is removed from request and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing transaction ID
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -206,7 +206,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_07      
-      description: Update contact details when invalid otp is used and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid OTP
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -240,7 +240,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_08      
-      description: Update contact details when otp value is empty and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty OTP
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -274,7 +274,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Otp_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_09      
-      description: Update contact details when otp is removed from request and logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing OTP
       role: residentNew
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_01
@@ -308,7 +308,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_Invalid_Token_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_10      
-      description: Update contact details when invalid token is used      
+      description: Verify that the system returns an error when the API is called with invalid token
       role: resident
       restMethod: post
       inputTemplate: resident/UpdateContactDetails/UpdateContactDetails
@@ -346,7 +346,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Invalid_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_11      
-      description: Update contact details when invalid userid is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -380,7 +380,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Empty_User_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_12      
-      description: Update contact details when userid is given as empty value and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -414,7 +414,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_User_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_13      
-      description: Update contact details when userid is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing user ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -448,7 +448,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_14      
-      description: Update contact details when invalid transaction id is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -482,7 +482,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_15      
-      description: Update contact details when transaction id is given as empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -516,7 +516,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_16      
-      description: Update contact details when transaction id is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing transaction ID
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -550,7 +550,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_17      
-      description: Update contact details when invalid otp is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid OTP
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -584,7 +584,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_18      
-      description: Update contact details when otp is given empty value and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty OTP
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -618,7 +618,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Otp_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_19      
-      description: Update contact details when otp is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing OTP
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
@@ -652,7 +652,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_uin_Valid_All_Smoke_Pos:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_20      
-      description: Update contact details when logged in using UIN      
+      description: Verify that the system successfully updates the contact details when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
       auditLogCheck: true
@@ -683,7 +683,7 @@ UpdateContactDetails:
    Resident_UpdateContactDetails_vid_Valid_All_Smoke_Pos:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_UpdateContact_21      
-      description: Update contact details when logged in using VID      
+      description: Verify that the system successfully updates the contact details when the API is called with valid input details and a valid VID      
       role: residentNewVid
       restMethod: post
       additionalDependencies: Dependent_ESignet_GenerateToken_02
