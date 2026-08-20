@@ -1325,7 +1325,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder()
 				.sortType("desc").sortField("createdDateTime").build();
 		MachineSearchRequestDTO machineSearchRequestDTO = MachineSearchRequestDTO.builder().version("1.0")
-				// .requesttime(DateUtils2.getUTCCurrentDateTimeString()) //TODO fix this
+				.requesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()))
 				.request(
 						MachineSearchRequestDTO.MachineSearchRequest.builder()
 								.filters(List.of(searchFilterName, searchFilterPublicKey)).sort(List.of(searchSort))
@@ -1372,7 +1372,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode,
 			String regCenterId, String publicKey) throws ApisResourceAccessException {
 		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
-				// .requesttime(DateUtils2.getUTCCurrentDateTimeString()) //TODO fix this
+				.requesttime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime()))
 				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
 						.validityDateTime(DateUtils2.formatToISOString(DateUtils2.getUTCCurrentDateTime().plusYears(3)))
 						.name(residentMachinePrefix + System.currentTimeMillis()).machineSpecId(machineSpecId)
