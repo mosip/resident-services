@@ -194,6 +194,75 @@ To learn more about resident service from a functional perspective and use case 
 
 Automated functional tests are available in the [Functional tests](api-test).
 
+### Running Functional Tests
+
+#### Location
+
+The test rig (a TestNG-based suite that exercises the Resident Service end-to-end) lives in the [`api-test`](api-test) directory at the root of this repository. The test runner entry point is [`MosipTestRunner`](api-test/src/main/java/io/mosip/testrig/apirig/resident/testrunner/MosipTestRunner.java), and the TestNG suite XML files are under [`api-test/testNgXmlFiles/`](api-test/testNgXmlFiles).
+
+#### How to Run
+
+The rig is packaged as an executable shaded jar. Build it from the `api-test/` module, then launch the runner — it auto-discovers the master suite (`residentMasterTestSuite.xml`) from `testNgXmlFiles/`:
+
+```text
+cd api-test
+mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
+java -jar target/apitest-resident-1.3.0-jar-with-dependencies.jar
+```
+
+To target a different suite, edit or replace `testNgXmlFiles/residentMasterTestSuite.xml` (the runner picks the file whose name contains `mastertestsuite`, case-insensitive). The available pre-configured suites are `residentMasterTestSuite.xml`, `residentSuite.xml`, and `residentPrerequisiteSuite.xml`.
+
+The HTML and XML reports are written to `api-test/testng-report/` after the run.
+
+#### Configuration
+
+Test rig settings — environment URLs, module flags, and the placeholder slots for secrets — are stored in [`api-test/src/main/resources/config/resident.properties`](api-test/src/main/resources/config/resident.properties). The secret/password keys are intentionally left blank in this committed file so credentials are never checked in:
+
+```properties
+keycloak_Password =
+mosip_resident_client_secret =
+postgres-password =
+# ... etc.
+```
+
+These blank values are populated at runtime from environment variables (see below).
+
+#### Environment Variables
+
+As of the [MOSIP-40514](https://mosip.atlassian.net/browse/MOSIP-40514) fix, any property in `resident.properties` whose value is blank or whitespace-only is automatically resolved from a process environment variable at startup by [`ResidentConfigManager`](api-test/src/main/java/io/mosip/testrig/apirig/resident/utils/ResidentConfigManager.java). This lets you supply secrets to CI runs (or local runs) without ever committing them to the repository.
+
+The lookup tries the property key as-is first, then an UPPER_SNAKE_CASE form where dots (`.`), dashes (`-`), and slashes (`/`) are converted to underscores. Underscores already in the key are preserved.
+
+| Property in `resident.properties` | Environment variable |
+| --- | --- |
+| `keycloak_Password` | `KEYCLOAK_PASSWORD` |
+| `mosip_resident_client_secret` | `MOSIP_RESIDENT_CLIENT_SECRET` |
+| `mosip_partner_client_secret` | `MOSIP_PARTNER_CLIENT_SECRET` |
+| `mosip_pms_client_secret` | `MOSIP_PMS_CLIENT_SECRET` |
+| `mosip_admin_client_secret` | `MOSIP_ADMIN_CLIENT_SECRET` |
+| `mosip_idrepo_client_secret` | `MOSIP_IDREPO_CLIENT_SECRET` |
+| `mosip_reg_client_secret` | `MOSIP_REG_CLIENT_SECRET` |
+| `mosip_regproc_client_secret` | `MOSIP_REGPROC_CLIENT_SECRET` |
+| `mosip_hotlist_client_secret` | `MOSIP_HOTLIST_CLIENT_SECRET` |
+| `mosip_testrig_client_secret` | `MOSIP_TESTRIG_CLIENT_SECRET` |
+| `audit_password` | `AUDIT_PASSWORD` |
+| `partner_password` | `PARTNER_PASSWORD` |
+| `postgres-password` | `POSTGRES_PASSWORD` |
+
+Example — running locally with secrets supplied via the shell:
+
+```text
+export KEYCLOAK_PASSWORD='...'
+export MOSIP_RESIDENT_CLIENT_SECRET='...'
+export POSTGRES_PASSWORD='...'
+
+cd api-test
+mvn clean install -Dmaven.javadoc.skip=true -Dgpg.skip=true
+java -jar target/apitest-resident-1.3.0-jar-with-dependencies.jar
+```
+
+If a property is left blank in the file **and** no matching environment variable is set, the rig stores an empty string for that key (it never stores `null`), so downstream string-handling code does not NPE — but the test scenarios that depend on that secret will fail to authenticate. Always check the startup logs for `Resolved blank property '<key>' from environment.` lines to confirm secrets were picked up.
+
 ## Contribution & Community
 
 • To learn how you can contribute code to this application, [click here](https://docs.mosip.io/1.2.0/community/code-contributions).
