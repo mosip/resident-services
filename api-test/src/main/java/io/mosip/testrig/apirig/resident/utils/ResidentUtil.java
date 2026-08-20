@@ -17,6 +17,7 @@ import io.mosip.testrig.apirig.testrunner.BaseTestCase;
 import io.mosip.testrig.apirig.utils.AdminTestUtil;
 import io.mosip.testrig.apirig.utils.GlobalConstants;
 import io.mosip.testrig.apirig.utils.GlobalMethods;
+import io.mosip.testrig.apirig.utils.KernelAuthentication;
 import io.mosip.testrig.apirig.utils.RestClient;
 import io.mosip.testrig.apirig.utils.SkipTestCaseHandler;
 import io.restassured.response.Response;
@@ -181,6 +182,68 @@ public class ResidentUtil extends AdminTestUtil {
 
 	}
 	
+	/**
+	 * Best-effort cleanup that fetches the resident's pending drafts and discards
+	 * the cancellable ones for the supplied role. Used by retry loops that hit
+	 * RES-SER-524 ("Not allowed to update UIN as previous packet is pending. To
+	 * proceed further please discard it.") so the next retry has a clean slate
+	 * instead of waiting for an old cancellable draft to time out on its own.
+	 *
+	 * Returns the number of drafts that were successfully discarded. Never throws.
+	 */
+	public static int discardCancellablePendingDrafts(String role, String testCaseName) {
+		try {
+			String token = new KernelAuthentication().getTokenByRole(role);
+			Response getResp = RestClient.getRequestWithCookie(
+					ApplnURI + "/resident/v1/identity/get-pending-drafts/eng",
+					javax.ws.rs.core.MediaType.APPLICATION_JSON,
+					javax.ws.rs.core.MediaType.APPLICATION_JSON,
+					COOKIENAME, token);
+			if (getResp == null || getResp.asString() == null || getResp.asString().isEmpty()) {
+				return 0;
+			}
+			JSONObject body = new JSONObject(getResp.asString());
+			JSONObject responseNode = body.optJSONObject("response");
+			if (responseNode == null) {
+				return 0;
+			}
+			JSONArray drafts = responseNode.optJSONArray("drafts");
+			if (drafts == null || drafts.length() == 0) {
+				return 0;
+			}
+			int discarded = 0;
+			for (int i = 0; i < drafts.length(); i++) {
+				JSONObject draft = drafts.optJSONObject(i);
+				if (draft == null || !draft.optBoolean("cancellable", false)) {
+					continue;
+				}
+				String eid = draft.optString("eid", "");
+				if (eid.isEmpty()) {
+					continue;
+				}
+				Response postResp = postWithBodyAndCookie(
+						ApplnURI + "/resident/v1/identity/discardPendingDraft/" + eid,
+						"{}", COOKIENAME, role, testCaseName);
+				if (postResp != null && postResp.asString() != null
+						&& postResp.asString().contains("DISCARDED")) {
+					discarded++;
+					logger.info("Discarded a cancellable pending draft.");
+				} else {
+					// Do not log eid or full response body — they can contain
+					// sensitive resident identifiers. Log only the HTTP status.
+					String statusInfo = (postResp == null)
+							? "no-response"
+							: ("status=" + postResp.getStatusCode());
+					logger.warn("Discard request did not return DISCARDED (" + statusInfo + ").");
+				}
+			}
+			return discarded;
+		} catch (Exception e) {
+			logger.error("Failed to discard cancellable pending drafts: " + e.getMessage());
+			return 0;
+		}
+	}
+
 	public static JSONArray configActuatorResponseArray = null;
 	
 	public static String getValueFromConfigActuator() {

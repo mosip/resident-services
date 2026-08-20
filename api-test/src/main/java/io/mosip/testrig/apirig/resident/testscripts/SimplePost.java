@@ -134,22 +134,34 @@ public class SimplePost extends ResidentUtil implements ITest {
 				response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, auditLogCheck,
 						COOKIENAME, testCaseDTO.getRole(), testCaseDTO.getTestCaseName(), sendEsignetToken);
 
-				if (response != null && (response.asString().contains("RES-SER-524")
-						|| response.asString().contains("RES-SER-525"))) {
-					logger.info("waiting for: " + properties.getProperty("uinGenDelayTime")
-							+ " to update UIN as previous packet is pending.");
-					try {
-						Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
+				if (response == null) {
+					logger.error("Received null response while invoking endpoint; aborting retry loop.");
+					break;
+				}
 
-					} catch (NumberFormatException | InterruptedException e) {
-						logger.error(e.getMessage());
-						Thread.currentThread().interrupt();
+				String responseBody = response.asString();
+				if (responseBody.contains("RES-SER-524")) {
+					int discarded = ResidentUtil.discardCancellablePendingDrafts(
+							testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
+					logger.info("RES-SER-524: discarded " + discarded
+							+ " cancellable draft(s) before retrying.");
+					if (discarded == 0) {
+						// Nothing was actually cancellable right now — fall back to wait.
+						sleepForUinGenDelay();
 					}
+				} else if (responseBody.contains("RES-SER-525")) {
+					logger.info("RES-SER-525: previous packet is non-cancellable, waiting "
+							+ properties.getProperty("uinGenDelayTime") + " ms before retry.");
+					sleepForUinGenDelay();
 				} else {
 					break;
 				}
 
 				currLoopCount++;
+			}
+
+			if (response == null) {
+				throw new AdminTestException("Received null response from endpoint; cannot validate output.");
 			}
 
 			Map<String, List<OutputValidationDto>> ouputValid = null;
@@ -179,9 +191,20 @@ public class SimplePost extends ResidentUtil implements ITest {
 
 	}
 
+	private void sleepForUinGenDelay() {
+		try {
+			Thread.sleep(Long.parseLong(properties.getProperty("uinGenDelayTime")));
+		} catch (NumberFormatException e) {
+			logger.error(e.getMessage());
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+			Thread.currentThread().interrupt();
+		}
+	}
+
 	/**
 	 * The method ser current test name to result
-	 * 
+	 *
 	 * @param result
 	 */
 	@AfterMethod(alwaysRun = true)
