@@ -1,2 +1,8 @@
-##### JIRA number;testcase 
+##### JIRA number;testcase
 #MOSIP-12345------Test_Case_Name
+GH-1657------Resident_CredentialsStatus_All_Valid_Smoke_euin
+GH-1657------Resident_CredentialsStatus_All_Valid_Smoke_QrCode
+GH-1657------Resident_CredentialsStatus_All_Valid_Smoke_Reprint
+GH-1657------Resident_CredentialsStatus_VID_All_Valid_Smoke_euin
+GH-1657------Resident_CredentialsStatus_VID_All_Valid_Smoke_Reprint
+GH-1657------Resident_CredentialsStatus_VID_All_Valid_Smoke_QrCode
