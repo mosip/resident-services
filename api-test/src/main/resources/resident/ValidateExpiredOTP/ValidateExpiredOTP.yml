@@ -2,7 +2,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_UIN_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_01      
-      description: Validate expired otp, otp requested using UIN      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid UIN
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -11,7 +11,7 @@ ValidateExpiredOTP:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_UIN$",
-    "otp": "$ID:AddIdentity_ForEotp_Scen_smoke_Pos_EMAIL$"
+    "otp": "$ID:SendOtpForExpiration_Valid_UIN_All_Smoke_OTP$"
 }'
       output: '{
 	  "errors": [
@@ -25,7 +25,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_PerpVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_02      
-      description: Validate expired otp, otp requested using perpetual VID  
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid perpetual VID
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -34,7 +34,7 @@ ValidateExpiredOTP:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:GenerateVID_Perpetual_ForEotp_Scen_Valid_Smoke_sid_vid$",
-    "otp": "$ID:AddIdentity_ForEotp_Scen_Vid_smoke_Pos_EMAIL$"
+    "otp": "$ID:SendOtpForExpiration_using_PerpetualVid_Smoke_OTP$"
 }'
       output: '{
 	  "errors": [
@@ -48,7 +48,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_TempVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_03      
-      description: Validate expired otp, otp requested using temporary VID      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid temporary VID
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -57,13 +57,12 @@ ValidateExpiredOTP:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:GenerateVID_Temporary_1_ForEotp_Scen_Valid_Smoke_sid_vid$",
-    "otp": "$ID:AddIdentity_ForEotp_Temp_Vid_smoke_Pos_EMAIL$"
+    "otp": "$ID:SendOtpForExpiration_using_TempVid_Smoke_OTP$"
 }'
       output: '{
 	  "errors": [
 	    {
-	      "errorCode": "RES-SER-422",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-422"
 	    }
 	  ]
 }'
@@ -71,7 +70,7 @@ ValidateExpiredOTP:
    Resident_ValidateExpiredOTP_OnetimeVid_ExpOtp_Neg:
       endPoint: /resident/v1/validate-otp
       uniqueIdentifier: TC_Resident_ValidateExpiredOtp_04      
-      description: Validate expired otp, otp requested using onetimeuse VID      
+      description: Verify that the system returns an error when the API is called with expired OTP requested using a valid onetime use VID      
       role: resident
       restMethod: post
       inputTemplate: resident/ValidateExpiredOTP/ValidateExpiredOTP
@@ -80,13 +79,12 @@ ValidateExpiredOTP:
     "transactionId": "$TRANSACTIONID$",
     "requesttime": "$TIMESTAMP$",
     "individualId": "$ID:GenerateVID_Onetimeuse_ForEotp_Scen_Valid_Smoke_sid_vid$",
-    "otp": "$ID:AddIdentity_ForEotp_Onetime_Vid_smoke_Pos_EMAIL$"
+    "otp": "$ID:SendOtpForExpiration_using_OneTimeUseVid_Smoke_OTP$"
 }'
       output: '{
 	  "errors": [
 	    {
-	      "errorCode": "RES-SER-422",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-422"
 	    }
 	  ]
 }'

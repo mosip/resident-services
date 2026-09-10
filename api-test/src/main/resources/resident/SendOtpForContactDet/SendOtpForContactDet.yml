@@ -2,15 +2,16 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_All_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_01      
-      description: Request otp to given userid when logged in using UIN      
+      description: Verify that the system successfully sends the OTP to the user ID when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		   "userId": "residentautomation@mosip.net",
+		   "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		   "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -20,14 +21,15 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_All_Valid_Smoke:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_02      
-      description: Request otp to given userid when logged in using VID     
+      description: Verify that the system successfully sends the OTP to the user ID when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/SendOtpForContactDet/SendOtpForContactDetResult
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		   "userId": "residentautomation@mosip.net",
+		   "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		   "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
@@ -37,9 +39,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Invalid_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_03      
-      description: Request otp to given invalid userid when logged in using UIN      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid user ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -50,8 +53,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
 }
   ]
 }'
@@ -59,9 +61,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Empty_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_04      
-      description: Request otp when userid value is empty      
+      description: Verify that the system returns an error when the API is called with empty user ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -72,8 +75,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -81,9 +83,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_UserId_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_05      
-      description: Request otp when userid is removed from request       
+      description: Verify that the system returns an error when the API is called with missing user ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -94,8 +97,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -103,21 +105,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_06      
-      description: Request otp to given userid when invalid transactionid is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transaction ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "adhs%^"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -125,21 +127,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_07      
-      description: Request otp to given userid when transactionid value is empty     
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty transaction ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": ""
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -147,21 +149,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_08      
-      description: Request otp to given userid when transactionid is removed from request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing transaction ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$REMOVE$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -169,21 +171,20 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_Invalid_Token_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_09      
-      description: Request otp to given userid when invalid token is used      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid token
       role: resident
       restMethod: post
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "KER-ATH-401",
-      "message": "$IGNORE$"
+      "errorCode": "KER-ATH-401"
     }
   ]
 }'
@@ -191,21 +192,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Invalid_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_10      
-      description: Request otp to given userid when invalid requesttime is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid request time
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "12323dqq",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "$TRANSACTIONID$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-418",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-418"
     }
   ]
 }'
@@ -213,21 +214,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_uin_Empty_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_11      
-      description: Request otp to given userid when requestime value is empty      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty request time
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionID": "$TRANSACTIONID$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -235,9 +236,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Invalid_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_12      
-      description: Request otp when invalid userid is given and logged in using VID     
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid user ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -248,8 +250,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
 }
   ]
 }'
@@ -257,9 +258,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_Vid_Empty_UserId_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_13      
-      description: Request otp when userid values is empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty user ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -270,8 +272,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -279,9 +280,10 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_UserId_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_14      
-      description: Request otp when userid is removed from request and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing user ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
@@ -292,8 +294,7 @@ SendOtpForContactDet:
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -301,21 +302,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Invalid_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_15      
-      description: Request otp when invalid transactionid is given and logged in uisng VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid transaction ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "adhs%^"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -323,21 +324,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Empty_Transaction_Id_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_16      
-      description: Request otp to given userid when transcation id is given empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty transaction ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": ""
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -345,21 +346,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Transaction_Id_Not_Present_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_17      
-      description: Request otp to given userid when transaction id is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing transaction ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "$TIMESTAMP$",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$REMOVE$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -367,21 +368,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Invalid_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_18      
-      description: Request otp to given userid when invalid requesttime is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid request time
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "12323dqq",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-418",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-418"
     }
   ]
 }'
@@ -389,21 +390,21 @@ SendOtpForContactDet:
    Resident_SendOtpForContactDet_vid_Empty_Req_Time_Neg:
       endPoint: /resident/v1/contact-details/send-otp
       uniqueIdentifier: TC_Resident_SendotpforContact_19      
-      description: Request otp to given userid when requesttime is given as empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty request time      
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/SendOtpForContactDet/SendOtpForContactDet
       outputTemplate: resident/error
       input: '{
 		  "requesttime": "",
-		  "userId": "residentautomation@mosip.net",
+		  "userId": "$RUNCONTEXT$residentautomation@mosip.net",
 		  "transactionId": "$TRANSACTIONID$"
 }'
       output: '{
          "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'

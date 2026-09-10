@@ -2,7 +2,7 @@ DownloadUinCard:
    Resident_DownloadUinCard_all_Valid_Smoke:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_01
-      description: Download UIN card using all valid inputs
+      description: Verify that the system successfully downloads the UIN card when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -27,21 +27,19 @@ DownloadUinCard:
 
       output: '{
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_With_Invalid_OTP_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_02
-      description: Download UIN card with an invalid OTP
+      description: Verify that the system returns an error when the API is called with invalid OTP
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "198365@@eeG",
@@ -60,25 +58,22 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457",
-		        "message": "$IGNORE$"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_03
-      description: Download UIN card using an invalid transactionId
+      description: Verify that the system returns an error when the API is called with invalid transactionId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "213$@As",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -97,25 +92,22 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457",
-		        "message": "$IGNORE$"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Empty_TransactionID_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_04
-      description: Download UIN card using an empty transactionId
+      description: Verify that the system returns an error when the API is called with empty transactionId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -134,25 +126,22 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-				"errorCode": "RES-SER-457",
-		        "message": "$IGNORE$"
+				"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Invalid_Otp_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_05
-      description: Download UIN card using an invalid OTP
+      description: Verify that the system returns an error when the API is called with invalid OTP value
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "123456",
@@ -171,25 +160,23 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410",
+					"errorCode": "RES-OTP-007",
 			        "message": "Invalid input parameter - otp"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Empty_Otp_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_06
-      description: Download UIN card using an empty OTP
+      description: Verify that the system returns an error when the API is called with empty OTP
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "",
@@ -208,25 +195,22 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410",
-			        "message": "$IGNORE$"
+					"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Invalid_IndividualID_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_07
-      description: Download UIN card using an invalid individualId
+      description: Verify that the system returns an error when the API is called with invalid individualId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -245,25 +229,22 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410",
-			        "message": "$IGNORE$"
+					"errorCode": "RES-SER-410"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_DownloadUinCard_Empty_IndividualID_Neg:
       endPoint: /resident/v1/download-card
       uniqueIdentifier: TC_Resident_DownloadUinCard_08
-      description: Download UIN card using an empty individualId
+      description: Verify that the system returns an error when the API is called with empty individualId
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: post
+      checkErrorsOnlyInResponse: true
       inputTemplate: resident/DownloadUinCard/DownloadUinCard
-      outputTemplate: resident/DownloadUinCard/DownloadUinCardResult
+      outputTemplate: resident/error
       input: '{
       	 "transactionId": "$TRANSACTIONID$",
           "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
@@ -282,13 +263,10 @@ DownloadUinCard:
 
       output: '{
 	           "errors": [{
-					"errorCode": "RES-SER-410",
-			        "message": "$IGNORE$"
+					"errorCode": "RES-SER-414"
 			}],
                 "sendOtpResp":{
-			        "maskedMobile": "$IGNORE$",
-			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-			        "maskedEmail": "$IGNORE$"
+			        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
    

@@ -2,19 +2,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Invalid_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_01      
-      description: Validate OTP requested using userId when invalid request time is given in request     
+      description: Verify that the system returns an error when the API is called with invalid request time for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "576",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -23,8 +23,7 @@ ValidateWithUserIdOtp:
       output: '{
        "errors": [
     {
-      "errorCode": "RES-SER-418",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "RES-SER-418"
     }
   ],
        "sendOtpResp":{
@@ -37,19 +36,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Past_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_02      
-      description: Validate OTP requested using userId when request time is given as past time      
+      description: Verify that the system returns an error when the API is called with past request time for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "2022-02-13T04:50:44.641Z",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -58,8 +57,7 @@ ValidateWithUserIdOtp:
       output: '{
        "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -70,7 +68,7 @@ ValidateWithUserIdOtp:
 }'
 
    Resident_ValidateWithUserIdOtp_uin_Future_RequestTime_Neg:
-      description: Validate OTP requested using userId when request time is given as future value   
+      description: Verify that the system returns an error when the API is called with future request time for user ID OTP validation
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_03      
       role: residentNew
@@ -79,12 +77,12 @@ ValidateWithUserIdOtp:
       outputTemplate: resident/error
       input: '{
       	"requesttime": "2033-02-13T04:50:44.641Z",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -93,8 +91,7 @@ ValidateWithUserIdOtp:
       output: '{
       "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -107,7 +104,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_04      
-      description: Validate OTP requested using userId and userId value is given invalid in request      
+      description: Verify that the system returns an error when the API is called with invalid user ID for OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -116,10 +113,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "6y6$",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -143,7 +140,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_05      
-      description: Validate OTP requested using userId when userId value is given as empty      
+      description: Verify that the system returns an error when the API is called with empty user ID for OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -152,10 +149,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -164,8 +161,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -179,7 +175,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_06      
-      description: Validate OTP requested using userId when only spaces is given as user id value      
+      description: Verify that the system returns an error when the API is called with user ID containing only spaces for OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -188,10 +184,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": " ",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -215,7 +211,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_07      
-      description: Validate OTP requested using userId when userid attribute is removed from request      
+      description: Verify that the system returns an error when the API is called with missing user ID for OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -224,10 +220,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "$REMOVE$",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -250,7 +246,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_08      
-      description: Validate OTP requested using userId when userid value given as null      
+      description: Verify that the system returns an error when the API is called with null user ID for OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -259,10 +255,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "null",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -285,19 +281,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_09      
-      description: Validate OTP requested using userId when invalid transactionid is given     
+      description: Verify that the system returns an error when the API is called with invalid transaction ID for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "Tg$4",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -320,19 +316,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_10      
-      description: Validate OTP requested using userId when transactionid value is empty      
+      description: Verify that the system returns an error when the API is called with empty transaction ID for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -341,8 +337,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -355,19 +350,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_11      
-      description: Validate OTP requested using userId when transactionid is removed from request      
+      description: Verify that the system returns an error when the API is called with missing transaction ID for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$REMOVE$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -376,8 +371,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -390,19 +384,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Space_val_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_12      
-      description: Validate OTP requested using userId when only spaces given for transactionid value      
+      description: Verify that the system returns an error when the API is called with transaction ID containing only spaces for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": " ",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -411,8 +405,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -425,19 +418,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Null_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_13      
-      description: Validate OTP requested using userId when transactionid value is given as null      
+      description: Verify that the system returns an error when the API is called with null transaction ID for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "null",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -446,8 +439,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -460,19 +452,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_14      
-      description: Validate OTP requested using userId when invalid otp is passed      
+      description: Verify that the system returns an error when the API is called with invalid OTP for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"cdw3$",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -481,8 +473,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -495,19 +486,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Missing_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_15      
-      description: Validate OTP requested using userId when otp attribute is removed from request      
+      description: Verify that the system returns an error when the API is called with missing OTP for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"$REMOVE$",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -516,8 +507,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -530,19 +520,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Null_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_16      
-      description: Validate OTP requested using userId when otp value is given as null      
+      description: Verify that the system returns an error when the API is called with null OTP for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"null",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -551,8 +541,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -565,19 +554,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_SpaceVal_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_17      
-      description: Validate OTP requested using userId when only spaces given as otp value      
+      description: Verify that the system returns an error when the API is called with OTP containing only spaces for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":" ",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -586,8 +575,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -600,19 +588,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_18      
-      description: Validate OTP requested using userId when otp value is empty      
+      description: Verify that the system returns an error when the API is called with empty OTP for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -621,8 +609,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -635,19 +622,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Invalid_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_19      
-      description: Validate OTP requested using userId       
+      description: Verify that the system successfully validates the OTP when the API is called with valid input details for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "576",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -656,8 +643,7 @@ ValidateWithUserIdOtp:
       output: '{
        "errors": [
     {
-      "errorCode": "RES-SER-418",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "RES-SER-418"
     }
   ],
        "sendOtpResp":{
@@ -670,19 +656,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Past_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_20      
-      description: Validate OTP requested using userId when past requestime is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and past request time for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "2022-02-13T04:50:44.641Z",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -691,8 +677,7 @@ ValidateWithUserIdOtp:
       output: '{
        "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -705,19 +690,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Future_RequestTime_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_21      
-      description: Validate OTP requested using userId when future requestime is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and future request time for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "2033-02-13T04:50:44.641Z",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -727,8 +712,7 @@ ValidateWithUserIdOtp:
       
        "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -741,7 +725,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Invalid_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_22      
-      description: Validate OTP requested when invalid userid is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid user ID for OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -750,10 +734,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "6y6$",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -777,7 +761,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Empty_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_23      
-      description: Validate OTP requested when userid is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing user ID for OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -786,10 +770,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -813,7 +797,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_SpaceVal_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_24      
-      description: Validate OTP requested when userid is given only spaces and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and user ID containing only spaces for OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -822,10 +806,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": " ",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -849,7 +833,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Missing_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_25      
-      description: Validate OTP requested when userid is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing user ID attribute for OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -858,10 +842,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "$REMOVE$",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -884,7 +868,7 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Null_userId_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_26      
-      description: Validate OTP requested when userid is given with null values and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and null user ID for OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
@@ -893,10 +877,10 @@ ValidateWithUserIdOtp:
       	"requesttime": "$TIMESTAMP$",
 	    "userId": "null",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -919,19 +903,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Invalid_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_27      
-      description: Validate OTP requested using userid when invalid transactionid is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid transaction ID for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "Tg$4",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -954,19 +938,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Empty_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_28      
-      description: Validate OTP requested using userid when transactionid is empty and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty transaction ID for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -975,8 +959,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -989,19 +972,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Missing_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_29      
-      description: Validate OTP requested using userid when transactionid is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing transaction ID for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$REMOVE$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1010,8 +993,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1024,19 +1006,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Space_val_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_30    
-      description: Validate OTP requested using userid when transactionid is given with only spaces and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and transaction ID containing only spaces for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": " ",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1045,8 +1027,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1059,19 +1040,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Null_transactionID_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_31      
-      description: Validate OTP requested using userid when transactionid is given null and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and null transaction ID for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "null",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1080,8 +1061,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1094,19 +1074,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Invalid_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_32      
-      description: Validate OTP requested using userid when invalid otp is given and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid OTP for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"cdw3$",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1115,8 +1095,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1129,19 +1108,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Missing_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_33      
-      description: Validate OTP requested using userid when otp is removed and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and missing OTP for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"$REMOVE$",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1150,8 +1129,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1164,19 +1142,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Null_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_34      
-      description: Validate OTP requested using userid when otp is null and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and null OTP for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"null",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1185,8 +1163,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1199,19 +1176,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_SpaceVal_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_35      
-      description: Validate OTP requested using userid when otp is given as null values and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and OTP containing only spaces for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":" ",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1220,8 +1197,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1234,19 +1210,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_Empty_Otp_Neg:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_36      
-      description: Validate OTP requested using userid when otp is given empty value and logged in using VID      
+      description: Verify that the system returns an error when the API is called with a valid VID and empty OTP for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/error
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
     	"otp":"",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1255,8 +1231,7 @@ ValidateWithUserIdOtp:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
        "sendOtpResp":{
@@ -1269,19 +1244,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_uin_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_37      
-      description: Validate OTP requested using userid with all valid details and logged in using UIN      
+      description: Verify that the system successfully validates the OTP when the API is called with valid input details and a valid UIN for user ID OTP validation
       role: residentNew
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtpResult
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"
@@ -1299,19 +1274,19 @@ ValidateWithUserIdOtp:
    Resident_ValidateWithUserIdOtp_vid_all_Valid_Smoke:
       endPoint: /resident/v1/contact-details/update-data
       uniqueIdentifier: TC_Resident_ValidateUserIdOtp_38      
-      description: Validate OTP requested using userid with all valid details and logged in using VID      
+      description: Verify that the system successfully validates the OTP when the API is called with valid input details and a valid VID for user ID OTP validation
       role: residentNewVid
       restMethod: post
       inputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtp
       outputTemplate: resident/ValidateWithUserIdOtp/ValidateWithUserIdOtpResult
       input: '{
       	"requesttime": "$TIMESTAMP$",
-	    "userId": "residentautomation2@mosip.net",
+	    "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	    "transactionID": "$TRANSACTIONID$",
-    	"otp": "residentautomation2@mosip.net",
+    	"otp": "$RUNCONTEXT$residentautomation2@mosip.net",
     	 "sendOtp":{
            "requesttime": "$TIMESTAMP$",
-           "userId": "residentautomation2@mosip.net",
+           "userId": "$RUNCONTEXT$residentautomation2@mosip.net",
 	       "transactionId": "$TRANSACTIONID$",
            "sendOtpReqTemplate": "resident/SendOtpToUserId/SendOtpToUserId",
            "sendOtpEndPoint": "/resident/v1/contact-details/send-otp"

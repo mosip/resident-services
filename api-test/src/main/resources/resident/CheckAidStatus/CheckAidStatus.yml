@@ -2,7 +2,7 @@ CheckAidStatus:
    Resident_CheckAidStatus_all_Valid_Smoke:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_01
-      description: Check the status of the AID using valid data
+      description: Verify that the system successfully returns the AID status when the API is called with valid input details
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -25,16 +25,14 @@ CheckAidStatus:
 }'
       output: '{
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Invalid_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_02
-      description: Check the status of the AID by using an invalid AID
+      description: Verify that the system returns an error when the API is called with invalid AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -58,21 +56,18 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-410",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-410"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Invalid_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_03
-      description: Check the status of the AID using an invalid transactionID
+      description: Verify that the system returns an error when the API is called with invalid transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -96,21 +91,18 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-410",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-410"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Invalid_Otp_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_04
-      description: Check the status of the AID using an invalid OTP
+      description: Verify that the system returns an error when the API is called with invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -134,21 +126,18 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-422",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-422"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Empty_Aid_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_05
-      description: Check the status of the AID using an empty AID
+      description: Verify that the system returns an error when the API is called with empty AID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -172,21 +161,18 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-410",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-410"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Empty_TransactionID_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_06
-      description: Check the status of the AID using an empty transaction ID
+      description: Verify that the system returns an error when the API is called with empty transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -210,26 +196,23 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-410",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-410"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 }'
 
    Resident_CheckAidStatus_Empty_Otp_Neg:
       endPoint: /resident/v1/aid/status
       uniqueIdentifier: TC_Resident_CheckAidStatus_07
-      description: Check the status of the AID using an empty otp
+      description: Verify that the system returns an error when the API is called with empty OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
       inputTemplate: resident/CheckAidStatus/CheckAidStatus
-      outputTemplate: resident/error 
+      outputTemplate: resident/error
       input: '{
 		"requesttime": "$TIMESTAMP$",
 	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
@@ -248,14 +231,543 @@ CheckAidStatus:
       output: '{
 		 "errors": [
 	    {
-	      "errorCode": "RES-SER-410",
-	      "message": "$IGNORE$"
+	      "errorCode": "RES-SER-410"
 	    }
   ],
         "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
     }
 
+}'
+
+   Resident_CheckAidStatus_Missing_Aid_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_08
+      description: Verify that the system returns an error when the API is called with missing AID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "$REMOVE$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Missing_Requesttime_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_09
+      description: Verify that the system returns an error when the API is called with missing requesttime
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$REMOVE$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_Requesttime_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_10
+      description: Verify that the system returns an error when the API is called with empty requesttime
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Missing_Otp_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_11
+      description: Verify that the system returns an error when the API is called with missing OTP
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$REMOVE$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_TransactionID_Alpha_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_12
+      description: Verify that the system returns an error when the API is called with alphabetic-only transactionId
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "abcdefghi",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Missing_TransactionID_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_13
+      description: Verify that the system returns an error when the API is called with missing transactionId
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$REMOVE$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_Id_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_14
+      description: Verify that the system returns an error when the API is called with invalid ID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "xyz",
+	    "version": "1.0",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Missing_Id_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_15
+      description: Verify that the system returns an error when the API is called with missing ID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "$REMOVE$",
+	    "version": "1.0",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_Id_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_16
+      description: Verify that the system returns an error when the API is called with empty ID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "",
+	    "version": "1.0",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Empty_Version_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_17
+      description: Verify that the system returns an error when the API is called with empty version
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "mosip.resident.checkstatus",
+	    "version": "",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_Version_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_18
+      description: Verify that the system returns an error when the API is called with invalid version
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "mosip.resident.checkstatus",
+	    "version": "adcd",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Missing_Version_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_19
+      description: Verify that the system returns an error when the API is called with missing version
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatusWithOverrides
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "id": "mosip.resident.checkstatus",
+	    "version": "$REMOVE$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_VidOnly_all_Valid_Smoke:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_20
+      description: Verify that the system successfully returns the AID status when the API is called with valid input details and use-vid-only set to true
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/CheckAidStatus/CheckAidStatusResult
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_VidOnly_Invalid_Aid_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_21
+      description: Verify that the system returns an error when the API is called with use-vid-only set to true and invalid AID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "$TIMESTAMP$",
+	    "aid": "xyz",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
+}'
+
+   Resident_CheckAidStatus_Invalid_Requesttime_Format_Neg:
+      endPoint: /resident/v1/aid/status
+      uniqueIdentifier: TC_Resident_CheckAidStatus_22
+      description: Verify that the system returns an error when the API is called with invalid requesttime format
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/CheckAidStatus/CheckAidStatus
+      outputTemplate: resident/error
+      input: '{
+	    "requesttime": "2023-11-21",
+	    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+	    "otp": "$ID:AddIdentity_Positive_PRE_smoke_EMAIL$",
+	    "transactionId": "$TRANSACTIONID$",
+	    "sendOtp":{
+		    "transactionId": "$TRANSACTIONID$",
+		    "requestTime": "$TIMESTAMP$",
+		    "individualId": "$ID:AddIdentity_Positive_PRE_smoke_UIN$",
+		    "otpChannel": [{channel: "EMAIL"},{channel: "PHONE"}],
+		    "aid": "$ID:UpdateUIN_Valid_All_Smoke_Pos_sid_registrationId$",
+		    "sendOtpReqTemplate": "resident/ReqAidOtp/ReqAidOtp",
+		    "sendOtpEndPoint": "/resident/v1/individualId/otp"
+	    }
+}'
+      output: '{
+		 "errors": [
+	    {
+	      "errorCode": "RES-SER-410"
+	    }
+  ],
+        "sendOtpResp":{
+        "sendOtpResTemplate":"resident/ReqAidOtp/ReqAidOtpResult"
+    }
 }'

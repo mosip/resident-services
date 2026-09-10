@@ -1,13 +1,14 @@
 {
-    "id": "mosip.resident.download.personalized.card",
-    "version": "1.0",
-    "requesttime": "{{requesttime}}",
-    "request": {
-        "attributes": [
+  "id": "mosip.resident.download.personalized.card",
+  "version": "1.0",
+  "requesttime": "{{requesttime}}",
+  "request": {
+    "html": "{{html}}",
+    "attributes": [
       {{#each attributes}}
-            "{{attributesVal}}"
-          {{#unless @last}},{{/unless}}
-      	{{/each}}
-  ]
-    }
+        "{{attributesVal}}"
+        {{#unless @last}},{{/unless}}
+      {{/each}}
+    ]
+  }
 }

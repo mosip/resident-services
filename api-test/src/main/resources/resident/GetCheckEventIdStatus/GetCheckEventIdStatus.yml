@@ -2,10 +2,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_uin_all_Valid_Smoke:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_01      
-      description: Get check eventId status using a valid UIN with all valid inputs
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details and a valid UIN
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
@@ -19,10 +20,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_vid_all_Valid_Smoke:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_02      
-      description: Get check eventId status using a valid VID with all valid inputs
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details and a valid VID
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
       input: '{
@@ -36,10 +38,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_uin_Invalid_eventId_Neg:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_03      
-      description: Get check eventId status using a valid UIN with an invalid eventId
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid UIN with an invalid eventId
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -49,8 +52,7 @@ GetCheckEventIdStatus:
       output: '{
         "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -58,10 +60,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_vid_Invalid_eventId_Neg:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_04      
-      description: Get check eventId status using a valid VID with an invalid eventId
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid VID with an invalid eventId
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -71,8 +74,7 @@ GetCheckEventIdStatus:
       output: '{
         "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -80,10 +82,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_uin_Invalid_LangCode_Neg:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_05      
-      description: Get check eventId status using a valid UIN with an invalid langcode
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid UIN with an invalid langcode
       role: residentNew
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -93,8 +96,7 @@ GetCheckEventIdStatus:
       output: '{
         "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -102,10 +104,11 @@ GetCheckEventIdStatus:
    Resident_GetCheckEventIdStatus_vid_Invalid_LangCode_Neg:
       endPoint: /resident/v1/events/{eventId}?langCode={langCode}
       uniqueIdentifier: TC_Resident_GetEventIdStatus_06      
-      description: Get check eventId status using a valid VID with an invalid langcode
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid VID with an invalid langcode
       role: residentNewVid
       checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
       outputTemplate: resident/error
       input: '{
@@ -115,8 +118,116 @@ GetCheckEventIdStatus:
       output: '{
         "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_uin_Without_eventId_Neg:
+      endPoint: /resident/v1/?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_07
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid UIN without eventId
+      role: residentNew
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+       "eventId": "$REMOVE$",
+       "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-418"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_uin_SpaceWithin_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_10
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid UIN with a space within the eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": "550e8400 e29b41d4a716446655440000",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_SpaceWithin_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_11
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid VID with a space within the eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": "550e8400 e29b41d4a716446655440000",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_uin_SpaceAtEnds_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_12
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid UIN with spaces at the beginning and end of the eventId
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": " 550e8400e29b41d4a716446655440000 ",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
+    }
+  ]
+}'
+
+   Resident_GetCheckEventIdStatus_vid_SpaceAtEnds_eventId_Neg:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_13
+      description: Verify that the system returns an error when the API is called with check eventId status using a valid VID with spaces at the beginning and end of the eventId
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/error
+      input: '{
+        "eventId": " 550e8400e29b41d4a716446655440000 ",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+        "errors": [
+    {
+      "errorCode": "RES-SER-410"
     }
   ]
 }'

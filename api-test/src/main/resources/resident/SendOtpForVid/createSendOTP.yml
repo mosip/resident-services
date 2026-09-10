@@ -2,7 +2,7 @@ createSendOTP:
    Resident_SendOTP_All_Valid_Smoke:
       endPoint: /idauthentication/v1/otp/v4jO2rTUkDglaG7rCkWDnqIT3WpZaGEW9j3FMXwTA5xXKVaDpx/6001/34536061
       uniqueIdentifier: TC_Resident_Sendotp_01      
-      description: Request OTP using VID      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       inputTemplate: resident/SendOtpForVid/createSendOTP

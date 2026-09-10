@@ -2,7 +2,7 @@ SendOTP:
    Resident_SendOTP_Valid_UIN_All_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_01      
-      description: Request otp using UIN as individual id      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -15,14 +15,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
    Resident_SendOTP_Valid_UIN_Transactions_All_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_02      
-      description: Request otp using UIN as individual id      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -35,14 +33,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
    Resident_SendOTP_Valid_VID_All_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_03      
-      description: Request otp using VID as individual id      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -55,15 +51,13 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
 
    Resident_SendOTP_Valid_VID_Use_Five_Pos:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_04      
-      description: Request otp using VID as individual id      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -76,14 +70,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }' 
     
    Resident_SendOTP_Valid_VID_Use_Pos:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_05      
-      description: Request otp using VID as individual id      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -96,14 +88,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
    Resident_SendOTP_Valid_UIN_Phone_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_06      
-      description: Request otp using UIN as individual id and otp channel as phone      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid UIN and phone OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -117,13 +107,11 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
    Resident_SendOTP_Valid_UIN_Email_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_07      
-      description: Request otp using UIN as individual id and otp channel as email      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid UIN and email OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -137,13 +125,11 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
    Resident_SendOTP_RevokedVID_Invalid:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_08      
-      description: Request otp using Revoked VID as individual id       
+      description: Verify that the system returns an error when the API is called with a revoked VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -156,13 +142,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-      "errorCode": "IDA-MLC-023",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "IDA-MLC-023"
     }'
    Resident_SendOTP_Valid_UIN_Invalid_empty_otpChannel:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_09      
-      description: Request otp using UIN as individual id and otp channel as empty array      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -176,13 +161,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-      "errorCode": "IDA-OTA-008",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "IDA-OTA-008"
     }'
    Resident_SendOTP_InValid_individualId:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_10      
-      description: Request otp using invalid individual id      
+      description: Verify that the system returns an error when the API is called with invalid individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -195,13 +179,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Missing_individualId:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_11      
-      description: Request otp without individual id attribute in request      
+      description: Verify that the system returns an error when the API is called with missing individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -214,13 +197,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Empty_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_12      
-      description: Request otp using UIN as individual id and transcationid value as empty      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty transaction ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -233,13 +215,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-006",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-006"
     }'
    Resident_SendOTP_InValid_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_13      
-      description: Request otp using UIN as individual id and invalid transaction id is given  
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transaction ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -252,13 +233,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Missing_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_14      
-      description: Request otp using UIN as individual id and transactionid value is removed from request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing transaction ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -271,13 +251,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "RES-SER-425",
-         "message": "$IGNORE$"
+         "errorCode": "RES-SER-425"
     }'
    Resident_SendOTP_InValid_Empty_requestTime:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_15      
-      description: Request otp using UIN as individual id and requesttime is given as empty      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty request time
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -290,13 +269,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-006",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-006"
     }'
    Resident_SendOTP_InValid_requestTime:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_16      
-      description: Request otp using UIN as individual id and invalid request time is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid request time
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -309,14 +287,13 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "RES-SER-425",
-         "message": "$IGNORE$"
+         "errorCode": "RES-SER-425"
     }'
 
    Resident_SendOTP_Empty_individualId_Neg:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_17      
-      description: Request otp when individual id value is empty      
+      description: Verify that the system returns an error when the API is called with empty individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -329,13 +306,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_Empty_individualIdType_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_18      
-      description: Request otp when individual id type value is empty      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN with empty individual id type
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -348,14 +324,12 @@ SendOTP:
     "individualIdType": ""
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
    Resident_SendOTP_Valid_VID_Phone_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_19      
-      description: Request otp using VID as individual id and otp channel as only phone      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid VID and phone OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -369,14 +343,12 @@ SendOTP:
     "individualIdType": "VID"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
     
    Resident_SendOTP_Valid_Vid_Email_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_Sendotp_20      
-      description: Request otp using VID as individual id and otp channel as only email      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid VID and email OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -390,6 +362,76 @@ SendOTP:
     "individualIdType": "VID"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
+    }'
+
+   Resident_SendOTP_With_Invalid_UIN_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_21      
+      description: Verify that the system returns an error when the API is called with invalid UIN
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$INVALID_UIN$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009"
+    }'
+
+   Resident_SendOTP_With_Valid_UIN_NotIn_DB_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_22      
+      description: Verify that the system returns an error when the API is called with a valid UIN not present in the database
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$VALID_UIN_NOTIN_DB$",
+    "individualIdType": "UIN"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-018"
+    }'
+
+   Resident_SendOTP_With_Invalid_VID_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_23     
+      description: Verify that the system returns an error when the API is called with invalid VID
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$INVALID_VID$",
+    "individualIdType": "VID"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-009"
+    }'
+
+   Resident_SendOTP_With_Valid_VID_NotIn_DB_Neg:
+      endPoint: /resident/v1/req/otp
+      uniqueIdentifier: TC_Resident_Sendotp_24     
+      description: Verify that the system returns an error when the API is called with a valid VID not present in the database
+      role: resident
+      restMethod: post
+      inputTemplate: resident/SendOTP/createSendOTP
+      outputTemplate: resident/SendOTP/createSendOTPErrorResult
+      input: '{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$VALID_VID_NOTIN_DB$",
+    "individualIdType": "VID"
+}'
+      output: '{
+         "errorCode": "IDA-MLC-018"
     }'

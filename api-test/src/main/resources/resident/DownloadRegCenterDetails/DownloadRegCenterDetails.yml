@@ -1,10 +1,9 @@
 DownloadRegCenterDetails:
    Resident_DownloadRegCenterDetails_all_Valid_Smoke:
-      endPoint: /resident/v1/download/registrationcenters
+      endPoint: /resident/v1/download/registration-centers-list
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_01
-      description: Download registration center details using all valid inputs
+      description: Verify that the system successfully returns the registration center details PDF when the API is called with valid input details
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetailsResult
@@ -14,15 +13,14 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Langcode_Neg:
-      endPoint: /resident/v1/download/registrationcenters
+      endPoint: /resident/v1/download/registration-centers-list
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_02
-      description: Download registration center details using an invalid langcode
+      description: Verify that the system returns an error when the API is called with invalid langcode
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -32,15 +30,18 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "errors": [
+         {
+            "errorCode": "RES-SER-410"
+         }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Hierarchylevel_Neg:
-      endPoint: /resident/v1/download/registrationcenters
+      endPoint: /resident/v1/download/registration-centers-list
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_03
-      description: Download registration center details using an invalid hierarchylevel
+      description: Verify that the system returns an error when the API is called with invalid hierarchylevel
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -50,15 +51,18 @@ DownloadRegCenterDetails:
 		  "name": "10112"
 }'
       output: '{
-		
+      "errors": [
+         {
+            "errorCode": "RES-SER-418"
+         }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_Name_Neg:
-      endPoint: /resident/v1/download/registrationcenters
+      endPoint: /resident/v1/download/registration-centers-list
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_04
-      description: Download registration center details using an invalid name
+      description: Verify that the system returns an error when the API is called with invalid name
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -68,15 +72,18 @@ DownloadRegCenterDetails:
 		  "name": "10@##112"
 }'
       output: '{
-		
+        "errors": [
+          {
+             "errorCode": "RES-SER-418"
+          }
+      ]
 }'
 
    Resident_DownloadRegCenterDetails_Invalid_All_Input_Neg:
-      endPoint: /resident/v1/download/registrationcenters
+      endPoint: /resident/v1/download/registration-centers-list
       uniqueIdentifier: TC_Resident_DownloadRegCenterDetails_05
-      description: Download registration center details using all invalid inputs
+      description: Verify that the system returns an error when the API is called with all invalid inputs
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadRegCenterDetails/DownloadRegCenterDetails
       outputTemplate: resident/error
@@ -86,5 +93,9 @@ DownloadRegCenterDetails:
 		  "name": "10@##112"
 }'
       output: '{
-		
+        "errors": [
+           {
+              "errorCode": "RES-SER-418"
+           }
+      ]
 }'

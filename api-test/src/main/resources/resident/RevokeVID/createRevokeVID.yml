@@ -2,7 +2,7 @@ RevokeVID:
    Resident_Revoke_Perpetual_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Perpetual_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_01      
-      description: Revoke Perpetual VID when Otp requested using same VID      
+      description: Verify that the system successfully revokes the perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -33,16 +33,14 @@ RevokeVID:
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Temporary_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_02      
-      description: Revoke Temporary VID when Otp requested using same VID      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -73,16 +71,14 @@ RevokeVID:
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Onetimeuse_VID_UsingSameVID_Invalid:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Onetimeuse_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_03      
-      description: Revoke Onetimeuse VID when Otp requested using same VID      
+      description: Verify that the system successfully revokes the onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -113,16 +109,14 @@ RevokeVID:
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Invalid_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_04      
-      description: Revoke Perpetual VID by giving id value invalid and otp requested uisng UIN     
+      description: Verify that the system returns an error when the API is called with id value invalid and otp requested uisng UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -153,16 +147,14 @@ RevokeVID:
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Missing_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_05      
-      description: Revoke Perpetual VID by removing id attribute from request and otp requested using UIN   
+      description: Verify that the system returns an error when the API is called with perpetual VID by removing id attribute from request and otp requested using UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -189,21 +181,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_Id:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_06      
-      description: Revoke Perpetual VID when Otp requested using UIN and id value is given empty      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and id value is given empty
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -230,21 +219,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Invalid_Individual_Id:
       endPoint: /resident/v1/vid/@234rff
       uniqueIdentifier: TC_Resident_RevokeVid_07      
-      description: Revoke Perpetual VID when Otp requested using UIN and invalid individual id is given     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and invalid individual id is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -271,20 +257,17 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-412",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-412"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_RevokeVID_Missing_Individual_Id:
       endPoint: /resident/v1/vid/$REMOVE$
       uniqueIdentifier: TC_Resident_RevokeVid_08      
-      description: Revoke Perpetual VID when Otp requested using UIN and individual id is removed from request     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and individual id is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -311,21 +294,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_Individual_Id:
       endPoint: /resident/v1/vid/""
       uniqueIdentifier: TC_Resident_RevokeVid_10      
-      description: Revoke Perpetual VID when Otp requested using UIN and individual id value is given empty     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and individual id value is given empty
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -352,20 +332,17 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_RevokeVID_Missing_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_11      
-      description: Revoke temporary VID when Otp requested using UIN and requesttime is removed in request     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and requesttime is removed in request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -392,20 +369,17 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_RevokeVID_Invalid_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_12      
-      description: Revoke temporary VID when Otp requested using UIN and invalid requesttime is given     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and invalid requesttime is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -432,21 +406,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_Request_Time:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_13      
-      description: Revoke temporary VID when Otp requested using UIN and requesttime is given empty     
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and requesttime is given empty
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -473,21 +444,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Invalid_version:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_14      
-      description: Revoke temporary VID when Otp requested using UIN and invalid version is given      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and invalid version is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -514,20 +482,17 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_RevokeVID_Missing_version:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_15      
-      description: Revoke temporary VID when Otp requested using UIN and version is removed from request      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and version is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -554,21 +519,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_version:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_16      
-      description: Revoke temporary VID when Otp requested using UIN and empty version is given      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and empty version is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -595,21 +557,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_transactionID:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_17      
-      description: Revoke temporary VID when Otp requested using UIN and empty transaction id is given      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and empty transaction id is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -636,21 +595,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Invalid_transactionID:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_18      
-      description: Revoke temporary VID when Otp requested using UIN and invalid transaction id is given      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and invalid transaction id is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -677,21 +633,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Missing_transactionID:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_19      
-      description: Revoke temporary VID when Otp requested using UIN and transaction id is removed from request      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and transaction id is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -718,21 +671,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Missing_vid_status:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_20      
-      description: Revoke temporary VID when Otp requested using UIN and VidStatus is removed from request      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and VidStatus is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -759,20 +709,17 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_RevokeVID_Invalid_vidstatus:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_21      
-      description: Revoke temporary VID when Otp requested using UIN and invalid VidStatus is given      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and invalid VidStatus is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -799,21 +746,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_RevokeVID_Empty_vidstatus:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_22      
-      description: Revoke temporary VID when Otp requested using UIN and VidStatus is empty      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN and VidStatus is empty
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -840,21 +784,18 @@ RevokeVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Temporary_VID_UsingPerpVID_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_23      
-      description: Revoke temporary VID when Otp requested using perpetual VID      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -880,16 +821,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Temporary_VID_UsingTempVID_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_2_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_24      
-      description: Revoke temporary VID when Otp requested using temporary VID      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -915,16 +854,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Temporary_VID_UsingOnetimeVID_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_3_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_25      
-      description: Revoke temporary VID when Otp requested using onetimeuse VID      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -950,16 +887,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Perpetual_VID_UsingUIN_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Perpetual_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_26      
-      description: Revoke perpetual VID when Otp requested using UIN      
+      description: Verify that the system successfully revokes the perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -985,16 +920,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Onetimeuse_VID_UsingUIN_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Onetimeuse_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_27      
-      description: Revoke onetimeuse VID when Otp requested using UIN      
+      description: Verify that the system successfully revokes the onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -1020,16 +953,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Temporary_VID_UsingUIN_Valid_Smoke:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_4_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_28      
-      description: Revoke temporary VID when Otp requested using UIN      
+      description: Verify that the system successfully revokes the temporary VID when the API is called with valid input details and a valid VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -1055,16 +986,14 @@ RevokeVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Expired_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Perpetual_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_29      
-      description: Revoke expired VID when Otp requested using UIN      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -1091,21 +1020,18 @@ RevokeVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-412",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-412"
     }
   ],     
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Expired_Temp_VID_Neg:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_30      
-      description: Revoke Expired temporary VID when Otp requested using UIN      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -1132,21 +1058,18 @@ RevokeVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-412",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-412"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Revoke_Expired_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid/$ID:GenerateVID_Onetimeuse_Using_RevokeUIN_Valid_Smoke_sid_vid$
       uniqueIdentifier: TC_Resident_RevokeVid_31      
-      description: Revoke expired onetimeuse VID when Otp requested using UIN      
+      description: Verify that the system returns an error when the API is called with otp requested using UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: patch
@@ -1173,13 +1096,10 @@ RevokeVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-412",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-412"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'

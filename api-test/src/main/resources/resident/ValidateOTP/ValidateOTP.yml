@@ -2,7 +2,7 @@ SendOTP:
    Resident_SendOTP_Valid_UIN_All_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_01      
-      description: Request OTP using UIN       
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -15,13 +15,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
         "maskedEmail": "XXsXXeXXaXXoXXtXXn@gmail.com"
     }'
    Resident_SendOTP_Valid_UIN_Phone_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_02      
-      description: Request OTP using UIN when otp channel is given as only phone      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid UIN and phone OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -35,13 +34,11 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
-        "maskedEmail": "$IGNORE$"
     }'
    Resident_SendOTP_Valid_UIN_Email_Smoke:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_03      
-      description: Request OTP using UIN when otp channel is given as only Email      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details, a valid UIN and email OTP channel
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -55,13 +52,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-        "maskedMobile": "$IGNORE$",
         "maskedEmail": "XXsXXeXXaXXoXXtXXn@gmail.com"
     }'
    Resident_SendOTP_RevokedVID_Invalid:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_04      
-      description: Request OTP using Revoked VID      
+      description: Verify that the system returns an error when the API is called with a revoked VID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -74,13 +70,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-      "errorCode": "IDA-MLC-018",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "IDA-MLC-018"
     }'
    Resident_SendOTP_Valid_UIN_Invalid_empty_otpChannel:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_05      
-      description: Request OTP using UIN when otp channel is empty array      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty OTP channel
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP2
@@ -93,13 +88,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-      "errorCode": "IDA-OTA-008",
-      "errorMessage": "$IGNORE$"
+      "errorCode": "IDA-OTA-008"
     }'
    Resident_SendOTP_InValid_individualId:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_06      
-      description: Request OTP using invalid individualId      
+      description: Verify that the system returns an error when the API is called with invalid individual id
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -111,13 +105,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Missing_individualId:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_07      
-      description: Request OTP when individualId is removed from request      
+      description: Verify that the system returns an error when the API is called with missing individual id
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -129,13 +122,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Empty_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_07      
-      description: Request OTP when transcationId is given empty      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty transaction ID
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -147,13 +139,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-006",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-006"
     }'
    Resident_SendOTP_InValid_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_09      
-      description: Request OTP when invalid transcationId is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid transaction ID
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -165,13 +156,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-009",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-009"
     }'
    Resident_SendOTP_InValid_Missing_transactionID:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_10      
-      description: Request OTP when transcationId is removed from request      
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing transaction ID
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -183,13 +173,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "RES-SER-425",
-         "message": "$IGNORE$"
+         "errorCode": "RES-SER-425"
     }'
    Resident_SendOTP_InValid_Empty_requestTime:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_11      
-      description: Request OTP when requesttime is given empty      
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty request time
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -201,13 +190,12 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "IDA-MLC-006",
-         "errorMessage": "$IGNORE$"
+         "errorCode": "IDA-MLC-006"
     }'
    Resident_SendOTP_InValid_requestTime:
       endPoint: /resident/v1/req/otp
       uniqueIdentifier: TC_Resident_RequestOtp_12      
-      description: Request OTP when invalid requesttime is given      
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid request time
       role: resident
       restMethod: post
       inputTemplate: resident/SendOTP/createSendOTP
@@ -219,6 +207,5 @@ SendOTP:
     "individualIdType": "UIN"
 }'
       output: '{
-         "errorCode": "RES-SER-425",
-         "message": "$IGNORE$"
+         "errorCode": "RES-SER-425"
     }'

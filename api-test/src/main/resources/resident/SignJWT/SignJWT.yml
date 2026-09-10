@@ -2,7 +2,7 @@ SignJWT:
    Resident_SignJWT_all_Valid_Smoke_sid:
       endPoint: /v1/keymanager/jwtSign
       uniqueIdentifier: TC_Dependency_esignet      
-      description: Get signJWT      
+      description: Verify that the system successfully signs the JWT when the API is called with valid input details and a valid event ID
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

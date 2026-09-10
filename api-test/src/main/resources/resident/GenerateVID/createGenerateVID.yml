@@ -2,7 +2,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_01
-      description: Generate perpetual VID using valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -28,15 +28,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_Generate_Perpetual_VID_Valid_Smoke_send_otp_with_max_email_character_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_02
-      description: Generate a perpetual VID by sending an OTP to an email ID with maximum character
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -62,16 +60,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_With_InValid_UIN:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_03
-      description: Generate perpetual VID using an invalid UIN
+      description: Verify that the system returns an error when the API is called with perpetual VID using an invalid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -98,21 +94,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_04
-      description: Generate temporary VID using valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -138,16 +131,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temporary_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_05
-      description: Generate VID for temporary using valid inputs
+      description: Verify that the system successfully generates a VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -173,16 +164,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temp_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_06
-      description: Generate temporary VID using valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -208,16 +197,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_07
-      description: Generate Onetimeuse VID using valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -243,16 +230,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_All_Valid_Smoke_Perpetual_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_08
-      description: Generate perpetual VID using all valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -278,15 +263,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_All_Valid_Smoke_Temp_VID_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_09
-      description: Generate temporary VID using all valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -312,16 +295,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_All_Valid_Smoke_OneTimeUse_VID_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_10
-      description: Generate Onetimeuse VID using all valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -347,16 +328,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Perp_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_11
-      description: Generate temporary VID using perpetual VID
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -382,16 +361,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Temp_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_12
-      description: Generate temporary VID using temporary VID
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -417,16 +394,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Onetimeuse_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_13
-      description: Generate perpetual VID using Onetimeuse VID
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -452,16 +427,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_invalid_version_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_14
-      description: Generate VID using an invalid version
+      description: Verify that the system returns an error when the API is called with vID using an invalid version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -488,20 +461,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_missing_version_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_15
-      description: Generate VID using missing version
+      description: Verify that the system returns an error when the API is called with vID using missing version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -528,21 +498,18 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_invalid_individualId_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_16
-      description: Generate VID using an invalid individualId
+      description: Verify that the system returns an error when the API is called with vID using an invalid individualId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -556,7 +523,7 @@ GenerateVID:
         "id": "mosip.resident.vid",
         "version": "v1",
         "vidType": "Perpetual",
-        "otp": "$ID:AddIdentity_ValidParam_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_Positive_smoke_Pos_EMAIL$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
@@ -569,20 +536,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_missing_individualId_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_17
-      description: Generate VID using missing individualId
+      description: Verify that the system returns an error when the API is called with vID using missing individualId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -596,7 +560,7 @@ GenerateVID:
         "id": "mosip.resident.vid",
         "version": "v1",
         "vidType": "Perpetual",
-        "otp": "$ID:AddIdentity_ValidParam_smoke_Pos_EMAIL$",
+        "otp": "$ID:AddIdentity_Positive_PEXP_smoke_EMAIL$",
         "sendOtp":{
     "transactionID": "$TRANSACTIONID$",
     "requestTime": "$TIMESTAMP$",
@@ -609,20 +573,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_invalid_Timestamp_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_18
-      description: Generate VID using an invalid timestamp
+      description: Verify that the system returns an error when the API is called with vID using an invalid timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -649,14 +610,11 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
@@ -664,7 +622,7 @@ GenerateVID:
    Resident_GenerateVID_missing_Timestamp_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_19
-      description: Generate VID using missing timestamp
+      description: Verify that the system returns an error when the API is called with vID using missing timestamp
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -691,20 +649,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_MISSING_OTP_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_20
-      description: Generate VID using missing OTP
+      description: Verify that the system returns an error when the API is called with vID using missing OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -731,20 +686,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Invalid_OTP_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_21
-      description: Generate temporary VID using an invalid OTP
+      description: Verify that the system returns an error when the API is called with temporary VID using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -771,21 +723,18 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Invalid_OTP_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_22
-      description: Generate Onetimeuse VID using an invalid OTP
+      description: Verify that the system returns an error when the API is called with onetimeuse VID using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -812,21 +761,18 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Invalid_OTP_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_23
-      description: Generate VID using an invalid OTP
+      description: Verify that the system returns an error when the API is called with vID using an invalid OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -853,20 +799,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_missing_Id_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_24
-      description: Generate VID using missing Id
+      description: Verify that the system returns an error when the API is called with vID using missing Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -893,20 +836,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_invalid_Id_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_25
-      description: Generate VID using an invalid Id
+      description: Verify that the system returns an error when the API is called with vID using an invalid Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -933,20 +873,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_InValid_transactionId_Temp_VID:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_26
-      description: Generate temporary VID using an invalid transactionId
+      description: Verify that the system returns an error when the API is called with temporary VID using an invalid transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -973,20 +910,17 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_TransactionMismatch_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_27
-      description: Generate VID using mismatched transaction
+      description: Verify that the system returns an error when the API is called with vID using mismatched transaction
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1013,21 +947,18 @@ GenerateVID:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_28
-      description: Generate perpetual VID using perpetual VID in negative way
+      description: Verify that the system returns an error when the API is called with perpetual VID using perpetual VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1054,21 +985,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_29
-      description: Generate perpetual VID using temporary VID in negative way
+      description: Verify that the system returns an error when the API is called with perpetual VID using temporary VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1095,21 +1023,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_30
-      description: Generate perpetual VID using an Onetimeuse VID in negative way
+      description: Verify that the system returns an error when the API is called with perpetual VID using an Onetimeuse VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1136,21 +1061,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_31
-      description: Generate temporary VID using perpetual VID in negative way
+      description: Verify that the system returns an error when the API is called with temporary VID using perpetual VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1177,21 +1099,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_32
-      description: Generate temporary VID using temporary VID in negative way
+      description: Verify that the system returns an error when the API is called with temporary VID using temporary VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1218,21 +1137,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_33
-      description: Generate temporary VID using an Onetimeuse VID in negative way
+      description: Verify that the system returns an error when the API is called with temporary VID using an Onetimeuse VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1259,21 +1175,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Perpetual_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_34
-      description: Generate an Onetimeuse VID using perpetual VID in negative way
+      description: Verify that the system returns an error when the API is called with an Onetimeuse VID using perpetual VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1300,21 +1213,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Temp_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_35
-      description: Generate an Onetimeuse VID using temporary VID in negative way
+      description: Verify that the system returns an error when the API is called with an Onetimeuse VID using temporary VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1341,21 +1251,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Onetimeuse_VID_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_36
-      description: Generate an Onetimeuse VID using an Onetimeuse VID in negative way
+      description: Verify that the system returns an error when the API is called with an Onetimeuse VID using an Onetimeuse VID in negative way
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1382,21 +1289,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-422",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-422"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Temp_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_37
-      description: Generate perpetual VID using temporary VID in positive way
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1422,16 +1326,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Temp_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_38
-      description: Generate Onetimeuse VID using temporary VID in positive way
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1457,16 +1359,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Perp_VID_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_39
-      description: Generate Onetimeuse VID using perpetual VID in positive way
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1492,16 +1392,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Using_Perpetual_VID_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_40
-      description: Generate perpetual VID using perpetual VID in positive way
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1527,16 +1425,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Onetimeuse_VID_Using_Onetimeuse_VID_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_41
-      description: Generate Onetimeuse VID using Onetimeuse VID in positive way
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1562,16 +1458,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_Using_Onetimeuse_VID_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_42
-      description: Generate temporary VID using Onetimeuse VID in positive way
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1597,16 +1491,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_TransactionId_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_43
-      description: Generate perpetual VID using an empty transactionId
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty transactionId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1633,21 +1525,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_requesttime_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_44
-      description: Generate perpetual VID using an empty requesttime
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty requesttime
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1674,21 +1563,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_id_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_45
-      description: Generate perpetual VID using an empty Id
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty Id
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1715,21 +1601,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_version_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_46
-      description: Generate perpetual VID using an empty version
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty version
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1756,21 +1639,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_vidType_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_47
-      description: Generate perpetual VID using an empty vidtype
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty vidtype
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1797,21 +1677,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-406",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-406"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_otp_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_48
-      description: Generate perpetual VID using an empty OTP
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty OTP
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1838,21 +1715,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_individualId_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_49
-      description: Generate perpetual VID using an empty individualId
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty individualId
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1879,21 +1753,18 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Empty_individualIdType_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_50
-      description: Generate perpetual VID using an empty individualIdType
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty individualIdType
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1919,16 +1790,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Random_individualIdType_Pos:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_51
-      description: Generate perpetual VID using random individualIdType
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1954,16 +1823,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_Phone_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_52
-      description: Generate perpetual VID using phone and valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -1989,7 +1856,6 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
         "sendOtpResTemplate":"resident/SendOTP/createSendOTPResultForPhone"
     }
 }'
@@ -1997,7 +1863,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_Email_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_53
-      description: Generate perpetual VID using Email and valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2023,15 +1889,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResultForEmail",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResultForEmail"
     }
 }'
 
    Resident_Generate_Perpetual_VID_EmptyChannel_Invalid_Neg:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_54
-      description: Generate perpetual VID using an empty channel
+      description: Verify that the system returns an error when the API is called with perpetual VID using an empty channel
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2058,15 +1923,13 @@ GenerateVID:
       output: '{
   "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ],
   "sendOtpResp":{
     "errors": [
     {
-      "errorCode": "IDA-OTA-008",
-      "message": "$IGNORE$"
+      "errorCode": "IDA-OTA-008"
     }
   ],
         "sendOtpResTemplate":"resident/error"
@@ -2075,7 +1938,7 @@ GenerateVID:
    Resident_GenerateVID_Perpetual_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_55
-      description: Generate perpetual VID using revokeUIN and valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details, perpetual VID, EUIN credential and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2101,16 +1964,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temporary_1_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_56
-      description: Generate one temporary VID using a revoke UIN with valid inputs
+      description: Verify that the system successfully generates one temporary vid using a revoke uin when the API is called with valid input details, temporary VID, EUIN credential and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2136,16 +1997,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temporary_2_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_57
-      description: Generate two temporary VID using a revoke UIN with valid inputs
+      description: Verify that the system successfully generates two temporary vid using a revoke uin when the API is called with valid input details, temporary VID, EUIN credential and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2171,16 +2030,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temporary_3_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_58
-      description: Generate three temporary VID using a revoke UIN with valid inputs
+      description: Verify that the system successfully generates three temporary vid using a revoke uin when the API is called with valid input details, temporary VID, EUIN credential and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2206,16 +2063,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temporary_4_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_59
-      description: Generate four temporary VID using a revoke UIN with valid inputs
+      description: Verify that the system successfully generates four temporary vid using a revoke uin when the API is called with valid input details, temporary VID, EUIN credential and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2241,16 +2096,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Onetimeuse_Using_RevokeUIN_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_60
-      description: Generate Onetimeuse VID using a revoke UIN with valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details, onetime use VID, EUIN credential and a valid UIN
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2276,16 +2129,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Esignet_Integ_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_61
-      description: Generate perpetual VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2311,15 +2162,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_1_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_62
-      description: Generate one temporary VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates one temporary VID using an eSignet integer when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2345,15 +2194,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_2_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_63
-      description: Generate two temporary VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates two temporary VIDs using an eSignet integer when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2379,15 +2226,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_3_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_64
-      description: Generate three temporary VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates three temporary VIDs using an eSignet integer when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2413,15 +2258,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_4_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_65
-      description: Generate four temporary VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates four temporary VIDs using an eSignet integer when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2447,15 +2290,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Onetimeuse_Esignet_Integ_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_66
-      description: Generate Onetimeuse VID using an esignet integer with valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2481,16 +2322,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Onetimeuse_GetRid_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_67
-      description: Generate Onetimeuse VID to get RID with valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2516,16 +2355,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_GetRid_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_68
-      description: Generate perpetual VID to get RID with valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2551,16 +2388,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Temp_GetRid_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_69
-      description: Generate temporary VID to get RID with valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2586,16 +2421,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_70
-      description: Generate perpetual VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2621,15 +2454,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_1_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_71
-      description: Generate one temporary VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates one temporary VID for expired OTP scenario when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2655,15 +2486,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_2_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_72
-      description: Generate two temporary VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates two temporary VIDs for expired OTP scenario when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2689,15 +2518,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_3_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_73
-      description: Generate three temporary VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates three temporary VIDs for expired OTP scenario when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2723,15 +2550,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Temporary_4_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_74
-      description: Generate four temporary VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates four temporary VIDs for expired OTP scenario when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2757,15 +2582,13 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
    Resident_GenerateVID_Onetimeuse_ForEotp_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_75
-      description: Generate Onetimeuse VID for expire OTP scenario with valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2791,16 +2614,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_OrdrSts_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_76
-      description: Generate perpetual VID with valid order status
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2826,16 +2647,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Perpetual_Inv_Scen_Valid_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_77
-      description: Generate perpetual VID for invoice scenario with valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2861,16 +2680,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_GenerateVID_Onetime_Inv_Scen_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_78
-      description: Generate Onetimeuse VID for invoice scenario with valid inputs
+      description: Verify that the system successfully generates an onetime use VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2896,16 +2713,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Temporary_VID_ONE_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_79
-      description: Generate one temporary VID using valid inputs
+      description: Verify that the system successfully generates one temporary vid using valid inputs when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2931,16 +2746,186 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
+}'
+
+   Resident_Generate_Temporary_VID_TWO_Valid_sid:
+      endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_GenerateVID_80
+      description: Verify that the system successfully generates a second temporary VID when the API is called with valid input details and a valid VID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/GenerateVID/createGenerateVID
+      outputTemplate: resident/GenerateVID/createGenerateVIDResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid",
+        "version": "v1",
+        "vidType": "Temporary",
+        "otp": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "sendOtpResp":{
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
+    }
+}'
+
+   Resident_Generate_Temporary_VID_Three_Valid_sid:
+      endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_GenerateVID_81
+      description: Verify that the system successfully generates the third temporary VID when the API is called with valid input details and a valid VID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/GenerateVID/createGenerateVID
+      outputTemplate: resident/GenerateVID/createGenerateVIDResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid",
+        "version": "v1",
+        "vidType": "Temporary",
+        "otp": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "sendOtpResp":{
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
+    }
+}'
+
+   Resident_Generate_Temporary_VID_FOUR_Valid_sid:
+      endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_GenerateVID_82
+      description: Verify that the system successfully generates the fourth temporary VID when the API is called with valid input details and a valid VID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/GenerateVID/createGenerateVID
+      outputTemplate: resident/GenerateVID/createGenerateVIDResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid",
+        "version": "v1",
+        "vidType": "Temporary",
+        "otp": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "sendOtpResp":{
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
+    }
+}'
+
+   Resident_Generate_Temporary_VID_FIVE_Valid_sid:
+      endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_GenerateVID_83
+      description: Verify that the system successfully generates the fifth temporary VID when the API is called with valid input details and a valid VID
+      role: resident
+      restMethod: post
+      checkErrorsOnlyInResponse: true
+      inputTemplate: resident/GenerateVID/createGenerateVID
+      outputTemplate: resident/GenerateVID/createGenerateVIDResult
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid",
+        "version": "v1",
+        "vidType": "Temporary",
+        "otp": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "sendOtpResp":{
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
+    }
+}'
+
+   Resident_Generate_Temporary_VID_SIX_Valid_sid:
+      endPoint: /resident/v1/vid
+      uniqueIdentifier: TC_Resident_GenerateVID_84
+      description: Verify that the system successfully generates the six temporary VID when the API is called with valid input details and a valid VID
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/GenerateVID/createGenerateVID
+      outputTemplate: resident/error
+      input: '{
+        "transactionID": "$TRANSACTIONID$",
+        "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+        "individualIdType": "UIN",
+        "requesttime": "$TIMESTAMP$",
+        "id": "mosip.resident.vid",
+        "version": "v1",
+        "vidType": "Temporary",
+        "otp": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_EMAIL$",
+        "sendOtp":{
+    "transactionID": "$TRANSACTIONID$",
+    "requestTime": "$TIMESTAMP$",
+    "individualId": "$ID:AddIdentity_withValidParameters_To_Genrate_VID_Six_smoke_Pos_UIN$",
+    "individualIdType": "UIN",
+    "sendOtpReqTemplate": "resident/SendOTP/createSendOTP",
+    "sendOtpEndPoint": "/resident/v1/req/otp"
+    }
+    }'
+      output: '{
+  "sendOtpResp":{
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
+    },    
+    "errors": [
+    {
+      "errorCode": "RES-SER-405"
+    }
+  ]
+    
+    
 }'
 
    Resident_Generate_Perpetual_VID_Valid_First_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_85
-      description: Generate first perpetual VID using valid inputs
+      description: Verify that the system successfully generates the first perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -2966,9 +2951,7 @@ GenerateVID:
     }'
       output: '{
       "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
       
  
@@ -2977,7 +2960,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_SecondTime_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_86
-      description: Generate perpetual VID secondtime using valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3003,9 +2986,7 @@ GenerateVID:
     }'
       output: '{
       "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
     
 }'
@@ -3013,7 +2994,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_1_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_87
-      description: Generate one perpetual VID using valid inputs
+      description: Verify that the system successfully generates one perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3039,9 +3020,7 @@ GenerateVID:
     }'
       output: '{
       "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
     
 }'
@@ -3049,7 +3028,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_2_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_88
-      description: Generate second perpetual VID using valid inputs
+      description: Verify that the system successfully generates the second perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3075,9 +3054,7 @@ GenerateVID:
     }'
       output: '{
       "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
     
 }'
@@ -3085,7 +3062,7 @@ GenerateVID:
    Resident_Generate_Perpetual_VID_3_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_89
-      description: Generate third perpetual VID using valid inputs
+      description: Verify that the system successfully generates the third perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3111,9 +3088,7 @@ GenerateVID:
     }'
       output: '{
       "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
     
 }'
@@ -3121,7 +3096,7 @@ GenerateVID:
    Resident_Generate_Temporary_VID_use_3_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_90
-      description: Generate temporary VID using three cases with valid inputs
+      description: Verify that the system successfully generates a temporary VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3147,16 +3122,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_For_SendOtp_Valid_Smoke_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_91
-      description: Generate perpetual VID for send OTP using valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3182,16 +3155,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_uin_Transactions_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_92
-      description: Generate perpetual VID for UIN transactions using valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3217,16 +3188,14 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'
 
    Resident_Generate_Perpetual_VID_uin_Transactions_Second_sid:
       endPoint: /resident/v1/vid
       uniqueIdentifier: TC_Resident_GenerateVID_93
-      description: Generate perpetual VID for UIN transactions using valid inputs
+      description: Verify that the system successfully generates a perpetual VID when the API is called with valid input details and a valid VID
       role: resident
       restMethod: post
       checkErrorsOnlyInResponse: true
@@ -3252,8 +3221,6 @@ GenerateVID:
     }'
       output: '{
   "sendOtpResp":{
-        "maskedMobile": "$IGNORE$",
-        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult",
-        "maskedEmail": "$IGNORE$"
+        "sendOtpResTemplate":"resident/SendOTP/createSendOTPResult"
     }
 }'

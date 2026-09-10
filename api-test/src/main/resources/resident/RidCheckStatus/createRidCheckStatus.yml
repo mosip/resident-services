@@ -2,7 +2,7 @@ RidCheckStatus:
    Resident_RidCheckStatus_AllValid_Smoke:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_01      
-      description: Fetch RID status      
+      description: Verify that the system successfully returns the RID status when the API is called with valid input details
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -20,7 +20,7 @@ RidCheckStatus:
    Resident_RidCheckStatus_Missing_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_02      
-      description: Fetch RID status when individual id is removed from request      
+      description: Verify that the system returns an error when the API is called with individual id is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -35,15 +35,14 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualId:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_03      
-      description: Fetch RID status when invalid value is given for individual id       
+      description: Verify that the system returns an error when the API is called with invalid value is given for individual id
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -58,8 +57,7 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-408",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-408"
     }
   ]
 }'
@@ -67,7 +65,7 @@ RidCheckStatus:
    Resident_RidCheckStatus_Missing_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_04      
-      description: Fetch RID status when individual id type is removed from request      
+      description: Verify that the system returns an error when the API is called with individual id type is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -82,15 +80,14 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
    Resident_RidCheckStatus_Invalid_InputParameter_individualIdType:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_05      
-      description: Fetch RID status when individual id type value is given invalid      
+      description: Verify that the system returns an error when the API is called with individual id type value is given invalid
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -105,15 +102,14 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
    Resident_RidCheckStatus_Missing_Id:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_06      
-      description: Fetch RID status when id is removed from request      
+      description: Verify that the system returns an error when the API is called with id is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -128,15 +124,14 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
    Resident_RidCheckStatus_Missing_timestamp:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_07      
-      description: Fetch RID status when requesttime is removed from request      
+      description: Verify that the system returns an error when the API is called with requesttime is removed from request
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -151,15 +146,14 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
    Resident_RidCheckStatus_Invalid_timestamp:
       endPoint: /resident/v1/rid/check-status
       uniqueIdentifier: TC_Resident_Ridstatus_08      
-      description: Fetch RID status when invalid request time is given      
+      description: Verify that the system returns an error when the API is called with invalid request time is given
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post
@@ -174,8 +168,7 @@ RidCheckStatus:
       output: '{
    "errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
