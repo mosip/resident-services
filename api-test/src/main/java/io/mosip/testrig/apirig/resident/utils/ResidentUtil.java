@@ -1,6 +1,5 @@
 package io.mosip.testrig.apirig.resident.utils;
 
-import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +14,10 @@ import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import com.itextpdf.text.exceptions.BadPasswordException;
-
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.parser.PdfTextExtractor;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import io.mosip.testrig.apirig.dbaccess.DBManager;
 import io.mosip.testrig.apirig.dto.OutputValidationDto;
@@ -242,31 +241,28 @@ public class ResidentUtil extends AdminTestUtil {
 
 		byte[] pdf = response.asByteArray();
 		try {
-			PdfReader reader;
+			PDDocument document;
 			try {
 				// First opening pdf without password
-				reader = new PdfReader(new ByteArrayInputStream(pdf));
-				if (!reader.isEncrypted()) {
-					logger.info("Opened non-encrypted PDF");
-				} else {
-					reader.close();
-					throw new BadPasswordException("Encrypted PDF");
-				}
-
-			} catch (BadPasswordException e) {
+				document = Loader.loadPDF(pdf);
+				logger.info("Opened non-encrypted PDF");
+			} catch (InvalidPasswordException e) {
 
 				// If encrypted, try with password
 				String password = properties.getProperty("pdfPassword");
 
-				reader = new PdfReader(new ByteArrayInputStream(pdf), password.getBytes());
+				document = Loader.loadPDF(pdf, password);
 
 				logger.info("Opened password protected PDF");
 			}
 			String pdfAsText;
 			try {
-				pdfAsText = PdfTextExtractor.getTextFromPage(reader, 1);
+				PDFTextStripper stripper = new PDFTextStripper();
+				stripper.setStartPage(1);
+				stripper.setEndPage(1);
+				pdfAsText = stripper.getText(document);
 			} finally {
-				reader.close();
+				document.close();
 			}
 
 			Reporter.log(GlobalConstants.REPORT_RESPONSE_PREFIX + GlobalConstants.REPORT_RESPONSE_BODY
