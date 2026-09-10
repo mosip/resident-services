@@ -2,9 +2,10 @@ AuthLockNew:
    Resident_AuthLockNew_Demo_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_01
-      description: Lock the demo authentication type using valid UIN
+      description: Verify that the system successfully locks the demo authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -22,9 +23,10 @@ AuthLockNew:
    Resident_AuthLockNew_Otp_Phone_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_02
-      description: Lock the otp-phone authentication type using valid UIN
+      description: Verify that the system successfully locks the otp-phone authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -42,9 +44,10 @@ AuthLockNew:
    Resident_AuthLockNew_Otp_Email_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_03
-      description: Lock the otp-email authentication type using valid UIN
+      description: Verify that the system successfully locks the otp-email authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -62,9 +65,10 @@ AuthLockNew:
    Resident_AuthLockNew_Face_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_04
-      description: Lock the bio-face authentication type using valid UIN
+      description: Verify that the system successfully locks the bio-face authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -82,9 +86,10 @@ AuthLockNew:
    Resident_AuthLockNew_Iris_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_05
-      description: Lock the bio-iris authentication type using valid UIN
+      description: Verify that the system successfully locks the bio-iris authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -102,9 +107,10 @@ AuthLockNew:
    Resident_AuthLockNew_Finger_Valid_UIN_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_06
-      description: Lock the bio-finger authentication type using valid UIN
+      description: Verify that the system successfully locks the bio-finger authentication type when the API is called with valid input details and a valid UIN
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -122,9 +128,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_07
-      description: Lock the authentication type using valid UIN and an invalid requesttime
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid requesttime
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -138,8 +145,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -147,9 +153,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_08
-      description: Lock the authentication type using valid UIN and an invalid Id
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -163,8 +170,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -172,9 +178,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_09
-      description: Lock the authentication type using valid UIN and an invalid version
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid version
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -188,8 +195,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -197,9 +203,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_10
-      description: Lock the authentication type using valid UIN and an invalid authtype
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid auth type
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -213,8 +220,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-410",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-410"
 		    }
 		  ]
 }'
@@ -222,9 +228,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_11
-      description: Lock the authentication type using valid UIN and an invalid locked status
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid locked status
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -238,8 +245,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-418",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-418"
 		    }
 		  ]
 }'
@@ -247,9 +253,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_12
-      description: Lock the authentication type using valid UIN with an invalid unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid unlockforseconds
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -263,8 +270,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-418",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-418"
 		    }
 		  ]
 }'
@@ -272,9 +278,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_13
-      description: Lock the authentication type using valid UIN with an empty requesttime
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty requesttime
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -288,8 +295,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -297,8 +303,9 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_14
-      description: Lock the authentication type using valid UIN with an empty Id
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty ID
       role: residentNew
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
@@ -313,8 +320,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
   }'
@@ -322,9 +328,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_15
-      description: Lock the authentication type using valid UIN with an empty version
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty version
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -338,8 +345,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -347,9 +353,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_16
-      description: Lock the authentication type using valid UIN with an empty authtype
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty auth type
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -372,9 +379,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_17
-      description: Lock the authentication type using valid UIN with an empty locked status
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty locked status
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -392,9 +400,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_18
-      description: Lock the authentication type using valid UIN with an empty unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid UIN and empty unlockforseconds
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -412,9 +421,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_19
-      description: Lock the authentication type using valid UIN with missing requesttime
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing requesttime
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -428,8 +438,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -437,9 +446,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_20
-      description: Lock the authentication type using valid UIN with missing Id
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing ID
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -453,8 +463,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -462,9 +471,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_21
-      description: Lock the authentication type using valid UIN with missing version
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing version
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -478,8 +488,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -487,9 +496,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_22
-      description: Lock the authentication type using valid UIN with missing authtype
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing auth type
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -512,9 +522,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_23
-      description: Lock the authentication type using valid UIN with missing locked status
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing locked status
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -532,9 +543,10 @@ AuthLockNew:
    Resident_AuthLockNew_uin_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_24
-      description: Lock the authentication type using valid UIN with missing unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing unlockforseconds
       role: residentNew
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -552,7 +564,7 @@ AuthLockNew:
    Resident_AuthLockNew_StatusCode_Invalid_Token_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_25
-      description: Lock the authentication type using valid statuscode and an invalid token
+      description: Verify that the system returns an error when the API is called with valid status code and invalid token
       role: invalid
       restMethod: post
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
@@ -570,9 +582,10 @@ AuthLockNew:
    Resident_AuthLockNew_Demo_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_26
-      description: Lock the demo authentication type using valid VID
+      description: Verify that the system successfully locks the demo authentication type when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -590,9 +603,10 @@ AuthLockNew:
    Resident_AuthLockNew_Face_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_27
-      description: Lock the face authentication type using valid VID
+      description: Verify that the system successfully locks the face authentication type when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -610,9 +624,10 @@ AuthLockNew:
    Resident_AuthLockNew_Iris_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_28
-      description: Lock the iris authentication type using a valid VID
+      description: Verify that the system successfully locks the iris authentication type when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -630,9 +645,10 @@ AuthLockNew:
    Resident_AuthLockNew_Finger_Valid_Vid_All:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_29
-      description: Lock the finger authentication type using a valid VID
+      description: Verify that the system successfully locks the finger authentication type when the API is called with valid input details and a valid VID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -650,9 +666,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_30
-      description: Lock the authentication type using valid VID with an invalid requesttime
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid requesttime
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -666,8 +683,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -675,9 +691,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_31
-      description: Lock the authentication type using valid VID with an invalid Id
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -691,8 +708,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -700,9 +716,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_32
-      description: Lock the authentication type using valid VID with an invalid version
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid version
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -716,8 +733,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -725,9 +741,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_33
-      description: Lock the authentication type using valid VID with an invalid authtype
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid auth type
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -741,8 +758,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-410",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-410"
 		    }
 		  ]
 }'
@@ -750,9 +766,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_Locked_Status_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_34
-      description: Lock the authentication type using valid VID with an invalid lockedstatus
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid locked status
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -766,8 +783,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-418",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-418"
 		    }
 		  ]
 }'
@@ -775,9 +791,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Invalid_Secs_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_35
-      description: Lock the authentication type using valid VID with an invalid unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid VID and invalid unlockforseconds
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -791,8 +808,7 @@ AuthLockNew:
       output: '{
   		"errors": [
 		    {
-		      "errorCode": "RES-SER-418",
-		      "message": "$IGNORE$"
+		      "errorCode": "RES-SER-418"
 		    }
 		  ]
 }'
@@ -800,9 +816,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_36
-      description: Lock the authentication type using valid VID with an empty requesttime
+      description: Verify that the system returns an error when the API is called with a valid VID and empty requesttime
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -816,8 +833,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -825,9 +841,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_37
-      description: Lock the authentication type using valid VID with an empty Id
+      description: Verify that the system returns an error when the API is called with a valid VID and empty ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -841,8 +858,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
   }'
@@ -850,9 +866,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_38
-      description: Lock the authentication type using valid VID with an empty version
+      description: Verify that the system returns an error when the API is called with a valid VID and empty version
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -866,8 +883,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -875,9 +891,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_39
-      description: Lock the authentication type using valid VID with an empty authtype
+      description: Verify that the system returns an error when the API is called with a valid VID and empty auth type
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -900,9 +917,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_40
-      description: Lock the authentication type using valid VID with an empty lockedstatus
+      description: Verify that the system returns an error when the API is called with a valid VID and empty locked status
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -920,9 +938,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Empty_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_41
-      description: Lock the authentication type using valid VID with an empty unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid VID and empty unlockforseconds
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -940,9 +959,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_Requesttime_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_42
-      description: Lock the authentication type using valid VID with missing requesttime
+      description: Verify that the system returns an error when the API is called with a valid VID and missing requesttime
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -956,8 +976,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -965,9 +984,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_Id_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_43
-      description: Lock the authentication type using valid VID with missing Id
+      description: Verify that the system returns an error when the API is called with a valid VID and missing ID
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -981,8 +1001,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -990,9 +1009,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_Version_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_44
-      description: Lock the authentication type using valid VID with missing version
+      description: Verify that the system returns an error when the API is called with a valid VID and missing version
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -1006,8 +1026,7 @@ AuthLockNew:
       output: '{
   		"errors": [
     {
-      "errorCode": "RES-SER-410",
-      "message": "$IGNORE$"
+      "errorCode": "RES-SER-410"
     }
   ]
 }'
@@ -1015,9 +1034,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_AuthType_Neg:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_45
-      description: Lock the authentication type using valid VID with missing authtype
+      description: Verify that the system returns an error when the API is called with a valid VID and missing auth type
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/error
       input: '{
@@ -1040,9 +1060,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_Locked_Status_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_46
-      description: Lock the authentication type using valid VID with missing lockedstatus
+      description: Verify that the system returns an error when the API is called with a valid VID and missing locked status
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{
@@ -1060,9 +1081,10 @@ AuthLockNew:
    Resident_AuthLockNew_vid_Missing_Secs_Pos:
       endPoint: /resident/v1/auth-lock-unlock
       uniqueIdentifier: TC_Resident_AuthLockNew_47
-      description: Lock the authentication type using valid VID with missing unlockforseconds
+      description: Verify that the system returns an error when the API is called with a valid VID and missing unlockforseconds
       role: residentNewVid
       restMethod: post
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AuthLockNew/CreateAuthLockNew
       outputTemplate: resident/AuthLockNew/CreateAuthLockNewResult
       input: '{

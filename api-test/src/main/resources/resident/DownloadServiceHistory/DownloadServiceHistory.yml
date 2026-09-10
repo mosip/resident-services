@@ -2,10 +2,10 @@ DownloadServiceHistory:
    Resident_DownloadServiceHistory_uin_all_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_01
-      description: Download service history using a valid UIN with all valid inputs
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details and a valid UIN
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -21,18 +21,18 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_Invalid_User_Neg:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_02
-      description: Download service history using a valid UIN with an invalid user
+      description: Verify that the system returns an error when the API is called with a valid UIN and invalid user
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/error
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -46,18 +46,22 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "errors": [
+         {
+            "errorCode": "KER-ATH-401"
+         }
+     ]
 }'
 
    Resident_DownloadServiceHistory_uin_Missing_LangCode_Neg:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_03
-      description: Download service history using a valid UIN with missing langcode
+      description: Verify that the system returns an error when the API is called with a valid UIN and missing languageCode
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/error
       input: '{
       	"languageCode": "$REMOVE$",
 		"pageStart": "$REMOVE$",
@@ -71,16 +75,20 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "errors": [
+        {
+          "errorCode": "RES-SER-418"
+        }
+      ]
 }'
 
    Resident_DownloadServiceHistory_uin_FromDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_04
-      description: Download service history using a valid UIN with valid fromdate
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid fromDateTime
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -96,16 +104,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_ToDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_05
-      description: Download service history using a valid UIN with valid todate
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid toDateTime
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -121,16 +129,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_PageStart_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_06
-      description: Download service history using a valid UIN with valid pagestart
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid pageStart
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -146,16 +154,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_ServiceType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_07
-      description: Download service history using a valid UIN with valid servicetype
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid serviceType
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -171,16 +179,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_SortType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_08
-      description: Download service history using a valid UIN with valid sorttype
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid sortType
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -196,16 +204,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_uin_StatusFilter_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_09
-      description: Download service history using a valid UIN with valid statusfilter
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid UIN, and valid statusFilter
       role: residentNew
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -216,21 +224,21 @@ DownloadServiceHistory:
 		"toDateTime": "$REMOVE$",
 		"sortType": "$REMOVE$",
 		"serviceType": "$REMOVE$",
-		"statusFilter": "in-progress,success,failed",
+		"statusFilter": "Success",
 		"searchText": "$REMOVE$",
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_all_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_10
-      description: Download service history using a valid VID with all valid inputs
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details and a valid VID
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -246,18 +254,18 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_Missing_LangCode_Neg:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_11
-      description: Download service history using a valid VID with missing langcode
+      description: Verify that the system returns an error when the API is called with a valid VID and missing languageCode
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/error
       input: '{
       	"languageCode": "$REMOVE$",
 		"pageStart": "$REMOVE$",
@@ -271,16 +279,20 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "errors": [
+        {
+           "errorCode": "RES-SER-418"
+        }
+     ]
 }'
 
    Resident_DownloadServiceHistory_vid_FromDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_12
-      description: Download service history using a valid VID with valid fromdate
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid fromDateTime
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -296,16 +308,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_ToDate_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_13
-      description: Download service history using a valid VID with valid todate
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid toDateTime
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -321,16 +333,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_PageStart_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_14
-      description: Download service history using a valid VID with valid pagestart
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid pageStart
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -346,16 +358,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_ServiceType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_15
-      description: Download service history using a valid VID with valid servicetype
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid serviceType
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -371,16 +383,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_SortType_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_16
-      description: Download service history using a valid VID with valid sorttype
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid sortType
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -396,16 +408,16 @@ DownloadServiceHistory:
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadServiceHistory_vid_StatusFilter_Valid_Smoke:
       endPoint: /resident/v1/download/service-history
       uniqueIdentifier: TC_Resident_DownloadServiceHistory_17
-      description: Download service history using a valid VID with valid statusfilter
+      description: Verify that the system successfully returns the service history PDF when the API is called with valid input details, a valid VID, and valid statusFilter
       role: residentNewVid
-      checkErrorsOnlyInResponse: true
       restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
       outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
       input: '{
@@ -416,10 +428,10 @@ DownloadServiceHistory:
 		"toDateTime": "$REMOVE$",
 		"sortType": "$REMOVE$",
 		"serviceType": "$REMOVE$",
-		"statusFilter": "in-progress,success,failed",
+		"statusFilter": "Success",
 		"searchText": "$REMOVE$",
 		"eventReqDateTime": "$REMOVE$"
 }'
       output: '{
-      
+      "Content-Type": "application/pdf"
 }'

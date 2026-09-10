@@ -2,9 +2,8 @@ DownloadSupportingDocs:
    Resident_DownloadSupportingDocs_all_Valid_smoke:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_01
-      description: Download supporting documents using all valid inputs
+      description: Verify that the system successfully returns the supporting documents PDF when the API is called with valid input details
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
       outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
@@ -12,14 +11,14 @@ DownloadSupportingDocs:
       "langcode":"$1STLANG$"
 }'
       output: '{
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadSupportingDocs_Valid_smoke:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_02
-      description: Download supporting documents using valid data
+      description: Verify that the system successfully returns the supporting documents PDF when the API is called with valid input details and secondary language code
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
       outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
@@ -27,15 +26,14 @@ DownloadSupportingDocs:
       "langcode":"$2NDLANG$"
 }'
       output: '{
-	
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadSupportingDocs_Empty_Lang_Neg:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_03
-      description: Download supporting documents using an empty langcode
+      description: Verify that the system returns an error when the API is called with empty langcode
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
       outputTemplate: resident/error
@@ -43,30 +41,33 @@ DownloadSupportingDocs:
       "langcode":""
 }'
       output: '{
-	
+      "errors": [
+         {
+            "errorCode": "RES-SER-410"
+         }
+      ]
 }'
 
-   Resident_DownloadSupportingDocs_Invalid_token_Neg:
+   Resident_DownloadSupportingDocs_Invalid_token:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_04
-      description: Download supporting documents using an invalid token
-      role: invalid
-      checkErrorsOnlyInResponse: true
+      description: Verify that the system successfully returns the supporting documents PDF when the API is called with invalid token
+      role: invalidtoken
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
-      outputTemplate: resident/error
+      outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
       input: '{
       "langcode":"$1STLANG$"
 }'
       output: '{
+      "Content-Type": "application/pdf"
 }'
 
    Resident_DownloadSupportingDocs_Invalid_lang_Neg:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_05
-      description: Download supporting documents using an invalid langcode
+      description: Verify that the system returns an error when the API is called with invalid langcode
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
       outputTemplate: resident/error
@@ -74,14 +75,18 @@ DownloadSupportingDocs:
       "langcode":"$1!ee$"
 }'
       output: '{
+      "errors": [
+         {
+            "errorCode": "RES-SER-410"
+         }
+      ]
 }'
 
    Resident_DownloadSupportingDocs_Absent_langCode_Neg:
       endPoint: /resident/v1/download/supporting-documents
       uniqueIdentifier: TC_Resident_DownloadSupportingDocs_06
-      description: Download supporting documents using an absent langcode
+      description: Verify that the system returns an error when the API is called with absent langcode
       role: resident
-      checkErrorsOnlyInResponse: true
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
       outputTemplate: resident/error
@@ -89,4 +94,9 @@ DownloadSupportingDocs:
       "langcode":"$REMOVE$"
 }'
       output: '{
+      "errors": [
+         {
+            "errorCode": "RES-SER-418"
+         }
+      ]
 }'

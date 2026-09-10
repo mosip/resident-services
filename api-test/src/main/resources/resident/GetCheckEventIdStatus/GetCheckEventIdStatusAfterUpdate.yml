@@ -1,0 +1,36 @@
+GetCheckEventIdStatusAfterUpdate:
+   Resident_GetCheckEventIdStatus_uin_UpdateName_Smoke:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_08
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details, update-name operation and a valid UIN
+      role: residentNew
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_01
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
+      input: '{
+        "eventId": "$ID:GetServiceHistory_uin_all_Valid_Smoke_sid_eventId$",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+
+}'
+
+   Resident_GetCheckEventIdStatus_vid_UpdateName_Smoke:
+      endPoint: /resident/v1/events/{eventId}?langCode={langCode}
+      uniqueIdentifier: TC_Resident_GetEventIdStatus_09
+      description: Verify that the system successfully returns the event ID status when the API is called with valid input details, update-name operation and a valid VID
+      role: residentNewVid
+      checkErrorsOnlyInResponse: true
+      restMethod: get
+      additionalDependencies: Dependent_ESignet_GenerateToken_02
+      inputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatus
+      outputTemplate: resident/GetCheckEventIdStatus/GetCheckEventIdStatusResult
+      input: '{
+        "eventId": "$ID:GetServiceHistory_vid_all_Valid_Smoke_sid_eventId$",
+        "langCode": "$1STLANG$"
+}'
+      output: '{
+
+}'

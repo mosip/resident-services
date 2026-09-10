@@ -2,7 +2,7 @@ SendOtpIdp:
    Resident_ESignet_SendOtpIdp_all_Valid_Smoke:
       endPoint: /v1/idp/authorization/send-otp
       uniqueIdentifier: TC_Resident_SendotpIDP_01      
-      description: Request OTP using UIN      
+      description: Verify that the system successfully sends the OTP when the API is called with valid input details and a valid UIN in the eSignet authorization process
       role: resident
       checkErrorsOnlyInResponse: true
       restMethod: post

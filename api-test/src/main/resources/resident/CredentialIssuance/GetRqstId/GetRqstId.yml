@@ -2,7 +2,7 @@ GetRqstId:
    Resident_GetRqstId_All_Valid_Smoke:
       endPoint: /v1/credentialrequest/getRequestIds?direction=ASC&orderBy=updateDateTime&pageNumber=0&pageSize=1&statusCode=FAILED
       uniqueIdentifier: TC_Resident_GetRqstId_01
-      description: Get requestId using all valid inputs
+      description: Verify that the system successfully returns the request ID when the API is called with valid input details
       role: resident
       restMethod: get
       inputTemplate: resident/CredentialIssuance/GetRqstId/getRqstId
