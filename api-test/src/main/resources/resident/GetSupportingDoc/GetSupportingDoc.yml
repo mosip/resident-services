@@ -6,7 +6,7 @@ GetSupportingDoc:
       role: resident
       restMethod: get
       inputTemplate: resident/GetSupportingDoc/GetSupportingDoc
-      outputTemplate: resident/GetSupportingDoc/GetSupportingDocResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       		"langcode": "$1STLANG$"
 }'

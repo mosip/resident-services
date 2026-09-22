@@ -4,7 +4,7 @@ GetAcknowledgementController:
       role: residentNew
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
@@ -18,7 +18,7 @@ GetAcknowledgementController:
       role: residentNew
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "ar$!22",
 		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
@@ -32,7 +32,7 @@ GetAcknowledgementController:
       role: residentNew
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  "44$as443!"
@@ -46,7 +46,7 @@ GetAcknowledgementController:
       role: residentNew
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "",
 		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"
@@ -60,7 +60,7 @@ GetAcknowledgementController:
       role: residentNew
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  ""
@@ -74,7 +74,7 @@ GetAcknowledgementController:
       role: resident
       restMethod: get
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  "$ID:GetServiceHistory_all_Valid_Smoke_sid_eventId$"

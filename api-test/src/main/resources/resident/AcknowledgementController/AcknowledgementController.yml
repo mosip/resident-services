@@ -7,7 +7,7 @@ GetAcknowledgementController:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
@@ -24,7 +24,7 @@ GetAcknowledgementController:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/AcknowledgementController/AcknowledgementController
-      outputTemplate: resident/AcknowledgementController/AcknowledgementControllerResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
 		  "languageCode": "$1STLANG$",
 		  "eventId":  "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
