@@ -7,7 +7,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -90,7 +90,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -115,7 +115,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -140,7 +140,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "0",
@@ -165,7 +165,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -190,7 +190,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -215,7 +215,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -240,7 +240,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -294,7 +294,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -319,7 +319,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -344,7 +344,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "0",
@@ -369,7 +369,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -394,7 +394,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
@@ -419,7 +419,7 @@ DownloadServiceHistory:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadServiceHistory/DownloadServiceHistory
-      outputTemplate: resident/DownloadServiceHistory/DownloadServiceHistoryResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"languageCode": "$1STLANG$",
 		"pageStart": "$REMOVE$",
