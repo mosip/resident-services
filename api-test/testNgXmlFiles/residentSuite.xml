@@ -44,7 +44,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeUpdateUIN">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -62,6 +62,7 @@
 	<test name="AuditLogValidationAfterUpdateUIN">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-205" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -85,7 +86,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeReqAidOtp">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -102,6 +103,7 @@
 	<test name="AuditLogValidationAfterReqAidOtp">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-195" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -118,6 +120,7 @@
 	<test name="AuditLogValidationAfterCheckAidStatus">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-211" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -141,7 +144,7 @@
 	</test>
 	<test name="AuditLogValidationBeforePrintUin">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -158,6 +161,7 @@
 	<test name="AuditLogValidationAfterPrintUin">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-201" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -436,7 +440,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeGetPartnersByPartnerType">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -455,6 +459,7 @@
 	<test name="AuditLogValidationAfterGetPartnersByPartnerType">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-187" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -472,6 +477,7 @@
 	<test name="AuditLogValidationAfterReqShareCredWithPartner">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-125" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -531,7 +537,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeDownloadNearestRegCen">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -549,6 +555,7 @@
 	<test name="AuditLogValidationAfterDownloadNearestRegCen">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-273" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -574,7 +581,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeAuditLog">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<parameter name="sendEsignetToken" value="true" />
 		<classes>
 			<class
@@ -593,6 +600,8 @@
 	<test name="AuditLogValidationAfterAuditLog">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-191" />
+		<parameter name="auditAppId" value="10011" />
 		<parameter name="sendEsignetToken" value="true" />
 		<classes>
 			<class
@@ -611,6 +620,7 @@
 	<test name="AuditLogValidationAfterGetValidateToken">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-287" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -675,7 +685,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeRetrieveVID">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -693,6 +703,7 @@
 	<test name="AuditLogValidationAfterRetrieveVID">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-192" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -737,7 +748,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeGrievanceTicket">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -755,6 +766,7 @@
 	<test name="AuditLogValidationAfterGrievanceTicket">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-279" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -771,7 +783,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeDownloadUinCardByEventId">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -789,6 +801,7 @@
 		<test name="AuditLogValidationAfterDownloadUinCardByEventId">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-231" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -832,7 +845,7 @@
 	</test>
 	<test name="AuditLogValidationBeforeUploadDocument">
 		<parameter name="ymlFile"
-			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+			value="resident/AuditLogValidation/AuditLogCheckpoint.yml" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
@@ -851,6 +864,7 @@
 	<test name="AuditLogValidationAfterUploadDocument">
 		<parameter name="ymlFile"
 			value="resident/AuditLogValidation/AuditLogValidation.yml" />
+		<parameter name="auditEventIds" value="RES-SER-177" />
 		<classes>
 			<class
 				name="io.mosip.testrig.apirig.resident.testscripts.AuditValidator" />
