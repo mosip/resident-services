@@ -33,7 +33,6 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
@@ -379,8 +378,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 
 		if (credentialRequestStatusResponseDto != null) {
-			if(EventStatusSuccess.STORED.name().equals(credentialRequestStatusResponseDto.getStatusCode())
-				&& credentialRequestStatusResponseDto.getUrl() != null
+			if(credentialRequestStatusResponseDto.getUrl() != null
 				&& !credentialRequestStatusResponseDto.getUrl().isEmpty()) {
 				logger.debug("ResidentCredentialServiceImpl::getDataShareUrl()::exit");
 				return credentialRequestStatusResponseDto.getUrl();

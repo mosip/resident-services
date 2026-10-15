@@ -592,6 +592,49 @@ public class ResidentCredentialServiceTest {
 		assertNotNull(card);
 	}
 
+	@Test
+	public void testGetCardWithStatusPastStoredButUrlAvailable() throws Exception {
+		ReflectionTestUtils.setField(residentCredentialService, "applicationId", "resident");
+		ReflectionTestUtils.setField(residentCredentialService, "partnerReferenceId", "mosip_partner");
+
+		ResponseWrapper<CredentialRequestStatusDto> responseWrapper = new ResponseWrapper<CredentialRequestStatusDto>();
+		CredentialRequestStatusDto credentialRequestStatusDto = new CredentialRequestStatusDto();
+		credentialRequestStatusDto.setId("id-1");
+		credentialRequestStatusDto.setRequestId("effc56cd-cf3b-4042-ad48-7277cf90f763");
+		credentialRequestStatusDto.setStatusCode("PRINTED");
+		credentialRequestStatusDto.setUrl("https://url");
+
+		responseWrapper.setId("id-1");
+		responseWrapper.setVersion("T version");
+		responseWrapper.setResponsetime("responseTime");
+		responseWrapper.setResponse(credentialRequestStatusDto);
+
+		when(env.getProperty(any())).thenReturn("https://credentialUrl");
+		URI credentailStatusUri = URI.create("https://credentialUrleffc56cd-cf3b-4042-ad48-7277cf90f763");
+		when(residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class)).thenReturn(responseWrapper);
+
+		URI dataShareUri = URI.create(credentialRequestStatusDto.getUrl());
+		when(residentServiceRestClient.getApi(dataShareUri, String.class)).thenReturn("str");
+		RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
+		CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
+		cryptomanagerRequestDto.setApplicationId("resident");
+		cryptomanagerRequestDto.setData("str");
+		cryptomanagerRequestDto.setReferenceId("mosip_partner");
+		cryptomanagerRequestDto.setPrependThumbprint(true);
+		cryptomanagerRequestDto.setTimeStamp(LocalDateTime.now());
+		request.setRequesttime("responseTime");
+		request.setRequest(cryptomanagerRequestDto);
+
+		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
+		when(residentServiceRestClient.postApi(anyString(), any(), any(), any())).thenReturn(str);
+		CryptomanagerResponseDto responseObject = new CryptomanagerResponseDto();
+		responseObject.setResponse(new EncryptResponseDto(str));
+		when(mapper.readValue(str, CryptomanagerResponseDto.class)).thenReturn(responseObject);
+
+		byte[] card = residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763");
+		assertNotNull(card);
+	}
+
 	@Test(expected = ResidentCredentialServiceException.class)
 	public void testGetCardWithDataShareUrlNull() throws Exception {
 		ResponseWrapper<CredentialRequestStatusDto> responseWrapper = new ResponseWrapper<CredentialRequestStatusDto>();
