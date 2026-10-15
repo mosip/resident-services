@@ -143,6 +143,12 @@ public class ResidentUtil extends AdminTestUtil {
 					getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES, "mosip.iam.module.clientID"));
 		}
 		
+		// eSignet 1.6.x rejects a reused nonce, so generate a fresh one per request
+		if (jsonString.contains("$UNIQUENONCEVALUEFORESIGNET$")) {
+			jsonString = replaceKeywordValue(jsonString, "$UNIQUENONCEVALUEFORESIGNET$",
+					java.util.UUID.randomUUID().toString());
+		}
+		
 		if (jsonString.contains("$PERSONALIZED_CARD_HTML$")) {
 			jsonString = replaceKeywordWithValue(jsonString, "$PERSONALIZED_CARD_HTML$",
 					readBase64Resource("resident/personalized_card.html.b64"));
