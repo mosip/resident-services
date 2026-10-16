@@ -15,7 +15,7 @@ The shared test infrastructure lives in `apitest-commons` (a separate repo: `mos
 mvn clean install -Dgpg.skip=true -Dmaven.gitcommitid.skip=true
 
 # Run via JAR (primary method)
-java -Dmodules=resident -Denv.user=api-internal.<envName> -Denv.endpoint=<baseUrl> -Denv.testLevel=smokeAndRegression -jar target/apitest-resident-1.2.1-SNAPSHOT-jar-with-dependencies.jar
+java -Dmodules=resident -Denv.user=api-internal.<envName> -Denv.endpoint=<baseUrl> -Denv.testLevel=smokeAndRegression -jar (Get-ChildItem target/apitest-resident-*-jar-with-dependencies.jar).FullName
 
 # Run via IDE (Eclipse/VS Code): Main class is
 # io.mosip.testrig.apirig.resident.testrunner.MosipTestRunner
