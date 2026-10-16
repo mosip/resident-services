@@ -1,0 +1,13 @@
+AuditLogCheckpoint:
+   Resident_AuditLogCheckpoint_All_Valid_Smoke:
+      endPoint: SELECT to_char(MAX(log_dtimes), 'YYYY-MM-DD HH24:MI:SS.US') AS checkpoint FROM audit.app_audit_log
+      uniqueIdentifier: TC_Resident_AuditLogCheckpoint_01
+      description: Verify that the system successfully captures the latest audit log timestamp from the database before the API is called
+      role: audit
+      restMethod: post
+      inputTemplate: resident/AuditLogValidation/AuditLogValidation
+      outputTemplate: resident/AuditLogValidation/AuditLogValidationResult
+      input: '{
+}'
+      output: '{
+}'

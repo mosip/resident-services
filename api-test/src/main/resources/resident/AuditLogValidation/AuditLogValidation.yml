@@ -1,8 +1,8 @@
 AuditLogValidation:
    Resident_AuditLogValidation_All_Valid_Smoke:
-      endPoint: SELECT COUNT(*) FROM audit.app_audit_log
+      endPoint: SELECT (SELECT COUNT(*) FROM audit.app_audit_log WHERE log_dtimes > '$AUDITCHECKPOINT$' AND app_id = '$AUDITAPPID$' AND event_id IN ($AUDITEVENTIDS$)) AS count, (SELECT to_char(MAX(log_dtimes), 'YYYY-MM-DD HH24:MI:SS.US') FROM audit.app_audit_log) AS checkpoint
       uniqueIdentifier: TC_Resident_AuditLogValidation_01
-      description: Verify that the system successfully returns the audit log count when the API is called with valid input details from the database
+      description: Verify that the expected resident audit events are logged in the audit database after the API is called with valid input details
       role: audit
       restMethod: post
       inputTemplate: resident/AuditLogValidation/AuditLogValidation
