@@ -8,7 +8,7 @@ DownloadUinCardByEventId:
       additionalDependencies: Dependent_ESignet_GenerateToken_01
       auditLogCheck: true
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
-      outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"eventId": "$ID:GetRequestCardVid_uin_all_Valid_Smoke_sid_eventid$"
 }'
@@ -24,7 +24,7 @@ DownloadUinCardByEventId:
       restMethod: get
       additionalDependencies: Dependent_ESignet_GenerateToken_02
       inputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventId
-      outputTemplate: resident/DownloadUinCardByEventId/DownloadUinCardByEventIdResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       	"eventId": "$ID:GetRequestCardVid_vid_all_Valid_Smoke_sid_eventid$"
 }'

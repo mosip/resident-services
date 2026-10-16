@@ -6,7 +6,7 @@ DownloadNearestRegCen:
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCen
-      outputTemplate: resident/DownloadNearestRegCen/DownloadNearestRegCenResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       "langcode": "$1STLANG$",
 	  "latitude": "34.52117",
