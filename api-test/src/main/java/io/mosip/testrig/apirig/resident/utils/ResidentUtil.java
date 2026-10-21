@@ -37,7 +37,7 @@ import io.restassured.response.Response;
 public class ResidentUtil extends AdminTestUtil {
 
 	private static final Logger logger = Logger.getLogger(ResidentUtil.class);
-	protected static int ResidentAuditCount = 0;
+	protected static String ResidentAuditCheckpoint = null;
 	protected static final String ESIGNET_PAYLOAD = "config/esignetPayload.json";
 	
 	public static List<String> testCasesInRunScope = new ArrayList<>();
@@ -141,6 +141,12 @@ public class ResidentUtil extends AdminTestUtil {
 		if (jsonString.contains("$OIDCCLIENT$")) {
 			jsonString = replaceKeywordValue(jsonString, "$OIDCCLIENT$",
 					getValueFromActuator(GlobalConstants.RESIDENT_DEFAULT_PROPERTIES, "mosip.iam.module.clientID"));
+		}
+		
+		// eSignet 1.6.x rejects a reused nonce, so generate a fresh one per request
+		if (jsonString.contains("$UNIQUENONCEVALUEFORESIGNET$")) {
+			jsonString = replaceKeywordValue(jsonString, "$UNIQUENONCEVALUEFORESIGNET$",
+					java.util.UUID.randomUUID().toString());
 		}
 		
 		if (jsonString.contains("$PERSONALIZED_CARD_HTML$")) {
@@ -295,5 +301,18 @@ public class ResidentUtil extends AdminTestUtil {
 		return true;
 
 	}
-	
+
+	protected static String toSqlInList(String commaSeparatedValues) {
+		List<String> values = new ArrayList<>();
+		for (String value : commaSeparatedValues.split(",")) {
+			if (!value.isBlank())
+				values.add("'" + sanitizeSqlValue(value.trim()) + "'");
+		}
+		return String.join(",", values);
+	}
+
+	// Guards against SQL injection from suite XML values
+	protected static String sanitizeSqlValue(String value) {
+		return value.replaceAll("[^A-Za-z0-9_-]", "");
+	}
 }

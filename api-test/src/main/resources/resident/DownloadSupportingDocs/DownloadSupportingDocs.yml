@@ -6,7 +6,7 @@ DownloadSupportingDocs:
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
-      outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       "langcode":"$1STLANG$"
 }'
@@ -21,7 +21,7 @@ DownloadSupportingDocs:
       role: resident
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
-      outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       "langcode":"$2NDLANG$"
 }'
@@ -55,7 +55,7 @@ DownloadSupportingDocs:
       role: invalidtoken
       restMethod: get
       inputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocs
-      outputTemplate: resident/DownloadSupportingDocs/DownloadSupportingDocsResult
+      outputTemplate: resident/ContentTypeResult
       input: '{
       "langcode":"$1STLANG$"
 }'

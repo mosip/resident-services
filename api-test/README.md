@@ -27,7 +27,7 @@ Before running the automation tests, ensure the following software is installed 
 - **Maven 3.9.6** or higher ([installation guide](https://maven.apache.org/install.html))
 - **Lombok** (Refer to [Lombok Project](https://projectlombok.org/))
 - **setting.xml** ([download here](https://github.com/mosip/mosip-functional-tests/blob/master/settings.xml))
-- **apitest-commons** library should be cloned and the JAR should be built. Refer to ([README](https://github.com/mosip/mosip-functional-tests/blob/release-1.3.0/apitest-commons/README.md))
+- **apitest-commons** library should be cloned and the JAR should be built. Refer to ([README](https://github.com/mosip/mosip-functional-tests/blob/master/apitest-commons/README.md)) and build the `apitest-commons` version referenced in this module's `pom.xml`
 
 ### For Windows
 
@@ -102,8 +102,13 @@ To execute the tests using Jar, use the following steps:
    ```
 
 2. Run the automation test suite JAR file:
+   ```sh
+   # Linux / macOS / Git Bash
+   java -Dmodules=resident -Denv.user=api-internal.<env_name> -Denv.endpoint=<base_env> -Denv.testLevel=smokeAndRegression -jar apitest-resident-*-jar-with-dependencies.jar
    ```
-   java -jar -Dmodules=resident -Denv.user=api-internal.<env_name> -Denv.endpoint=<base_env> -Denv.testLevel=smokeAndRegression -jar apitest-resident-1.3.2-jar-with-dependencies.jar
+   ```powershell
+   # Windows PowerShell (does not expand * for java, so resolve the file first)
+   java -Dmodules=resident -Denv.user=api-internal.<env_name> -Denv.endpoint=<base_env> -Denv.testLevel=smokeAndRegression -jar (Get-ChildItem apitest-resident-*-jar-with-dependencies.jar).Name
    ```
    
 # Using Eclipse IDE
@@ -179,7 +184,7 @@ This section describes the meaning of each column in the test report:
 - **env.user**: Replace `<env_name>` with the appropriate environment name (e.g., `dev`, `qa`, etc.).
 - **env.endpoint**: The environment where the application under test is deployed. Replace `<base_env>` with the correct base URL for the environment (e.g., `https://api-internal.<env_name>.mosip.net`).
 - **env.testLevel**: Set this to `smoke` to run only smoke test cases, or `smokeAndRegression` to run both smoke and regression tests.
-- **jar**: Specify the name of the JAR file to execute. The version will change according to the development code version. For example, the current version may look like `apitest-resident-1.3.2-jar-with-dependencies.jar`.
+- **jar**: The JAR built in `target/`, named `apitest-resident-<version>-jar-with-dependencies.jar`, where `<version>` is the `<version>` in `pom.xml`. The `apitest-resident-*-jar-with-dependencies.jar` pattern above picks it up, so the command does not change when the version does.
 
 ### Build and Run Info
 
