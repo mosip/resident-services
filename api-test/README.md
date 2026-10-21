@@ -60,6 +60,13 @@ You can access the test automation code using either of the following methods:
    ```sh
    git clone https://github.com/mosip/resident-services
    ```
+---
+
+## Update the property file
+1. Navigate to the resident.properties file located at:
+    resident-services\api-test\src\main\resources\config\resident.properties
+2. Open the file in your preferred editor
+3. Update the client secret values and other required credentials as per your environment
 
 ---
 
@@ -156,6 +163,21 @@ To execute the tests using Eclipse IDE, use the following steps:
        - Second report is for core testcases
 
 ---
+
+## Test Report Column Definitions
+This section describes the meaning of each column in the test report:
+- **Total (T)**
+  The total number of test cases considered in the report.
+- **Passed (P)**
+  Indicates the number of test cases that executed successfully with the expected results.
+- **Failed (F)**
+  Indicates the number of test cases that failed due to issues such as output validation mismatches or unexpected errors during execution.
+- **Skipped (S)**
+  Represents test cases that were not executed due to missing prerequisites or data dependencies.
+- **Ignored (I)**
+  Represents test cases that were intentionally not executed due to limitations such as unsupported features, incompatibilities, or undeployed services.
+- **Known Issues (KI)**
+  Indicates test cases that failed but are already acknowledged as known issues for the current release, typically linked with a bug or defect ID.
 
 ## Details of Arguments Used
 
