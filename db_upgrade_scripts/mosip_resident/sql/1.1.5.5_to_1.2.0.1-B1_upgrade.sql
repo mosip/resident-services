@@ -15,10 +15,10 @@ CREATE SCHEMA resident;
 ALTER SCHEMA resident OWNER TO postgres;
 ALTER DATABASE mosip_resident SET search_path TO resident,pg_catalog,public;
 
-CREATE ROLE residentuser WITH 
+CREATE ROLE residentuser WITH
 	INHERIT
 	LOGIN
-	PASSWORD 'dbuserpwd';
+	PASSWORD :dbuserpwd;
 
 GRANT CONNECT
    ON DATABASE mosip_resident
@@ -28,9 +28,8 @@ GRANT USAGE
    ON SCHEMA resident
    TO residentuser;
 
-GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES
-   ON ALL TABLES IN SCHEMA resident
-   TO residentuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA resident
+   GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES ON TABLES TO residentuser;
 
 -- This Table is used to save the OTP for the user whenever user requests for one using the email id / phone number to log into the application.
 CREATE TABLE resident.otp_transaction(
