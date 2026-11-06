@@ -33,7 +33,7 @@
     "TC_Resident_UploadDocument_07": ["Dependent_ESignet_GenerateToken_01"],
     "TC_Resident_UploadDocument_08": ["Dependent_ESignet_GenerateToken_01"],
     "Dependent_ESignet_GenerateToken_02": [
-        "TC_Dependency_esignet",
+        "TC_Dependency_esignet_Vid",
         "Dependent_ESignet_AuthorizationCode_02"
     ],
     "Dependent_ESignet_GenerateToken_01": [
