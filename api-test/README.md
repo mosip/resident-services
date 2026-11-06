@@ -67,6 +67,9 @@ You can access the test automation code using either of the following methods:
     resident-services\api-test\src\main\resources\config\resident.properties
 2. Open the file in your preferred editor
 3. Update the client secret values and other required credentials as per your environment
+4. Set these optional properties if your environment needs them:
+   - `eSignetbaseurl`: the eSignet base URL, needed when eSignet is not on the default host. If left empty, it is derived from `env.endpoint` by replacing `api-internal` with `esignet`.
+   - `auditEventMaxWaitSeconds`: the maximum time, in seconds, to wait for an expected audit event after an API call. Audit entries are written asynchronously.
 
 ---
 
@@ -177,7 +180,7 @@ This section describes the meaning of each column in the test report:
 - **Ignored (I)**
   Represents test cases that were intentionally not executed due to limitations such as unsupported features, incompatibilities, or undeployed services.
 - **Known Issues (KI)**
-  Indicates test cases that failed but are already acknowledged as known issues for the current release, typically linked with a bug or defect ID.
+  Indicates test cases that were not executed because they are already acknowledged as known issues for the current release, typically linked with a bug or defect ID.
 
 ## Details of Arguments Used
 
