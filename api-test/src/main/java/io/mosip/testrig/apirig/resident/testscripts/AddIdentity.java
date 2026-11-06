@@ -43,6 +43,8 @@ public class AddIdentity extends ResidentUtil implements ITest {
 	private static final Logger logger = Logger.getLogger(AddIdentity.class);
 	protected String testCaseName = "";
 	public Response response = null;
+	// Set only when a test case actually posted an identity, so skipped YAMLs don't wait
+	private boolean isProcessingDelayRequired = false;
 
 	/**
 	 * get current testcaseName
@@ -123,6 +125,7 @@ public class AddIdentity extends ResidentUtil implements ITest {
 			inputJson = replaceKeywordWithValue(inputJson, "$EMAILVALUE$", email);
 		}
 
+		isProcessingDelayRequired = true;
 		response = postWithBodyAndCookie(ApplnURI + testCaseDTO.getEndPoint(), inputJson, COOKIENAME,
 				testCaseDTO.getRole(), testCaseDTO.getTestCaseName());
 
@@ -155,7 +158,9 @@ public class AddIdentity extends ResidentUtil implements ITest {
 
 	@AfterClass(alwaysRun = true)
 	public void waittime() {
-
+		if (!isProcessingDelayRequired) {
+			return;
+		}
 		try {
 			logger.info(
 					"waiting for " + properties.getProperty("Delaytime") + " mili secs after UIN Generation In IDREPO");

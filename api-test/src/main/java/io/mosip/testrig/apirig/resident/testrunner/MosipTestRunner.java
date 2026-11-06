@@ -119,7 +119,17 @@ public class MosipTestRunner {
 			PartnerRegistration.deviceGeneration();
 
 			BiometricDataProvider.generateBiometricTestData("Registration");
-			
+
+			// eSignet rejects state-changing calls (send-otp, authenticate, ...) without a valid XSRF token
+			if (!ResidentConfigManager.isInServiceNotDeployedList(GlobalConstants.ESIGNET)) {
+				try {
+					AdminTestUtil.fetchAndStoreCsrfToken();
+				} catch (Exception e) {
+					LOGGER.error("Failed to fetch eSignet CSRF token; eSignet test cases may fail with 403: "
+							+ e.getMessage());
+				}
+			}
+
 			String testCasesToExecuteString = ResidentConfigManager.getproperty("testCasesToExecute");
 			
 			generateDependency = ResidentConfigManager.getproperty("generateDependencyJson");
