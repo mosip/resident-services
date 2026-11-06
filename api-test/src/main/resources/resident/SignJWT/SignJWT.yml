@@ -19,3 +19,23 @@ SignJWT:
 }'
       output: '{
 }'
+   Resident_SignJWT_Vid_all_Valid_Smoke_sid:
+      endPoint: /v1/keymanager/jwtSign
+      uniqueIdentifier: TC_Dependency_esignet_Vid
+      description: Verify that the system successfully signs a separate JWT for the VID token request, because eSignet accepts each client assertion jti only once
+      role: resident
+      checkErrorsOnlyInResponse: true
+      restMethod: post
+      inputTemplate: resident/SignJWT/SignJWT
+      outputTemplate: resident/SignJWT/SignJWTResult
+      input: '{
+        "requesttime": "$TIMESTAMP$",
+	    "dataToSign": "$IDPCLIENTPAYLOAD$",
+	    "applicationId": "RESIDENT",
+	    "referenceId": "",
+	    "includePayload": true,
+	    "includeCertificate": true,
+	    "includeCertHash": false
+}'
+      output: '{
+}'
